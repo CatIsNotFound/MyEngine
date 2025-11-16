@@ -18,6 +18,33 @@ namespace S3GF {
                     static_cast<uint8_t>(255 * color.a)};
         }
 
+        inline void calcPoint(const Vector2& position, float radius, SDL_Color color,
+                      std::vector<SDL_Vertex>& vertices, std::vector<int>& indices,
+                      const uint16_t count = 32) {
+            vertices.clear();
+            indices.clear();
+            
+            const uint16_t actual_count = std::max(count, static_cast<uint16_t>(3));
+            
+            SDL_FColor fcolor = convert2FColor(color);
+            
+            vertices.push_back({{position.x, position.y}, fcolor, {0, 0}});
+            
+            for (uint16_t i = 0; i < actual_count; ++i) {
+                float angle = 2.0f * M_PI * static_cast<float>(i) / static_cast<float>(actual_count);
+                float x = position.x + cosf(angle) * radius;
+                float y = position.y + sinf(angle) * radius;
+                vertices.push_back({{x, y}, fcolor, {0, 0}});
+            }
+            
+            // 添加索引，确保最后一个三角形正确连接到起始顶点
+            for (uint16_t i = 0; i < actual_count; ++i) {
+                indices.push_back(0);
+                indices.push_back(i + 1);
+                indices.push_back((i + 1) % actual_count + 1);
+            }
+        }
+
         inline void calcLine(float x1, float y1, float x2, float y2, uint16_t thickness, const SDL_Color &color,
                              std::array<SDL_Vertex, 4> &vertex, std::array<int, 6> &indices) {
             float dx = x2 - x1;

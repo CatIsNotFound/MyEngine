@@ -108,12 +108,18 @@ namespace S3GF {
     }
 
     void Renderer::PointCMD::exec() {
-        if (!point.size) return;
-        SDL_SetRenderDrawColor(renderer, point.color.r, point.color.g, point.color.b, point.color.a);
-        if (point.size == 1) {
-            SDL_RenderPoint(renderer, point.position.x, point.position.y);
+        if (!point.size()) return;
+        const auto color = point.color();
+        const auto pos = point.position();
+        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+        if (point.size() == 1) {
+            SDL_RenderPoint(renderer, pos.x, pos.y);
         } else {
-
+            auto _ret = SDL_RenderGeometry(renderer, nullptr, point.vertices(), point.verticesCount(),
+                               point.indices(), point.indicesCount());
+            if (!_ret) {
+                Logger::log(std::format("Renderer Error: {}", SDL_GetError()), Logger::ERROR);
+            }
         }
     }
 
@@ -122,14 +128,15 @@ namespace S3GF {
         const auto START = line.startPosition();
         const auto END = line.endPosition();
         if (!SIZE) return;
-        SDL_SetRenderDrawColor(renderer, line.color.r, line.color.g, line.color.b, line.color.a);
+        const auto color = line.color();
+        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
         if (SIZE == 1) {
             SDL_RenderLine(renderer, START.x, START.y,
                            END.x, END.y);
             return;
         }
-        SDL_RenderGeometry(renderer, nullptr, line.vertexes(),
-                           line.vertexCount(), line.indices(), line.indiceCount());
+        SDL_RenderGeometry(renderer, nullptr, line.vertices(),
+                           line.vertexCount(), line.indices(), line.indicesCount());
     }
 
     void Renderer::RectCMD::exec() {

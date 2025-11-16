@@ -1239,20 +1239,57 @@ namespace S3GF {
      */
     namespace Graphics {
         struct Point {
-            Vector2 position;
-            uint16_t size;
-            SDL_Color color;
+        private:
+            void update() {
+                S3GF::Algorithm::calcPoint(_position, _size / 2.f,
+                                           _color, _vertices, _indices, _count);
+            }
+            Vector2 _position;
+            uint16_t _size;
+            SDL_Color _color;
+            std::vector<SDL_Vertex> _vertices;
+            std::vector<int> _indices;
+            uint16_t _count{32};
+        public:
+            explicit Point() : _position(0, 0), _size(1), _color(StdColor::Black), _count(32) { update(); }
+            Point(float x, float y, uint16_t size, const SDL_Color& color, uint16_t count = 32)
+                : _position(x, y), _size(size), _color(color), _count(count) { update(); }
+            void move(float x, float y) { _position.reset(x, y); update(); }
+            void move(const Vector2& new_pos) { _position.reset(new_pos); update(); }
+            void resize(uint16_t new_size) { _size = new_size; update(); }
+            void setColor(const SDL_Color& color) { _color = color; update(); }
+            void reset(const Vector2& pos, uint16_t size, const SDL_Color& color, uint16_t segment = 32) {
+                _position.reset(pos);
+                _size = size;
+                _color = color;
+                _count = segment;
+                update();
+            }
+            void reset(float x, float y, uint16_t size, const SDL_Color& color, uint16_t segment = 32) {
+                _position.reset(x, y);
+                _size = size;
+                _color = color;
+                _count = segment;
+                update();
+            }
+            const Vector2& position() const { return _position; }
+            uint16_t size() const { return _size; }
+            const SDL_Color& color() const { return _color; }
+            const SDL_Vertex* vertices() const { return _vertices.data(); }
+            const int* indices() const { return _indices.data(); }
+            size_t verticesCount() const { return _vertices.size(); }
+            size_t indicesCount() const { return _indices.size(); }
         };
 
         struct Line {
             explicit Line(float x1, float y1, float x2, float y2, uint16_t size, const SDL_Color& color)
-                : _start_position(x1, y1), _end_position(x2, y2), _size(size), color(color) {update();}
+                : _start_position(x1, y1), _end_position(x2, y2), _size(size), _color(color) {update();}
             explicit Line(const Vector2& start, const Vector2& end, uint16_t size, const SDL_Color &color)
-                : _start_position(start), _end_position(end), _size(size), color(color) {update();}
-            SDL_Color color;
+                : _start_position(start), _end_position(end), _size(size), _color(color) {update();}
+
             const int *indices() { return _indices.data(); }
-            const SDL_Vertex *vertexes() { return _vertexes.data(); }
-            size_t indiceCount() const { return _indices.size(); }
+            const SDL_Vertex *vertices() { return _vertexes.data(); }
+            size_t indicesCount() const { return _indices.size(); }
             size_t vertexCount() const { return _vertexes.size(); }
             const Vector2& startPosition() const { return _start_position; }
             const Vector2& endPosition() const { return _end_position; }
@@ -1262,20 +1299,38 @@ namespace S3GF {
             void setEndPosition(float x, float y) { _end_position.reset(x, y); update(); }
             uint8_t size() const { return _size; }
             void setSize(uint8_t new_size) { _size = new_size; update(); }
+            const SDL_Color& color() const { return _color; }
+            void setColor(const SDL_Color& color) { _color = color; update(); }
+            void reset(float sx, float sy, float ex, float ey, uint8_t size, const SDL_Color &color) {
+                _start_position.reset(sx, sy);
+                _end_position.reset(ex, ey);
+                _size = size;
+                _color = color;
+                update();
+            }
+            void reset(const Vector2& start, const Vector2& end, uint8_t size, const SDL_Color& color) {
+                _start_position.reset(start);
+                _end_position.reset(end);
+                _size = size;
+                _color = color;
+                update();
+            }
         private:
             void update() {
                 S3GF::Algorithm::calcLine(_start_position.x, _start_position.y,
                                 _end_position.x, _end_position.y,
-                                _size, color, _vertexes, _indices);
+                                _size, _color, _vertexes, _indices);
             }
             Vector2 _start_position;
             Vector2 _end_position;
             uint8_t _size;
+            SDL_Color _color;
             std::array<int, 6> _indices;
             std::array<SDL_Vertex, 4> _vertexes;
         };
 
         struct Rectangle {
+
             GeometryF geometry;
             uint16_t border_size;
             SDL_Color border_color;

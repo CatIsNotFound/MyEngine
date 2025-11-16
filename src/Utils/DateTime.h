@@ -5,6 +5,7 @@
 
 namespace S3GF {
     class DateTime {
+        static std::string timezone;
     public:
         DateTime() = delete;
         ~DateTime() = delete;
@@ -14,7 +15,7 @@ namespace S3GF {
         DateTime& operator=(DateTime&&) = delete;
 
         struct DT {
-            uint32_t year;
+            uint16_t year;
             uint8_t month;
             uint8_t day;
             uint8_t hour;
@@ -22,29 +23,260 @@ namespace S3GF {
             uint8_t second;
         };
 
-        static DT getNow() {
-            auto now = std::chrono::system_clock::now();
-            auto zoned = std::chrono::zoned_time(std::chrono::current_zone(), now);
-            auto local_days = std::chrono::floor<std::chrono::days>(zoned.get_local_time());
-            std::chrono::year_month_day local_ymd(local_days);
-            std::chrono::hh_mm_ss<std::chrono::seconds> local_time(std::chrono::floor<std::chrono::seconds>(zoned.get_local_time()));
+        enum Weekday {
+            Monday,
+            Mon = 0,
+            Tuesday,
+            Tue = 1,
+            Wednesday,
+            Wed = 2,
+            Thursday,
+            Thu = 3,
+            Friday,
+            Fri = 4,
+            Saturday,
+            Sat = 5,
+            Sunday,
+            Sun = 6
+        };
 
-            return _ret;
+        enum Month {
+            January,
+            Jan = 0,
+            February,
+            Feb = 1,
+            March,
+            Mar = 2,
+            April,
+            Apr = 3,
+            May,
+            June,
+            Jun = 5,
+            July,
+            Jul = 6,
+            August,
+            Aug = 7,
+            September,
+            Sep = 8,
+            October,
+            Oct = 9,
+            November,
+            Nov = 10,
+            December,
+            Dec = 11
+        };
+
+        static const char* weekdayStr(Weekday weekday, bool short_name = false) {
+            switch (weekday) {
+                case Mon:
+                    return (short_name ? "Mon" : "Monday");
+                case Tue:
+                    return (short_name ? "Tue" : "Tuesday");
+                case Wed:
+                    return (short_name ? "Wed" : "Wednesday");
+                case Thu:
+                    return (short_name ? "Thur" : "Thursday");
+                case Fri:
+                    return (short_name ? "Fri" : "Friday");
+                case Sat:
+                    return (short_name ? "Sat" : "Saturday");
+                case Sun:
+                    return (short_name ? "Sun" : "Sunday");
+                default:
+                    return "";
+            }
+        }
+
+        static const char* weekdayChineseStr(Weekday weekday) {
+            switch (weekday) {
+                case Mon:
+                    return "一";
+                case Tue:
+                    return "二";
+                case Wed:
+                    return "三";
+                case Thu:
+                    return "四";
+                case Fri:
+                    return "五";
+                case Sat:
+                    return "六";
+                case Sun:
+                    return "日";
+                default:
+                    return "";
+            }
+        }
+
+        static const char* monthStr(Month month, bool short_name = false) {
+            switch (month) {
+                case Jan:
+                    return (short_name ? "Jan" : "January");
+                case Feb:
+                    return (short_name ? "Feb" : "February");
+                case Mar:
+                    return (short_name ? "Mar" : "March");
+                case Apr:
+                    return (short_name ? "Apr" : "April");
+                case May:
+                    return "May";
+                case Jun:
+                    return (short_name ? "Jun" : "June");
+                case Jul:
+                    return (short_name ? "Jul" : "July");
+                case Aug:
+                    return (short_name ? "Aug" : "August");
+                case Sep:
+                    return (short_name ? "Sep" : "September");
+                case Oct:
+                    return (short_name ? "Oct" : "October");
+                case Nov:
+                    return (short_name ? "Nov" : "November");
+                case Dec:
+                    return (short_name ? "Dec" : "December");
+                default:
+                    return "";
+            }
+        }
+
+        static bool setDefaultTimezone(const std::string& tz) {
+            try {
+                std::chrono::locate_zone(tz);
+                timezone = tz;
+            } catch (const std::runtime_error& e) {
+                Logger::log(std::format("DateTime: Can't set invalid timezone: {}", tz), Logger::ERROR);
+                return false;
+            }
+            return true;
+        }
+
+        static std::string_view currentTimezone() {
+            return timezone;
         }
 
         static std::string now() {
             auto now = std::chrono::system_clock::now();
-            auto zoned = std::chrono::zoned_time(std::chrono::current_zone(), now);
+            auto zoned = std::chrono::zoned_time(timezone, now);
             return std::format("{}", zoned);
         }
 
-        static uint64_t timestamp() {
-            return std::chrono::system_clock::now().time_since_epoch().count();
+        static DT currentDateTime() {
+            using namespace std::chrono;
+            auto now = system_clock::now();
+            auto zoned = zoned_time(timezone, now);
+            auto local_time = zoned.get_local_time();
+            auto day_time = floor<days>(local_time);
+            year_month_day ymy{day_time};
+            hh_mm_ss time{local_time - day_time};
+            DT _ret{};
+            _ret.year = int(ymy.year());
+            _ret.month = static_cast<uint8_t>(static_cast<unsigned>(ymy.month()));
+            _ret.day = static_cast<uint8_t>(static_cast<unsigned>(ymy.day()));
+            _ret.hour = static_cast<uint8_t>(time.hours().count());
+            _ret.minute = static_cast<uint8_t>(time.minutes().count());
+            _ret.second = static_cast<uint8_t>(time.seconds().count());
+            return _ret;
         }
 
-        static std::string formatDateTime(const std::string& format) {
+        static uint64_t generateTimestamp(const DT& datetime) {
+            using namespace std::chrono;
+            year y(datetime.year);
+            month m(datetime.month);
+            day d(datetime.day);
+            year_month_day ymd(y, m, d);
+            auto days = sys_days{ymd};
+            if (!ymd.ok()) {
+                Logger::log("DateTime: Current date is not valid!", Logger::ERROR);
+                return 0;
+            }
+            auto time = hours(datetime.hour) + minutes(datetime.minute) + seconds(datetime.second);
+            auto time_point = days + time;
+            return time_point.time_since_epoch().count();
+        }
+
+        static DT parseFromTimestamp(uint64_t timestamp) {
+            using namespace std::chrono;
+            auto now = system_clock::time_point(seconds(timestamp));
+
+            auto day_time = floor<days>(now);
+            year_month_day ymy{day_time};
+            hh_mm_ss time{now - day_time};
+            DT _ret{};
+            _ret.year = int(ymy.year());
+            _ret.month = static_cast<uint8_t>(static_cast<unsigned>(ymy.month()));
+            _ret.day = static_cast<uint8_t>(static_cast<unsigned>(ymy.day()));
+            _ret.hour = static_cast<uint8_t>(time.hours().count());
+            _ret.minute = static_cast<uint8_t>(time.minutes().count());
+            _ret.second = static_cast<uint8_t>(time.seconds().count());
+            return _ret;
+        }
+
+        static std::string formatDateTime(const DT& datetime, const std::string& format) {
+            using namespace std::chrono;
+            year y(datetime.year);
+            month m(datetime.month);
+            day d(datetime.day);
+            year_month_day ymd(y, m, d);
+            if (!ymd.ok()) {
+                Logger::log("DateTime: Current date is not valid!", Logger::ERROR);
+                return 0;
+            }
+            auto t_sys = sys_days{ymd};
+            weekday w_day = weekday{t_sys};
+            std::string output;
+            for (size_t p = 0; p < format.size();) {
+                if (format[p] != '%') {
+                    output += format[p++];
+                    continue;
+                }
+                auto sub_str = format.substr(p, 2);
+                p += 2;
+                if (sub_str == "%Y") {
+                    output += std::to_string(datetime.year);
+                } else if (sub_str == "%y") {
+                    output += std::format("{:02d}", (datetime.year % 100));
+                } else if (sub_str == "%m") {
+                    output += std::format("{:02d}", datetime.month);
+                } else if (sub_str == "%d") {
+                    output += std::format("{:02d}", datetime.day);
+                } else if (sub_str == "%H") {
+                    output += std::format("{:02d}", datetime.hour);
+                } else if (sub_str == "%I") {
+                    output += std::format("{:02d}", datetime.hour % 12);
+                } else if (sub_str == "%M") {
+                    output += std::format("{:02d}", datetime.minute);
+                } else if (sub_str == "%S") {
+                    output += std::format("{:02d}", datetime.second);
+                } else if (sub_str == "%a") {
+                    output += std::format("{}", weekdayStr(static_cast<Weekday>(w_day.iso_encoding()), true));
+                } else if (sub_str == "%A") {
+                    output += std::format("{}", weekdayStr(static_cast<Weekday>(w_day.iso_encoding()), false));
+                } else if (sub_str == "%b") {
+                    output += std::format("{}", monthStr(static_cast<Month>(datetime.month), true));
+                } else if (sub_str == "%B") {
+                    output += std::format("{}", monthStr(static_cast<Month>(datetime.month), false));
+                } else if (sub_str == "%C") {
+                    output += std::format("{:04d}/{:02d}/{:02d} {:02d}:{:02d}:{:02d}",
+                                          datetime.year, datetime.month, datetime.day,
+                                          datetime.hour, datetime.minute, datetime.second);
+                } else if (sub_str == "%E") {
+                    output += std::format("{} {} {:02d} {:02d}:{:02d}:{:02d} {} {:04d}",
+                          weekdayStr(static_cast<Weekday>(w_day.iso_encoding()), true),
+                             monthStr(static_cast<Month>(datetime.month), true),
+                             datetime.day,
+                             datetime.hour,
+                             datetime.minute,
+                             datetime.second,
+                             (datetime.hour / 12 ? "PM" : "AM"),
+                             datetime.year);
+                }
+            }
+            return output;
+        }
+
+        static std::string formatCurrentDateTime(const std::string& format) {
             auto now = std::chrono::system_clock::now();
-            auto zoned = std::chrono::zoned_time(std::chrono::current_zone(), now);
+            auto zoned = std::chrono::zoned_time(timezone, now);
             std::string output;
             size_t p = 0;
             for (; p < format.size();) {
@@ -91,9 +323,10 @@ namespace S3GF {
             return output;
         }
 
-    private:
 
     };
+
+    std::string DateTime::timezone{std::chrono::current_zone()->name()};
 }
 
 #endif //S3GF_DATETIME_H
