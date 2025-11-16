@@ -1,0 +1,392 @@
+#pragma once
+#ifndef ENGINE_H
+#define ENGINE_H
+#include "Components.h"
+
+namespace S3GF {
+    class Window;
+    struct Property;
+    class Texture;
+    class Renderer {
+    public:
+        explicit Renderer(Window* window = nullptr);
+        ~Renderer();
+        SDL_Renderer* self() const;
+        Window* window() const;
+        void _update();
+        void fillBackground(const SDL_Color& color);
+        void drawTexture(SDL_Texture* texture, Property* property);
+        void drawText(TTF_Text* text, const Vector2& position);
+    private:
+        struct Command {
+            explicit Command(SDL_Renderer* renderer) : renderer(renderer) {}
+            virtual void exec() = 0;
+            SDL_Renderer* renderer;
+        };
+        struct FillCMD : public Command {
+            explicit FillCMD(SDL_Renderer* renderer, SDL_Color color = StdColor::Black) 
+                : Command(renderer), bg_color(color) {}
+            SDL_Color bg_color;
+            void exec() override;
+        };
+        struct TextureCMD : public Command {
+            explicit TextureCMD(SDL_Renderer* renderer, SDL_Texture* texture, Property* property)
+                : Command(renderer), _texture(texture), _property(property) {}
+            SDL_Texture* _texture;
+            Property* _property;
+            void exec() override;
+        };
+        struct TextCMD : public Command {
+            explicit TextCMD(SDL_Renderer* renderer, TTF_Text* text, const Vector2& position)
+                : Command(renderer), text(text), position(position) {}
+            TTF_Text* text;
+            Vector2 position;
+            void exec() override;
+        };
+        
+        SDL_Renderer* _renderer{nullptr};
+        Window* _window{nullptr};
+        std::vector<std::unique_ptr<Command>> _cmd_list;
+    };
+
+    class Window {
+    public:
+        struct Geometry {
+            int x, y, width, height;
+        };
+        enum GraphicEngine {
+            OPENGL,
+            VULKAN
+        };
+        explicit Window(const std::string& title, int width = 800, int height = 600, GraphicEngine engine = OPENGL);
+        ~Window();
+
+        bool move(int x, int y);
+        bool resize(int width, int height);
+        bool setGeometry(int x, int y, int width, int height);
+        
+        const Geometry geometry() const;
+        uint32_t windowID() const;
+
+        bool show();
+        bool hide();
+        bool visible() const;
+
+        bool setResizable(bool enabled);
+        bool resizable() const;
+
+        void setRenderer(Renderer* renderer);
+        Renderer* renderer() const;
+
+        void setWindowTitle(const std::string& title);
+        const std::string& windowTitle() const; 
+
+        SDL_Window* self() const;
+        void installPaintEvent(const std::function<void(Renderer* renderer)>& paint_event);
+        virtual void paintEvent();
+        virtual void resizeEvent();
+        virtual void moveEvent();
+        virtual void getFocusEvent();
+        virtual void lostFocusEvent();
+        virtual void unloadEvent();
+    private:
+        Geometry _window_geometry;
+        std::shared_ptr<Renderer> _renderer; 
+        SDL_Window* _window{nullptr};
+        SDL_WindowID _winID;
+        std::string _title;
+        bool _visible{true};
+        bool _resizable{false};
+        std::function<void(Renderer*)> _paint_event;
+    };
+    class Engine;
+    class EventSystem {
+    public:
+        EventSystem(EventSystem &&) = delete;
+        EventSystem(const EventSystem &) = delete;
+        EventSystem &operator=(EventSystem &&) = delete;
+        EventSystem &operator=(const EventSystem &) = delete;
+        ~EventSystem();
+
+        static EventSystem* global(Engine* engine);
+        static EventSystem* global();
+        void appendEvent(uint64_t id, const std::function<void(SDL_Event)>& event);
+        void removeEvent(uint64_t id);
+        void clearEvent();
+        bool run();
+    private:
+        explicit EventSystem(Engine* engine) : _engine(engine) {}
+        static std::unique_ptr<EventSystem> _instance;
+        Engine* _engine{nullptr};
+        std::map<uint64_t, std::function<void(SDL_Event)>> _event_list;
+    };
+
+    class Engine {
+    public:
+        using constIter = std::unordered_map<SDL_WindowID, std::unique_ptr<Window>>::const_iterator;
+        using iter = std::unordered_map<SDL_WindowID, std::unique_ptr<Window>>::iterator;
+        explicit Engine(); 
+        ~Engine();
+
+        bool isRunning() const;
+        static void exit(int code = 0);
+        int exec();
+
+        void newWindow(Window* window);
+        void removeWindow(SDL_WindowID id);
+        Window* window(SDL_WindowID id = _main_window_id) const;
+        std::vector<uint32_t> windowIDList() const;
+        constIter begin() const { return _window_list.cbegin(); }
+        iter begin() { return _window_list.begin(); }
+        constIter end() const { return _window_list.cend(); }
+        iter end() { return _window_list.end(); }
+        size_t windowCount() { return _window_list.size(); }
+
+        void setFPS(uint32_t fps);
+        uint32_t fps() const; 
+        static void throwFatalError();
+
+    private:
+        void cleanUp();
+        void running();
+        bool _running;
+        static int _return_code;
+        static bool _quit_requested;
+        uint32_t _fps{0};
+        double _frame_in_ns{0};
+        uint32_t _real_fps{0};
+        static SDL_WindowID _main_window_id;
+        std::unordered_map<SDL_WindowID, std::unique_ptr<Window>> _window_list;
+    };
+
+    class Logger {
+    public:
+        enum LogLevel {
+            DEBUG,
+            INFO,
+            WARN,
+            ERROR,
+            FATAL
+        };
+        Logger() = delete;
+        Logger(Logger&&) = delete;
+        Logger(const Logger&) = delete;
+        Logger& operator=(Logger&&) = delete;
+        Logger& operator=(const Logger&) = delete;
+        ~Logger() = delete;
+
+        static void log(const std::string& message, LogLevel level = DEBUG) {
+            _running_time = SDL_GetTicksNS();
+            if (level < _base_level) return;
+            auto _real_time = (_running_time - _started_time) / 1e9;
+            if (level >= WARN) {
+                std::cerr << std::format("[{:.06f}] [{}] {}\n", _real_time, _logLevelToString(level), message);
+            } else {
+                std::cout << std::format("[{:.06f}] [{}] {}\n", _real_time, _logLevelToString(level), message);
+            }
+            _last_log_level = level;
+            _last_log_info = message;
+        }
+
+        static void setBaseLogLevel(LogLevel level) {
+            _base_level = level;
+        }
+
+        static std::string lastError() {
+            return (_last_log_level >= ERROR ? _last_log_info : "");
+        }
+    private:
+        static std::string _logLevelToString(LogLevel level) {
+            switch (level) {
+                case DEBUG: return "DEBUG";
+                case INFO: return "INFO";
+                case WARN: return "WARN";
+                case ERROR: return "ERROR";
+                case FATAL: return "FATAL";
+                default: return "UNKNOWN";
+            }
+        }
+
+        static LogLevel _base_level;
+        static LogLevel _last_log_level;
+        static std::string _last_log_info;
+        static uint64_t _started_time;
+        static uint64_t _running_time;
+    };
+
+    class Font {
+    public:
+        /**
+         * @enum Style
+         * @brief 字体样式
+         */
+        enum Style {
+            /// 常规样式
+            Regular = 0x0,
+            /// 粗体样式
+            Bold = 0x1,
+            /// 斜体样式
+            Italic = 0x2,
+            /// 下划线样式
+            Underline = 0x4,
+            /// 删除线样式
+            Strikethrough = 0x8
+        };
+        /**
+         * @enum Direction
+         * @brief 字体方向
+         */
+        enum Direction {
+            /// 从左到右
+            LeftToRight = 4,
+            /// 从右到左
+            RightToLeft,
+            /// 从上到下
+            TopToBottom,
+            /// 从下到上
+            BottomToTop
+        };
+        /**
+         * @enum 字体微调
+         */
+        enum Hinting {
+            Normal,
+            Light,
+            Mono,
+            None,
+            SubPixel
+        };
+        Font(Font &&) = delete;
+        Font(const Font &) = delete;
+        Font &operator=(Font &&) = delete;
+        Font &operator=(const Font &) = delete;
+        explicit Font(const std::string& font_path, float font_size = 9.f);
+        ~Font();
+        
+        void setFontSize(float size);
+        float fontSize() const;
+        void setFontColor(const SDL_Color& color);
+        const SDL_Color fontColor() const;
+        void setStyle(uint32_t flags);
+        void setOutline(uint32_t value = 0);
+        uint32_t outline() const;
+        void setOutlineColor(const SDL_Color& color);
+        const SDL_Color outlineColor() const;
+        void setFontDirection(Direction direction);
+        Direction fontDirection() const;
+        void setFontHinting(uint32_t flags);
+        void setFontKerning(bool enabled);
+        bool fontKerning() const;
+        void setLineSpacing(uint32_t spacing);
+        uint32_t lineSpacing() const;
+        SDL_Surface* toImage(const std::string& text);
+        SDL_Surface* toImage(const std::string& text, const SDL_Color& backgrond_color);
+
+        TTF_Font* self() const;
+    private:
+        TTF_Font* _font{nullptr};
+        float _font_size{};
+        SColor _font_color{};
+        uint32_t _font_style_flags{};
+        uint32_t _font_outline{};
+        SColor _outline_color{};
+        Direction _font_direction{};
+        uint32_t _font_hinting{};
+        bool _font_kerning{};
+        uint32_t _line_spacing{};
+        bool _font_is_loaded{false};
+    };
+
+    class TextSystem {
+    public:
+        struct Text {
+            TTF_Text* self;
+            std::string text;
+            std::string font_name;
+            SDL_Color font_color;
+        };
+        struct FontEngine {
+            TTF_TextEngine* engine;
+            TTF_TextEngine* surface_engine;
+            std::unique_ptr<Font> font;
+        };
+        TextSystem(TextSystem &&) = delete;
+        TextSystem(const TextSystem &) = delete;
+        TextSystem &operator=(TextSystem &&) = delete;
+        TextSystem &operator=(const TextSystem &) = delete;
+        ~TextSystem();
+        
+        static TextSystem* global();
+        bool isLoaded() const;
+        void unload();
+        bool addFont(const std::string& font_name, const std::string& font_path, Renderer* renderer);
+        bool removeFont(const std::string& font_name);
+        Font* font(const std::string& font_name);
+        StringList fontNameList() const;
+        
+        bool addText(uint64_t text_id, const std::string& font_name, const std::string& text);
+        bool removeText(uint64_t text_id);
+        bool setText(uint64_t text_id, const std::string& text);
+        bool appendText(uint64_t text_id, const std::string& text);
+        bool setTextFont(uint64_t text_id, const std::string& font_name);
+        bool setTextColor(uint64_t text_id, const SDL_Color& color);
+        Text* indexOfText(uint64_t text_id);
+        std::vector<uint64_t> textIDList() const;
+        bool drawText(uint64_t text_id, const Vector2& pos, Renderer* renderer);
+        SDL_Surface* toImage(uint64_t text_id);
+    private:
+        explicit TextSystem();
+        static std::unique_ptr<TextSystem> _instance;
+        bool _is_loaded{false};
+        std::map<uint64_t, Text> _text_map;
+        std::unordered_map<std::string, FontEngine> _font_map;
+        TTF_TextEngine* _text_engine{nullptr};
+    };
+
+    class AudioSystem {
+    public:
+        enum class Status {
+            Unknown,
+            NoLoaded,
+            Loading,
+            Invalid,
+            Loaded
+        };
+        
+        struct Audio {
+            MIX_Audio* self;
+            Status status;
+            std::string url;
+
+            struct {
+                MIX_Track* self{nullptr};
+                uint64_t duration{0};
+                uint64_t position{0};
+            } track;
+        };
+
+        AudioSystem(AudioSystem &&) = delete;
+        AudioSystem(const AudioSystem &) = delete;
+        AudioSystem &operator=(AudioSystem &&) = delete;
+        AudioSystem &operator=(const AudioSystem &) = delete;
+        static AudioSystem* global();
+        ~AudioSystem();
+        bool isValid() const;
+        bool load();
+        void unload();
+        
+        uint64_t newAudio();
+        bool remove(uint64_t audio_id);
+        void clear();
+
+        const Audio& audio(uint64_t audio_id) const; 
+    private:
+        explicit AudioSystem();
+        static std::unique_ptr<AudioSystem> _instance;
+        bool _is_init{false};
+        MIX_Mixer* _mixer;
+        std::unordered_map<uint64_t, Audio> _audios_map;
+    };
+}
+
+#endif

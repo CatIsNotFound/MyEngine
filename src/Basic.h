@@ -1,0 +1,1180 @@
+
+#pragma once
+#ifndef BASIC_H
+#define BASIC_H
+
+/**
+ * @file Basic.h
+ * @brief 基本模块
+ *
+ * 定义引擎基础数据结构和图形实体，是整个引擎的基础数据层。
+ *
+ * @copyright Copyright © 2025 CatIsNotFound
+ * @author CatIsNotFound
+ */
+
+#include "Libs.h"
+
+using SRenderer     = SDL_Renderer;
+using SSurface      = SDL_Surface;
+using STexture      = SDL_Texture;
+using SEvent        = SDL_Event;
+using SWinEvent     = SDL_WindowEvent;
+using SWindow       = SDL_Window;
+using SWindowID     = SDL_WindowID;
+using SColor        = SDL_Color;
+using SCursor       = SDL_Cursor;
+using SStdCursor    = SDL_SystemCursor;
+using SAudioSpec    = SDL_AudioSpec;
+
+using StringList    = std::vector<std::string>; 
+
+namespace S3GF {
+    /**
+     * @namespace StdColor
+     * @brief 预定义标准颜色（81 色）
+     * @see Basic.h
+     */
+    namespace StdColor {
+        /// 完全透明
+        constexpr SColor Transparent = {255, 255, 255, 0};
+        /// 半透明
+        constexpr SColor HalfTransparent = {255, 255, 255, 128};
+
+        constexpr SColor Black = {0, 0, 0, 255};
+        constexpr SColor White = {255, 255, 255, 255};
+        constexpr SColor Red = {255, 0, 0, 255};
+        constexpr SColor Green = {0, 255, 0, 255};
+        constexpr SColor Blue = {0, 0, 255, 255};
+        constexpr SColor Cyan = {0, 255, 255, 255};
+        constexpr SColor Magenta = {255, 0, 255, 255};
+        constexpr SColor Yellow = {255, 255, 0, 255};
+
+        constexpr SColor LightGray = {200, 200, 200, 255};
+        constexpr SColor DarkGray = {64, 64, 64, 255};
+        constexpr SColor Gray = {128, 128, 128, 255};
+        constexpr SColor Silver = {192, 192, 192, 255};
+        constexpr SColor Gainsboro = {220, 220, 220, 255};
+        constexpr SColor WhiteSmoke = {245, 245, 245, 255};
+        constexpr SColor DimGray = {105, 105, 105, 255};
+        constexpr SColor SlateGray = {112, 128, 144, 255};
+        constexpr SColor DarkSlateGray = {47, 79, 79, 255};
+
+        constexpr SColor Crimson = {220, 20, 60, 255};
+        constexpr SColor Maroon = {128, 0, 0, 255};
+        constexpr SColor DarkRed = {139, 0, 0, 255};
+        constexpr SColor Tomato = {255, 99, 71, 255};
+        constexpr SColor Coral = {255, 127, 80, 255};
+        constexpr SColor Salmon = {250, 128, 114, 255};
+        constexpr SColor LightCoral = {240, 128, 128, 255};
+        constexpr SColor IndianRed = {205, 92, 92, 255};
+        constexpr SColor FireBrick = {178, 34, 34, 255};
+
+        constexpr SColor Orange = {255, 165, 0, 255};
+        constexpr SColor DarkOrange = {255, 140, 0, 255};
+        constexpr SColor OrangeRed = {255, 69, 0, 255};
+        constexpr SColor PeachPuff = {255, 218, 185, 255};
+        constexpr SColor NavajoWhite = {255, 222, 173, 255};
+
+        constexpr SColor Gold = {255, 215, 0, 255};
+        constexpr SColor LightYellow = {255, 255, 224, 255};
+        constexpr SColor LemonChiffon = {255, 250, 205, 255};
+        constexpr SColor PaleGoldenrod = {238, 232, 170, 255};
+        constexpr SColor Khaki = {240, 230, 140, 255};
+        constexpr SColor DarkKhaki = {189, 183, 107, 255};
+
+        constexpr SColor Lime = {0, 255, 0, 255};
+        constexpr SColor ForestGreen = {34, 139, 34, 255};
+        constexpr SColor SeaGreen = {46, 139, 87, 255};
+        constexpr SColor Olive = {128, 128, 0, 255};
+        constexpr SColor DarkOliveGreen = {85, 107, 47, 255};
+        constexpr SColor LimeGreen = {50, 205, 50, 255};
+        constexpr SColor SpringGreen = {0, 255, 127, 255};
+        constexpr SColor LightGreen = {144, 238, 144, 255};
+        constexpr SColor PaleGreen = {152, 251, 152, 255};
+        constexpr SColor MediumSpringGreen = {0, 250, 154, 255};
+
+        constexpr SColor Navy = {0, 0, 128, 255};
+        constexpr SColor DarkBlue = {0, 0, 139, 255};
+        constexpr SColor MediumBlue = {0, 0, 205, 255};
+        constexpr SColor RoyalBlue = {65, 105, 225, 255};
+        constexpr SColor SteelBlue = {70, 130, 180, 255};
+        constexpr SColor LightBlue = {173, 216, 230, 255};
+        constexpr SColor SkyBlue = {135, 206, 235, 255};
+        constexpr SColor PowderBlue = {176, 224, 230, 255};
+        constexpr SColor LightCyan = {224, 255, 255, 255};
+        constexpr SColor DeepSkyBlue = {0, 191, 255, 255};
+        constexpr SColor DodgerBlue = {30, 144, 255, 255};
+
+        constexpr SColor Purple = {128, 0, 128, 255};
+        constexpr SColor DarkPurple = {102, 51, 153, 255};
+        constexpr SColor Fuchsia = {255, 0, 255, 255};
+        constexpr SColor Violet = {238, 130, 238, 255};
+        constexpr SColor Plum = {221, 160, 221, 255};
+        constexpr SColor Orchid = {218, 112, 214, 255};
+        constexpr SColor MediumOrchid = {186, 85, 211, 255};
+        constexpr SColor MediumPurple = {147, 112, 219, 255};
+        constexpr SColor Indigo = {75, 0, 130, 255};
+
+        constexpr SColor Brown = {165, 42, 42, 255};
+        constexpr SColor SaddleBrown = {139, 69, 19, 255};
+        constexpr SColor Sienna = {160, 82, 45, 255};
+        constexpr SColor Chocolate = {210, 105, 30, 255};
+        constexpr SColor Peru = {205, 133, 63, 255};
+        constexpr SColor SandyBrown = {244, 164, 96, 255};
+        constexpr SColor BurlyWood = {222, 184, 135, 255};
+        constexpr SColor Tan = {210, 180, 140, 255};
+
+        constexpr SColor Pink = {255, 192, 203, 255};
+        constexpr SColor LightPink = {255, 182, 193, 255};
+        constexpr SColor HotPink = {255, 105, 180, 255};
+        constexpr SColor DeepPink = {255, 20, 147, 255};
+        constexpr SColor PaleVioletRed = {219, 112, 147, 255};
+        constexpr SColor MediumVioletRed = {199, 21, 133, 255};
+    }
+
+    /**
+     * @struct Geometry
+     * @brief 位置、大小
+     */
+    struct Geometry {
+        int x, y, width, height;
+        Geometry();
+        Geometry(int x, int y, int width, int height);
+        void setGeometry(int x, int y, int width, int height);
+        void setPosition(int x, int y);
+        void resize(int width, int height);
+    };
+
+    /**
+     * @struct Vector2
+     * @brief 向量坐标
+     *
+     * 用于指定某对象的位置
+     */
+    struct Vector2 {
+        float x, y;
+        explicit Vector2() : x(0.0f), y(0.0f) {}
+        Vector2(float x, float y);
+        /**
+         * @brief 重新设置新的向量
+         * @param x
+         * @param y
+         */
+        void reset(float x, float y);
+        void reset(const Vector2& vector2);
+        Vector2 operator+(const Vector2& v) const { return {this->x + v.x, this->y + v.y}; }
+        Vector2 operator-(const Vector2& v) const { return {this->x - v.x, this->y - v.y}; }
+        Vector2 operator*(const Vector2& v) const { return {this->x * v.x, this->y * v.y}; }
+        Vector2 operator*(float v) const { return {this->x * v, this->y * v}; };
+        Vector2 operator/(const Vector2& v) const { return {this->x / v.x, this->y / v.y}; }
+        Vector2 operator/(float v) const { return (v != 0) ? Vector2(this->x / v, this->y / v) : *this; }
+        void operator+=(const Vector2& v) { this->x += v.x; this->y += v.y; }
+        void operator-=(const Vector2& v) { this->x -= v.x; this->y -= v.y; }
+        void operator*=(const Vector2& v) { this->x *= v.x; this->y *= v.y; }
+        void operator*=(float v) { this->x *= v; this->y *= v; }
+        void operator/=(const Vector2& v) { this->x /= v.x; this->y /= v.y; }
+        void operator/=(float v) { if (v == 0) return; this->x /= v; this->y /= v; }
+        bool operator==(const Vector2& v) const {
+            return ((this->x != v.x) ? false : ((this->y != v.y) ? false : true));
+        }
+        bool operator!=(const Vector2& v) const {
+            return ((this->x != v.x) ? true : ((this->y != v.y) ? true : false));
+        }
+        bool operator>(const Vector2& v) const {
+            return (this->x > v.x && this->y > v.y);
+        }
+        bool operator>=(const Vector2& v) const {
+            return (this->x >= v.x && this->y >= v.y);
+        }
+        bool operator<(const Vector2& v) const {
+            return (this->x < v.x && this->y < v.y);
+        }
+        bool operator<=(const Vector2& v) const {
+            return (this->x <= v.x && this->y <= v.y);
+        }
+        /**
+         * @brief 判断两个坐标位置是否大致相等
+         * @param v         指定另一个坐标
+         * @param EPISON    允许的误差数 （默认 0.000001f 误差）
+         * @retval true  表示相等
+         * @retval false 表示不相等
+         */
+        [[nodiscard]] bool isEqual(const Vector2& v, const float EPISON = 1e-6f) const {
+            return ((this->x >= v.x - EPISON && this->x <= v.x + EPISON) &&
+                (this->y >= v.y - EPISON && this->y <= v.y + EPISON));
+        }
+    };
+
+    /**
+     * @struct Size
+     * @brief 尺寸、大小
+     *
+     * 用于调整对象的尺寸、大小
+     */
+    struct Size {
+        float width, height;
+        explicit Size() : width(0.0f), height(0.0f) {}
+        Size(float width, float height);
+        /**
+         * @brief 重新设置新的尺寸
+         * @param width
+         * @param height
+         */
+        void reset(float width, float height);
+        void reset(const Size& size);
+        Size operator+(const Size& s) const { return {this->width + s.width, this->height + s.height}; }
+        Size operator-(const Size& s) const { return {this->width - s.width, this->height - s.height}; }
+        Size operator*(const Size& s) const { return {this->width * s.width, this->height * s.height}; }
+        Size operator*(float v) const { return {this->width * v, this->height * v}; }
+        Size operator/(const Size& s) const { return {this->width / s.width, this->height / s.height}; }
+        Size operator/(float v) const { return (v == 0) ? *this : Size(this->width / v, this->height / v); }
+        void operator+=(const Size& s) { this->width += s.width; this->height += s.height; }
+        void operator-=(const Size& s) { this->width -= s.width; this->height -= s.height; }
+        void operator*=(const Size& s) { this->width *= s.width; this->height *= s.height; }
+        void operator*=(float v) { this->width *= v; this->height *= v; }
+        void operator/=(const Size& s) { this->width /= s.width; this->height /= s.height; }
+        void operator/=(float v) { if (v == 0) return; this->width /= v; this->height /= v; }
+        bool operator==(const Size& s) const {
+            return (this->width != s.width) ? false : ((this->height != this->height) ? false : true);
+        }
+        bool operator!=(const Size& s) const {
+            return (this->width != s.width) ? true : ((this->height != this->height) ? true : false);
+        }
+        bool operator>(const Size& s) const {
+            return (this->width > s.width && this->height > s.height);
+        }
+        bool operator>=(const Size& s) const {
+            return (this->width >= s.width && this->height >= s.height);
+        }
+        bool operator<(const Size& s) const {
+            return (this->width < s.width && this->height < s.height);
+        }
+        bool operator<=(const Size& s) const {
+            return (this->width <= s.width && this->height <= s.height);
+        }
+    };
+
+    /**
+     * @struct GeometryF
+     * @brief 位置、大小
+     *
+     * 针对于 Vector2 和 Size 组成，用于调整位置、大小
+     */
+    struct GeometryF {
+        Vector2 pos;
+        Size size;
+        void reset(const Vector2& pos, const Size& size) {
+            this->pos.x = pos.x;
+            this->pos.y = pos.y;
+            this->size.width = size.width;
+            this->size.height = size.height;
+        }
+        void reset(float x, float y, float width, float height) {
+            this->pos.x = x;
+            this->pos.y = y;
+            this->size.width = width;
+            this->size.height = height;
+        }
+        void resetPos(const Vector2& pos) {
+            this->pos.x = pos.x;
+            this->pos.y = pos.y;
+        }
+        void resetSize(const Size& size) {
+            this->size.width = size.width;
+            this->size.height = size.height;
+        }
+    };
+
+    /**
+     * @struct Matrix2D
+     * @brief 二维矩阵
+     * @since v1.1.0-alpha
+     *
+     * 支持使用基本数据类型及简单的结构体进行存储。
+     */
+    template<typename T>
+    struct Matrix2D {
+    private:
+        /// 矩阵数据
+        std::vector<T> _datas;
+        /// 行
+        uint32_t _row;
+        /// 列
+        uint32_t _col;
+        /// 删除器
+        std::function<void(T&)> _deleter;
+    public:
+        using iterator = typename std::vector<T>::iterator;
+        using constIterator = typename std::vector<T>::const_iterator;
+        struct Position {
+            uint32_t row;
+            uint32_t col;
+            Position() : row(0), col(0) {}
+            Position(uint32_t row, uint32_t col) : row(row), col(col) {}
+            bool isValid() const { return row && col; }
+            bool operator==(const Position& p) const { return (row == p.row && col == p.col); }
+            bool operator!=(const Position& p) const { return (row != p.row || col != p.col); }
+            bool operator>(const Position& p) const { return (row >= p.row && col > p.col); }
+            bool operator<(const Position& p) const { return (row <= p.row && col < p.col); }
+            bool operator>=(const Position& p) const { return (row >= p.row && col >= p.col); }
+            bool operator<=(const Position& p) const { return (row <= p.row && col <= p.col); }
+        };
+        /**
+         * @brief 创建一个空白的二维矩阵（没有任何数据）
+         */
+        explicit Matrix2D() : _row(0), _col(0), _datas() {}
+        /**
+         * @brief 创建指定行列的二维矩阵
+         * @param row 行
+         * @param col  列
+         * @param deleter 删除器（若需要删除指针等情况时指定）
+         */
+        Matrix2D(uint32_t row, uint32_t col, const std::function<void(T&)> &deleter = {});
+        /**
+         * @brief 创建指定行列与默认值的二维矩阵
+         * @param row  行
+         * @param col   列
+         * @param value 默认值（用于填充所有数据）
+         * @param deleter 删除器（若需要删除指针等情况时指定）
+         */
+        Matrix2D(uint32_t row, uint32_t col, const T &value, const std::function<void(T&)> &deleter = {});
+        /**
+         * @brief 复制原有的二维矩阵
+         * @param matrix    指定二维矩阵
+         */
+        Matrix2D(const Matrix2D<T> &matrix);
+        ~Matrix2D();
+        /**
+         * @brief 设置删除器
+         * @param function  指定函数
+         *
+         * 当此类析构时，将调用删除器以删除指针！
+         */
+        void setDeleter(const std::function<void(T&)>& function);
+        /**
+         * @brief 填充所有值
+         * @param value 指定值
+         */
+        void fill(const T& value);
+        /**
+         * @brief 填充范围内的值
+         * @param start 指定开始位置（行列）
+         * @param end   指定结束位置（行列）
+         * @param value 指定填充的值
+         */
+        bool fillN(const Matrix2D::Position &start, const Matrix2D::Position &end, const T& value);
+        /**
+         * @brief 重新调整新的大小
+         * @param line 行
+         * @param col  列
+         */
+        void resize(uint32_t line, uint32_t col);
+        /**
+         * @brief 获取矩阵中指定行列的数据
+         * @param row 行
+         * @param col  列
+         * @return 返回对应行列下的数据
+         * @see get
+         */
+        T& at(uint32_t row, uint32_t col);
+        /**
+         * @brief 获取矩阵中指定行列的数据
+         * @param row 行
+         * @param col  列
+         * @return 返回对应行列下的数据
+         * @note 区别于 `at`，此函数为常量版本，无法修改里面的数据！
+         * @see at
+         */
+        const T& get(uint32_t row, uint32_t col);
+        /**
+         * @brief 获取当前矩阵的总行数
+         * @return 返回对应的行数
+         */
+        [[nodiscard]] uint32_t rows() const;
+        /**
+         * @brief 获取当前矩阵的总列数
+         * @return 返回对应的列数
+         */
+        [[nodiscard]] uint32_t cols() const;
+        Matrix2D operator+(const Matrix2D<T>& other) const;
+        Matrix2D operator-(const Matrix2D<T>& other) const;
+        /**
+         * @brief 矩阵乘法
+         * @param other     指定矩阵，其指定的行数必需与现有的列数相等
+         *
+         * 将矩阵里的所有值进行乘法操作
+         * @note 当前仅支持整数、浮点数运算，不支持其它数据类型的运算！
+         * @note 两个矩阵必需分别为 m * n, n * p 的大小才可用！
+         */
+        Matrix2D operator*(const Matrix2D<T>& other) const;
+
+        bool operator==(const Matrix2D<T>& other) const;
+        bool operator!=(const Matrix2D<T>& other) const;
+
+        T& operator[](uint32_t index);
+        T& operator()(uint32_t row, uint32_t col);
+
+        iterator begin() { return _datas.begin(); }
+        iterator end() { return _datas.end(); }
+        constIterator begin() const { return _datas.begin(); }
+        constIterator end() const { return _datas.end(); }
+        /**
+         * @brief 全局相加
+         * @param value     指定值
+         * @param function  函数（对于复杂的数据类型，此参数必需指定）
+         *
+         * 将矩阵里的所有值进行相加操作
+         */
+        void add(T& value, const std::function<void(T&, T&)>& function = {});
+        /**
+         * @brief 全局相加
+         * @param value     指定值
+         * @param function  函数（对于复杂的数据类型，此参数必需指定）
+         *
+         * 将矩阵里的所有值进行相加操作
+         */
+        void add(T&& value, const std::function<void(T&, T&)>& function = {});
+        /**
+         * @brief 全局相减
+         * @param value 指定值
+         * @param function  函数（对于复杂的数据类型，此参数必需指定）
+         *
+         * 将矩阵里的所有值进行相减操作
+         */
+        void minus(T& value, const std::function<void(T&, T&)>& function = {});
+        /**
+         * @brief 全局相减
+         * @param value 指定值
+         * @param function  函数（对于复杂的数据类型，此参数必需指定）
+         *
+         * 将矩阵里的所有值进行相减操作
+         */
+        void minus(T&& value, const std::function<void(T&, T&)>& function = {});
+        /**
+         * @brief 全局乘法
+         * @param value     指定值
+         * @param function  函数（对于复杂的数据类型，此参数必需指定）
+         *
+         * 将矩阵里的所有值进行相乘操作
+         */
+        void times(T& value, const std::function<void(T&, T&)>& function = {});
+        /**
+         * @brief 全局点乘
+         * @param value     指定值
+         * @param function  函数（对于复杂的数据类型，此参数必需指定）
+         *
+         * 将矩阵里的所有值进行点乘操作
+         */
+        void times(T&& value, const std::function<void(T&, T&)>& function = {});
+        /**
+         * @brief 矩阵点乘
+         * @param other     指定矩阵
+         * @param function  函数（对于复杂的数据类型，此参数必需指定）
+         * @note 两个矩阵的大小必需完全一样（即行列必需相等）！
+         */
+        void times(const Matrix2D<T> &other, const std::function<void(T &, const T &)> &function = {});
+        /**
+         * @brief 矩阵乘法
+         *
+         * 将矩阵里的所有值进行乘法操作
+         * @param other     指定矩阵，其指定的行数必需与现有的列数相等
+         * @note 当前仅支持整数、浮点数运算，不支持其它数据类型的运算！
+         * @note 两个矩阵必需分别为 m * n, n * p 的大小才可用！
+         */
+        void multiply(const Matrix2D<T> &other);
+        /**
+         * @brief 转置矩阵
+         *
+         * 将原有的 m * n 大小的矩阵转置为 n * m 大小的矩阵。
+         * @see rotate
+         */
+        void transpose();
+        /**
+         * @brief 翻转矩阵
+         *
+         * 当选择任何一个方向的逆序时，都会发生交换。
+         * @param reverse_row 行与行之间逆序（垂直翻转）
+         * @param reverse_col  列与列之间逆序（水平翻转）
+         * @note 当两个参数都为 `true` 时，矩阵将完全逆序
+         * @see rotate
+         */
+        void reverse(bool reverse_row = true, bool reverse_col = false);
+        /**
+         * @brief 旋转矩阵
+         * @param turn_right 是否向右旋转 90°，反之向左旋转 90°
+         * @see reverse
+         * @see transpose
+         */
+        void rotate(bool turn_right = true);
+        /**
+         * @brief 切割指定行矩阵
+         * @param start_row     起始行
+         * @param end_row       结束行
+         * @return 返回矩阵行位于 `[start_row, end_row)` 区间内的所有行矩阵
+         */
+        Matrix2D splitRows(uint32_t start_row, uint32_t end_row);
+        /**
+         * @brief 切割指定列矩阵
+         * @param start_col     起始列
+         * @param end_col       结束列
+         * @return 返回矩阵行位于 `[start_col, end_col)` 区间内的所有列矩阵
+         */
+        Matrix2D splitCols(uint32_t start_col, uint32_t end_col);
+        /**
+         * @brief 切割矩阵
+         *
+         * 切割原有的矩阵，根据 `start_pos` 位置开始，取 `rows * cols` 个数据并创建成新的矩阵。
+         * @param rows      新的行数
+         * @param cols      新的列数
+         * @param start_pos 从哪个位置开始
+         * @return 返回新的大小为 `(rows * cols)` 的二维矩阵。
+         *
+         * @note 从 `start_pos` 位置起，若取得数据的总个数小于新的矩阵大小，则剩余部分自动填充为空数据。
+         * @note 指定的 `start_pos` 位置若超出原有矩阵的范围，将返回空矩阵。
+         */
+        Matrix2D split(uint32_t rows, uint32_t cols, const Position& start_pos);
+        /**
+         * @brief 按照矩形的方式切割矩阵
+         *
+         * 根据起始位置和结束位置包围成一个矩形，并将其切割成独立的矩阵。
+         * @param start_pos     起始位置
+         * @param end_pos       结束位置
+         * @return 返回切割后的矩阵。
+         *
+         */
+        Matrix2D split(Matrix2D::Position start_pos, Matrix2D::Position end_pos);
+        /**
+         * @brief 逆矩阵
+         * @return 返回新的矩阵，用于存储求得的结果
+         * @note 当前仅支持整数、浮点数运算，不支持其它数据类型的运算！
+         * @note 两个矩阵的大小必需完全一致！否则将返回空矩阵！
+         */
+        Matrix2D<T> inverse();
+    };
+
+    template<typename T>
+    void Matrix2D<T>::setDeleter(const std::function<void(T &)> &function) {
+        _deleter = function;
+    }
+
+    template<typename T>
+    Matrix2D<T>::Matrix2D(uint32_t row, uint32_t col, const std::function<void(T&)> &deleter)
+        : _row(row), _col(col), _deleter(deleter) {
+        _datas.resize(_row * _col);
+    }
+
+    template<typename T>
+    Matrix2D<T>::Matrix2D(uint32_t row, uint32_t col, const T &value, const std::function<void(T&)> &deleter)
+            : _row(row), _col(col), _deleter(deleter) {
+        _datas.resize(_row * _col);
+        fill(value);
+    }
+
+    template<typename T>
+    Matrix2D<T>::Matrix2D(const Matrix2D<T> &matrix)
+            : _row(matrix._row), _col(matrix._col), _deleter(matrix._deleter) {
+        _datas = matrix._datas;
+    }
+
+    template<typename T>
+    Matrix2D<T>::~Matrix2D() {
+        if (_deleter) {
+            for (auto& _d : _datas) {
+                _deleter(_d);
+            }
+        }
+    }
+
+    template<typename T>
+    void Matrix2D<T>::fill(const T &value) {
+        std::fill(_datas.begin(), _datas.end(), value);
+    }
+
+    template<typename T>
+    bool Matrix2D<T>::fillN(const Matrix2D::Position &start, const Matrix2D::Position &end, const T &value) {
+        auto st = start.row * _col + start.col, ed = end.row * _col + end.col;
+        if (ed >= _datas.size()) {
+            SDL_Log("[ERROR] One of the specified position is not valid!");
+            return false;
+        }
+        std::fill(_datas.begin() + st, _datas.begin() + ed, value);
+        return true;
+    }
+
+    template<typename T>
+    void Matrix2D<T>::resize(uint32_t line, uint32_t col) {
+        if (_row * _col != line * col) _datas.resize(line * col);
+        _row = line;
+        _col = col;
+    }
+
+    template<typename T>
+    T &Matrix2D<T>::at(uint32_t row, uint32_t col) {
+        auto idx = row * _col + col;
+        if (idx >= _datas.size()) throw std::out_of_range("[FATAL] The specified position is out of range!");
+        return _datas.at(idx);
+    }
+
+    template<typename T>
+    const T &Matrix2D<T>::get(uint32_t row, uint32_t col) {
+        auto idx = row * _col + col;
+        if (idx >= _datas.size()) throw std::out_of_range("[FATAL] The specified position is out of range!");
+        return _datas.at(idx);
+    }
+
+    template<typename T>
+    uint32_t Matrix2D<T>::rows() const {
+        return _row;
+    }
+
+    template<typename T>
+    uint32_t Matrix2D<T>::cols() const {
+        return _col;
+    }
+
+    template<typename T>
+    Matrix2D<T> Matrix2D<T>::operator+(const Matrix2D<T> &other) const {
+        if ((_row == other._row) && (_col == other._col)) {
+            Matrix2D<T> _ret(_row, _col);
+            for (size_t _idx = 0; _idx < _datas.size(); ++_idx) {
+                _ret[_idx] = _datas[_idx] + other._datas[_idx];
+            }
+            return _ret;
+        } else {
+            SDL_Log("[ERROR] Matrix dimensions mismatch!\nOriginal: (%d, %d), Specified: (%d, %d)",
+                    _row, _col, other._row, other._col);
+            return Matrix2D<T>();
+        }
+    }
+
+    template<typename T>
+    Matrix2D<T> Matrix2D<T>::operator-(const Matrix2D<T> &other) const {
+        if ((_row == other._row) && (_col == other._col)) {
+            Matrix2D<T> _ret(_row, _col);
+            for (size_t _idx = 0; _idx < _datas.size(); ++_idx) {
+                _ret[_idx] = _datas[_idx] - other._datas[_idx];
+            }
+            return _ret;
+        } else {
+            SDL_Log("[ERROR] Matrix dimensions mismatch!\nOriginal: (%d, %d), Specified: (%d, %d)",
+                    _row, _col, other._row, other._col);
+            return Matrix2D<T>();
+        }
+    }
+
+    template<typename T>
+    Matrix2D<T> Matrix2D<T>::operator*(const Matrix2D<T> &other) const {
+        if (_col != other._row) {
+            SDL_Log("[ERROR] Matrix dimensions incompatible for multiplication!");
+            return Matrix2D<T>();
+        }
+        if constexpr (!std::is_integral_v<std::decay_t<T>> &&
+                        !std::is_floating_point_v<std::decay_t<T>>) {
+            static_assert(!std::is_integral_v<std::decay_t<T>> &&
+                          !std::is_floating_point_v<std::decay_t<T>>,
+                          "[FATAL] Can't support the current data type!");
+        }
+        Matrix2D<T> result(_row, other._col, other._deleter);
+        for (size_t i = 0; i < _row; ++i) {
+            for (size_t k = 0; k < _col; ++k) {
+                const T& a_ik = _datas[i * _col + k];
+                for (size_t j = 0; j < other._col; ++j) {
+                    result[i * other._col + j] += a_ik * other._datas[k * other._col + j];
+                }
+            }
+        }
+        return result;
+    }
+
+    template<typename T>
+    bool Matrix2D<T>::operator==(const Matrix2D<T> &other) const {
+        if (_row != other._row || _col != other._col) return false;
+        for (size_t i = 0; i < _datas.size(); ++i) {
+            if (_datas[i] != other._datas[i]) return false;
+        }
+        return true;
+    }
+
+    template<typename T>
+    bool Matrix2D<T>::operator!=(const Matrix2D<T> &other) const {
+        if (_row != other._row || _col != other._col) return true;
+        for (size_t i = 0; i < _datas.size(); ++i) {
+            if (_datas[i] != other._datas[i]) return true;
+        }
+        return false;
+    }
+
+    template<typename T>
+    T &Matrix2D<T>::operator[](uint32_t index) {
+        return _datas[index];
+    }
+
+    template<typename T>
+    T &Matrix2D<T>::operator()(uint32_t row, uint32_t col) {
+        auto idx = row * _col + col;
+        if (idx >= _datas.size()) throw std::out_of_range("[FATAL] The specified position is out of range!");
+        return _datas[idx];
+    }
+
+    template<typename T>
+    void Matrix2D<T>::add(T &value, const std::function<void(T&, T&)> &function) {
+        std::for_each(_datas.begin(), _datas.end(), [&function, &value](T& v) {
+            if (function) {
+                function(v, value);
+            } else if constexpr (std::is_integral_v<std::decay_t<T>> ||
+                                 std::is_floating_point_v<std::decay_t<T>>) {
+                v += value;
+            } else {
+                SDL_Log("[ERROR] Unsupported data type!\np.s: Did you forget to specify how to add values?");
+            }
+        });
+    }
+
+    template<typename T>
+    void Matrix2D<T>::add(T &&value, const std::function<void(T&, T&)> &function) {
+        std::for_each(_datas.begin(), _datas.end(), [&function, &value](T& v) {
+            if (function) {
+                function(v, value);
+            } else if constexpr (std::is_integral_v<std::decay_t<T>> ||
+                                 std::is_floating_point_v<std::decay_t<T>>) {
+                v += value;
+            } else {
+                SDL_Log("[ERROR] Unsupported data type!\n"
+                        "p.s: Did you forget to specify how to add values?");
+            }
+        });
+    }
+
+    template<typename T>
+    void Matrix2D<T>::minus(T &value, const std::function<void(T&, T&)> &function) {
+        std::for_each(_datas.begin(), _datas.end(), [&function, &value](T& v) {
+            if (function) {
+                function(v, value);
+            } else if constexpr (std::is_integral_v<std::decay_t<T>> ||
+                                 std::is_floating_point_v<std::decay_t<T>>) {
+                v -= value;
+            } else {
+                SDL_Log("[ERROR] Unsupported data type!\n"
+                        "p.s: Did you forget to specify how to minus values?");
+            }
+        });
+    }
+
+    template<typename T>
+    void Matrix2D<T>::minus(T &&value, const std::function<void(T&, T&)> &function) {
+        std::for_each(_datas.begin(), _datas.end(), [&function, &value](T& v) {
+            if (function) {
+                function(v, value);
+            } else if constexpr (std::is_integral_v<std::decay_t<T>> ||
+                                 std::is_floating_point_v<std::decay_t<T>>) {
+                v -= value;
+            } else {
+                SDL_Log("[ERROR] Unsupported data type!\n"
+                        "p.s: Did you forget to specify how to minus values?");
+            }
+        });
+    }
+
+    template<typename T>
+    void Matrix2D<T>::times(T &value, const std::function<void(T&, T&)> &function) {
+        std::for_each(_datas.begin(), _datas.end(), [&function, &value](T& v) {
+            if (function) {
+                function(v, value);
+            } else if constexpr (std::is_integral_v<std::decay_t<T>> ||
+                                 std::is_floating_point_v<std::decay_t<T>>) {
+                v *= value;
+            } else {
+                SDL_Log("[ERROR] Unsupported data type!\n"
+                        "p.s: Did you forget to specify how to times values?");
+            }
+        });
+    }
+
+    template<typename T>
+    void Matrix2D<T>::times(T &&value, const std::function<void(T&, T&)> &function) {
+        std::for_each(_datas.begin(), _datas.end(), [&function, &value](T& v) {
+            if (function) {
+                function(v, value);
+            } else if constexpr (std::is_integral_v<std::decay_t<T>> ||
+                                 std::is_floating_point_v<std::decay_t<T>>) {
+                v *= value;
+            } else {
+                SDL_Log("[ERROR] Unsupported data type!\n"
+                        "p.s: Did you forget to specify how to times values?");
+            }
+        });
+    }
+
+    template<typename T>
+    void Matrix2D<T>::times(const Matrix2D<T> &other, const std::function<void(T &, const T &)> &function) {
+        if ((_row == other._row) && (_col == other._col)) {
+            if (function) {
+                for (size_t i = 0; i < _datas.size(); ++i) {
+                    function(_datas[i], other._datas[i]);
+                }
+            } else if constexpr (std::is_integral_v<std::decay_t<T>> ||
+                                 std::is_floating_point_v<std::decay_t<T>>) {
+                for (size_t i = 0; i < _datas.size(); ++i) {
+                    _datas[i] *= other._datas[i];
+                }
+            } else {
+                SDL_Log("[ERROR] Unsupported data type!\n"
+                        "p.s: Did you forget to specify how to times values?");
+            }
+        } else {
+            SDL_Log("[ERROR] Matrix dimensions mismatch!\nOriginal: (%u, %u), Specified: (%u, %u)",
+                    _row, _col, other._row, other._col);
+        }
+    }
+
+    template<typename T>
+    void Matrix2D<T>::multiply(const Matrix2D<T> &other) {
+        if (_col != other._row) {
+            SDL_Log("[ERROR] Matrix dimensions incompatible for multiplication!");
+            return;
+        }
+        std::vector<T> result(_row * other._col);
+        for (size_t i = 0; i < _row; ++i) {
+            for (size_t k = 0; k < _col; ++k) {
+                const T& a_ik = _datas[i * _col + k];
+                for (size_t j = 0; j < other._col; ++j) {
+                    result[i * other._col + j] += a_ik * other._datas[k * other._col + j];
+                }
+            }
+        }
+        _datas = std::move(result);
+        _col = other._col;
+    }
+
+    template<typename T>
+    void Matrix2D<T>::transpose() {
+        if (!_row || !_col) return;
+        if (_row == _col) {
+            for (size_t i = 0; i < _row; ++i) {
+                for (size_t j = i + 1; j < _col; ++j) {
+                    std::swap(_datas[i * _col + j], _datas[j * _col + i]);
+                }
+            }
+            return;
+        }
+        std::vector<T> temp_vec;
+        temp_vec.reserve(_row * _col);
+        for (size_t j = 0; j < _col; ++j) {
+            for (size_t i = 0; i < _row; ++i) {
+                temp_vec.push_back(_datas[i * _col + j]);
+            }
+        }
+        std::swap(_datas, temp_vec);
+        std::swap(_row, _col);
+    }
+
+    template<typename T>
+    void Matrix2D<T>::reverse(bool reverse_row, bool reverse_col) {
+        if (reverse_row && reverse_col) {
+            const size_t M_SIZE = _datas.size() / 2;
+            size_t _idx = 0, _last_idx = _datas.size() - 1;
+            for (size_t i = 0; i < M_SIZE; ++i) {
+                std::swap(_datas[_idx++], _datas[_last_idx--]);
+            }
+        } else if (reverse_col) {
+            const size_t M_SIZE_IN_COL = _col / 2;
+            for (size_t i = 0; i < _row; ++i) {
+                for (size_t j = 0; j < M_SIZE_IN_COL; ++j) {
+                    std::swap(_datas[i * _col + j], _datas[i * _col + _col - j - 1]);
+                }
+            }
+        } else if (reverse_row) {
+            const size_t M_SIZE_IN_LINE = _row / 2;
+            for (size_t i = 0; i < _col; ++i) {
+                for (size_t j = 0; j < M_SIZE_IN_LINE; ++j) {
+                    std::swap(_datas[j * _col + i], _datas[(_row - j - 1) * _col + i]);
+                }
+            }
+        }
+    }
+
+    template<typename T>
+    void Matrix2D<T>::rotate(bool turn_right) {
+        if (!_row || !_col) return;
+        std::vector<T> temp;
+        temp.reserve(_row * _col);
+        if (turn_right) {
+            for (size_t c = 0; c < _col; ++c) {
+                for (size_t r = 0; r < _row; ++r) {
+                    temp.emplace_back(_datas[(_row - r - 1) * _col + c]);
+                }
+            }
+        } else {
+            for (size_t c = 0; c < _col; ++c) {
+                for (size_t r = 0; r < _row; ++r) {
+                    temp.emplace_back(_datas[r * _col + (_col - c - 1)]);
+                }
+            }
+        }
+        std::swap(temp, _datas);
+        if (_row != _col) std::swap(_row, _col);
+    }
+
+    template<typename T>
+    Matrix2D<T> Matrix2D<T>::splitRows(uint32_t start_row, uint32_t end_row) {
+        if (start_row == end_row) {
+            SDL_Log("[ERROR] The specified start row and end row cannot be the same!");
+            return Matrix2D<T>();
+        }
+        if (end_row > _row) {
+            SDL_Log("[ERROR] The specified end row exceeds the total rows of the original matrix!");
+            return Matrix2D<T>();
+        }
+        if (start_row > end_row) std::swap(start_row, end_row);
+        auto new_rows = end_row - start_row;
+        Matrix2D<T> _ret(new_rows, _col);
+        for (size_t i = 0; i < new_rows; ++i) {
+            for (size_t j = 0; j < _col; ++j) {
+                _ret[i * _col + j] = _datas[(start_row + i) * _col + j];
+            }
+        }
+        return _ret;
+    }
+
+    template<typename T>
+    Matrix2D<T> Matrix2D<T>::splitCols(uint32_t start_col, uint32_t end_col) {
+        if (start_col == end_col) {
+            SDL_Log("[ERROR] The specified start col and end col cannot be the same!");
+            return Matrix2D<T>();
+        }
+        if (end_col > _col) {
+            SDL_Log("[ERROR] The specified end col exceeds the total cols of the original matrix!");
+            return Matrix2D<T>();
+        }
+        if (start_col > end_col) std::swap(start_col, end_col);
+        auto new_cols = end_col - start_col;
+        Matrix2D<T> _ret(_row, new_cols);
+        for (size_t i = 0; i < _row; ++i) {
+            for (size_t j = 0; j < new_cols; ++j) {
+                _ret[i * new_cols + j] = _datas[i * _col + j + start_col];
+            }
+        }
+        return _ret;
+    }
+
+    template<typename T>
+    Matrix2D<T> Matrix2D<T>::split(uint32_t rows, uint32_t cols, const Matrix2D::Position &start_pos) {
+        if (start_pos.row >= _row || start_pos.col >= _col) {
+            SDL_Log("[ERROR] The specified start position is not valid!");
+            return Matrix2D();
+        }
+        Matrix2D<T> _ret(rows, cols);
+        auto size = rows * cols;
+        auto start_index = start_pos.row * _col + start_pos.col;
+        auto elapsed = _datas.size() - start_index;
+        bool is_less = elapsed < size;
+        if (!is_less) {
+            for (size_t i = 0; i < _ret._datas.size(); ++i) {
+                _ret[i] = _datas[start_index++];
+            }
+        } else {
+            for (size_t i = 0; i < elapsed; ++i) {
+                _ret[i] = _datas[start_index++];
+            }
+            for (size_t i = elapsed; i < _ret._datas.size(); ++i) {
+                _ret[i] = {};
+            }
+        }
+        return _ret;
+    }
+
+    template<typename T>
+    Matrix2D<T> Matrix2D<T>::split(Matrix2D::Position start_pos,
+                                   Matrix2D::Position end_pos) {
+        if (start_pos > end_pos) {
+            auto temp = start_pos;
+            start_pos = end_pos;
+            end_pos = temp;
+        }
+        if (end_pos.row >= _row) {
+            end_pos.row = _row - 1;
+        }
+        if (end_pos.col >= _col) {
+            end_pos.col = _col - 1;
+        }
+        auto rows = end_pos.row - start_pos.row + 1;
+        auto cols = end_pos.col - start_pos.col + 1;
+        Matrix2D<T> _ret(rows, cols);
+        for (size_t i = 0; i < rows; ++i) {
+            for (size_t j = 0; j < cols; ++j) {
+                _ret[i * _ret._col + j] = _datas[(start_pos.row + i) * _col + j + start_pos.col];
+            }
+        }
+        return _ret;
+    }
+
+    template<typename T>
+    Matrix2D<T> Matrix2D<T>::inverse() {
+        if (_row != _col) {
+            SDL_Log("[ERROR] The specified matrix size is not matched!");
+            return Matrix2D<T>();
+        }
+        if constexpr (!std::is_integral_v<std::decay_t<T>> &&
+                      !std::is_floating_point_v<std::decay_t<T>>) {
+            static_assert(!std::is_integral_v<std::decay_t<T>> &&
+                          !std::is_floating_point_v<std::decay_t<T>>,
+                          "[FATAL] Can't support the current data type!");
+        }
+        const uint32_t n = _row;
+        Matrix2D<T> _ret(n, n);
+        // 创建增广矩阵 [A|I]
+        Matrix2D<T> augmented(n, 2 * n);
+        // 填充增广矩阵：左侧为原矩阵，右侧为单位矩阵
+        for (uint32_t i = 0; i < n; ++i) {
+            for (uint32_t j = 0; j < n; ++j) {
+                augmented(i, j) = _datas[i * _col + j];  // 原矩阵
+                augmented(i, j + n) = (i == j) ? static_cast<T>(1) : static_cast<T>(0);  // 单位矩阵
+            }
+        }
+        // 使用高斯-约旦消元法
+        for (uint32_t i = 0; i < n; ++i) {
+            // 寻找主元（部分主元选择）
+            uint32_t max_row = i;
+            for (uint32_t k = i + 1; k < n; ++k) {
+                if (std::abs(augmented(k, i)) > std::abs(augmented(max_row, i))) {
+                    max_row = k;
+                }
+            }
+            // 如果主元为0，矩阵不可逆
+            if (std::abs(augmented(max_row, i)) < static_cast<T>(1e-10)) {
+                SDL_Log("[ERROR] Matrix is singular and cannot be inverted!");
+                return Matrix2D<T>();
+            }
+            // 交换行
+            if (max_row != i) {
+                for (uint32_t j = 0; j < 2 * n; ++j) {
+                    std::swap(augmented(i, j), augmented(max_row, j));
+                }
+            }
+            // 将主元行标准化
+            T pivot = augmented(i, i);
+            for (uint32_t j = 0; j < 2 * n; ++j) {
+                augmented(i, j) /= pivot;
+            }
+            // 消去其他行的当前列
+            for (uint32_t k = 0; k < n; ++k) {
+                if (k != i && std::abs(augmented(k, i)) > static_cast<T>(1e-10)) {
+                    T factor = augmented(k, i);
+                    for (uint32_t j = 0; j < 2 * n; ++j) {
+                        augmented(k, j) -= factor * augmented(i, j);
+                    }
+                }
+            }
+        }
+        // 提取逆矩阵（增广矩阵的右侧部分）
+        for (uint32_t i = 0; i < n; ++i) {
+            for (uint32_t j = 0; j < n; ++j) {
+                _ret(i, j) = augmented(i, j + n);
+            }
+        }
+        return _ret;
+    }
+
+
+    /**
+     * @namespace Graphics
+     * @brief 基本图形
+     *
+     * 包含所有基本图形，如：点、线段、矩形、椭圆等基本图形。
+     */
+    // namespace Graphics {
+    //     /**
+    //      * @struct Point
+    //      * @brief 圆点
+    //      */
+    //     struct Point {
+    //         Vector2 pos;
+    //         SColor color;
+    //         Point() : pos(0, 0), color(StdColor::Black) {}
+    //         explicit Point(Vector2 pos, SColor color = StdColor::Black) : pos(pos), color(color) {}
+    //         Point(float x, float y, SColor color = StdColor::Black) : pos(x, y), color(color) {}
+    //         Point(float x, float y, uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255)
+    //             : pos(x, y), color(r, g, b, a) {}
+    //         Point(Vector2 pos, const std::string& hex_color = "#000000");
+    //         Point(float x, float y, const std::string& hex_color = "#000000");
+    //     };
+    //     /**
+    //      * @struct Line
+    //      * @brief 线段
+    //      */
+    //     struct Line {
+    //         Vector2 start;
+    //         Vector2 end;
+    //         uint8_t width;
+    //         SColor color;
+    //         Line() : start(0, 0), end(0, 0), width(1), color(StdColor::Black) {}
+    //         Line(float x1, float y1, float x2, float y2, uint8_t width = 1, SColor color = StdColor::Black)
+    //             : start(x1, y1), end(x2, y2), width(width), color(color) {}
+    //         Line(Vector2 start, Vector2 end, uint8_t width = 1, SColor color = StdColor::Black)
+    //             : start(start), end(end), width(width), color(color) {}
+    //         Line(float x1, float y1, float x2, float y2, uint8_t width = 1, uint8_t r = 0, uint8_t g = 0, uint8_t b = 0, uint8_t a = 255)
+    //             : start(x1, y1), end(x2, y2), width(width), color(r, g, b, a) {}
+    //         Line(float x1, float y1, float x2, float y2, uint8_t width, const std::string &hex_color = "#000000");
+    //         Line(Vector2 start, Vector2 end, uint8_t width, const std::string &hex_color = "#000000");
+    //     };
+    //     /**
+    //      * @struct Rectangle
+    //      * @brief 矩形
+    //      */
+    //     struct Rectangle {
+    //         Vector2 pos;
+    //         Size size;
+    //         bool bordered_mode;
+    //         bool filled_mode;
+    //         SColor fore_color;
+    //         SColor back_color;
+    //         Rectangle() : pos(0, 0), size(0, 0), filled_mode(false), bordered_mode(true),
+    //             fore_color(StdColor::Black), back_color(StdColor::Black) {}
+    //         Rectangle(Vector2 pos, Size size, SColor foreground = StdColor::Black, bool bordered_mode = true,
+    //                   bool filled_mode = false, SColor background = StdColor::Black)
+    //                   : pos(pos), size(size), fore_color(foreground), bordered_mode(bordered_mode),
+    //                     filled_mode(filled_mode), back_color(background) {}
+    //         explicit Rectangle(float x, float y, float width, float height, SColor foreground = StdColor::Black,
+    //                   bool bordered_mode = true, bool filled_mode = false, SColor background = StdColor::Black)
+    //                   : pos(x, y), size(width, height), fore_color(foreground), bordered_mode(bordered_mode),
+    //                      filled_mode(filled_mode), back_color(background) {}
+    //         Rectangle(float x, float y, uint32_t width, uint32_t height,
+    //                   uint8_t fore_r, uint8_t fore_g, uint8_t fore_b, uint8_t fore_a = 255,
+    //                   bool bordered_mode = true, bool filled_mode = false,
+    //                   uint8_t back_r = 0, uint8_t back_g = 0, uint8_t back_b = 0, uint8_t back_a = 255)
+    //                   : pos(x, y), size(width, height), fore_color(fore_r, fore_g, fore_b, fore_a),
+    //                     bordered_mode(bordered_mode), filled_mode(filled_mode),
+    //                     back_color(back_r, back_g, back_b, back_a) {}
+    //         explicit Rectangle(Vector2 pos, Size size, const std::string& foreground = "#000000", bool bordered_mode = true,
+    //                   bool filled_mode = false, const std::string& background = "#000000");
+    //         Rectangle(float x, float y, float width, float height, const std::string& foreground = "#000000",
+    //                   bool bordered_mode = true, bool filled_mode = false, const std::string& background = "#000000");
+
+    //     };
+    //     /**
+    //      * @struct Ellipse
+    //      * @brief 椭圆
+    //      */
+    //     struct Ellipse {
+    //         Vector2 pos;
+    //         Size area;
+    //         bool bordered_mode;
+    //         bool filled_mode;
+    //         SColor fore_color;
+    //         SColor back_color;
+    //         Ellipse() : pos(0, 0), area(0, 0), bordered_mode(true), filled_mode(false),
+    //                     fore_color(StdColor::Black), back_color(StdColor::Black) {}
+    //         explicit Ellipse(Vector2 pos, Size area, SColor foreground = StdColor::Black, bool bordered_mode = true,
+    //                 bool filled_mode = false, SColor background = StdColor::Black)
+    //                 : pos(pos), area(area), fore_color(foreground), bordered_mode(bordered_mode),
+    //                   filled_mode(filled_mode), back_color(background) {}
+    //         Ellipse(float x, float y, float width, float height, SColor foreground = StdColor::Black,
+    //                 bool bordered_mode = true, bool filled_mode = false, SColor background = StdColor::Black)
+    //                 : pos(x, y), area(width, height), fore_color(foreground), bordered_mode(bordered_mode),
+    //                   filled_mode(filled_mode), back_color(background) {}
+    //     };
+    // }
+}
+
+#endif //BASIC_H
