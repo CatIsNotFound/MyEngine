@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
-project(S3GF LANGUAGES C CXX)
+project(S3GF LANGUAGES C CXX VERSION 0.1.0)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -17,6 +17,19 @@ else()
         set(SDL3_TTF_LIB "/usr/local/SDL3_ttf" CACHE PATH "SDL3 TTF Libs Path")
 endif()
 
+if (NOT EXISTS ${SDL3_LIB})
+    message(FATAL_ERROR "SDL3 Libs path is not found! Use '-DSDL3_LIB=path/to/sdl3' to set the path.")
+endif()
+if (NOT EXISTS ${SDL3_IMAGE_LIB})
+    message(FATAL_ERROR "SDL3 Image Libs path is not found! Use '-DSDL3_IMAGE_LIB=path/to/sdl3_image' to set the path.")
+endif()
+if (NOT EXISTS ${SDL3_MIXER_LIB})
+    message(FATAL_ERROR "SDL3 Mixer Libs path is not found! Use '-DSDL3_MIXER_LIB=path/to/sdl3_mixer' to set the path.")
+endif()
+if (NOT EXISTS ${SDL3_TTF_LIB})
+    message(FATAL_ERROR "SDL3 TTF Libs path is not found! Use '-DSDL3_TTF_LIB=path/to/sdl3_ttf' to set the path.")
+endif()
+
 list(APPEND CMAKE_PREFIX_PATH ${SDL3_LIB})
 list(APPEND CMAKE_PREFIX_PATH ${SDL3_IMAGE_LIB})
 list(APPEND CMAKE_PREFIX_PATH ${SDL3_MIXER_LIB})
@@ -30,7 +43,6 @@ find_package(SDL3_ttf REQUIRED)
 if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
     add_library(${PROJECT_NAME} SHARED
             src/Basic.h
-            src/Basic.cpp
             src/Libs.h
             src/Core.cpp
             src/Core.h
@@ -42,11 +54,12 @@ if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
             src/Utils/Random.h
             src/Algorithm/Draw.h
             src/Utils/DateTime.h
+            src/Utils/Cursor.h
+            src/Algorithm/Collider.h
     )
 else ()
     add_library(${PROJECT_NAME} STATIC
             src/Basic.h
-            src/Basic.cpp
             src/Libs.h
             src/Core.cpp
             src/Core.h
@@ -58,6 +71,8 @@ else ()
             src/Utils/Random.h
             src/Algorithm/Draw.h
             src/Utils/DateTime.h
+            src/Utils/Cursor.h
+            src/Algorithm/Collider.h
     )
 endif ()
 
@@ -103,6 +118,7 @@ message("SDL3 image path: ${SDL3_IMAGE_LIB}")
 message("SDL3 mixer path: ${SDL3_MIXER_LIB}")
 message("SDL3 ttf   path: ${SDL3_TTF_LIB}")
 message("Install path: ${CMAKE_INSTALL_PREFIX}")
+message("Project version: ${PROJECT_VERSION}")
 message("============================================================")
 
 if (WIN32)

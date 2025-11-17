@@ -27,6 +27,9 @@ namespace S3GF {
         void drawEllipse(Graphics::Ellipse&& ellipse);
         void drawTexture(SDL_Texture* texture, Property* property);
         void drawText(TTF_Text* text, const Vector2& position);
+        void setViewport(const Geometry& geometry);
+        void setClipView(const Geometry& geometry);
+        void setBlendMode(const SDL_BlendMode& blend_mode);
     private:
         struct Command {
             explicit Command(SDL_Renderer* renderer) : renderer(renderer) {}
@@ -37,6 +40,26 @@ namespace S3GF {
             explicit FillCMD(SDL_Renderer* renderer, SDL_Color color = StdColor::Black) 
                 : Command(renderer), bg_color(color) {}
             SDL_Color bg_color;
+            void exec() override;
+        };
+        struct ClipCMD : public Command {
+            explicit ClipCMD(SDL_Renderer* renderer, bool reset = true, SDL_Rect rect = {0, 0, 0, 0})
+                : Command(renderer), _reset(reset), _clip_area(rect) {}
+            SDL_Rect _clip_area;
+            bool _reset;
+            void exec() override;
+        };
+        struct ViewportCMD : public Command {
+            explicit ViewportCMD(SDL_Renderer* renderer, bool reset = true, SDL_Rect rect = {0, 0, 0, 0})
+                : Command(renderer), _reset(reset), _viewport_area(rect) {}
+            SDL_Rect _viewport_area;
+            bool _reset;
+            void exec() override;
+        };
+        struct BlendModeCMD : public Command {
+            explicit BlendModeCMD(SDL_Renderer* renderer, SDL_BlendMode blend_mode = SDL_BLENDMODE_NONE)
+                : Command(renderer), _blend_mode(blend_mode) {}
+            SDL_BlendMode _blend_mode;
             void exec() override;
         };
         struct PointCMD : public Command {

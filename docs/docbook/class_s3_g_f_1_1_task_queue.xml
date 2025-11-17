@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_s3_g_f_1_1_task_queue" xml:lang="en-US">
+<title>S3GF::TaskQueue&lt; T &gt; Class Template Reference</title>
+<indexterm><primary>S3GF::TaskQueue&lt; T &gt;</primary></indexterm>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_task_queue_1add94c129975f1905183a459710e2acbe"/><emphasis role="strong">TaskQueue</emphasis> (<link linkend="_class_s3_g_f_1_1_task_queue">TaskQueue</link> &amp;&amp;)=delete</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_task_queue_1afc9211c47e4aaec5727dd02953617c0a"/><emphasis role="strong">TaskQueue</emphasis> (const <link linkend="_class_s3_g_f_1_1_task_queue">TaskQueue</link> &amp;)=delete</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_task_queue_1a081be011f56a11fedb278de38eb1e204"/><link linkend="_class_s3_g_f_1_1_task_queue">TaskQueue</link> &amp; <emphasis role="strong">operator=</emphasis> (<link linkend="_class_s3_g_f_1_1_task_queue">TaskQueue</link> &amp;&amp;)=delete</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_task_queue_1a77cfc6a8de32a75279061e757b8b340e"/><link linkend="_class_s3_g_f_1_1_task_queue">TaskQueue</link> &amp; <emphasis role="strong">operator=</emphasis> (const <link linkend="_class_s3_g_f_1_1_task_queue">TaskQueue</link> &amp;)=delete</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_task_queue_1a462a5a037acda71da3051faac1b82b3f"/>bool <emphasis role="strong">push</emphasis> (const T &amp;data)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_task_queue_1ac49558b4660e1d8729d658c9ca97ecbc"/>bool <emphasis role="strong">push</emphasis> (T &amp;&amp;data)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_task_queue_1a859b778e04615c02a1e80c26023fef82"/>bool <emphasis role="strong">pop</emphasis> (T &amp;data)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_task_queue_1adccc7e26811a98b8dd008f5a214b3a22"/>void <emphasis role="strong">clear</emphasis> ()</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_task_queue_1a50ae0416d76ef63e5d98ceeba05f55b1"/>void <emphasis role="strong">start</emphasis> ()</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_task_queue_1af3959ea8c200fc42bcee7eb64e3908a3"/>void <emphasis role="strong">stop</emphasis> ()</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_task_queue_1ae74779657c0a67f5e49724f53451205f"/>bool <emphasis role="strong">isRunning</emphasis> () const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_task_queue_1a5064ce7c9e4bc5005aea48c64c536eb9"/>void <emphasis role="strong">setMaxSize</emphasis> (size_t max_size)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_task_queue_1a976ef7e60b3da3bbf4d48aeca26fe82d"/>size_t <emphasis role="strong">size</emphasis> () const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_task_queue_1a988a8944cdb081ab29eb951846b73134"/>bool <emphasis role="strong">empty</emphasis> () const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_task_queue_1a214d031cecffc6d5fe9db466d5227660"/>const T &amp; <emphasis role="strong">front</emphasis> () const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_task_queue_1a135243886157fcb4550af04fb6400784"/>const T &amp; <emphasis role="strong">back</emphasis> () const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_task_queue_1a5615193b18f8e1284859c0a3d3645556"/>void <emphasis role="strong">setDeletor</emphasis> (const std::function&lt; void(T &amp;)&gt; &amp;deletor)</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<para>
+The documentation for this class was generated from the following file:</para>
+D:/Coding/S3GF/src/Utils/Queue.h</section>

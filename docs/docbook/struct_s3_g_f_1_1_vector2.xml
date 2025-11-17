@@ -1,0 +1,187 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_struct_s3_g_f_1_1_vector2" xml:lang="en-US">
+<title>S3GF::Vector2 Struct Reference</title>
+<indexterm><primary>S3GF::Vector2</primary></indexterm>
+<para>
+
+<para>向量坐标 </para>
+ 
+</para>
+<para>
+<computeroutput>#include &lt;Basic.h&gt;</computeroutput>
+</para>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_vector2_1a5b51c5466cdc66933bebb1ff459a7809"/><emphasis role="strong">Vector2</emphasis> (float x, float y)</para>
+</listitem>
+            <listitem><para>void <link linkend="_struct_s3_g_f_1_1_vector2_1abf5e7a6144315c802cc077b16cfc0d0d">reset</link> (float x, float y)</para>
+
+<para>重新设置新的向量 </para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_vector2_1a41603d84d5737b51f1e6f9deb7fab36f"/>void <emphasis role="strong">reset</emphasis> (const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;vector2)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_vector2_1a7db4b17f51d2f20fe509b54139855b8d"/><link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> <emphasis role="strong">operator+</emphasis> (const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;v) const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_vector2_1a43cf12680a5a63e87eb5a9a8ac709dd8"/><link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> <emphasis role="strong">operator-</emphasis> (const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;v) const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_vector2_1ab5a8022b43f6dd610b17f17569bf8506"/><link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> <emphasis role="strong">operator*</emphasis> (const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;v) const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_vector2_1a50e6d5992cac433aafe4c7cce14a65da"/><link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> <emphasis role="strong">operator*</emphasis> (float v) const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_vector2_1a353eeb20acea63c037afad30a10beccf"/><link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> <emphasis role="strong">operator/</emphasis> (const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;v) const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_vector2_1ab1a279e44383bf669cd76b9b4153a0d4"/><link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> <emphasis role="strong">operator/</emphasis> (float v) const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_vector2_1a79125258da2aa6e4f54fa742da8c8e0b"/>void <emphasis role="strong">operator+=</emphasis> (const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;v)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_vector2_1ab27be7e886fb53bdf60163a98436c78d"/>void <emphasis role="strong">operator-=</emphasis> (const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;v)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_vector2_1a936e952e935b49638997a5979336fde8"/>void <emphasis role="strong">operator*=</emphasis> (const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;v)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_vector2_1a9d4518d561b3e5165a234099884ef2d8"/>void <emphasis role="strong">operator*=</emphasis> (float v)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_vector2_1af6fcfe9d70cfe8d1db33eb22989a51f5"/>void <emphasis role="strong">operator/=</emphasis> (const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;v)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_vector2_1aa1cddfe3998814a7614ee08c8d27c268"/>void <emphasis role="strong">operator/=</emphasis> (float v)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_vector2_1a3923ebe48f1d4e21eb150574dc642a0f"/>bool <emphasis role="strong">operator==</emphasis> (const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;v) const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_vector2_1a8849fdc3fa64f55c322c2470297b34f2"/>bool <emphasis role="strong">operator!=</emphasis> (const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;v) const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_vector2_1a2240705b48fb8201641ff1844d890a40"/>bool <emphasis role="strong">operator&gt;</emphasis> (const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;v) const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_vector2_1aac7f6bc3de016727f6f2caf8d139a7a6"/>bool <emphasis role="strong">operator&gt;=</emphasis> (const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;v) const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_vector2_1a7f1f9dceb97da83fbbee1da7a2558a0c"/>bool <emphasis role="strong">operator&lt;</emphasis> (const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;v) const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_vector2_1aa0b567afbb80550257d8c90dfa70cb58"/>bool <emphasis role="strong">operator&lt;=</emphasis> (const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;v) const</para>
+</listitem>
+            <listitem><para>bool <link linkend="_struct_s3_g_f_1_1_vector2_1ab603a1976f0bf55e46c39fa8f0a25742">isEqual</link> (const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;v, const float EPISON=1e-6f) const</para>
+
+<para>判断两个坐标位置是否大致相等 </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Public Attributes    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_vector2_1a05e47b6a3917a7ef0e3b68151ce8ca88"/>float <emphasis role="strong">x</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_vector2_1aa8f759f962d4909d23378cb1f4063d13"/>float <emphasis role="strong">y</emphasis></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Detailed Description</title>
+
+<para>向量坐标 </para>
+
+
+
+<para>用于指定某对象的位置 </para>
+</section>
+<section>
+<title>Member Function Documentation</title>
+<anchor xml:id="_struct_s3_g_f_1_1_vector2_1ab603a1976f0bf55e46c39fa8f0a25742"/><section>
+    <title>isEqual()</title>
+<indexterm><primary>isEqual</primary><secondary>S3GF::Vector2</secondary></indexterm>
+<indexterm><primary>S3GF::Vector2</primary><secondary>isEqual</secondary></indexterm>
+<para><computeroutput>bool S3GF::Vector2::isEqual (const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp; v, const float EPISON = <computeroutput>1e-6f</computeroutput>
+) const<computeroutput>[inline]</computeroutput>, <computeroutput>[nodiscard]</computeroutput></computeroutput></para><para>
+
+<para>判断两个坐标位置是否大致相等 </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>v</entry><entry>
+<para>指定另一个坐标 </para>
+</entry>
+                            </row>
+                            <row>
+<entry>EPISON</entry><entry>
+<para>允许的误差数 （默认 0.000001f 误差） </para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                
+                <formalpara>
+                    <title>
+Return values</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>true</entry><entry>
+<para>表示相等 </para>
+</entry>
+                            </row>
+                            <row>
+<entry>false</entry><entry>
+<para>表示不相等 </para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</section>
+<anchor xml:id="_struct_s3_g_f_1_1_vector2_1abf5e7a6144315c802cc077b16cfc0d0d"/><section>
+    <title>reset()</title>
+<indexterm><primary>reset</primary><secondary>S3GF::Vector2</secondary></indexterm>
+<indexterm><primary>S3GF::Vector2</primary><secondary>reset</secondary></indexterm>
+<para><computeroutput>void S3GF::Vector2::reset (float x, float y)<computeroutput>[inline]</computeroutput></computeroutput></para><para>
+
+<para>重新设置新的向量 </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>x</entry><entry>
+<para></para>
+</entry>
+                            </row>
+                            <row>
+<entry>y</entry><entry>
+<para></para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</section>
+<para>
+The documentation for this struct was generated from the following file:</para>
+D:/Coding/S3GF/src/<link linkend="__basic_8h">Basic.h</link></section>
+</section>

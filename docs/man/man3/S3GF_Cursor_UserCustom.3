@@ -1,0 +1,48 @@
+.TH "S3GF::Cursor::UserCustom" 3 "Version v0.0.1-beta" "S3GF" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+S3GF::Cursor::UserCustom \- 用户自定义鼠标光标数据  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fR#include <Cursor\&.h>\fP
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "struct \fBHotPoint\fP"
+.br
+.RI "用于定义鼠标光标的热点坐标 "
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBUserCustom\fP (const \fBHotPoint\fP &hot_point, SSurface *cursor)"
+.br
+.ti -1c
+.RI "\fBUserCustom\fP (const \fBUserCustom\fP &copy)"
+.br
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "\fBHotPoint\fP \fBhot_point\fP"
+.br
+.ti -1c
+.RI "std::shared_ptr< SDL_Surface > \fBcursor\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+用户自定义鼠标光标数据 
+
+包含热点坐标（点击生效点）和光标表面资源 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for S3GF from the source code\&.

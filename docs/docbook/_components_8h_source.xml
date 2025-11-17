@@ -1,0 +1,102 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="__components_8h_source" xml:lang="en-US">
+<title>Components.h</title>
+<indexterm><primary>D:/Coding/S3GF/src/Components.h</primary></indexterm>
+<programlisting linenumbering="unnumbered">1 <emphasis role="preprocessor">#pragma&#32;once</emphasis>
+2 <emphasis role="preprocessor">#ifndef&#32;S3GF_COMPONETS_H</emphasis>
+3 <emphasis role="preprocessor">#define&#32;S3GF_COMPONETS_H</emphasis>
+4 <emphasis role="preprocessor">#include&#32;&quot;<link linkend="__basic_8h">Basic.h</link>&quot;</emphasis>
+5 <emphasis role="preprocessor">#include&#32;&quot;Utils/Random.h&quot;</emphasis>
+6 
+7 <emphasis role="keyword">namespace&#32;</emphasis><link linkend="_namespace_s3_g_f">S3GF</link>&#32;{
+8 &#32;&#32;&#32;&#32;<emphasis role="keyword">class&#32;</emphasis><link linkend="_class_s3_g_f_1_1_renderer">Renderer</link>;
+9 &#32;&#32;&#32;&#32;<emphasis role="keyword">struct&#32;</emphasis><link linkend="_struct_s3_g_f_1_1_property">Property</link>&#32;{
+10 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="keywordtype">bool</emphasis>&#32;clip_mode;
+11 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;SDL_FRect&#32;clip_area;
+12 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;SDL_Color&#32;color_alpha;
+13 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="keywordtype">double</emphasis>&#32;rotate_angle;
+14 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;move(<emphasis role="keyword">const</emphasis>&#32;<link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link>&amp;&#32;pos)&#32;{
+15 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;_position.reset(pos);
+16 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;setScale(_scale);
+17 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;}
+18 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;move(<emphasis role="keywordtype">float</emphasis>&#32;x,&#32;<emphasis role="keywordtype">float</emphasis>&#32;y)&#32;{
+19 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;_position.reset(x,&#32;y);
+20 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;setScale(_scale);
+21 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;}
+22 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="keyword">const</emphasis>&#32;<link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link>&#32;position()<emphasis role="keyword">&#32;const&#32;</emphasis>{
+23 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="keywordflow">return</emphasis>&#32;_position;
+24 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;}
+25 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;resize(<emphasis role="keyword">const</emphasis>&#32;<link linkend="_struct_s3_g_f_1_1_size">Size</link>&amp;&#32;size)&#32;{
+26 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;_size.<link linkend="_struct_s3_g_f_1_1_vector2_1abf5e7a6144315c802cc077b16cfc0d0d">reset</link>(size);
+27 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;setScale(_scale);
+28 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;}
+29 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;resize(<emphasis role="keywordtype">float</emphasis>&#32;width,&#32;<emphasis role="keywordtype">float</emphasis>&#32;height)&#32;{
+30 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;_size.reset(width,&#32;height);
+31 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;setScale(_scale);
+32 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;}
+33 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="keyword">const</emphasis>&#32;<link linkend="_struct_s3_g_f_1_1_size">Size</link>&#32;size()<emphasis role="keyword">&#32;const&#32;</emphasis>{
+34 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="keywordflow">return</emphasis>&#32;_size;
+35 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;}
+36 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;setGeomentry(<emphasis role="keyword">const</emphasis>&#32;<link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link>&amp;&#32;pos,&#32;<emphasis role="keyword">const</emphasis>&#32;<link linkend="_struct_s3_g_f_1_1_size">Size</link>&amp;&#32;size)&#32;{
+37 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;_position.<link linkend="_struct_s3_g_f_1_1_size_1ab212d2fe7db7362bd9557d4a665ce771">reset</link>(pos);
+38 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;_size.reset(size);
+39 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;setScale(_scale);
+40 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;}
+41 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;setGeomentry(<emphasis role="keywordtype">float</emphasis>&#32;x,&#32;<emphasis role="keywordtype">float</emphasis>&#32;y,&#32;<emphasis role="keywordtype">float</emphasis>&#32;width,&#32;<emphasis role="keywordtype">float</emphasis>&#32;height)&#32;{
+42 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;_position.reset(x,&#32;y);
+43 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;_size.reset(width,&#32;height);
+44 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;setScale(_scale);
+45 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;}
+46 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="keyword">const</emphasis>&#32;<link linkend="_struct_s3_g_f_1_1_geometry_f">GeometryF</link>&#32;geomentry()<emphasis role="keyword">&#32;const&#32;</emphasis>{
+47 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="keywordflow">return</emphasis>&#32;<link linkend="_struct_s3_g_f_1_1_geometry_f">GeometryF</link>{_position,&#32;_size};
+48 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;}
+49 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;setScale(<emphasis role="keywordtype">float</emphasis>&#32;scale&#32;=&#32;1.0f)&#32;{
+50 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;_scale&#32;=&#32;scale;
+51 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link>&#32;global_center_pos&#32;=&#32;{
+52 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;_position.x&#32;+&#32;_size.width&#32;/&#32;2,&#32;_position.y&#32;+&#32;_size.height&#32;/&#32;2
+53 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;};
+54 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;_scaled_position.<link linkend="_struct_s3_g_f_1_1_vector2_1abf5e7a6144315c802cc077b16cfc0d0d">reset</link>((_position.x&#32;-&#32;global_center_pos.x)&#32;*&#32;_scale&#32;+&#32;global_center_pos.x,&#32;
+55 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;(_position.y&#32;-&#32;global_center_pos.y)&#32;*&#32;_scale&#32;+&#32;global_center_pos.y);
+56 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;_scaled_size.reset(_size.width&#32;*&#32;_scale,&#32;_size.height&#32;*&#32;_scale);
+57 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;}
+58 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="keywordtype">float</emphasis>&#32;scale()<emphasis role="keyword">&#32;const&#32;</emphasis>{
+59 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="keywordflow">return</emphasis>&#32;_scale;
+60 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;}
+61 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<link linkend="_struct_s3_g_f_1_1_geometry_f">GeometryF</link>&#32;scaledGeometry()<emphasis role="keyword">&#32;const&#32;</emphasis>{
+62 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="keywordflow">return</emphasis>&#32;<link linkend="_struct_s3_g_f_1_1_geometry_f">GeometryF</link>{_scaled_position,&#32;_scaled_size};
+63 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;}
+64 &#32;&#32;&#32;&#32;<emphasis role="keyword">private</emphasis>:
+65 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link>&#32;_position;
+66 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<link linkend="_struct_s3_g_f_1_1_size">Size</link>&#32;_size;
+67 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="keywordtype">float</emphasis>&#32;_scale;
+68 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link>&#32;_scaled_position;
+69 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<link linkend="_struct_s3_g_f_1_1_size">Size</link>&#32;_scaled_size;
+70 &#32;&#32;&#32;&#32;};
+71 
+72 &#32;&#32;&#32;&#32;<emphasis role="keyword">class&#32;</emphasis>Texture&#32;{
+73 &#32;&#32;&#32;&#32;<emphasis role="keyword">public</emphasis>:
+74 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;Texture(<emphasis role="keyword">const</emphasis>&#32;Texture&#32;&amp;)&#32;=&#32;<emphasis role="keyword">delete</emphasis>;
+75 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;Texture(Texture&#32;&amp;&amp;)&#32;=&#32;<emphasis role="keyword">delete</emphasis>;
+76 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;Texture&#32;&amp;operator=(<emphasis role="keyword">const</emphasis>&#32;Texture&#32;&amp;)&#32;=&#32;<emphasis role="keyword">delete</emphasis>;
+77 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;Texture&#32;&amp;operator=(Texture&#32;&amp;&amp;)&#32;=&#32;<emphasis role="keyword">delete</emphasis>;
+78 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="keyword">explicit</emphasis>&#32;Texture(<emphasis role="keyword">const</emphasis>&#32;std::string&#32;&amp;path,&#32;<link linkend="_class_s3_g_f_1_1_renderer">Renderer</link>&#32;*renderer);
+79 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="keyword">explicit</emphasis>&#32;Texture(SDL_Surface*&#32;surface,&#32;<link linkend="_class_s3_g_f_1_1_renderer">Renderer</link>&#32;*renderer,&#32;<emphasis role="keywordtype">bool</emphasis>&#32;deep_copy&#32;=&#32;<emphasis role="keyword">false</emphasis>);
+80 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="keyword">explicit</emphasis>&#32;Texture(<link linkend="_class_s3_g_f_1_1_renderer">Renderer</link>*&#32;renderer,&#32;SDL_PixelFormat&#32;format,&#32;<emphasis role="keywordtype">int</emphasis>&#32;width,&#32;<emphasis role="keywordtype">int</emphasis>&#32;height,&#32;SDL_TextureAccess&#32;access);
+81 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;~Texture();
+82 
+83 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="keywordtype">bool</emphasis>&#32;setImagePath(<emphasis role="keyword">const</emphasis>&#32;std::string&amp;&#32;path);
+84 
+85 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;SDL_Texture*&#32;self()&#32;<emphasis role="keyword">const</emphasis>;
+86 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<link linkend="_struct_s3_g_f_1_1_property">Property</link>*&#32;property();
+87 
+88 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;draw()&#32;<emphasis role="keyword">const</emphasis>;
+89 &#32;&#32;&#32;&#32;<emphasis role="keyword">private</emphasis>:
+90 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;SDL_Surface*&#32;_surface;
+91 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;SDL_Texture*&#32;_texture;
+92 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;std::unique_ptr&lt;Property&gt;&#32;_property;
+93 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<link linkend="_class_s3_g_f_1_1_renderer">Renderer</link>*&#32;_renderer;
+94 &#32;&#32;&#32;&#32;};
+95 }
+96 <emphasis role="preprocessor">#include&#32;&quot;Core.h&quot;</emphasis>
+97 <emphasis role="preprocessor">#endif&#32;</emphasis><emphasis role="comment">//&#32;!S3GF_COMPONETS_H</emphasis>
+</programlisting></section>

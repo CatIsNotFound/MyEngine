@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_struct_s3_g_f_1_1_window_1_1_geometry" xml:lang="en-US">
+<title>S3GF::Window::Geometry Struct Reference</title>
+<indexterm><primary>S3GF::Window::Geometry</primary></indexterm>
+<simplesect>
+    <title>Public Attributes    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_window_1_1_geometry_1a0f0623524aff1f706d7b023ab12eabc4"/>int <emphasis role="strong">x</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_window_1_1_geometry_1a0667f60e7595ecfff4938153875800aa"/>int <emphasis role="strong">y</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_window_1_1_geometry_1a200b0d701e7e14d76d7f97e7d24b56ab"/>int <emphasis role="strong">width</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_window_1_1_geometry_1a2c8c7bff4e961c18b65e5858ac9c141a"/>int <emphasis role="strong">height</emphasis></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<para>
+The documentation for this struct was generated from the following file:</para>
+D:/Coding/S3GF/src/Core.h</section>

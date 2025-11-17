@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_s3_g_f_1_1_trigger" xml:lang="en-US">
+<title>S3GF::Trigger Class Reference</title>
+<indexterm><primary>S3GF::Trigger</primary></indexterm>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_trigger_1a0161fe91897c1dd1f4c89c745529b8a8"/><emphasis role="strong">Trigger</emphasis> (<link linkend="_class_s3_g_f_1_1_trigger">Trigger</link> &amp;&amp;)=delete</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_trigger_1a2ffd8da0c6ec412260a40a229142f123"/><emphasis role="strong">Trigger</emphasis> (const <link linkend="_class_s3_g_f_1_1_trigger">Trigger</link> &amp;)=delete</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_trigger_1a9f36d485f259eef1db71ccc80ba64efc"/><link linkend="_class_s3_g_f_1_1_trigger">Trigger</link> &amp; <emphasis role="strong">operator=</emphasis> (<link linkend="_class_s3_g_f_1_1_trigger">Trigger</link> &amp;&amp;)=delete</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_trigger_1a223f65b0b5f54118198f1a05ad4e494b"/><link linkend="_class_s3_g_f_1_1_trigger">Trigger</link> &amp; <emphasis role="strong">operator=</emphasis> (const <link linkend="_class_s3_g_f_1_1_trigger">Trigger</link> &amp;)=delete</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_trigger_1a26325ac4abff523ffaf095b7426ccfef"/><emphasis role="strong">Trigger</emphasis> (const std::function&lt; bool()&gt; &amp;condition, const std::function&lt; void()&gt; &amp;event)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_trigger_1afd9c3ae0679fab5861848afa7ad6d66d"/>void <emphasis role="strong">setCondition</emphasis> (const std::function&lt; bool()&gt; &amp;condition)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_trigger_1a11dade774032fa46cb63c5dcd885477f"/>void <emphasis role="strong">setEvent</emphasis> (const std::function&lt; void()&gt; &amp;event)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_trigger_1a7559f002c4fb2ed39373951399de6253"/>void <emphasis role="strong">start</emphasis> (uint32_t count=1)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_trigger_1a5bd7352ea2ec279c6380015babeaffab"/>void <emphasis role="strong">stop</emphasis> ()</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_trigger_1a16af190ead861c6c1879cb563a98bb1a"/>bool <emphasis role="strong">enabled</emphasis> () const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_trigger_1a17514b9ea739171879add8b808e50e99"/>bool <emphasis role="strong">isTriggered</emphasis> () const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_trigger_1a8dd61a1322792a3b184f8dcde4010840"/>uint64_t <emphasis role="strong">triggeredCount</emphasis> () const</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<para>
+The documentation for this class was generated from the following files:</para>
+D:/Coding/S3GF/src/MultiThread/Components.hD:/Coding/S3GF/src/MultiThread/Components.cpp</section>

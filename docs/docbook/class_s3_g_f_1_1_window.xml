@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_s3_g_f_1_1_window" xml:lang="en-US">
+<title>S3GF::Window Class Reference</title>
+<indexterm><primary>S3GF::Window</primary></indexterm>
+<simplesect>
+    <title>Classes    </title>
+        <itemizedlist>
+            <listitem><para>struct <link linkend="_struct_s3_g_f_1_1_window_1_1_geometry">Geometry</link></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Public Types    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_window_1a7bbb4819c14c9970cb09b554877eb75f"/>enum <emphasis role="strong">GraphicEngine</emphasis> { <emphasis role="strong">OPENGL</emphasis>
+, <emphasis role="strong">VULKAN</emphasis>
+ }</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_window_1a027244e180fc3c65c09d62c85d3f973c"/><emphasis role="strong">Window</emphasis> (const std::string &amp;title, int width=800, int height=600, GraphicEngine engine=OPENGL)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_window_1ab539c7bd71aea612582486d60a732438"/>bool <emphasis role="strong">move</emphasis> (int x, int y)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_window_1a7c36e55b43aa2bbc3bec18f749fa204b"/>bool <emphasis role="strong">resize</emphasis> (int width, int height)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_window_1a7fd0b798bcf802f47376e570d4dcc2ce"/>bool <emphasis role="strong">setGeometry</emphasis> (int x, int y, int width, int height)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_window_1a99fea3f152012ebf3fb895c5db7568ea"/>const <link linkend="_struct_s3_g_f_1_1_window_1_1_geometry">Geometry</link> <emphasis role="strong">geometry</emphasis> () const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_window_1a6ff100469a7e692770d75b12dae3a1cc"/>uint32_t <emphasis role="strong">windowID</emphasis> () const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_window_1a6ab230496ddfd46fe9d3426f75504bd4"/>bool <emphasis role="strong">show</emphasis> ()</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_window_1a667459e48c5debe0b68d4fcc2d18d563"/>bool <emphasis role="strong">hide</emphasis> ()</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_window_1ae4cee5b6a7c35f701c0ffea3bde86f5f"/>bool <emphasis role="strong">visible</emphasis> () const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_window_1aa857d94af1731b096cf461cf68c30560"/>bool <emphasis role="strong">setResizable</emphasis> (bool enabled)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_window_1aabb5fa35ab45228d06e3b74e235951ad"/>bool <emphasis role="strong">resizable</emphasis> () const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_window_1a6529d9d1d8f274cd223846d97615edab"/>void <emphasis role="strong">setRenderer</emphasis> (<link linkend="_class_s3_g_f_1_1_renderer">Renderer</link> *renderer)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_window_1a781de017baa94449be949ef773ef24dd"/><link linkend="_class_s3_g_f_1_1_renderer">Renderer</link> * <emphasis role="strong">renderer</emphasis> () const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_window_1affe01533b2da96d47f9aac9eeb64baab"/>void <emphasis role="strong">setWindowTitle</emphasis> (const std::string &amp;title)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_window_1abb19345a679a3881245e3eb90753d712"/>const std::string &amp; <emphasis role="strong">windowTitle</emphasis> () const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_window_1a7bac049be8c4cb5521243e2dc6784ae8"/>SDL_Window * <emphasis role="strong">self</emphasis> () const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_window_1a8b26495e67adad2883e06b8ed2163923"/>void <emphasis role="strong">installPaintEvent</emphasis> (const std::function&lt; void(<link linkend="_class_s3_g_f_1_1_renderer">Renderer</link> *renderer)&gt; &amp;paint_event)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_window_1aec94ad756464adaff049e7c9dede4016"/>virtual void <emphasis role="strong">paintEvent</emphasis> ()</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_window_1a4aa5df893e771cf9fde9a9c1385ace96"/>virtual void <emphasis role="strong">resizeEvent</emphasis> ()</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_window_1a2d38e20a8a0e587c38602f540bc48bd0"/>virtual void <emphasis role="strong">moveEvent</emphasis> ()</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_window_1a2bb1f1c94b034dad4d4f0b195295529a"/>virtual void <emphasis role="strong">getFocusEvent</emphasis> ()</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_window_1a5b49f097a24b23011cd1f90f3352f260"/>virtual void <emphasis role="strong">lostFocusEvent</emphasis> ()</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_window_1abb3ade9405cff3344fed7a0267a2385c"/>virtual void <emphasis role="strong">unloadEvent</emphasis> ()</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<para>
+The documentation for this class was generated from the following files:</para>
+D:/Coding/S3GF/src/Core.hD:/Coding/S3GF/src/Core.cpp</section>

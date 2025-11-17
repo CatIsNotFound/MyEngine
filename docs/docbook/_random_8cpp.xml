@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="__random_8cpp" xml:lang="en-US">
+<title>D:/Coding/S3GF/src/Utils/Random.cpp File Reference</title>
+<indexterm><primary>D:/Coding/S3GF/src/Utils/Random.cpp</primary></indexterm>
+<programlisting linenumbering="unnumbered">#include &quot;Random.h&quot;<?linebreak?></programlisting><simplesect>
+    <title>Namespaces    </title>
+        <itemizedlist>
+            <listitem><para>namespace <link linkend="_namespace_s3_g_f">S3GF</link></para>
+
+<para><link linkend="_namespace_s3_g_f">S3GF</link> 空间 </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+</section>

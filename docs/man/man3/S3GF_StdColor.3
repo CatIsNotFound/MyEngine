@@ -1,0 +1,438 @@
+.TH "S3GF::StdColor" 3 "Version v0.1.0-beta" "S3GF" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+S3GF::StdColor
+.SH SYNOPSIS
+.br
+.PP
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBTransparent\fP = {255, 255, 255, 0}"
+.br
+.RI "完全透明 "
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBHalfTransparent\fP = {255, 255, 255, 128}"
+.br
+.RI "半透明 "
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBBlack\fP = {0, 0, 0, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBWhite\fP = {255, 255, 255, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBRed\fP = {255, 0, 0, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBGreen\fP = {0, 255, 0, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBBlue\fP = {0, 0, 255, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBCyan\fP = {0, 255, 255, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBMagenta\fP = {255, 0, 255, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBYellow\fP = {255, 255, 0, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBLightGray\fP = {200, 200, 200, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBDarkGray\fP = {64, 64, 64, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBGray\fP = {128, 128, 128, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBSilver\fP = {192, 192, 192, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBGainsboro\fP = {220, 220, 220, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBWhiteSmoke\fP = {245, 245, 245, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBDimGray\fP = {105, 105, 105, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBSlateGray\fP = {112, 128, 144, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBDarkSlateGray\fP = {47, 79, 79, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBCrimson\fP = {220, 20, 60, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBMaroon\fP = {128, 0, 0, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBDarkRed\fP = {139, 0, 0, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBTomato\fP = {255, 99, 71, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBCoral\fP = {255, 127, 80, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBSalmon\fP = {250, 128, 114, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBLightCoral\fP = {240, 128, 128, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBIndianRed\fP = {205, 92, 92, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBFireBrick\fP = {178, 34, 34, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBOrange\fP = {255, 165, 0, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBDarkOrange\fP = {255, 140, 0, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBOrangeRed\fP = {255, 69, 0, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBPeachPuff\fP = {255, 218, 185, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBNavajoWhite\fP = {255, 222, 173, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBGold\fP = {255, 215, 0, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBLightYellow\fP = {255, 255, 224, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBLemonChiffon\fP = {255, 250, 205, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBPaleGoldenrod\fP = {238, 232, 170, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBKhaki\fP = {240, 230, 140, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBDarkKhaki\fP = {189, 183, 107, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBLime\fP = {0, 255, 0, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBForestGreen\fP = {34, 139, 34, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBSeaGreen\fP = {46, 139, 87, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBOlive\fP = {128, 128, 0, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBDarkOliveGreen\fP = {85, 107, 47, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBLimeGreen\fP = {50, 205, 50, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBSpringGreen\fP = {0, 255, 127, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBLightGreen\fP = {144, 238, 144, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBPaleGreen\fP = {152, 251, 152, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBMediumSpringGreen\fP = {0, 250, 154, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBNavy\fP = {0, 0, 128, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBDarkBlue\fP = {0, 0, 139, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBMediumBlue\fP = {0, 0, 205, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBRoyalBlue\fP = {65, 105, 225, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBSteelBlue\fP = {70, 130, 180, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBLightBlue\fP = {173, 216, 230, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBSkyBlue\fP = {135, 206, 235, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBPowderBlue\fP = {176, 224, 230, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBLightCyan\fP = {224, 255, 255, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBDeepSkyBlue\fP = {0, 191, 255, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBDodgerBlue\fP = {30, 144, 255, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBPurple\fP = {128, 0, 128, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBDarkPurple\fP = {102, 51, 153, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBFuchsia\fP = {255, 0, 255, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBViolet\fP = {238, 130, 238, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBPlum\fP = {221, 160, 221, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBOrchid\fP = {218, 112, 214, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBMediumOrchid\fP = {186, 85, 211, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBMediumPurple\fP = {147, 112, 219, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBIndigo\fP = {75, 0, 130, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBBrown\fP = {165, 42, 42, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBSaddleBrown\fP = {139, 69, 19, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBSienna\fP = {160, 82, 45, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBChocolate\fP = {210, 105, 30, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBPeru\fP = {205, 133, 63, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBSandyBrown\fP = {244, 164, 96, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBBurlyWood\fP = {222, 184, 135, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBTan\fP = {210, 180, 140, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBPink\fP = {255, 192, 203, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBLightPink\fP = {255, 182, 193, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBHotPink\fP = {255, 105, 180, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBDeepPink\fP = {255, 20, 147, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBPaleVioletRed\fP = {219, 112, 147, 255}"
+.br
+.ti -1c
+.RI "constexpr \fBSColor\fP \fBMediumVioletRed\fP = {199, 21, 133, 255}"
+.br
+.in -1c
+.SH "Variable Documentation"
+.PP 
+.SS "\fBSColor\fP S3GF::StdColor::Black = {0, 0, 0, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::Blue = {0, 0, 255, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::Brown = {165, 42, 42, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::BurlyWood = {222, 184, 135, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::Chocolate = {210, 105, 30, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::Coral = {255, 127, 80, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::Crimson = {220, 20, 60, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::Cyan = {0, 255, 255, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::DarkBlue = {0, 0, 139, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::DarkGray = {64, 64, 64, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::DarkKhaki = {189, 183, 107, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::DarkOliveGreen = {85, 107, 47, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::DarkOrange = {255, 140, 0, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::DarkPurple = {102, 51, 153, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::DarkRed = {139, 0, 0, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::DarkSlateGray = {47, 79, 79, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::DeepPink = {255, 20, 147, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::DeepSkyBlue = {0, 191, 255, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::DimGray = {105, 105, 105, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::DodgerBlue = {30, 144, 255, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::FireBrick = {178, 34, 34, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::ForestGreen = {34, 139, 34, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::Fuchsia = {255, 0, 255, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::Gainsboro = {220, 220, 220, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::Gold = {255, 215, 0, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::Gray = {128, 128, 128, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::Green = {0, 255, 0, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::HalfTransparent = {255, 255, 255, 128}\fR [constexpr]\fP"
+
+.PP
+半透明 
+.SS "\fBSColor\fP S3GF::StdColor::HotPink = {255, 105, 180, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::IndianRed = {205, 92, 92, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::Indigo = {75, 0, 130, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::Khaki = {240, 230, 140, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::LemonChiffon = {255, 250, 205, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::LightBlue = {173, 216, 230, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::LightCoral = {240, 128, 128, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::LightCyan = {224, 255, 255, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::LightGray = {200, 200, 200, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::LightGreen = {144, 238, 144, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::LightPink = {255, 182, 193, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::LightYellow = {255, 255, 224, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::Lime = {0, 255, 0, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::LimeGreen = {50, 205, 50, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::Magenta = {255, 0, 255, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::Maroon = {128, 0, 0, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::MediumBlue = {0, 0, 205, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::MediumOrchid = {186, 85, 211, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::MediumPurple = {147, 112, 219, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::MediumSpringGreen = {0, 250, 154, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::MediumVioletRed = {199, 21, 133, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::NavajoWhite = {255, 222, 173, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::Navy = {0, 0, 128, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::Olive = {128, 128, 0, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::Orange = {255, 165, 0, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::OrangeRed = {255, 69, 0, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::Orchid = {218, 112, 214, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::PaleGoldenrod = {238, 232, 170, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::PaleGreen = {152, 251, 152, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::PaleVioletRed = {219, 112, 147, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::PeachPuff = {255, 218, 185, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::Peru = {205, 133, 63, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::Pink = {255, 192, 203, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::Plum = {221, 160, 221, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::PowderBlue = {176, 224, 230, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::Purple = {128, 0, 128, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::Red = {255, 0, 0, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::RoyalBlue = {65, 105, 225, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::SaddleBrown = {139, 69, 19, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::Salmon = {250, 128, 114, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::SandyBrown = {244, 164, 96, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::SeaGreen = {46, 139, 87, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::Sienna = {160, 82, 45, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::Silver = {192, 192, 192, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::SkyBlue = {135, 206, 235, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::SlateGray = {112, 128, 144, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::SpringGreen = {0, 255, 127, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::SteelBlue = {70, 130, 180, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::Tan = {210, 180, 140, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::Tomato = {255, 99, 71, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::Transparent = {255, 255, 255, 0}\fR [constexpr]\fP"
+
+.PP
+完全透明 
+.SS "\fBSColor\fP S3GF::StdColor::Violet = {238, 130, 238, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::White = {255, 255, 255, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::WhiteSmoke = {245, 245, 245, 255}\fR [constexpr]\fP"
+
+.SS "\fBSColor\fP S3GF::StdColor::Yellow = {255, 255, 0, 255}\fR [constexpr]\fP"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for S3GF from the source code\&.

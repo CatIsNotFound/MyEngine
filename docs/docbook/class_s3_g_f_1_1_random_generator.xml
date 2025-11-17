@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_s3_g_f_1_1_random_generator" xml:lang="en-US">
+<title>S3GF::RandomGenerator Class Reference</title>
+<indexterm><primary>S3GF::RandomGenerator</primary></indexterm>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_random_generator_1a410fa468a44ca42a987cbe908b1ea4a1"/><emphasis role="strong">RandomGenerator</emphasis> (<link linkend="_class_s3_g_f_1_1_random_generator">RandomGenerator</link> &amp;&amp;)=delete</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_random_generator_1ad293cb86acf81b20251c7e87100e4624"/><emphasis role="strong">RandomGenerator</emphasis> (const <link linkend="_class_s3_g_f_1_1_random_generator">RandomGenerator</link> &amp;)=delete</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_random_generator_1a4c6d29542c81362d182095141d93f79b"/><link linkend="_class_s3_g_f_1_1_random_generator">RandomGenerator</link> &amp; <emphasis role="strong">operator=</emphasis> (<link linkend="_class_s3_g_f_1_1_random_generator">RandomGenerator</link> &amp;&amp;)=delete</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_random_generator_1aa205001f1084102f2c9a67aa392a8680"/><link linkend="_class_s3_g_f_1_1_random_generator">RandomGenerator</link> &amp; <emphasis role="strong">operator=</emphasis> (const <link linkend="_class_s3_g_f_1_1_random_generator">RandomGenerator</link> &amp;)=delete</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Static Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_random_generator_1a668b24c317315c428f1f283f2534e1ed"/>static int <emphasis role="strong">randInt</emphasis> (int start, int end)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_random_generator_1ae2847f10a8e0fc232cac895c10d95a42"/>static int64_t <emphasis role="strong">randBigInt</emphasis> (int64_t start, int64_t end)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_random_generator_1a5f703edcc28d73667f01e0882c620e75"/>static uint32_t <emphasis role="strong">randUInt</emphasis> (uint32_t start, uint32_t end)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_random_generator_1a0b7b68363ba28474a77302aa6ee7cf65"/>static uint64_t <emphasis role="strong">randBigUInt</emphasis> (uint64_t start, uint64_t end)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_random_generator_1aff44611c28368eee030cc3c86c3d11a4"/>static float <emphasis role="strong">randFloat</emphasis> (float start, float end)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_random_generator_1a099468514946b9ff4ea65a9f85339720"/>static double <emphasis role="strong">randDouble</emphasis> (double start, double end)</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Static Public Attributes    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_random_generator_1a1bf66af1434608751e5e9ebeb4ced04a"/>static time_t <emphasis role="strong">time_seed</emphasis> {time(0)}</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<para>
+The documentation for this class was generated from the following files:</para>
+D:/Coding/S3GF/src/Utils/Random.hD:/Coding/S3GF/src/Utils/Random.cpp</section>

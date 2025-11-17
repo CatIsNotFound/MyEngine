@@ -1,0 +1,100 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_s3_g_f_1_1_date_time" xml:lang="en-US">
+<title>S3GF::DateTime Class Reference</title>
+<indexterm><primary>S3GF::DateTime</primary></indexterm>
+<simplesect>
+    <title>Classes    </title>
+        <itemizedlist>
+            <listitem><para>struct <link linkend="_struct_s3_g_f_1_1_date_time_1_1_d_t">DT</link></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Public Types    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_date_time_1a7269fa42b1ce6eda529f2ef41c18a40a"/>enum <emphasis role="strong">Weekday</emphasis> { <?linebreak?><emphasis role="strong">Monday</emphasis>
+, <emphasis role="strong">Mon</emphasis> = 0
+, <emphasis role="strong">Tuesday</emphasis>
+, <emphasis role="strong">Tue</emphasis> = 1
+, <?linebreak?><emphasis role="strong">Wednesday</emphasis>
+, <emphasis role="strong">Wed</emphasis> = 2
+, <emphasis role="strong">Thursday</emphasis>
+, <emphasis role="strong">Thu</emphasis> = 3
+, <?linebreak?><emphasis role="strong">Friday</emphasis>
+, <emphasis role="strong">Fri</emphasis> = 4
+, <emphasis role="strong">Saturday</emphasis>
+, <emphasis role="strong">Sat</emphasis> = 5
+, <?linebreak?><emphasis role="strong">Sunday</emphasis>
+, <emphasis role="strong">Sun</emphasis> = 6
+ }</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_date_time_1a9b63b8696f803dcd168d5c0fe1269d7b"/>enum <emphasis role="strong">Month</emphasis> { <?linebreak?><emphasis role="strong">January</emphasis>
+, <emphasis role="strong">Jan</emphasis> = 0
+, <emphasis role="strong">February</emphasis>
+, <emphasis role="strong">Feb</emphasis> = 1
+, <?linebreak?><emphasis role="strong">March</emphasis>
+, <emphasis role="strong">Mar</emphasis> = 2
+, <emphasis role="strong">April</emphasis>
+, <emphasis role="strong">Apr</emphasis> = 3
+, <?linebreak?><emphasis role="strong">May</emphasis>
+, <emphasis role="strong">June</emphasis>
+, <emphasis role="strong">Jun</emphasis> = 5
+, <emphasis role="strong">July</emphasis>
+, <?linebreak?><emphasis role="strong">Jul</emphasis> = 6
+, <emphasis role="strong">August</emphasis>
+, <emphasis role="strong">Aug</emphasis> = 7
+, <emphasis role="strong">September</emphasis>
+, <?linebreak?><emphasis role="strong">Sep</emphasis> = 8
+, <emphasis role="strong">October</emphasis>
+, <emphasis role="strong">Oct</emphasis> = 9
+, <emphasis role="strong">November</emphasis>
+, <?linebreak?><emphasis role="strong">Nov</emphasis> = 10
+, <emphasis role="strong">December</emphasis>
+, <emphasis role="strong">Dec</emphasis> = 11
+ }</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_date_time_1a7ec6eaaf4649a021ce0313603de066b2"/><emphasis role="strong">DateTime</emphasis> (const <link linkend="_class_s3_g_f_1_1_date_time">DateTime</link> &amp;)=delete</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_date_time_1a6c519d7b982f0b8b6e2087d53694d2bd"/><emphasis role="strong">DateTime</emphasis> (<link linkend="_class_s3_g_f_1_1_date_time">DateTime</link> &amp;&amp;)=delete</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_date_time_1a61533fb9df9c32fefda2f6dd29da3aae"/><link linkend="_class_s3_g_f_1_1_date_time">DateTime</link> &amp; <emphasis role="strong">operator=</emphasis> (const <link linkend="_class_s3_g_f_1_1_date_time">DateTime</link> &amp;)=delete</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_date_time_1a6de5495691292e0da70147349a472fba"/><link linkend="_class_s3_g_f_1_1_date_time">DateTime</link> &amp; <emphasis role="strong">operator=</emphasis> (<link linkend="_class_s3_g_f_1_1_date_time">DateTime</link> &amp;&amp;)=delete</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Static Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_date_time_1a5290368a8032911c63a484c6f35c2246"/>static const char * <emphasis role="strong">weekdayStr</emphasis> (Weekday weekday, bool short_name=false)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_date_time_1aa80039ad48014d427c12dace59a8d734"/>static const char * <emphasis role="strong">weekdayChineseStr</emphasis> (Weekday weekday)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_date_time_1a2f94dc9d6e870ebd15c8aabdc22417d9"/>static const char * <emphasis role="strong">monthStr</emphasis> (Month month, bool short_name=false)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_date_time_1ae62ddd223046e5520e05882ab34d1b38"/>static bool <emphasis role="strong">setDefaultTimezone</emphasis> (const std::string &amp;tz)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_date_time_1a34b1663601465cdefd56d506ef803869"/>static std::string_view <emphasis role="strong">currentTimezone</emphasis> ()</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_date_time_1ab49dd000abfccfc657d43b4746b33371"/>static std::string <emphasis role="strong">now</emphasis> ()</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_date_time_1ac70d3c2e1bc50ae9703f6c912ae7d9e6"/>static <link linkend="_struct_s3_g_f_1_1_date_time_1_1_d_t">DT</link> <emphasis role="strong">currentDateTime</emphasis> ()</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_date_time_1afb96669421b3a6b3c75a2aa33c38e8a3"/>static uint64_t <emphasis role="strong">generateTimestamp</emphasis> (const <link linkend="_struct_s3_g_f_1_1_date_time_1_1_d_t">DT</link> &amp;datetime)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_date_time_1a3069098c1110c8bc7e075c7290660e4e"/>static <link linkend="_struct_s3_g_f_1_1_date_time_1_1_d_t">DT</link> <emphasis role="strong">parseFromTimestamp</emphasis> (uint64_t timestamp)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_date_time_1a84ff2f18dc8e488e88128a62e0aca811"/>static std::string <emphasis role="strong">formatDateTime</emphasis> (const <link linkend="_struct_s3_g_f_1_1_date_time_1_1_d_t">DT</link> &amp;datetime, const std::string &amp;format)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_date_time_1aadfdf453096ef16f83c27585f2e3e482"/>static std::string <emphasis role="strong">formatCurrentDateTime</emphasis> (const std::string &amp;format)</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<para>
+The documentation for this class was generated from the following file:</para>
+D:/Coding/S3GF/src/Utils/DateTime.h</section>

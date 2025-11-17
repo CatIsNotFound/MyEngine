@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_s3_g_f_1_1_logger" xml:lang="en-US">
+<title>S3GF::Logger Class Reference</title>
+<indexterm><primary>S3GF::Logger</primary></indexterm>
+<simplesect>
+    <title>Public Types    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_logger_1ae49668eb142f209d30f35e13befa6b13"/>enum <emphasis role="strong">LogLevel</emphasis> { <?linebreak?><emphasis role="strong">DEBUG</emphasis>
+, <emphasis role="strong">INFO</emphasis>
+, <emphasis role="strong">WARN</emphasis>
+, <emphasis role="strong">ERROR</emphasis>
+, <?linebreak?><emphasis role="strong">FATAL</emphasis>
+ }</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_logger_1a93632b56f2e5d0ed11b3caf9e214b689"/><emphasis role="strong">Logger</emphasis> (<link linkend="_class_s3_g_f_1_1_logger">Logger</link> &amp;&amp;)=delete</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_logger_1a7a17380a8e085317c340dc3e0f74080a"/><emphasis role="strong">Logger</emphasis> (const <link linkend="_class_s3_g_f_1_1_logger">Logger</link> &amp;)=delete</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_logger_1aa656ba834afcf666dc01b118c372c10e"/><link linkend="_class_s3_g_f_1_1_logger">Logger</link> &amp; <emphasis role="strong">operator=</emphasis> (<link linkend="_class_s3_g_f_1_1_logger">Logger</link> &amp;&amp;)=delete</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_logger_1aabd5381f15df1b463840431b1b5bc67d"/><link linkend="_class_s3_g_f_1_1_logger">Logger</link> &amp; <emphasis role="strong">operator=</emphasis> (const <link linkend="_class_s3_g_f_1_1_logger">Logger</link> &amp;)=delete</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Static Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_logger_1a88868646b792f1de08b61770f1dd45d2"/>static void <emphasis role="strong">log</emphasis> (const std::string &amp;message, LogLevel level=DEBUG)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_logger_1a7f2c294d63d10cfeb44078544a592083"/>static void <emphasis role="strong">setBaseLogLevel</emphasis> (LogLevel level)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_logger_1af183c3af50574d726390828ee308c33d"/>static std::string <emphasis role="strong">lastError</emphasis> ()</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<para>
+The documentation for this class was generated from the following files:</para>
+D:/Coding/S3GF/src/Core.hD:/Coding/S3GF/src/Core.cpp</section>

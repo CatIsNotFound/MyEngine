@@ -1,0 +1,388 @@
+.TH "D:/Coding/S3GF/src/Basic.h" 3 "Version v0.0.1-beta" "S3GF" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+D:/Coding/S3GF/src/Basic.h \- 基本模块  
+
+.SH SYNOPSIS
+.br
+.PP
+\fR#include 'Libs\&.h'\fP
+.br
+\fR#include 'Algorithm/Draw\&.h'\fP
+.br
+
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "struct \fBS3GF::Geometry\fP"
+.br
+.RI "位置、大小 "
+.ti -1c
+.RI "struct \fBS3GF::Vector2\fP"
+.br
+.RI "向量坐标 "
+.ti -1c
+.RI "struct \fBS3GF::Size\fP"
+.br
+.RI "尺寸、大小 "
+.ti -1c
+.RI "struct \fBS3GF::GeometryF\fP"
+.br
+.RI "位置、大小 "
+.ti -1c
+.RI "struct \fBS3GF::Matrix2D< T >\fP"
+.br
+.RI "二维矩阵 "
+.ti -1c
+.RI "struct \fBS3GF::Matrix2D< T >::Position\fP"
+.br
+.ti -1c
+.RI "class \fBS3GF::Graphics::Point\fP"
+.br
+.ti -1c
+.RI "class \fBS3GF::Graphics::Line\fP"
+.br
+.ti -1c
+.RI "class \fBS3GF::Graphics::Rectangle\fP"
+.br
+.ti -1c
+.RI "class \fBS3GF::Graphics::Triangle\fP"
+.br
+.ti -1c
+.RI "struct \fBS3GF::Graphics::Ellipse\fP"
+.br
+.in -1c
+.SS "Namespaces"
+
+.in +1c
+.ti -1c
+.RI "namespace \fBS3GF\fP"
+.br
+.RI "\fBS3GF\fP 空间 "
+.ti -1c
+.RI "namespace \fBStdColor\fP"
+.br
+.RI "预定义标准颜色（81 色） "
+.ti -1c
+.RI "namespace \fBGraphics\fP"
+.br
+.RI "基本图形 "
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "using \fBSRenderer\fP = SDL_Renderer"
+.br
+.ti -1c
+.RI "using \fBSSurface\fP = SDL_Surface"
+.br
+.ti -1c
+.RI "using \fBSTexture\fP = SDL_Texture"
+.br
+.ti -1c
+.RI "using \fBSEvent\fP = SDL_Event"
+.br
+.ti -1c
+.RI "using \fBSWinEvent\fP = SDL_WindowEvent"
+.br
+.ti -1c
+.RI "using \fBSWindow\fP = SDL_Window"
+.br
+.ti -1c
+.RI "using \fBSWindowID\fP = SDL_WindowID"
+.br
+.ti -1c
+.RI "using \fBSColor\fP = SDL_Color"
+.br
+.ti -1c
+.RI "using \fBSCursor\fP = SDL_Cursor"
+.br
+.ti -1c
+.RI "using \fBSStdCursor\fP = SDL_SystemCursor"
+.br
+.ti -1c
+.RI "using \fBSAudioSpec\fP = SDL_AudioSpec"
+.br
+.ti -1c
+.RI "using \fBStringList\fP = std::vector<std::string>"
+.br
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Transparent\fP = {255, 255, 255, 0}"
+.br
+.RI "完全透明 "
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::HalfTransparent\fP = {255, 255, 255, 128}"
+.br
+.RI "半透明 "
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Black\fP = {0, 0, 0, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::White\fP = {255, 255, 255, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Red\fP = {255, 0, 0, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Green\fP = {0, 255, 0, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Blue\fP = {0, 0, 255, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Cyan\fP = {0, 255, 255, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Magenta\fP = {255, 0, 255, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Yellow\fP = {255, 255, 0, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::LightGray\fP = {200, 200, 200, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::DarkGray\fP = {64, 64, 64, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Gray\fP = {128, 128, 128, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Silver\fP = {192, 192, 192, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Gainsboro\fP = {220, 220, 220, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::WhiteSmoke\fP = {245, 245, 245, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::DimGray\fP = {105, 105, 105, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::SlateGray\fP = {112, 128, 144, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::DarkSlateGray\fP = {47, 79, 79, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Crimson\fP = {220, 20, 60, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Maroon\fP = {128, 0, 0, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::DarkRed\fP = {139, 0, 0, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Tomato\fP = {255, 99, 71, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Coral\fP = {255, 127, 80, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Salmon\fP = {250, 128, 114, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::LightCoral\fP = {240, 128, 128, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::IndianRed\fP = {205, 92, 92, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::FireBrick\fP = {178, 34, 34, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Orange\fP = {255, 165, 0, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::DarkOrange\fP = {255, 140, 0, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::OrangeRed\fP = {255, 69, 0, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::PeachPuff\fP = {255, 218, 185, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::NavajoWhite\fP = {255, 222, 173, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Gold\fP = {255, 215, 0, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::LightYellow\fP = {255, 255, 224, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::LemonChiffon\fP = {255, 250, 205, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::PaleGoldenrod\fP = {238, 232, 170, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Khaki\fP = {240, 230, 140, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::DarkKhaki\fP = {189, 183, 107, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Lime\fP = {0, 255, 0, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::ForestGreen\fP = {34, 139, 34, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::SeaGreen\fP = {46, 139, 87, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Olive\fP = {128, 128, 0, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::DarkOliveGreen\fP = {85, 107, 47, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::LimeGreen\fP = {50, 205, 50, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::SpringGreen\fP = {0, 255, 127, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::LightGreen\fP = {144, 238, 144, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::PaleGreen\fP = {152, 251, 152, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::MediumSpringGreen\fP = {0, 250, 154, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Navy\fP = {0, 0, 128, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::DarkBlue\fP = {0, 0, 139, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::MediumBlue\fP = {0, 0, 205, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::RoyalBlue\fP = {65, 105, 225, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::SteelBlue\fP = {70, 130, 180, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::LightBlue\fP = {173, 216, 230, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::SkyBlue\fP = {135, 206, 235, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::PowderBlue\fP = {176, 224, 230, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::LightCyan\fP = {224, 255, 255, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::DeepSkyBlue\fP = {0, 191, 255, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::DodgerBlue\fP = {30, 144, 255, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Purple\fP = {128, 0, 128, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::DarkPurple\fP = {102, 51, 153, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Fuchsia\fP = {255, 0, 255, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Violet\fP = {238, 130, 238, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Plum\fP = {221, 160, 221, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Orchid\fP = {218, 112, 214, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::MediumOrchid\fP = {186, 85, 211, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::MediumPurple\fP = {147, 112, 219, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Indigo\fP = {75, 0, 130, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Brown\fP = {165, 42, 42, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::SaddleBrown\fP = {139, 69, 19, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Sienna\fP = {160, 82, 45, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Chocolate\fP = {210, 105, 30, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Peru\fP = {205, 133, 63, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::SandyBrown\fP = {244, 164, 96, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::BurlyWood\fP = {222, 184, 135, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Tan\fP = {210, 180, 140, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::Pink\fP = {255, 192, 203, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::LightPink\fP = {255, 182, 193, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::HotPink\fP = {255, 105, 180, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::DeepPink\fP = {255, 20, 147, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::PaleVioletRed\fP = {219, 112, 147, 255}"
+.br
+.ti -1c
+.RI "constexpr SColor \fBS3GF::StdColor::MediumVioletRed\fP = {199, 21, 133, 255}"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+基本模块 
+
+定义引擎基础数据结构和图形实体，是整个引擎的基础数据层。
+
+.PP
+\fBCopyright\fP
+.RS 4
+Copyright © 2025 CatIsNotFound 
+.RE
+.PP
+\fBAuthor\fP
+.RS 4
+CatIsNotFound 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for S3GF from the source code\&.

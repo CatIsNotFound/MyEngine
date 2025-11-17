@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="__queue_8h" xml:lang="en-US">
+<title>D:/Coding/S3GF/src/Utils/Queue.h File Reference</title>
+<indexterm><primary>D:/Coding/S3GF/src/Utils/Queue.h</primary></indexterm>
+<programlisting linenumbering="unnumbered">#include &quot;Libs.h&quot;<?linebreak?></programlisting><simplesect>
+    <title>Classes    </title>
+        <itemizedlist>
+            <listitem><para>class <link linkend="_class_s3_g_f_1_1_task_queue">S3GF::TaskQueue&lt; T &gt;</link></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Namespaces    </title>
+        <itemizedlist>
+            <listitem><para>namespace <link linkend="_namespace_s3_g_f">S3GF</link></para>
+
+<para><link linkend="_namespace_s3_g_f">S3GF</link> 空间 </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Macros    </title>
+        <itemizedlist>
+            <listitem><para>#define <link linkend="__queue_8h_1ad59fa78f9f8b51c5d045bfe45bdb6207">QUEUE_H</link></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Macro Definition Documentation</title>
+<anchor xml:id="__queue_8h_1ad59fa78f9f8b51c5d045bfe45bdb6207"/><section>
+    <title>QUEUE_H</title>
+<indexterm><primary>QUEUE_H</primary><secondary>Queue.h</secondary></indexterm>
+<indexterm><primary>Queue.h</primary><secondary>QUEUE_H</secondary></indexterm>
+<para><computeroutput>#define QUEUE_H</computeroutput></para></section>
+</section>
+</section>

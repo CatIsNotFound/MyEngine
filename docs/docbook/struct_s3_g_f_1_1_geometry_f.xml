@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_struct_s3_g_f_1_1_geometry_f" xml:lang="en-US">
+<title>S3GF::GeometryF Struct Reference</title>
+<indexterm><primary>S3GF::GeometryF</primary></indexterm>
+<para>
+
+<para>位置、大小 </para>
+ 
+</para>
+<para>
+<computeroutput>#include &lt;Basic.h&gt;</computeroutput>
+</para>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_geometry_f_1a3523841965c16399bf76162460d3b7b4"/><emphasis role="strong">GeometryF</emphasis> (float x, float y, float w, float h)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_geometry_f_1a8a72272528fe302b45735939317fe37e"/><emphasis role="strong">GeometryF</emphasis> (const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;pos, const <link linkend="_struct_s3_g_f_1_1_size">Size</link> &amp;size)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_geometry_f_1a63f52bd76d6f95c382b2975cfb02b9af"/><emphasis role="strong">GeometryF</emphasis> (<link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;&amp;pos, <link linkend="_struct_s3_g_f_1_1_size">Size</link> &amp;&amp;size)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_geometry_f_1a4878ba286c6c1f8f657dd921a357da1e"/>void <emphasis role="strong">reset</emphasis> (const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;pos, const <link linkend="_struct_s3_g_f_1_1_size">Size</link> &amp;size)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_geometry_f_1a4a1c4c240ebdbaee99821ce483906487"/>void <emphasis role="strong">reset</emphasis> (float x, float y, float width, float height)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_geometry_f_1a782f21e6c23f4a5d7a4572a254c64829"/>void <emphasis role="strong">reset</emphasis> (const <link linkend="_struct_s3_g_f_1_1_geometry_f">GeometryF</link> &amp;geometry)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_geometry_f_1a033ed5553f61c4529735eb4fecf89f82"/>void <emphasis role="strong">resetPos</emphasis> (const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;pos)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_geometry_f_1a4ac0dde2611ce38e46838bd093d493ba"/>void <emphasis role="strong">resetSize</emphasis> (const <link linkend="_struct_s3_g_f_1_1_size">Size</link> &amp;size)</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Public Attributes    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_geometry_f_1ab8929abf4cb61f092322370280ad6231"/><link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> <emphasis role="strong">pos</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_geometry_f_1afb735b5e67d64e3d85845827bb138cd6"/><link linkend="_struct_s3_g_f_1_1_size">Size</link> <emphasis role="strong">size</emphasis></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Detailed Description</title>
+
+<para>位置、大小 </para>
+
+
+
+<para>针对于 <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> 和 <link linkend="_struct_s3_g_f_1_1_size">Size</link> 组成，用于调整位置、大小 </para>
+<para>
+The documentation for this struct was generated from the following file:</para>
+D:/Coding/S3GF/src/<link linkend="__basic_8h">Basic.h</link></section>
+</section>

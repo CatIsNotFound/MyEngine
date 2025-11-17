@@ -1,0 +1,99 @@
+.TH "S3GF::Window" 3 "Version v0.0.1-beta" "S3GF" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+S3GF::Window
+.SH SYNOPSIS
+.br
+.PP
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "struct \fBGeometry\fP"
+.br
+.in -1c
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "enum \fBGraphicEngine\fP { \fBOPENGL\fP, \fBVULKAN\fP }"
+.br
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBWindow\fP (const std::string &title, int width=800, int height=600, GraphicEngine engine=OPENGL)"
+.br
+.ti -1c
+.RI "bool \fBmove\fP (int x, int y)"
+.br
+.ti -1c
+.RI "bool \fBresize\fP (int width, int height)"
+.br
+.ti -1c
+.RI "bool \fBsetGeometry\fP (int x, int y, int width, int height)"
+.br
+.ti -1c
+.RI "const \fBGeometry\fP \fBgeometry\fP () const"
+.br
+.ti -1c
+.RI "uint32_t \fBwindowID\fP () const"
+.br
+.ti -1c
+.RI "bool \fBshow\fP ()"
+.br
+.ti -1c
+.RI "bool \fBhide\fP ()"
+.br
+.ti -1c
+.RI "bool \fBvisible\fP () const"
+.br
+.ti -1c
+.RI "bool \fBsetResizable\fP (bool enabled)"
+.br
+.ti -1c
+.RI "bool \fBresizable\fP () const"
+.br
+.ti -1c
+.RI "void \fBsetRenderer\fP (\fBRenderer\fP *renderer)"
+.br
+.ti -1c
+.RI "\fBRenderer\fP * \fBrenderer\fP () const"
+.br
+.ti -1c
+.RI "void \fBsetWindowTitle\fP (const std::string &title)"
+.br
+.ti -1c
+.RI "const std::string & \fBwindowTitle\fP () const"
+.br
+.ti -1c
+.RI "SDL_Window * \fBself\fP () const"
+.br
+.ti -1c
+.RI "void \fBinstallPaintEvent\fP (const std::function< void(\fBRenderer\fP *renderer)> &paint_event)"
+.br
+.ti -1c
+.RI "virtual void \fBpaintEvent\fP ()"
+.br
+.ti -1c
+.RI "virtual void \fBresizeEvent\fP ()"
+.br
+.ti -1c
+.RI "virtual void \fBmoveEvent\fP ()"
+.br
+.ti -1c
+.RI "virtual void \fBgetFocusEvent\fP ()"
+.br
+.ti -1c
+.RI "virtual void \fBlostFocusEvent\fP ()"
+.br
+.ti -1c
+.RI "virtual void \fBunloadEvent\fP ()"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for S3GF from the source code\&.

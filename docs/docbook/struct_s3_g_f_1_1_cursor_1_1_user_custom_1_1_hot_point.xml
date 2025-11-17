@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_struct_s3_g_f_1_1_cursor_1_1_user_custom_1_1_hot_point" xml:lang="en-US">
+<title>S3GF::Cursor::UserCustom::HotPoint Struct Reference</title>
+<indexterm><primary>S3GF::Cursor::UserCustom::HotPoint</primary></indexterm>
+<para>
+
+<para>用于定义鼠标光标的热点坐标 </para>
+ 
+</para>
+<para>
+<computeroutput>#include &lt;Cursor.h&gt;</computeroutput>
+</para>
+<simplesect>
+    <title>Public Attributes    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_cursor_1_1_user_custom_1_1_hot_point_1a55b4dbee81560519934a7e227cb4dc1f"/>int <emphasis role="strong">x</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_cursor_1_1_user_custom_1_1_hot_point_1af36e85f77f8e378a1048eef3d8ec426e"/>int <emphasis role="strong">y</emphasis></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Detailed Description</title>
+
+<para>用于定义鼠标光标的热点坐标 </para>
+<para>
+The documentation for this struct was generated from the following file:</para>
+D:/Coding/S3GF/src/Utils/Cursor.h</section>
+</section>

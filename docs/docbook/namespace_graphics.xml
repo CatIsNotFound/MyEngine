@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_namespace_graphics" xml:lang="en-US">
+<title>Graphics Namespace Reference</title>
+<indexterm><primary>Graphics</primary></indexterm>
+<para>
+
+<para>基本图形 </para>
+ 
+</para>
+<section>
+<title>Detailed Description</title>
+
+<para>基本图形 </para>
+
+<para>包含所有基本图形，如：点、线段、矩形、椭圆等基本图形。 </para>
+</section>
+</section>

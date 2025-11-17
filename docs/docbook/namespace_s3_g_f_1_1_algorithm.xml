@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_namespace_s3_g_f_1_1_algorithm" xml:lang="en-US">
+<title>S3GF::Algorithm Namespace Reference</title>
+<indexterm><primary>S3GF::Algorithm</primary></indexterm>
+<simplesect>
+    <title>Functions    </title>
+        <itemizedlist>
+            <listitem><para>SDL_FColor <link linkend="_namespace_s3_g_f_1_1_algorithm_1a97b79a3634b484bc69314a5ac516ed19">convert2FColor</link> (const SDL_Color &amp;color)</para>
+</listitem>
+            <listitem><para>SDL_Color <link linkend="_namespace_s3_g_f_1_1_algorithm_1a1a3cce725f9721db09f6bd71b728f951">convert2Color</link> (const SDL_FColor &amp;color)</para>
+</listitem>
+            <listitem><para>void <link linkend="_namespace_s3_g_f_1_1_algorithm_1ae88ccc0ef57fbf4183d9725ec70c6a1b">calcPoint</link> (const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;position, float radius, SDL_Color color, std::vector&lt; SDL_Vertex &gt; &amp;vertices, std::vector&lt; int &gt; &amp;indices, const uint16_t count=32)</para>
+</listitem>
+            <listitem><para>void <link linkend="_namespace_s3_g_f_1_1_algorithm_1a5404339a6359528546359eb6371616b5">calcLine</link> (float x1, float y1, float x2, float y2, uint16_t thickness, const SDL_Color &amp;color, std::array&lt; SDL_Vertex, 4 &gt; &amp;vertex, std::array&lt; int, 6 &gt; &amp;indices)</para>
+</listitem>
+            <listitem><para>void <link linkend="_namespace_s3_g_f_1_1_algorithm_1a4f34b3fb3e32b37a7632f387ebb8a91a">calcRectangleBorder</link> (const <link linkend="_struct_s3_g_f_1_1_geometry_f">GeometryF</link> &amp;geometry, uint16_t border_size, std::array&lt; SDL_FRect, 4 &gt; &amp;borders)</para>
+</listitem>
+            <listitem><para>void <link linkend="_namespace_s3_g_f_1_1_algorithm_1abf15972793e314000989cde891bf29e7">calcTriangle</link> (const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;pos1, const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;pos2, const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;pos3, const SDL_Color &amp;color, std::array&lt; SDL_Vertex, 3 &gt; &amp;vertices, std::array&lt; int, 3 &gt; &amp;indices)</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Function Documentation</title>
+<anchor xml:id="_namespace_s3_g_f_1_1_algorithm_1a5404339a6359528546359eb6371616b5"/><section>
+    <title>calcLine()</title>
+<indexterm><primary>calcLine</primary><secondary>S3GF::Algorithm</secondary></indexterm>
+<indexterm><primary>S3GF::Algorithm</primary><secondary>calcLine</secondary></indexterm>
+<para><computeroutput>void S3GF::Algorithm::calcLine (float x1, float y1, float x2, float y2, uint16_t thickness, const SDL_Color &amp; color, std::array&lt; SDL_Vertex, 4 &gt; &amp; vertex, std::array&lt; int, 6 &gt; &amp; indices)<computeroutput>[inline]</computeroutput></computeroutput></para></section>
+<anchor xml:id="_namespace_s3_g_f_1_1_algorithm_1ae88ccc0ef57fbf4183d9725ec70c6a1b"/><section>
+    <title>calcPoint()</title>
+<indexterm><primary>calcPoint</primary><secondary>S3GF::Algorithm</secondary></indexterm>
+<indexterm><primary>S3GF::Algorithm</primary><secondary>calcPoint</secondary></indexterm>
+<para><computeroutput>void S3GF::Algorithm::calcPoint (const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp; position, float radius, SDL_Color color, std::vector&lt; SDL_Vertex &gt; &amp; vertices, std::vector&lt; int &gt; &amp; indices, const uint16_t count = <computeroutput>32</computeroutput>
+)<computeroutput>[inline]</computeroutput></computeroutput></para></section>
+<anchor xml:id="_namespace_s3_g_f_1_1_algorithm_1a4f34b3fb3e32b37a7632f387ebb8a91a"/><section>
+    <title>calcRectangleBorder()</title>
+<indexterm><primary>calcRectangleBorder</primary><secondary>S3GF::Algorithm</secondary></indexterm>
+<indexterm><primary>S3GF::Algorithm</primary><secondary>calcRectangleBorder</secondary></indexterm>
+<para><computeroutput>void S3GF::Algorithm::calcRectangleBorder (const <link linkend="_struct_s3_g_f_1_1_geometry_f">GeometryF</link> &amp; geometry, uint16_t border_size, std::array&lt; SDL_FRect, 4 &gt; &amp; borders)<computeroutput>[inline]</computeroutput></computeroutput></para></section>
+<anchor xml:id="_namespace_s3_g_f_1_1_algorithm_1abf15972793e314000989cde891bf29e7"/><section>
+    <title>calcTriangle()</title>
+<indexterm><primary>calcTriangle</primary><secondary>S3GF::Algorithm</secondary></indexterm>
+<indexterm><primary>S3GF::Algorithm</primary><secondary>calcTriangle</secondary></indexterm>
+<para><computeroutput>void S3GF::Algorithm::calcTriangle (const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp; pos1, const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp; pos2, const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp; pos3, const SDL_Color &amp; color, std::array&lt; SDL_Vertex, 3 &gt; &amp; vertices, std::array&lt; int, 3 &gt; &amp; indices)<computeroutput>[inline]</computeroutput></computeroutput></para></section>
+<anchor xml:id="_namespace_s3_g_f_1_1_algorithm_1a1a3cce725f9721db09f6bd71b728f951"/><section>
+    <title>convert2Color()</title>
+<indexterm><primary>convert2Color</primary><secondary>S3GF::Algorithm</secondary></indexterm>
+<indexterm><primary>S3GF::Algorithm</primary><secondary>convert2Color</secondary></indexterm>
+<para><computeroutput>SDL_Color S3GF::Algorithm::convert2Color (const SDL_FColor &amp; color)<computeroutput>[inline]</computeroutput></computeroutput></para></section>
+<anchor xml:id="_namespace_s3_g_f_1_1_algorithm_1a97b79a3634b484bc69314a5ac516ed19"/><section>
+    <title>convert2FColor()</title>
+<indexterm><primary>convert2FColor</primary><secondary>S3GF::Algorithm</secondary></indexterm>
+<indexterm><primary>S3GF::Algorithm</primary><secondary>convert2FColor</secondary></indexterm>
+<para><computeroutput>SDL_FColor S3GF::Algorithm::convert2FColor (const SDL_Color &amp; color)<computeroutput>[inline]</computeroutput></computeroutput></para></section>
+</section>
+</section>

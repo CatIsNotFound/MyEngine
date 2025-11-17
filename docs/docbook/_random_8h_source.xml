@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="__random_8h_source" xml:lang="en-US">
+<title>Random.h</title>
+<indexterm><primary>D:/Coding/S3GF/src/Utils/Random.h</primary></indexterm>
+<programlisting linenumbering="unnumbered">1 <emphasis role="preprocessor">#pragma&#32;once</emphasis>
+2 <emphasis role="preprocessor">#ifndef&#32;S3GF_RANDOM_H</emphasis>
+3 <emphasis role="preprocessor">#define&#32;S3GF_RANDOM_H</emphasis>
+4 <emphasis role="preprocessor">#include&#32;&quot;Libs.h&quot;</emphasis>
+5 
+6 <emphasis role="keyword">namespace&#32;</emphasis><link linkend="_namespace_s3_g_f">S3GF</link>&#32;{
+7 &#32;&#32;&#32;&#32;<emphasis role="keyword">class&#32;</emphasis>RandomGenerator&#32;{
+8 &#32;&#32;&#32;&#32;<emphasis role="keyword">public</emphasis>:
+9 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;RandomGenerator()&#32;=&#32;<emphasis role="keyword">delete</emphasis>;
+10 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;RandomGenerator(RandomGenerator&#32;&amp;&amp;)&#32;=&#32;<emphasis role="keyword">delete</emphasis>;
+11 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;RandomGenerator(<emphasis role="keyword">const</emphasis>&#32;RandomGenerator&#32;&amp;)&#32;=&#32;<emphasis role="keyword">delete</emphasis>;
+12 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;RandomGenerator&#32;&amp;operator=(RandomGenerator&#32;&amp;&amp;)&#32;=&#32;<emphasis role="keyword">delete</emphasis>;
+13 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;RandomGenerator&#32;&amp;operator=(<emphasis role="keyword">const</emphasis>&#32;RandomGenerator&#32;&amp;)&#32;=&#32;<emphasis role="keyword">delete</emphasis>;
+14 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;~RandomGenerator()&#32;=&#32;<emphasis role="keyword">delete</emphasis>;
+15 
+16 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="keyword">static</emphasis>&#32;<emphasis role="keywordtype">int</emphasis>&#32;randInt(<emphasis role="keywordtype">int</emphasis>&#32;start,&#32;<emphasis role="keywordtype">int</emphasis>&#32;end);
+17 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="keyword">static</emphasis>&#32;int64_t&#32;randBigInt(int64_t&#32;start,&#32;int64_t&#32;end);
+18 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="keyword">static</emphasis>&#32;uint32_t&#32;randUInt(uint32_t&#32;start,&#32;uint32_t&#32;end);
+19 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="keyword">static</emphasis>&#32;uint64_t&#32;randBigUInt(uint64_t&#32;start,&#32;uint64_t&#32;end);
+20 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="keyword">static</emphasis>&#32;<emphasis role="keywordtype">float</emphasis>&#32;randFloat(<emphasis role="keywordtype">float</emphasis>&#32;start,&#32;<emphasis role="keywordtype">float</emphasis>&#32;end);
+21 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="keyword">static</emphasis>&#32;<emphasis role="keywordtype">double</emphasis>&#32;randDouble(<emphasis role="keywordtype">double</emphasis>&#32;start,&#32;<emphasis role="keywordtype">double</emphasis>&#32;end);
+22 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="keyword">static</emphasis>&#32;time_t&#32;time_seed;
+23 &#32;&#32;&#32;&#32;};
+24 }
+25 
+26 
+27 <emphasis role="preprocessor">#endif&#32;</emphasis><emphasis role="comment">//S3GF_RANDOM_H</emphasis>
+</programlisting></section>

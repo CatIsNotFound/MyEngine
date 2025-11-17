@@ -30,108 +30,291 @@ using SAudioSpec    = SDL_AudioSpec;
 
 using StringList    = std::vector<std::string>; 
 
+/**
+ * @namespace S3GF
+ * @brief S3GF 空间
+ * 
+ * 所有库都将被存储于此命名空间
+ */
 namespace S3GF {
     /**
      * @namespace StdColor
-     * @brief 预定义标准颜色（81 色）
+     * @brief 预定义颜色（130 色）
      * @see Basic.h
      */
     namespace StdColor {
-        /// 完全透明
         constexpr SColor Transparent = {255, 255, 255, 0};
-        /// 半透明
         constexpr SColor HalfTransparent = {255, 255, 255, 128};
-
+        /// 纯黑
         constexpr SColor Black = {0, 0, 0, 255};
+        /// 纯白
         constexpr SColor White = {255, 255, 255, 255};
-        constexpr SColor Red = {255, 0, 0, 255};
-        constexpr SColor Green = {0, 255, 0, 255};
-        constexpr SColor Blue = {0, 0, 255, 255};
-        constexpr SColor Cyan = {0, 255, 255, 255};
-        constexpr SColor Magenta = {255, 0, 255, 255};
-        constexpr SColor Yellow = {255, 255, 0, 255};
 
-        constexpr SColor LightGray = {200, 200, 200, 255};
-        constexpr SColor DarkGray = {64, 64, 64, 255};
-        constexpr SColor Gray = {128, 128, 128, 255};
-        constexpr SColor Silver = {192, 192, 192, 255};
-        constexpr SColor Gainsboro = {220, 220, 220, 255};
-        constexpr SColor WhiteSmoke = {245, 245, 245, 255};
-        constexpr SColor DimGray = {105, 105, 105, 255};
-        constexpr SColor SlateGray = {112, 128, 144, 255};
-        constexpr SColor DarkSlateGray = {47, 79, 79, 255};
+        // ==================== 红色系（32种）====================
+        /// 纯红
+        constexpr SColor RedPure = {255, 0, 0, 255};
+        /// 深红
+        constexpr SColor RedDark = {153, 0, 0, 255};
+        /// 暗红
+        constexpr SColor RedDarker = {102, 0, 0, 255};
+        /// 酒红
+        constexpr SColor RedWine = {85, 0, 34, 255};
+        /// 玫瑰红
+        constexpr SColor RedRose = {255, 26, 99, 255};
+        /// 粉红
+        constexpr SColor RedPink = {255, 105, 180, 255};
+        /// 浅粉
+        constexpr SColor RedLightPink = {255, 179, 217, 255};
+        /// 淡粉
+        constexpr SColor RedPalePink = {255, 218, 232, 255};
+        /// 珊瑚红
+        constexpr SColor RedCoral = {255, 114, 86, 255};
+        /// 橙红
+        constexpr SColor RedOrange = {255, 69, 0, 255};
+        /// 砖红
+        constexpr SColor RedBrick = {178, 34, 34, 255};
+        /// 铁锈红
+        constexpr SColor RedRust = {183, 65, 14, 255};
+        /// 绯红
+        constexpr SColor RedScarlet = {255, 36, 0, 255};
+        /// 洋红
+        constexpr SColor RedMagenta = {255, 0, 255, 255};
+        /// 品红
+        constexpr SColor RedFuchsia = {219, 112, 219, 255};
+        /// 玫瑰粉
+        constexpr SColor RedRosePink = {255, 52, 179, 255};
+        /// 深粉
+        constexpr SColor RedDeepPink = {255, 20, 147, 255};
+        /// 桃粉
+        constexpr SColor RedPeachPink = {255, 153, 170, 255};
+        /// 樱花粉
+        constexpr SColor RedCherryBlossom = {255, 228, 225, 255};
+        /// 胭脂红
+        constexpr SColor RedRouge = {210, 0, 82, 255};
+        /// 朱砂红
+        constexpr SColor RedVermilion = {227, 38, 54, 255};
+        /// 海棠红
+        constexpr SColor RedBegonia = {255, 99, 71, 255};
+        /// 石榴红
+        constexpr SColor RedPomegranate = {204, 0, 0, 255};
+        /// 浅红（半透明）
+        constexpr SColor RedLightTrans = {255, 192, 192, 192};
+        /// 淡红（半透明）
+        constexpr SColor RedPaleTrans = {255, 224, 224, 192};
+        /// 暗红（半透明）
+        constexpr SColor RedDarkTrans = {153, 50, 50, 192};
+        /// 玫瑰红（半透明）
+        constexpr SColor RedRoseTrans = {255, 105, 180, 192};
+        /// 洋红（半透明）
+        constexpr SColor RedMagentaTrans = {255, 153, 255, 192};
+        /// 珊瑚红（半透明）
+        constexpr SColor RedCoralTrans = {255, 160, 122, 192};
+        /// 橙红（半透明）
+        constexpr SColor RedOrangeTrans = {255, 127, 80, 192};
+        /// 品红（半透明）
+        constexpr SColor RedFuchsiaTrans = {230, 145, 230, 192};
+        /// 砖红（半透明）
+        constexpr SColor RedBrickTrans = {199, 21, 133, 192};
 
-        constexpr SColor Crimson = {220, 20, 60, 255};
-        constexpr SColor Maroon = {128, 0, 0, 255};
-        constexpr SColor DarkRed = {139, 0, 0, 255};
-        constexpr SColor Tomato = {255, 99, 71, 255};
-        constexpr SColor Coral = {255, 127, 80, 255};
-        constexpr SColor Salmon = {250, 128, 114, 255};
-        constexpr SColor LightCoral = {240, 128, 128, 255};
-        constexpr SColor IndianRed = {205, 92, 92, 255};
-        constexpr SColor FireBrick = {178, 34, 34, 255};
+        // ==================== 绿色系（32种）====================
+        /// 纯绿
+        constexpr SColor GreenPure = {0, 255, 0, 255};
+        /// 深绿
+        constexpr SColor GreenDark = {0, 153, 0, 255};
+        /// 墨绿
+        constexpr SColor GreenInk = {0, 102, 51, 255};
+        /// 橄榄绿
+        constexpr SColor GreenOlive = {107, 142, 35, 255};
+        /// 草绿
+        constexpr SColor GreenGrass = {34, 139, 34, 255};
+        /// 浅绿
+        constexpr SColor GreenLight = {144, 238, 144, 255};
+        /// 淡绿
+        constexpr SColor GreenPale = {152, 251, 152, 255};
+        /// 薄荷绿
+        constexpr SColor GreenMint = {189, 252, 201, 255};
+        /// 翠绿
+        constexpr SColor GreenEmerald = {0, 201, 87, 255};
+        /// 翡翠绿
+        constexpr SColor GreenJade = {50, 205, 50, 255};
+        /// 松绿
+        constexpr SColor GreenPine = {2, 94, 47, 255};
+        /// 柳绿
+        constexpr SColor GreenWillow = {134, 204, 204, 255};
+        /// 豆绿
+        constexpr SColor GreenBean = {194, 231, 181, 255};
+        /// 苔绿
+        constexpr SColor GreenMoss = {115, 147, 115, 255};
+        /// 竹绿
+        constexpr SColor GreenBamboo = {0, 168, 107, 255};
+        /// 青柠绿
+        constexpr SColor GreenLime = {50, 205, 50, 255};
+        /// 苹果绿
+        constexpr SColor GreenApple = {145, 238, 145, 255};
+        /// 森林绿
+        constexpr SColor GreenForest = {34, 139, 34, 255};
+        /// 常春藤绿
+        constexpr SColor GreenIvy = {7, 101, 68, 255};
+        /// 孔雀绿
+        constexpr SColor GreenPeacock = {0, 166, 166, 255};
+        /// 蓝绿
+        constexpr SColor GreenCyan = {0, 255, 255, 255};
+        /// 绿松石绿
+        constexpr SColor GreenTurquoise = {64, 224, 208, 255};
+        /// 薄荷蓝绿
+        constexpr SColor GreenMintCyan = {102, 255, 204, 255};
+        /// 浅绿（半透明）
+        constexpr SColor GreenLightTrans = {173, 255, 173, 192};
+        /// 淡绿（半透明）
+        constexpr SColor GreenPaleTrans = {204, 255, 204, 192};
+        /// 深绿（半透明）
+        constexpr SColor GreenDarkTrans = {50, 153, 50, 192};
+        /// 橄榄绿（半透明）
+        constexpr SColor GreenOliveTrans = {138, 154, 70, 192};
+        /// 翡翠绿（半透明）
+        constexpr SColor GreenJadeTrans = {102, 255, 102, 192};
+        /// 青柠绿（半透明）
+        constexpr SColor GreenLimeTrans = {127, 255, 0, 192};
+        /// 蓝绿（半透明）
+        constexpr SColor GreenCyanTrans = {102, 255, 255, 192};
+        /// 绿松石绿（半透明）
+        constexpr SColor GreenTurquoiseTrans = {128, 240, 224, 192};
+        /// 苔绿（半透明）
+        constexpr SColor GreenMossTrans = {143, 188, 143, 192};
+        /// 竹绿（半透明）
+        constexpr SColor GreenBambooTrans = {51, 204, 153, 192};
 
-        constexpr SColor Orange = {255, 165, 0, 255};
-        constexpr SColor DarkOrange = {255, 140, 0, 255};
-        constexpr SColor OrangeRed = {255, 69, 0, 255};
-        constexpr SColor PeachPuff = {255, 218, 185, 255};
-        constexpr SColor NavajoWhite = {255, 222, 173, 255};
+        // ==================== 蓝色系（32种）====================
+        /// 纯蓝
+        constexpr SColor BluePure = {0, 0, 255, 255};
+        /// 深蓝
+        constexpr SColor BlueDark = {0, 0, 153, 255};
+        /// 藏蓝
+        constexpr SColor BlueNavy = {0, 32, 96, 255};
+        /// 宝蓝
+        constexpr SColor BlueSapphire = {0, 102, 204, 255};
+        /// 天蓝
+        constexpr SColor BlueSky = {135, 206, 235, 255};
+        /// 浅蓝
+        constexpr SColor BlueLight = {173, 216, 230, 255};
+        /// 淡蓝
+        constexpr SColor BluePale = {204, 232, 255, 255};
+        /// 婴儿蓝
+        constexpr SColor BlueBaby = {176, 224, 230, 255};
+        /// 海蓝
+        constexpr SColor BlueSea = {28, 134, 238, 255};
+        /// 湖蓝
+        constexpr SColor BlueLake = {0, 191, 255, 255};
+        /// 钴蓝
+        constexpr SColor BlueCobalt = {65, 105, 225, 255};
+        /// 靛蓝
+        constexpr SColor BlueIndigo = {75, 0, 130, 255};
+        /// 紫罗兰蓝
+        constexpr SColor BlueViolet = {138, 43, 226, 255};
+        /// 薰衣草蓝
+        constexpr SColor BlueLavender = {191, 211, 254, 255};
+        /// 石蓝
+        constexpr SColor BlueStone = {100, 149, 237, 255};
+        /// 冰蓝
+        constexpr SColor BlueIce = {240, 248, 255, 255};
+        /// 钢蓝
+        constexpr SColor BlueSteel = {70, 130, 180, 255};
+        /// 普鲁士蓝
+        constexpr SColor BluePrussian = {29, 53, 87, 255};
+        /// 皇家蓝
+        constexpr SColor BlueRoyal = {0, 64, 128, 255};
+        /// 孔雀蓝
+        constexpr SColor BluePeacock = {30, 144, 255, 255};
+        /// 青蓝
+        constexpr SColor BlueCyan = {0, 255, 255, 255};
+        /// 淡紫蓝
+        constexpr SColor BlueLilac = {169, 184, 208, 255};
+        /// 天空蓝（深）
+        constexpr SColor BlueDeepSky = {0, 191, 255, 255};
+        /// 浅蓝（半透明）
+        constexpr SColor BlueLightTrans = {173, 216, 230, 192};
+        /// 淡蓝（半透明）
+        constexpr SColor BluePaleTrans = {211, 235, 250, 192};
+        /// 深蓝（半透明）
+        constexpr SColor BlueDarkTrans = {65, 105, 225, 192};
+        /// 藏蓝（半透明）
+        constexpr SColor BlueNavyTrans = {30, 144, 255, 192};
+        /// 宝蓝（半透明）
+        constexpr SColor BlueSapphireTrans = {0, 128, 255, 192};
+        /// 靛蓝（半透明）
+        constexpr SColor BlueIndigoTrans = {106, 90, 205, 192};
+        /// 紫罗兰蓝（半透明）
+        constexpr SColor BlueVioletTrans = {153, 102, 255, 192};
+        /// 海蓝（半透明）
+        constexpr SColor BlueSeaTrans = {64, 170, 255, 192};
+        /// 钢蓝（半透明）
+        constexpr SColor BlueSteelTrans = {100, 149, 237, 192};
 
-        constexpr SColor Gold = {255, 215, 0, 255};
-        constexpr SColor LightYellow = {255, 255, 224, 255};
-        constexpr SColor LemonChiffon = {255, 250, 205, 255};
-        constexpr SColor PaleGoldenrod = {238, 232, 170, 255};
-        constexpr SColor Khaki = {240, 230, 140, 255};
-        constexpr SColor DarkKhaki = {189, 183, 107, 255};
-
-        constexpr SColor Lime = {0, 255, 0, 255};
-        constexpr SColor ForestGreen = {34, 139, 34, 255};
-        constexpr SColor SeaGreen = {46, 139, 87, 255};
-        constexpr SColor Olive = {128, 128, 0, 255};
-        constexpr SColor DarkOliveGreen = {85, 107, 47, 255};
-        constexpr SColor LimeGreen = {50, 205, 50, 255};
-        constexpr SColor SpringGreen = {0, 255, 127, 255};
-        constexpr SColor LightGreen = {144, 238, 144, 255};
-        constexpr SColor PaleGreen = {152, 251, 152, 255};
-        constexpr SColor MediumSpringGreen = {0, 250, 154, 255};
-
-        constexpr SColor Navy = {0, 0, 128, 255};
-        constexpr SColor DarkBlue = {0, 0, 139, 255};
-        constexpr SColor MediumBlue = {0, 0, 205, 255};
-        constexpr SColor RoyalBlue = {65, 105, 225, 255};
-        constexpr SColor SteelBlue = {70, 130, 180, 255};
-        constexpr SColor LightBlue = {173, 216, 230, 255};
-        constexpr SColor SkyBlue = {135, 206, 235, 255};
-        constexpr SColor PowderBlue = {176, 224, 230, 255};
-        constexpr SColor LightCyan = {224, 255, 255, 255};
-        constexpr SColor DeepSkyBlue = {0, 191, 255, 255};
-        constexpr SColor DodgerBlue = {30, 144, 255, 255};
-
-        constexpr SColor Purple = {128, 0, 128, 255};
-        constexpr SColor DarkPurple = {102, 51, 153, 255};
-        constexpr SColor Fuchsia = {255, 0, 255, 255};
-        constexpr SColor Violet = {238, 130, 238, 255};
-        constexpr SColor Plum = {221, 160, 221, 255};
-        constexpr SColor Orchid = {218, 112, 214, 255};
-        constexpr SColor MediumOrchid = {186, 85, 211, 255};
-        constexpr SColor MediumPurple = {147, 112, 219, 255};
-        constexpr SColor Indigo = {75, 0, 130, 255};
-
-        constexpr SColor Brown = {165, 42, 42, 255};
-        constexpr SColor SaddleBrown = {139, 69, 19, 255};
-        constexpr SColor Sienna = {160, 82, 45, 255};
-        constexpr SColor Chocolate = {210, 105, 30, 255};
-        constexpr SColor Peru = {205, 133, 63, 255};
-        constexpr SColor SandyBrown = {244, 164, 96, 255};
-        constexpr SColor BurlyWood = {222, 184, 135, 255};
-        constexpr SColor Tan = {210, 180, 140, 255};
-
-        constexpr SColor Pink = {255, 192, 203, 255};
-        constexpr SColor LightPink = {255, 182, 193, 255};
-        constexpr SColor HotPink = {255, 105, 180, 255};
-        constexpr SColor DeepPink = {255, 20, 147, 255};
-        constexpr SColor PaleVioletRed = {219, 112, 147, 255};
-        constexpr SColor MediumVioletRed = {199, 21, 133, 255};
+        // ==================== 三原色混合系（32种）====================
+        /// 黄色（红+绿）
+        constexpr SColor MixYellow = {255, 255, 0, 255};
+        /// 深黄
+        constexpr SColor MixYellowDark = {204, 204, 0, 255};
+        /// 柠檬黄
+        constexpr SColor MixYellowLemon = {255, 246, 143, 255};
+        /// 橙黄（红+绿+少量蓝）
+        constexpr SColor MixOrangeYellow = {255, 165, 0, 255};
+        /// 琥珀黄
+        constexpr SColor MixAmber = {255, 193, 37, 255};
+        /// 金色（黄+少量红）
+        constexpr SColor MixGold = {255, 215, 0, 255};
+        /// 紫色（红+蓝）
+        constexpr SColor MixPurple = {128, 0, 128, 255};
+        /// 深紫
+        constexpr SColor MixPurpleDark = {72, 61, 139, 255};
+        /// 浅紫
+        constexpr SColor MixPurpleLight = {199, 21, 133, 255};
+        /// 淡紫
+        constexpr SColor MixPurplePale = {216, 191, 216, 255};
+        /// 紫罗兰
+        constexpr SColor MixViolet = {143, 0, 255, 255};
+        /// 紫红色（红+蓝+少量绿）
+        constexpr SColor MixFuchsia = {255, 0, 255, 255};
+        /// 青色（绿+蓝）
+        constexpr SColor MixCyan = {0, 255, 255, 255};
+        /// 深青
+        constexpr SColor MixCyanDark = {0, 139, 139, 255};
+        /// 浅青
+        constexpr SColor MixCyanLight = {175, 238, 238, 255};
+        /// 灰色（三原色等比）
+        constexpr SColor MixGray = {128, 128, 128, 255};
+        /// 深灰
+        constexpr SColor MixGrayDark = {64, 64, 64, 255};
+        /// 浅灰
+        constexpr SColor MixGrayLight = {192, 192, 192, 255};
+        /// 银灰
+        constexpr SColor MixSilver = {192, 192, 192, 255};
+        /// 棕褐色（红+绿+蓝不等比）
+        constexpr SColor MixBrown = {165, 42, 42, 255};
+        /// 深棕
+        constexpr SColor MixBrownDark = {101, 67, 33, 255};
+        /// 浅棕
+        constexpr SColor MixBrownLight = {210, 180, 140, 255};
+        /// 卡其色
+        constexpr SColor MixKhaki = {240, 230, 140, 255};
+        /// 米色
+        constexpr SColor MixBeige = {245, 245, 220, 255};
+        /// 奶油色
+        constexpr SColor MixCream = {255, 253, 208, 255};
+        /// 黄色（半透明）
+        constexpr SColor MixYellowTrans = {255, 255, 153, 192};
+        /// 紫色（半透明）
+        constexpr SColor MixPurpleTrans = {204, 153, 255, 192};
+        /// 青色（半透明）
+        constexpr SColor MixCyanTrans = {153, 255, 255, 192};
+        /// 灰色（半透明）
+        constexpr SColor MixGrayTrans = {192, 192, 192, 192};
+        /// 棕色（半透明）
+        constexpr SColor MixBrownTrans = {205, 133, 63, 192};
+        /// 卡其色（半透明）
+        constexpr SColor MixKhakiTrans = {245, 245, 205, 192};
+        /// 琥珀黄（半透明）
+        constexpr SColor MixAmberTrans = {255, 215, 105, 192};
     }
 
     /**
@@ -141,15 +324,27 @@ namespace S3GF {
     struct Geometry {
         int x, y, width, height;
 
-        Geometry();
+        Geometry() : x(0), y(0), width(0), height(0) {}
 
-        Geometry(int x, int y, int width, int height);
+        Geometry(int x, int y, int width, int height)
+                : x(x), y(y), width(width), height(height) {}
 
-        void setGeometry(int x, int y, int width, int height);
+        void setGeometry(int x, int y, int width, int height) {
+            this->x = x;
+            this->y = y;
+            this->width = width;
+            this->height = height;
+        }
 
-        void setPosition(int x, int y);
+        void setPosition(int x, int y) {
+            this->x = x;
+            this->y = y;
+        }
 
-        void resize(int width, int height);
+        void resize(int width, int height) {
+            this->width = width;
+            this->height = height;
+        }
     };
 
     /**
@@ -163,16 +358,22 @@ namespace S3GF {
 
         explicit Vector2() : x(0.0f), y(0.0f) {}
 
-        Vector2(float x, float y);
+        Vector2(float x, float y) : x(x), y(y) {}
 
         /**
          * @brief 重新设置新的向量
          * @param x
          * @param y
          */
-        void reset(float x, float y);
+        void reset(float x, float y) {
+            this->x = x;
+            this->y = y;
+        }
 
-        void reset(const Vector2 &vector2);
+        void reset(const Vector2 &vector2) {
+            this->x = vector2.x;
+            this->y = vector2.y;
+        }
 
         Vector2 operator+(const Vector2 &v) const { return {this->x + v.x, this->y + v.y}; }
 
@@ -265,16 +466,22 @@ namespace S3GF {
 
         explicit Size() : width(0.0f), height(0.0f) {}
 
-        Size(float width, float height);
+        Size(float width, float height) : width(width), height(height) {}
 
         /**
          * @brief 重新设置新的尺寸
          * @param width
          * @param height
          */
-        void reset(float width, float height);
+        void reset(float width, float height) {
+            this->width = width;
+            this->height = height;
+        }
 
-        void reset(const Size &size);
+        void reset(const Size &size) {
+            this->width = size.width;
+            this->height = size.height;
+        }
 
         Size operator+(const Size &s) const { return {this->width + s.width, this->height + s.height}; }
 
@@ -377,6 +584,13 @@ namespace S3GF {
             this->pos.y = y;
             this->size.width = width;
             this->size.height = height;
+        }
+
+        void reset(const GeometryF& geometry) {
+            this->pos.x = geometry.pos.x;
+            this->pos.y = geometry.pos.y;
+            this->size.width = geometry.size.width;
+            this->size.height = geometry.size.height;
         }
 
         void resetPos(const Vector2 &pos) {
@@ -1238,7 +1452,7 @@ namespace S3GF {
      * 包含所有基本图形，如：点、线段、矩形、椭圆等基本图形。
      */
     namespace Graphics {
-        struct Point {
+        class Point {
         private:
             void update() {
                 S3GF::Algorithm::calcPoint(_position, _size / 2.f,
@@ -1258,6 +1472,7 @@ namespace S3GF {
             void move(const Vector2& new_pos) { _position.reset(new_pos); update(); }
             void resize(uint16_t new_size) { _size = new_size; update(); }
             void setColor(const SDL_Color& color) { _color = color; update(); }
+            void setSegment(uint16_t segment = 32) { _count = segment; }
             void reset(const Vector2& pos, uint16_t size, const SDL_Color& color, uint16_t segment = 32) {
                 _position.reset(pos);
                 _size = size;
@@ -1281,16 +1496,18 @@ namespace S3GF {
             size_t indicesCount() const { return _indices.size(); }
         };
 
-        struct Line {
+        class Line {
+        public:
+            explicit Line() : _start_position(), _end_position(), _size(1), _color(StdColor::Black) {}
             explicit Line(float x1, float y1, float x2, float y2, uint16_t size, const SDL_Color& color)
                 : _start_position(x1, y1), _end_position(x2, y2), _size(size), _color(color) {update();}
             explicit Line(const Vector2& start, const Vector2& end, uint16_t size, const SDL_Color &color)
                 : _start_position(start), _end_position(end), _size(size), _color(color) {update();}
 
             const int *indices() { return _indices.data(); }
-            const SDL_Vertex *vertices() { return _vertexes.data(); }
+            const SDL_Vertex *vertices() { return _vertices.data(); }
             size_t indicesCount() const { return _indices.size(); }
-            size_t vertexCount() const { return _vertexes.size(); }
+            size_t vertexCount() const { return _vertices.size(); }
             const Vector2& startPosition() const { return _start_position; }
             const Vector2& endPosition() const { return _end_position; }
             void setStartPosition(const Vector2& pos) { _start_position.reset(pos.x, pos.y); update(); }
@@ -1318,41 +1535,307 @@ namespace S3GF {
         private:
             void update() {
                 S3GF::Algorithm::calcLine(_start_position.x, _start_position.y,
-                                _end_position.x, _end_position.y,
-                                _size, _color, _vertexes, _indices);
+                                          _end_position.x, _end_position.y,
+                                          _size, _color, _vertices, _indices);
             }
             Vector2 _start_position;
             Vector2 _end_position;
             uint8_t _size;
             SDL_Color _color;
             std::array<int, 6> _indices;
-            std::array<SDL_Vertex, 4> _vertexes;
+            std::array<SDL_Vertex, 4> _vertices;
         };
 
-        struct Rectangle {
+        class Rectangle {
+        private:
+            GeometryF _geometry;
+            uint16_t _border_size;
+            SDL_Color _border_color;
+            SDL_Color _background_color;
+            std::array<SDL_FRect, 4> _borders;
 
-            GeometryF geometry;
-            uint16_t border_size;
-            SDL_Color border_color;
-            SDL_Color background_color;
+        public:
+            explicit Rectangle() : _geometry(0, 0, 0, 0), _border_size(0),
+                _border_color(StdColor::Transparent), _background_color(StdColor::Transparent) {}
+            explicit Rectangle(float x, float y, float w, float h,
+                               uint16_t border = 1, const SDL_Color& border_color = StdColor::Black,
+                               const SDL_Color& background_color = StdColor::Transparent)
+                               : _geometry(x, y, w, h), _border_size(border),
+                                 _border_color(border_color), _background_color(background_color) {
+                S3GF::Algorithm::calcRectangleBorder(_geometry, _border_size, _borders);
+            }
+            void reset(const GeometryF& geometry, uint16_t border,
+                       const SDL_Color& border_color, const SDL_Color& background_color) {
+                _geometry.reset(geometry);
+                _border_size = border;
+                _border_color = border_color;
+                _background_color = background_color;
+                Algorithm::calcRectangleBorder(_geometry, _border_size, _borders);
+            }
+            void reset(const Vector2& pos, const Size& size, uint16_t border,
+                       const SDL_Color& border_color, const SDL_Color& background_color) {
+                _geometry.reset(pos, size);
+                _border_size = border;
+                _border_color = border_color;
+                _background_color = background_color;
+                S3GF::Algorithm::calcRectangleBorder(_geometry, _border_size, _borders);
+            }
+            void reset(float x, float y, float w, float h, uint16_t border,
+                       const SDL_Color& border_color, const SDL_Color& background_color) {
+                _geometry.reset(x, y, w, h);
+                _border_size = border;
+                _border_color = border_color;
+                _background_color = background_color;
+                S3GF::Algorithm::calcRectangleBorder(_geometry, _border_size, _borders);
+            }
+            void setGeometry(float x, float y, float w, float h) {
+                _geometry.reset(x, y, w, h);
+            }
+            void setGeometry(const Vector2& pos, const Size& size) {
+                _geometry.reset(pos, size);
+            }
+            void setGeometry(const GeometryF& geometry) {
+                _geometry = geometry;
+            }
+            void setBorderSize(uint16_t border_size) {
+                _border_size = border_size;
+                S3GF::Algorithm::calcRectangleBorder(_geometry, _border_size, _borders);
+            }
+            void setBorderColor(const SDL_Color& color) {
+                _border_color = color;
+            }
+            void setBackgroundColor(const SDL_Color& color) {
+                _background_color = color;
+            }
+            const GeometryF& geometry() const { return _geometry; }
+            uint16_t borderSize() const { return _border_size; }
+            const SDL_Color& borderColor() const { return _border_color; }
+            const SDL_Color& backgroundColor() const { return _background_color; }
+            const SDL_FRect* bordersRect() const { return _borders.data(); }
         };
 
-        struct Triangle {
-            Vector2 point1;
-            Vector2 point2;
-            Vector2 point3;
-            SDL_Color background_color;
+        class Triangle {
+        public:
+            explicit Triangle() : _p1(0, 0), _p2(0, 0), _p3(0, 0),
+                _border_size(0), _border_color(StdColor::Transparent), _background_color(StdColor::Black) {}
+            explicit Triangle(float x1, float y1, float x2, float y2, float x3, float y3,
+                              uint16_t border_size = 0, const SDL_Color& border_color = StdColor::Transparent,
+                              const SDL_Color& back_color = StdColor::Black)
+                : _p1(x1, y1), _p2(x2, y2), _p3(x3, y3),
+                  _border_size(border_size), _border_color(border_color), _background_color(back_color)
+                { updateTri(); updateBorder(); }
+
+            void reset(float x1, float y1, float x2, float y2, float x3, float y3,
+                       uint16_t border_size, const SDL_Color& border_color, const SDL_Color& back_color) {
+                _p1.reset(x1, y1);
+                _p2.reset(x2, y2);
+                _p3.reset(x3, y3);
+                _border_size = border_size;
+                _border_color = border_color;
+                _background_color = back_color;
+                updateTri();
+                updateBorder();
+            }
+            void reset(const Vector2& pos1, const Vector2& pos2, const Vector2& pos3,
+                       uint16_t border_size, const SDL_Color& border_color, const SDL_Color& back_color) {
+                _p1.reset(pos1);
+                _p2.reset(pos2);
+                _p3.reset(pos3);
+                _border_size = border_size;
+                _border_color = border_color;
+                _background_color = back_color;
+                updateTri();
+                updateBorder();
+            }
+            void setPosition(uint8_t index, const Vector2& pos) {
+                switch (index % 3) {
+                    case 0:
+                        _p1.reset(pos);
+                        break;
+                    case 1:
+                        _p2.reset(pos);
+                        break;
+                    case 2:
+                        _p3.reset(pos);
+                        break;
+                }
+                updateTri();
+                updateBorder();
+            }
+            void setBorder(uint16_t border_size, const SDL_Color& color) {
+                _border_size = border_size;
+                _border_color = color;
+                updateBorder();
+            }
+            void setBackgroundColor(const SDL_Color& color) {
+                _background_color = color;
+                updateTri();
+            }
+            const Vector2& position(uint8_t index = 0) const {
+                switch (index % 3) {
+                    case 0:
+                        return _p1;
+                    case 1:
+                        return _p2;
+                    case 2:
+                        return _p3;
+                }
+                return _p1;
+            }
+            uint16_t borderSize() const { return _border_size; }
+            const SDL_Color& borderColor() const { return _border_color; }
+            const SDL_Color& backgroundColor() const { return _background_color; }
+            const int *indices() { return _indices.data(); }
+            const SDL_Vertex *vertices() { return _vertices.data(); }
+            const int *borderIndices1() { return _bdi1.data(); }
+            const int *borderIndices2() { return _bdi2.data(); }
+            const int *borderIndices3() { return _bdi3.data(); }
+            const SDL_Vertex *borderVertices1() { return _bd1.data(); }
+            const SDL_Vertex *borderVertices2() { return _bd2.data(); }
+            const SDL_Vertex *borderVertices3() { return _bd3.data(); }
+            size_t borderIndicesCount() const { return _bdi1.size(); }
+            size_t borderVerticesCount() const { return _bd1.size(); }
+            size_t indicesCount() const { return _indices.size(); }
+            size_t vertexCount() const { return _vertices.size(); }
+        private:
+            void updateTri() {
+                S3GF::Algorithm::calcTriangle(_p1, _p2, _p3, _background_color, _vertices, _indices);
+            }
+            void updateBorder() {
+                if (_border_size == 0) return;
+                S3GF::Algorithm::calcLine(_p1.x, _p1.y, _p2.x, _p2.y, _border_size, _border_color,_bd1, _bdi1);
+                S3GF::Algorithm::calcLine(_p2.x, _p2.y, _p3.x, _p3.y, _border_size, _border_color,_bd2, _bdi2);
+                S3GF::Algorithm::calcLine(_p1.x, _p1.y, _p3.x, _p3.y, _border_size, _border_color,_bd3, _bdi3);
+            }
+            Vector2 _p1;
+            Vector2 _p2;
+            Vector2 _p3;
+            uint16_t _border_size;
+            SDL_Color _border_color;
+            SDL_Color _background_color;
+            std::array<SDL_Vertex, 3> _vertices;
+            std::array<int, 3> _indices;
+            std::array<SDL_Vertex, 4> _bd1, _bd2, _bd3;
+            std::array<int, 6> _bdi1, _bdi2, _bdi3;
         };
 
-        struct Ellipse {
-            Vector2 center_point;
-            Size radius;
-            uint16_t border_size;
-            SDL_Color border_color;
-            SDL_Color background_color;
-            float rotate;
-            uint16_t pts;
-            std::vector<SDL_FRect> points;
+        class Ellipse {
+        public:
+            explicit Ellipse() : _center_point(0, 0), _radius(0, 0),
+                _border_size(0), _border_color(StdColor::Transparent), _background_color(StdColor::Transparent),
+                _degree(0.f), _count(0) {}
+
+            Ellipse(float cx, float cy, float rw, float rh, uint16_t border_size = 1,
+                    const SDL_Color& border_color = StdColor::Black,
+                    const SDL_Color& back_color = StdColor::Transparent,
+                    float degree = 0.f, uint16_t segment = 32)
+                    : _center_point(cx, cy), _radius(rw, rh), _border_size(border_size),
+                      _border_color(border_color), _background_color(back_color),
+                      _degree(degree), _count(segment) {
+                S3GF::Algorithm::calcEllipse(_center_point, _radius,
+                                             _background_color, _degree, _count,
+                                             _vertices, _indices);
+                S3GF::Algorithm::calcEllipseRing(_center_point, _radius, _border_size,
+                                                 _border_color, _degree, _count,
+                                                 _border_vertices, _border_indices);
+            }
+
+            void reset(float cx, float cy, float rw, float rh, uint16_t border_size,
+                       const SDL_Color& border_color, const SDL_Color& back_color, float degree,
+                       uint16_t segment = 32) {
+                _center_point.reset(cx, cy);
+                _radius.reset(rw, rh);
+                _border_size = border_size;
+                _border_color = border_color;
+                _background_color = back_color;
+                _degree = degree;
+                _count = segment;
+                S3GF::Algorithm::calcEllipse(_center_point, _radius,
+                                             _background_color, _degree, _count,
+                                             _vertices, _indices);
+                S3GF::Algorithm::calcEllipseRing(_center_point, _radius, _border_size,
+                                                 _border_color, _degree, _count,
+                                                 _border_vertices, _border_indices);
+            }
+
+            void reset(const Vector2& center_pos, const Size& radius, uint16_t border_size,
+                       const SDL_Color& border_color, const SDL_Color& back_color, float degree,
+                       uint16_t segment = 32) {
+                _center_point.reset(center_pos);
+                _radius.reset(radius);
+                _border_size = border_size;
+                _border_color = border_color;
+                _background_color = back_color;
+                _degree = degree;
+                _count = segment;
+                S3GF::Algorithm::calcEllipse(_center_point, _radius,
+                                             _background_color, _degree, _count,
+                                             _vertices, _indices);
+                S3GF::Algorithm::calcEllipseRing(_center_point, _radius, _border_size,
+                                                 _border_color, _degree, _count,
+                                                 _border_vertices, _border_indices);
+            }
+
+            void setGeometry(float x, float y, float rw, float rh) {
+                _center_point.reset(x, y);
+                _radius.reset(rw, rh);
+                S3GF::Algorithm::calcEllipse(_center_point, _radius,
+                                             _background_color, _degree, _count,
+                                             _vertices, _indices);
+                S3GF::Algorithm::calcEllipseRing(_center_point, _radius, _border_size,
+                                                 _border_color, _degree, _count,
+                                                 _border_vertices, _border_indices);
+            }
+
+            void setGeometry(const Vector2& position, const Size& size) {
+                _center_point.reset(position);
+                _radius.reset(size);
+                S3GF::Algorithm::calcEllipse(_center_point, _radius,
+                                             _background_color, _degree, _count,
+                                             _vertices, _indices);
+                S3GF::Algorithm::calcEllipseRing(_center_point, _radius, _border_size,
+                                                 _border_color, _degree, _count,
+                                                 _border_vertices, _border_indices);
+            }
+
+            void setBorder(uint16_t size, const SDL_Color& color) {
+                _border_size = size;
+                _border_color = color;
+                S3GF::Algorithm::calcEllipseRing(_center_point, _radius, _border_size,
+                                                 _border_color, _degree, _count,
+                                                 _border_vertices, _border_indices);
+            }
+
+            void setBackground(const SDL_Color& color) {
+                _background_color = color;
+                S3GF::Algorithm::calcEllipse(_center_point, _radius,
+                                             _background_color, _degree, _count,
+                                             _vertices, _indices);
+            }
+            const Vector2& centerPosition() const { return _center_point; }
+            const Size& radius() const { return _radius; }
+            uint16_t borderSize() const { return _border_size; }
+            const SDL_Color& borderColor() const { return _border_color; }
+            const SDL_Color& backgroundColor() const { return _background_color; }
+            const int *indices() const { return _indices.data(); }
+            const SDL_Vertex *vertices() const { return _vertices.data(); }
+            size_t indicesCount() const { return _indices.size(); }
+            size_t vertexCount() const { return _vertices.size(); }
+            const int *borderIndices() const { return _border_indices.data(); }
+            const SDL_Vertex *borderVertices() const { return _border_vertices.data(); }
+            size_t borderIndicesCount() const { return _border_indices.size(); }
+            size_t borderVerticesCount() const { return _border_vertices.size(); }
+
+        private:
+            Vector2 _center_point;
+            Size _radius;
+            uint16_t _border_size;
+            SDL_Color _border_color;
+            SDL_Color _background_color;
+            float _degree;
+            uint16_t _count{32};
+            std::vector<SDL_Vertex> _vertices, _border_vertices;
+            std::vector<int> _indices, _border_indices;
         };
     }
 }

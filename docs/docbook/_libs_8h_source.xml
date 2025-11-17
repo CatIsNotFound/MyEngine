@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="__libs_8h_source" xml:lang="en-US">
+<title>Libs.h</title>
+<indexterm><primary>D:/Coding/S3GF/src/Libs.h</primary></indexterm>
+<programlisting linenumbering="unnumbered">1 <emphasis role="preprocessor">#pragma&#32;once</emphasis>
+2 
+3 <emphasis role="preprocessor">#include&#32;&lt;SDL3/SDL.h&gt;</emphasis>
+4 <emphasis role="preprocessor">#include&#32;&lt;SDL3_image/SDL_image.h&gt;</emphasis>
+5 <emphasis role="preprocessor">#include&#32;&lt;SDL3_ttf/SDL_ttf.h&gt;</emphasis>
+6 <emphasis role="preprocessor">#include&#32;&lt;SDL3_mixer/SDL_mixer.h&gt;</emphasis>
+7 
+8 <emphasis role="preprocessor">#include&#32;&lt;iostream&gt;</emphasis>
+9 <emphasis role="preprocessor">#include&#32;&lt;fstream&gt;</emphasis>
+10 <emphasis role="preprocessor">#include&#32;&lt;format&gt;</emphasis>
+11 <emphasis role="preprocessor">#include&#32;&lt;string&gt;</emphasis>
+12 <emphasis role="preprocessor">#include&#32;&lt;vector&gt;</emphasis>
+13 <emphasis role="preprocessor">#include&#32;&lt;deque&gt;</emphasis>
+14 <emphasis role="preprocessor">#include&#32;&lt;memory&gt;</emphasis>
+15 <emphasis role="preprocessor">#include&#32;&lt;functional&gt;</emphasis>
+16 <emphasis role="preprocessor">#include&#32;&lt;map&gt;</emphasis>
+17 <emphasis role="preprocessor">#include&#32;&lt;unordered_map&gt;</emphasis>
+18 <emphasis role="preprocessor">#include&#32;&lt;random&gt;</emphasis>
+19 <emphasis role="preprocessor">#include&#32;&lt;ranges&gt;</emphasis>
+20 <emphasis role="preprocessor">#include&#32;&lt;chrono&gt;</emphasis>
+21 <emphasis role="preprocessor">#include&#32;&lt;thread&gt;</emphasis>
+22 <emphasis role="preprocessor">#include&#32;&lt;mutex&gt;</emphasis>
+23 <emphasis role="preprocessor">#include&#32;&lt;condition_variable&gt;</emphasis>
+24 <emphasis role="preprocessor">#include&#32;&lt;atomic&gt;</emphasis>
+25 <emphasis role="preprocessor">#include&#32;&lt;cstdint&gt;</emphasis>
+26 <emphasis role="preprocessor">#include&#32;&lt;csignal&gt;</emphasis>
+</programlisting></section>

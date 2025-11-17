@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_namespace_std_color" xml:lang="en-US">
+<title>StdColor Namespace Reference</title>
+<indexterm><primary>StdColor</primary></indexterm>
+<para>
+
+<para>预定义标准颜色（81 色） </para>
+ 
+</para>
+<section>
+<title>Detailed Description</title>
+
+<para>预定义标准颜色（81 色） </para>
+
+<para><formalpara><title>See also</title>
+
+<para><link linkend="__basic_8h">Basic.h</link> </para>
+</formalpara>
+</para>
+</section>
+</section>

@@ -1,0 +1,76 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_namespace_s3_g_f" xml:lang="en-US">
+<title>S3GF Namespace Reference</title>
+<indexterm><primary>S3GF</primary></indexterm>
+<para>
+
+<para><link linkend="_namespace_s3_g_f">S3GF</link> 空间 </para>
+ 
+</para>
+<simplesect>
+    <title>Classes    </title>
+        <itemizedlist>
+            <listitem><para>class <link linkend="_class_s3_g_f_1_1_audio_system">AudioSystem</link></para>
+</listitem>
+            <listitem><para>class <link linkend="_class_s3_g_f_1_1_cursor">Cursor</link></para>
+
+<para>鼠标光标 </para>
+</listitem>
+            <listitem><para>class <link linkend="_class_s3_g_f_1_1_date_time">DateTime</link></para>
+</listitem>
+            <listitem><para>class <link linkend="_class_s3_g_f_1_1_engine">Engine</link></para>
+</listitem>
+            <listitem><para>class <link linkend="_class_s3_g_f_1_1_event_system">EventSystem</link></para>
+</listitem>
+            <listitem><para>class <link linkend="_class_s3_g_f_1_1_font">Font</link></para>
+</listitem>
+            <listitem><para>struct <link linkend="_struct_s3_g_f_1_1_geometry">Geometry</link></para>
+
+<para>位置、大小 </para>
+</listitem>
+            <listitem><para>struct <link linkend="_struct_s3_g_f_1_1_geometry_f">GeometryF</link></para>
+
+<para>位置、大小 </para>
+</listitem>
+            <listitem><para>class <link linkend="_class_s3_g_f_1_1_logger">Logger</link></para>
+</listitem>
+            <listitem><para>struct <link linkend="_struct_s3_g_f_1_1_matrix2_d">Matrix2D</link></para>
+
+<para>二维矩阵 </para>
+</listitem>
+            <listitem><para>struct <link linkend="_struct_s3_g_f_1_1_property">Property</link></para>
+</listitem>
+            <listitem><para>class <link linkend="_class_s3_g_f_1_1_random_generator">RandomGenerator</link></para>
+</listitem>
+            <listitem><para>class <link linkend="_class_s3_g_f_1_1_renderer">Renderer</link></para>
+</listitem>
+            <listitem><para>struct <link linkend="_struct_s3_g_f_1_1_size">Size</link></para>
+
+<para>尺寸、大小 </para>
+</listitem>
+            <listitem><para>class <link linkend="_class_s3_g_f_1_1_task_queue">TaskQueue</link></para>
+</listitem>
+            <listitem><para>class <link linkend="_class_s3_g_f_1_1_text_system">TextSystem</link></para>
+</listitem>
+            <listitem><para>class <link linkend="_class_s3_g_f_1_1_texture">Texture</link></para>
+</listitem>
+            <listitem><para>class <link linkend="_class_s3_g_f_1_1_timer">Timer</link></para>
+</listitem>
+            <listitem><para>class <link linkend="_class_s3_g_f_1_1_trigger">Trigger</link></para>
+</listitem>
+            <listitem><para>struct <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link></para>
+
+<para>向量坐标 </para>
+</listitem>
+            <listitem><para>class <link linkend="_class_s3_g_f_1_1_window">Window</link></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Detailed Description</title>
+
+<para><link linkend="_namespace_s3_g_f">S3GF</link> 空间 </para>
+
+<para>所有库都将被存储于此命名空间 </para>
+</section>
+</section>

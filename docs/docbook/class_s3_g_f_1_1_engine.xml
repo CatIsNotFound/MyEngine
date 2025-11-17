@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_s3_g_f_1_1_engine" xml:lang="en-US">
+<title>S3GF::Engine Class Reference</title>
+<indexterm><primary>S3GF::Engine</primary></indexterm>
+<simplesect>
+    <title>Public Types    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_engine_1a98b0525307ac0dfad265e43e5f247ca4"/>using <emphasis role="strong">constIter</emphasis> = std::unordered_map&lt;SDL_WindowID, std::unique_ptr&lt;<link linkend="_class_s3_g_f_1_1_window">Window</link>&gt;&gt;::const_iterator</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_engine_1a33b944e4b59b1e31439ed822c961fd3c"/>using <emphasis role="strong">iter</emphasis> = std::unordered_map&lt;SDL_WindowID, std::unique_ptr&lt;<link linkend="_class_s3_g_f_1_1_window">Window</link>&gt;&gt;::iterator</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_engine_1af167f11611678c64a71a3e5ad125145e"/>bool <emphasis role="strong">isRunning</emphasis> () const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_engine_1a7245975a3ff74f6898fd5da7bb303fa5"/>int <emphasis role="strong">exec</emphasis> ()</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_engine_1a6bba665be305778e7f1c83159d0fffc6"/>void <emphasis role="strong">newWindow</emphasis> (<link linkend="_class_s3_g_f_1_1_window">Window</link> *window)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_engine_1a66182622f1b2952f51fdb14037700000"/>void <emphasis role="strong">removeWindow</emphasis> (SDL_WindowID id)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_engine_1a6fdfec7c38433a47bbd7332dbf3d8c1c"/><link linkend="_class_s3_g_f_1_1_window">Window</link> * <emphasis role="strong">window</emphasis> (SDL_WindowID id=_main_window_id) const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_engine_1a7651de936145b4bc57b374b075b48915"/>std::vector&lt; uint32_t &gt; <emphasis role="strong">windowIDList</emphasis> () const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_engine_1aeaa5d1e31ff14a92b9b1c3dca7cf291e"/>constIter <emphasis role="strong">begin</emphasis> () const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_engine_1abb1c10004e589c460f9cbd52e457e095"/>iter <emphasis role="strong">begin</emphasis> ()</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_engine_1a3d064fa0173acfb9b7137cda882d1a28"/>constIter <emphasis role="strong">end</emphasis> () const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_engine_1a4ae7a6fe6668e32155a508cf4b6e65c1"/>iter <emphasis role="strong">end</emphasis> ()</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_engine_1a54479dfe42e1db1e38059cd6c42126e2"/>size_t <emphasis role="strong">windowCount</emphasis> ()</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_engine_1a1f54dda8b6dcbd12684ad194953a00c1"/>void <emphasis role="strong">setFPS</emphasis> (uint32_t fps)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_engine_1a40547112e9912ceb0165f13770736a5b"/>uint32_t <emphasis role="strong">fps</emphasis> () const</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Static Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_engine_1a8f9e000e0747f7762eb31bcae24fc55e"/>static void <emphasis role="strong">exit</emphasis> (int code=0)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_engine_1a936c92b3ac4065d540a5c3e3a38f7686"/>static void <emphasis role="strong">throwFatalError</emphasis> ()</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<para>
+The documentation for this class was generated from the following files:</para>
+D:/Coding/S3GF/src/Core.hD:/Coding/S3GF/src/Core.cpp</section>

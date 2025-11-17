@@ -1,0 +1,285 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="__basic_8h" xml:lang="en-US">
+<title>D:/Coding/S3GF/src/Basic.h File Reference</title>
+<indexterm><primary>D:/Coding/S3GF/src/Basic.h</primary></indexterm>
+<para>
+
+<para>基本模块 </para>
+ 
+</para>
+<programlisting linenumbering="unnumbered">#include &quot;Libs.h&quot;<?linebreak?>#include &quot;Algorithm/Draw.h&quot;<?linebreak?></programlisting><simplesect>
+    <title>Classes    </title>
+        <itemizedlist>
+            <listitem><para>struct <link linkend="_struct_s3_g_f_1_1_geometry">S3GF::Geometry</link></para>
+
+<para>位置、大小 </para>
+</listitem>
+            <listitem><para>struct <link linkend="_struct_s3_g_f_1_1_vector2">S3GF::Vector2</link></para>
+
+<para>向量坐标 </para>
+</listitem>
+            <listitem><para>struct <link linkend="_struct_s3_g_f_1_1_size">S3GF::Size</link></para>
+
+<para>尺寸、大小 </para>
+</listitem>
+            <listitem><para>struct <link linkend="_struct_s3_g_f_1_1_geometry_f">S3GF::GeometryF</link></para>
+
+<para>位置、大小 </para>
+</listitem>
+            <listitem><para>struct <link linkend="_struct_s3_g_f_1_1_matrix2_d">S3GF::Matrix2D&lt; T &gt;</link></para>
+
+<para>二维矩阵 </para>
+</listitem>
+            <listitem><para>struct <link linkend="_struct_s3_g_f_1_1_matrix2_d_1_1_position">S3GF::Matrix2D&lt; T &gt;::Position</link></para>
+</listitem>
+            <listitem><para>class <link linkend="_class_s3_g_f_1_1_graphics_1_1_point">S3GF::Graphics::Point</link></para>
+</listitem>
+            <listitem><para>class <link linkend="_class_s3_g_f_1_1_graphics_1_1_line">S3GF::Graphics::Line</link></para>
+</listitem>
+            <listitem><para>class <link linkend="_class_s3_g_f_1_1_graphics_1_1_rectangle">S3GF::Graphics::Rectangle</link></para>
+</listitem>
+            <listitem><para>class <link linkend="_class_s3_g_f_1_1_graphics_1_1_triangle">S3GF::Graphics::Triangle</link></para>
+</listitem>
+            <listitem><para>struct <link linkend="_struct_s3_g_f_1_1_graphics_1_1_ellipse">S3GF::Graphics::Ellipse</link></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Namespaces    </title>
+        <itemizedlist>
+            <listitem><para>namespace <link linkend="_namespace_s3_g_f">S3GF</link></para>
+
+<para><link linkend="_namespace_s3_g_f">S3GF</link> 空间 </para>
+</listitem>
+            <listitem><para>namespace <link linkend="_namespace_std_color">StdColor</link></para>
+
+<para>预定义标准颜色（81 色） </para>
+</listitem>
+            <listitem><para>namespace <link linkend="_namespace_graphics">Graphics</link></para>
+
+<para>基本图形 </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Typedefs    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="__basic_8h_1ac10e063040c85f79b117ad938ac69dae"/>using <emphasis role="strong">SRenderer</emphasis> = SDL_Renderer</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a802def363d211f13a26b8cce5d76c6b3"/>using <emphasis role="strong">SSurface</emphasis> = SDL_Surface</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a1031edeb99b79493c8ff1538e07e4967"/>using <emphasis role="strong">STexture</emphasis> = SDL_Texture</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1aa682a21b42a10447f25af4dc75c15a3e"/>using <emphasis role="strong">SEvent</emphasis> = SDL_Event</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a8bce9d82881ea1eba3add48568817dea"/>using <emphasis role="strong">SWinEvent</emphasis> = SDL_WindowEvent</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1ae229fdde9d8badf956e5f8a59d4ea1c0"/>using <emphasis role="strong">SWindow</emphasis> = SDL_Window</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a9f29487d0c223d2b32f8299da3fc128b"/>using <emphasis role="strong">SWindowID</emphasis> = SDL_WindowID</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a106ed59a69b478380b3ee12b5892ccdf"/>using <emphasis role="strong">SColor</emphasis> = SDL_Color</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1aba24c484ff945c689544253bb69fc25e"/>using <emphasis role="strong">SCursor</emphasis> = SDL_Cursor</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1ab7fb7fa1807f20469359c6cafe47dbaf"/>using <emphasis role="strong">SStdCursor</emphasis> = SDL_SystemCursor</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1ac6f26824e329ff1096da3927fb05efa8"/>using <emphasis role="strong">SAudioSpec</emphasis> = SDL_AudioSpec</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1ae10b2a8aa4762543db5d7f34b3ac750d"/>using <emphasis role="strong">StringList</emphasis> = std::vector&lt;std::string&gt;</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Variables    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="__basic_8h_1a3948d783c2e9ea1aaa19703d78afd84e"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Transparent</emphasis> = {255, 255, 255, 0}</para>
+
+<para>完全透明 </para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1ae6f7c46d53d2392d63e61e542e714362"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::HalfTransparent</emphasis> = {255, 255, 255, 128}</para>
+
+<para>半透明 </para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a00b679b260574e983176649636e9ac48"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Black</emphasis> = {0, 0, 0, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1aab700477e0f1115aca5815c545bce5e8"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::White</emphasis> = {255, 255, 255, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a93ac1a65cbd9dda043dd39852f06db34"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Red</emphasis> = {255, 0, 0, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1af4acc93094964da0e70b40edf9e19277"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Green</emphasis> = {0, 255, 0, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a2a2e8599459518a8474cbcc6cb8d37ea"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Blue</emphasis> = {0, 0, 255, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a8e022a7ababe46151df69b7c608b2f27"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Cyan</emphasis> = {0, 255, 255, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a9cda267d839d77bf504eaf87f211767c"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Magenta</emphasis> = {255, 0, 255, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1ac8ab98cb26fc07662d08340a1c837106"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Yellow</emphasis> = {255, 255, 0, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a9e7fcfd92e4ddba2c5728fd7ba3dc6d9"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::LightGray</emphasis> = {200, 200, 200, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a323681cf58b1c4c4787100c4ecee34cc"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::DarkGray</emphasis> = {64, 64, 64, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1acf6e78736774c56c657101afaa324921"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Gray</emphasis> = {128, 128, 128, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a0d1dc9fabd0d1f3d3a1686a97db3d6dc"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Silver</emphasis> = {192, 192, 192, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a5c255bb85e243e676eaa3f070d213c23"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Gainsboro</emphasis> = {220, 220, 220, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a8467d49798b3c61062ba0ca0715d147a"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::WhiteSmoke</emphasis> = {245, 245, 245, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a9e24729fb0f25677928f13be30b814ac"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::DimGray</emphasis> = {105, 105, 105, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a355718f1929642307c8fc4e6a2ad8fc3"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::SlateGray</emphasis> = {112, 128, 144, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a32988eacfa04fc3bd2f64578abe31b7b"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::DarkSlateGray</emphasis> = {47, 79, 79, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a6b4a29be1d3fedd85abcf73a6bf6b826"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Crimson</emphasis> = {220, 20, 60, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1ade64a629a25a77df384c60afbebfe499"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Maroon</emphasis> = {128, 0, 0, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1ac5d8fe6b999a8ac1d1a640f5fa0ed713"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::DarkRed</emphasis> = {139, 0, 0, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a3d4fc5b82402eabae5b2705687b11dad"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Tomato</emphasis> = {255, 99, 71, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a237017c07fb152a69a558a91fa6b773f"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Coral</emphasis> = {255, 127, 80, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a90cab8465f3541773cd7ea3500484095"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Salmon</emphasis> = {250, 128, 114, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1aa59794ce2760bfe91e5248ee792547dc"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::LightCoral</emphasis> = {240, 128, 128, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a6f6bc56144ea74878b92347501841ea8"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::IndianRed</emphasis> = {205, 92, 92, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a6f6cc7b0f4869da793830af5cfb799c4"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::FireBrick</emphasis> = {178, 34, 34, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1aa4f71db2226b991fa167f0946bcb87b8"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Orange</emphasis> = {255, 165, 0, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1ab377947a209eeb3a5cc3ea366efc0634"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::DarkOrange</emphasis> = {255, 140, 0, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a89d801cfbda52c04477bc1a378bcef0d"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::OrangeRed</emphasis> = {255, 69, 0, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1adb7770ab902dd3560a583c5a3c531689"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::PeachPuff</emphasis> = {255, 218, 185, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a3f3104347d18cb36d3131e32f5ce9d2c"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::NavajoWhite</emphasis> = {255, 222, 173, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1abc524a0f2561e15e9c905d9cd6612be2"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Gold</emphasis> = {255, 215, 0, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a45e286b65b93dc3ab04827a843e08d57"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::LightYellow</emphasis> = {255, 255, 224, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a52a94f8131947c19ad55ec3d3d708e2c"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::LemonChiffon</emphasis> = {255, 250, 205, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a0d60e35fb4826405bdd1b2c635c9cb2d"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::PaleGoldenrod</emphasis> = {238, 232, 170, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a1616dd6383127859915d939aae576c34"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Khaki</emphasis> = {240, 230, 140, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a576f8d2ccc0f07cb930b9801322bf7d3"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::DarkKhaki</emphasis> = {189, 183, 107, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1aae9899eff3cc3ddeed486e026f293087"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Lime</emphasis> = {0, 255, 0, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1aa8d3ac5045ef8bf18d922956c4fc08c1"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::ForestGreen</emphasis> = {34, 139, 34, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a4d980777d6c56f43438d9976a59119e2"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::SeaGreen</emphasis> = {46, 139, 87, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1ac8b56ef46c10cd3dd68668bc778f0cda"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Olive</emphasis> = {128, 128, 0, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a87809bb0fe0878d2a1c083edcd4f0326"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::DarkOliveGreen</emphasis> = {85, 107, 47, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1ab6e4e5ecfb7380f7071f94c4a0d88c45"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::LimeGreen</emphasis> = {50, 205, 50, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1accec43c13e6ec3abc89f4044ea29ef44"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::SpringGreen</emphasis> = {0, 255, 127, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1aa64876ad0f9c60f194592592c4d871bc"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::LightGreen</emphasis> = {144, 238, 144, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a5469ae524703feb92a69f42371c8441d"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::PaleGreen</emphasis> = {152, 251, 152, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a8502f4fc0cc313e6a1b810a07037021a"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::MediumSpringGreen</emphasis> = {0, 250, 154, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1aa7a0948634087065f93c2f822ffd61b3"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Navy</emphasis> = {0, 0, 128, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a495eb845df30db6a2775c104fc7e3035"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::DarkBlue</emphasis> = {0, 0, 139, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a3997ff5c15ab579038310f4f6cb86684"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::MediumBlue</emphasis> = {0, 0, 205, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a6fa1f8273d1d81a5f584cbe26f07a67f"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::RoyalBlue</emphasis> = {65, 105, 225, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a286ac29b6d1fa942d5e64d55ef300936"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::SteelBlue</emphasis> = {70, 130, 180, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1abed232e567c255e356ca29bbbbbb2d98"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::LightBlue</emphasis> = {173, 216, 230, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1ae1c0d5693b1cb036b8755bccb056da33"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::SkyBlue</emphasis> = {135, 206, 235, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a09d6ea3ed9e965d10fd3e50b545f148c"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::PowderBlue</emphasis> = {176, 224, 230, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a7be9d8c419675964a1a7dfa92c0e6509"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::LightCyan</emphasis> = {224, 255, 255, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1aad21e67c956660dab0a8ad5e298f9e55"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::DeepSkyBlue</emphasis> = {0, 191, 255, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1adb367dce22693fecb6c11b5d57c347f0"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::DodgerBlue</emphasis> = {30, 144, 255, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a2b4d3af2446c0608301c449856813e14"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Purple</emphasis> = {128, 0, 128, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1aee859f1f6387a57752ca449cabf071eb"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::DarkPurple</emphasis> = {102, 51, 153, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a9a3b04bf6303a05687b548a2f5aa509f"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Fuchsia</emphasis> = {255, 0, 255, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a69932e7cc7e628e21882fa3c99fdb8c1"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Violet</emphasis> = {238, 130, 238, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1af8632586cbe3249b13c01b4f0ed16cdc"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Plum</emphasis> = {221, 160, 221, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a23cd1d2d57187d7b05239edcb43b60d9"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Orchid</emphasis> = {218, 112, 214, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a84dd878ee7153c04fb9c29f3fcbea008"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::MediumOrchid</emphasis> = {186, 85, 211, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1ac971a792a0a3cf904ffa9597bb434168"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::MediumPurple</emphasis> = {147, 112, 219, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a716b9bbedf886dbbffaac55b6310bf9a"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Indigo</emphasis> = {75, 0, 130, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1ac4de67938ddcf825c1556564483cc3ba"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Brown</emphasis> = {165, 42, 42, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1ac9217c297e36f4e7892c66e1c1c7a05a"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::SaddleBrown</emphasis> = {139, 69, 19, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a075ff8371ff1b4735678266e591fcb72"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Sienna</emphasis> = {160, 82, 45, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a265da5ca9a9760bedab9987d983eb59c"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Chocolate</emphasis> = {210, 105, 30, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a4d520d2deda7a8e34ab6ff1fc857ee25"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Peru</emphasis> = {205, 133, 63, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a0e9e29e4b324923086110e3f7449d63c"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::SandyBrown</emphasis> = {244, 164, 96, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1aacc2cb31b20b81db665e55fea871021a"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::BurlyWood</emphasis> = {222, 184, 135, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1afcce3c487e64370885f2ee8763b934da"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Tan</emphasis> = {210, 180, 140, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1abbc9b929de7bdbb1220baaa88b644130"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::Pink</emphasis> = {255, 192, 203, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1ad0f01a2e2ad3678297bf949785c79540"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::LightPink</emphasis> = {255, 182, 193, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1ae8a371085569648233e16e0f6baf5c10"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::HotPink</emphasis> = {255, 105, 180, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a9d57a94fc10c66a20157bd5d5afff954"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::DeepPink</emphasis> = {255, 20, 147, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1abeb60bcdfd564ac1966fe115ab0a2199"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::PaleVioletRed</emphasis> = {219, 112, 147, 255}</para>
+</listitem>
+            <listitem><para><anchor xml:id="__basic_8h_1a7378335787a2d3bbfd0444907e01cfe2"/>constexpr SColor <emphasis role="strong">S3GF::StdColor::MediumVioletRed</emphasis> = {199, 21, 133, 255}</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Detailed Description</title>
+
+<para>基本模块 </para>
+
+<para>定义引擎基础数据结构和图形实体，是整个引擎的基础数据层。</para>
+
+<para><formalpara><title>Copyright</title>
+
+<para>Copyright © 2025 CatIsNotFound </para>
+</formalpara>
+<formalpara><title>Author</title>
+
+<para>CatIsNotFound </para>
+</formalpara>
+</para>
+</section>
+</section>

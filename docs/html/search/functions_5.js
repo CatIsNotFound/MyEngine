@@ -1,0 +1,8 @@
+var searchData=
+[
+  ['matrix2d_0',['Matrix2D',['../struct_s3_g_f_1_1_matrix2_d.html#aed07f777ece718aed0c4b44664da8d4c',1,'S3GF::Matrix2D::Matrix2D()'],['../struct_s3_g_f_1_1_matrix2_d.html#a7854b0a704c5ce2ebb912312ddc63f3f',1,'S3GF::Matrix2D::Matrix2D(uint32_t row, uint32_t col, const std::function&lt; void(T &amp;)&gt; &amp;deleter={})'],['../struct_s3_g_f_1_1_matrix2_d.html#a713e891d39ba2327b2814e79a2ecfce9',1,'S3GF::Matrix2D::Matrix2D(uint32_t row, uint32_t col, const T &amp;value, const std::function&lt; void(T &amp;)&gt; &amp;deleter={})'],['../struct_s3_g_f_1_1_matrix2_d.html#ae6f00a13ba3788d9f9b49e2b98fce862',1,'S3GF::Matrix2D::Matrix2D(const Matrix2D&lt; T &gt; &amp;matrix)']]],
+  ['minus_1',['minus',['../struct_s3_g_f_1_1_matrix2_d.html#a10de43028db57bf1ee267d0ad308da5d',1,'S3GF::Matrix2D::minus(T &amp;value, const std::function&lt; void(T &amp;, T &amp;)&gt; &amp;function={})'],['../struct_s3_g_f_1_1_matrix2_d.html#a1ea94a9f46ed9958a85320e1c977b0b3',1,'S3GF::Matrix2D::minus(T &amp;&amp;value, const std::function&lt; void(T &amp;, T &amp;)&gt; &amp;function={})']]],
+  ['move_2',['move',['../class_s3_g_f_1_1_cursor.html#a012e8f6ce964a0d8f4b78a133a35e4eb',1,'S3GF::Cursor::move(const Vector2 &amp;pos, const Window *window=nullptr)'],['../class_s3_g_f_1_1_cursor.html#a6d082a59a168d10605bd1e905f4d9427',1,'S3GF::Cursor::move(float x, float y, const Window *window=nullptr)']]],
+  ['movetocenter_3',['moveToCenter',['../class_s3_g_f_1_1_cursor.html#ad5f978895c4a83403d033b4f1ea8f765',1,'S3GF::Cursor']]],
+  ['multiply_4',['multiply',['../struct_s3_g_f_1_1_matrix2_d.html#a137bfc4291e2f13615b8b97653837b62',1,'S3GF::Matrix2D']]]
+];

@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<book xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_index" xml:lang="en-US">
+    <info>
+    <title>S3GF</title>
+    </info>
+<chapter>
+    <title>Namespace Documentation</title>
+<xi:include href="namespace_graphics.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+<xi:include href="namespace_s3_g_f.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+<xi:include href="namespace_std_color.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+</chapter>
+<chapter>
+    <title>Class Documentation</title>
+    <xi:include href="struct_s3_g_f_1_1_audio_system_1_1_audio.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_s3_g_f_1_1_audio_system.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_s3_g_f_1_1_cursor.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_s3_g_f_1_1_date_time.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="struct_s3_g_f_1_1_date_time_1_1_d_t.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="struct_s3_g_f_1_1_graphics_1_1_ellipse.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_s3_g_f_1_1_engine.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_s3_g_f_1_1_event_system.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_s3_g_f_1_1_font.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="struct_s3_g_f_1_1_text_system_1_1_font_engine.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="struct_s3_g_f_1_1_geometry.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="struct_s3_g_f_1_1_window_1_1_geometry.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="struct_s3_g_f_1_1_geometry_f.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="struct_s3_g_f_1_1_cursor_1_1_user_custom_1_1_hot_point.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_s3_g_f_1_1_graphics_1_1_line.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_s3_g_f_1_1_logger.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="struct_s3_g_f_1_1_matrix2_d.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_s3_g_f_1_1_graphics_1_1_point.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="struct_s3_g_f_1_1_matrix2_d_1_1_position.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="struct_s3_g_f_1_1_property.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_s3_g_f_1_1_random_generator.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_s3_g_f_1_1_graphics_1_1_rectangle.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_s3_g_f_1_1_renderer.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="struct_s3_g_f_1_1_size.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_s3_g_f_1_1_task_queue.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="struct_s3_g_f_1_1_text_system_1_1_text.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_s3_g_f_1_1_text_system.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_s3_g_f_1_1_texture.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_s3_g_f_1_1_timer.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_s3_g_f_1_1_graphics_1_1_triangle.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_s3_g_f_1_1_trigger.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="struct_s3_g_f_1_1_cursor_1_1_user_custom.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="struct_s3_g_f_1_1_vector2.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_s3_g_f_1_1_window.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+</chapter>
+<chapter>
+    <title>File Documentation</title>
+    <xi:include href="_draw_8h_source.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="_basic_8h.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="_basic_8h_source.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="_components_8h_source.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="_multi_thread_2_components_8h_source.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="_core_8h_source.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="_libs_8h_source.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="_cursor_8h_source.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="_date_time_8h_source.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="_queue_8h_source.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="_random_8h_source.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+</chapter>
+<index/>
+</book>

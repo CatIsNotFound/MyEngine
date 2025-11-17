@@ -102,9 +102,43 @@ namespace S3GF {
         _cmd_list.push_back(std::make_unique<TextCMD>(_renderer, text, position));
     }
 
+    void Renderer::setViewport(const Geometry& geometry) {
+        if (geometry.width == 0 || geometry.height == 0) {
+            _cmd_list.push_back(std::make_unique<ViewportCMD>(_renderer, true));
+        } else {
+            _cmd_list.push_back(std::make_unique<ViewportCMD>(_renderer, false,
+                      SDL_Rect(geometry.x, geometry.y, geometry.width,geometry.height)));
+        }
+    }
+
+    void Renderer::setClipView(const Geometry& geometry) {
+        if (geometry.width == 0 || geometry.height == 0) {
+            _cmd_list.push_back(std::make_unique<ClipCMD>(_renderer, true));
+        } else {
+            _cmd_list.push_back(std::make_unique<ClipCMD>(_renderer, false,
+                                                              SDL_Rect(geometry.x, geometry.y, geometry.width,geometry.height)));
+        }
+    }
+
+    void Renderer::setBlendMode(const SDL_BlendMode &blend_mode) {
+        _cmd_list.push_back(std::make_unique<BlendModeCMD>(_renderer, blend_mode));
+    }
+
     void Renderer::FillCMD::exec() {
         SDL_SetRenderDrawColor(renderer, bg_color.r, bg_color.g, bg_color.b, bg_color.a);
         SDL_RenderClear(renderer);
+    }
+
+    void Renderer::ClipCMD::exec() {
+        SDL_SetRenderClipRect(renderer, (_reset ? nullptr : &_clip_area));
+    }
+
+    void Renderer::ViewportCMD::exec() {
+        SDL_SetRenderViewport(renderer, (_reset ? nullptr : &_viewport_area));
+    }
+
+    void Renderer::BlendModeCMD::exec() {
+        SDL_SetRenderDrawBlendMode(renderer, _blend_mode);
     }
 
     void Renderer::PointCMD::exec() {
@@ -140,53 +174,68 @@ namespace S3GF {
     }
 
     void Renderer::RectCMD::exec() {
-        bool draw_bordered = rectangle.border_size > 0;
-        bool fill_rect = rectangle.background_color.a > 0;
-        SDL_FRect r(rectangle.geometry.pos.x, rectangle.geometry.pos.y,
-                    rectangle.geometry.size.width, rectangle.geometry.size.height);
+        bool draw_bordered = rectangle.borderSize() > 0;
+        bool fill_rect = rectangle.backgroundColor().a > 0;
+        GeometryF geometry = rectangle.geometry();
+        SDL_FRect r(geometry.pos.x, geometry.pos.y,
+                    geometry.size.width, geometry.size.height);
         if (fill_rect) {
-            SDL_SetRenderDrawColor(renderer, rectangle.background_color.r,
-                                   rectangle.background_color.g,
-                                   rectangle.background_color.b,
-                                   rectangle.background_color.a);
+            SDL_Color color = rectangle.backgroundColor();
+            SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
             SDL_RenderFillRect(renderer, &r);
         }
         if (draw_bordered) {
-            SDL_SetRenderDrawColor(renderer, rectangle.border_color.r,
-                                   rectangle.border_color.g,
-                                   rectangle.border_color.b,
-                                   rectangle.border_color.a);
-            if (rectangle.border_size == 1) {
+            SDL_Color color = rectangle.borderColor();
+            SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+            if (rectangle.borderSize() == 1) {
                 SDL_RenderRect(renderer, &r);
             } else {
-                const float THICKNESS = rectangle.border_size;
-                const float X = rectangle.geometry.pos.x;
-                const float Y = rectangle.geometry.pos.y;
-                const float W = rectangle.geometry.size.width;
-                const float H = rectangle.geometry.size.height;
-                SDL_FRect rects[4];
-                rects[0] = {X, Y, W, THICKNESS };
-                rects[1] = {X, Y + H - THICKNESS, W, THICKNESS };
-                rects[2] = {X, Y + THICKNESS, THICKNESS, H - 2 * THICKNESS };
-                rects[3] = {X + W - THICKNESS, Y + THICKNESS, THICKNESS, H - 2 * THICKNESS };
-                SDL_RenderFillRects(renderer, rects, 4);
+                SDL_RenderFillRects(renderer, rectangle.bordersRect(), 4);
             }
         }
     }
 
     void Renderer::TriangleCMD::exec() {
-        if (triangle.background_color.a == 0) return;
-        SDL_FColor color = Algorithm::convert2FColor(triangle.background_color);
-        SDL_Vertex vx[3] = {
-                {{triangle.point1.x, triangle.point1.y}, color},
-                {{triangle.point1.x, triangle.point1.y}, color},
-                {{triangle.point1.x, triangle.point1.y}, color}
-        };
-        SDL_RenderGeometry(renderer, nullptr, vx, 3, nullptr, 0);
+        bool filled = (triangle.backgroundColor().a >= 0);
+        bool bordered = (triangle.borderSize() > 0);
+
+        if (filled) {
+            SDL_RenderGeometry(renderer, nullptr, triangle.vertices(), 3,
+                               triangle.indices(), 3);
+        }
+        if (bordered){
+            const auto SIZE = triangle.borderSize();
+            const auto color = triangle.borderColor();
+            SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+            if (SIZE == 1) {
+                auto p1 = triangle.position(0),
+                     p2 = triangle.position(1),
+                     p3 = triangle.position(2);
+                SDL_RenderLine(renderer, p1.x, p1.y, p2.x, p2.y);
+                SDL_RenderLine(renderer, p3.x, p3.y, p2.x, p2.y);
+                SDL_RenderLine(renderer, p1.x, p1.y, p3.x, p3.y);
+            } else {
+                SDL_RenderGeometry(renderer, nullptr, triangle.borderVertices1(), triangle.borderVerticesCount(),
+                                   triangle.borderIndices1(), triangle.borderIndicesCount());
+                SDL_RenderGeometry(renderer, nullptr, triangle.borderVertices2(), triangle.borderVerticesCount(),
+                                   triangle.borderIndices2(), triangle.borderIndicesCount());
+                SDL_RenderGeometry(renderer, nullptr, triangle.borderVertices3(), triangle.borderVerticesCount(),
+                                   triangle.borderIndices3(), triangle.borderIndicesCount());
+            }
+        }
     }
 
     void Renderer::EllipseCMD::exec() {
-
+        bool filled = (ellipse.backgroundColor().a >= 0);
+        bool bordered = (ellipse.borderSize() > 0);
+        if (filled) {
+            SDL_RenderGeometry(renderer, nullptr, ellipse.vertices(), ellipse.vertexCount(),
+                               ellipse.indices(), ellipse.indicesCount());
+        }
+        if (bordered) {
+            SDL_RenderGeometry(renderer, nullptr, ellipse.borderVertices(), ellipse.borderVerticesCount(),
+                               ellipse.borderIndices(), ellipse.borderIndicesCount());
+        }
     }
 
     void Renderer::TextureCMD::exec() {

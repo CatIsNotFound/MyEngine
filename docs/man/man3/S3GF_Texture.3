@@ -1,0 +1,49 @@
+.TH "S3GF::Texture" 3 "Version v0.0.1-beta" "S3GF" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+S3GF::Texture
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBTexture\fP (const \fBTexture\fP &)=delete"
+.br
+.ti -1c
+.RI "\fBTexture\fP (\fBTexture\fP &&)=delete"
+.br
+.ti -1c
+.RI "\fBTexture\fP & \fBoperator=\fP (const \fBTexture\fP &)=delete"
+.br
+.ti -1c
+.RI "\fBTexture\fP & \fBoperator=\fP (\fBTexture\fP &&)=delete"
+.br
+.ti -1c
+.RI "\fBTexture\fP (const std::string &path, \fBRenderer\fP *renderer)"
+.br
+.ti -1c
+.RI "\fBTexture\fP (SDL_Surface *surface, \fBRenderer\fP *renderer, bool deep_copy=false)"
+.br
+.ti -1c
+.RI "\fBTexture\fP (\fBRenderer\fP *renderer, SDL_PixelFormat format, int width, int height, SDL_TextureAccess access)"
+.br
+.ti -1c
+.RI "bool \fBsetImagePath\fP (const std::string &path)"
+.br
+.ti -1c
+.RI "SDL_Texture * \fBself\fP () const"
+.br
+.ti -1c
+.RI "\fBProperty\fP * \fBproperty\fP ()"
+.br
+.ti -1c
+.RI "void \fBdraw\fP () const"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for S3GF from the source code\&.

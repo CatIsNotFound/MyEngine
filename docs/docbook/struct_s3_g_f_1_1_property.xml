@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_struct_s3_g_f_1_1_property" xml:lang="en-US">
+<title>S3GF::Property Struct Reference</title>
+<indexterm><primary>S3GF::Property</primary></indexterm>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_property_1ae462980a3ad9ace7a929d6880c485859"/>void <emphasis role="strong">move</emphasis> (const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;pos)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_property_1a28c467b9395d517f9912133fca2b9233"/>void <emphasis role="strong">move</emphasis> (float x, float y)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_property_1a9548b8bc537ce7079f2e2811383f194f"/>const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> <emphasis role="strong">position</emphasis> () const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_property_1a260b1ea3620acd672fc25432bf4399b0"/>void <emphasis role="strong">resize</emphasis> (const <link linkend="_struct_s3_g_f_1_1_size">Size</link> &amp;size)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_property_1ae3565c0cf8b8443dc8dbdd406518e13d"/>void <emphasis role="strong">resize</emphasis> (float width, float height)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_property_1a4e062e25c1d41e2e5c91a432cd2ada95"/>const <link linkend="_struct_s3_g_f_1_1_size">Size</link> <emphasis role="strong">size</emphasis> () const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_property_1a318175c1b4fb1e8eea1d0d43c2301d16"/>void <emphasis role="strong">setGeomentry</emphasis> (const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;pos, const <link linkend="_struct_s3_g_f_1_1_size">Size</link> &amp;size)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_property_1a996c58adbc2d52c02f7e18bad1cc8ba4"/>void <emphasis role="strong">setGeomentry</emphasis> (float x, float y, float width, float height)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_property_1af070ce4df63ba3f2e523cedc42468f1a"/>const <link linkend="_struct_s3_g_f_1_1_geometry_f">GeometryF</link> <emphasis role="strong">geomentry</emphasis> () const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_property_1a0078a6b7c51fded73f286fc0d7eb2c6d"/>void <emphasis role="strong">setScale</emphasis> (float scale=1.0f)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_property_1a2a34de4e7504f1f0371c3e04291437cf"/>float <emphasis role="strong">scale</emphasis> () const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_property_1ac66ed7510ea0c059b547122ec65223af"/><link linkend="_struct_s3_g_f_1_1_geometry_f">GeometryF</link> <emphasis role="strong">scaledGeometry</emphasis> () const</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Public Attributes    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_property_1ae6611566bd34505282e196b8c03ee9e7"/>bool <emphasis role="strong">clip_mode</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_property_1ae3feaff54653fa061903e2ac73b78bcc"/>SDL_FRect <emphasis role="strong">clip_area</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_property_1a06cd56d714fa12fd54f1e42b325288a9"/>SDL_Color <emphasis role="strong">color_alpha</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_property_1a195166c005747cefac675af673619ad6"/>double <emphasis role="strong">rotate_angle</emphasis></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<para>
+The documentation for this struct was generated from the following file:</para>
+D:/Coding/S3GF/src/Components.h</section>

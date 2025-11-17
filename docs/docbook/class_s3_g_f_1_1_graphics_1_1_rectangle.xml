@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_s3_g_f_1_1_graphics_1_1_rectangle" xml:lang="en-US">
+<title>S3GF::Graphics::Rectangle Class Reference</title>
+<indexterm><primary>S3GF::Graphics::Rectangle</primary></indexterm>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_graphics_1_1_rectangle_1adc4a8b8160d7ce7a5967014da08def52"/><emphasis role="strong">Rectangle</emphasis> (float x, float y, float w, float h, uint16_t border=1, const SDL_Color &amp;border_color=StdColor::Black, const SDL_Color &amp;background_color=<link linkend="__basic_8h_1a3948d783c2e9ea1aaa19703d78afd84e">StdColor::Transparent</link>)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_graphics_1_1_rectangle_1ac827c68022ac7394a6e5e0406585c68a"/>void <emphasis role="strong">reset</emphasis> (const <link linkend="_struct_s3_g_f_1_1_geometry_f">GeometryF</link> &amp;geometry, uint16_t border, const SDL_Color &amp;border_color, const SDL_Color &amp;background_color)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_graphics_1_1_rectangle_1a62eed84293af7787b07e8611baae5f63"/>void <emphasis role="strong">reset</emphasis> (const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;pos, const <link linkend="_struct_s3_g_f_1_1_size">Size</link> &amp;size, uint16_t border, const SDL_Color &amp;border_color, const SDL_Color &amp;background_color)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_graphics_1_1_rectangle_1a90538a77d4c569d01d56fdc73e893822"/>void <emphasis role="strong">reset</emphasis> (float x, float y, float w, float h, uint16_t border, const SDL_Color &amp;border_color, const SDL_Color &amp;background_color)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_graphics_1_1_rectangle_1ad4422073e9e7d23b8022438802d4d3d7"/>void <emphasis role="strong">setGeometry</emphasis> (float x, float y, float w, float h)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_graphics_1_1_rectangle_1ae90db98d1df27eac3538504cbeb54d87"/>void <emphasis role="strong">setGeometry</emphasis> (const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;pos, const <link linkend="_struct_s3_g_f_1_1_size">Size</link> &amp;size)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_graphics_1_1_rectangle_1ab197c3307e2a9c575a27b0db1a26dde0"/>void <emphasis role="strong">setGeometry</emphasis> (const <link linkend="_struct_s3_g_f_1_1_geometry_f">GeometryF</link> &amp;geometry)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_graphics_1_1_rectangle_1a29ba7daaf645d4404604827907ded95b"/>void <emphasis role="strong">setBorderSize</emphasis> (uint16_t border_size)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_graphics_1_1_rectangle_1a9b17487e997a4e4da79d857597e49e77"/>void <emphasis role="strong">setBorderColor</emphasis> (const SDL_Color &amp;color)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_graphics_1_1_rectangle_1a343059825f8bd6f0a9097e42a140000d"/>void <emphasis role="strong">setBackgroundColor</emphasis> (const SDL_Color &amp;color)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_graphics_1_1_rectangle_1a8e996b8e16a7f37b64f7ffccf78feb61"/>const <link linkend="_struct_s3_g_f_1_1_geometry_f">GeometryF</link> &amp; <emphasis role="strong">geometry</emphasis> () const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_graphics_1_1_rectangle_1abe2917bb2e9e764dd4f9d1a4ba9493ee"/>uint16_t <emphasis role="strong">borderSize</emphasis> () const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_graphics_1_1_rectangle_1adb4c9b877d32c20463e022e6c617a8b9"/>const SDL_Color &amp; <emphasis role="strong">borderColor</emphasis> () const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_graphics_1_1_rectangle_1abb7016900b467d4b71d1eab7a71807d8"/>const SDL_Color &amp; <emphasis role="strong">backgroundColor</emphasis> () const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_graphics_1_1_rectangle_1a65e0e12c0b035836e2ec4893213d09c8"/>const SDL_FRect * <emphasis role="strong">bordersRect</emphasis> () const</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<para>
+The documentation for this class was generated from the following file:</para>
+D:/Coding/S3GF/src/<link linkend="__basic_8h">Basic.h</link></section>

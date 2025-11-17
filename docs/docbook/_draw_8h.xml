@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="__draw_8h" xml:lang="en-US">
+<title>D:/Coding/S3GF/src/Algorithm/Draw.h File Reference</title>
+<indexterm><primary>D:/Coding/S3GF/src/Algorithm/Draw.h</primary></indexterm>
+<programlisting linenumbering="unnumbered">#include &quot;Libs.h&quot;<?linebreak?></programlisting><simplesect>
+    <title>Namespaces    </title>
+        <itemizedlist>
+            <listitem><para>namespace <link linkend="_namespace_s3_g_f">S3GF</link></para>
+
+<para><link linkend="_namespace_s3_g_f">S3GF</link> 空间 </para>
+</listitem>
+            <listitem><para>namespace <link linkend="_namespace_s3_g_f_1_1_algorithm">S3GF::Algorithm</link></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Macros    </title>
+        <itemizedlist>
+            <listitem><para>#define <link linkend="__draw_8h_1ace449d84319a3a1e4e14ce995c776e44">S3GF_DRAW_H</link></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Functions    </title>
+        <itemizedlist>
+            <listitem><para>SDL_FColor <link linkend="_namespace_s3_g_f_1_1_algorithm_1a97b79a3634b484bc69314a5ac516ed19">S3GF::Algorithm::convert2FColor</link> (const SDL_Color &amp;color)</para>
+</listitem>
+            <listitem><para>SDL_Color <link linkend="_namespace_s3_g_f_1_1_algorithm_1a1a3cce725f9721db09f6bd71b728f951">S3GF::Algorithm::convert2Color</link> (const SDL_FColor &amp;color)</para>
+</listitem>
+            <listitem><para>void <link linkend="_namespace_s3_g_f_1_1_algorithm_1ae88ccc0ef57fbf4183d9725ec70c6a1b">S3GF::Algorithm::calcPoint</link> (const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;position, float radius, SDL_Color color, std::vector&lt; SDL_Vertex &gt; &amp;vertices, std::vector&lt; int &gt; &amp;indices, const uint16_t count=32)</para>
+</listitem>
+            <listitem><para>void <link linkend="_namespace_s3_g_f_1_1_algorithm_1a5404339a6359528546359eb6371616b5">S3GF::Algorithm::calcLine</link> (float x1, float y1, float x2, float y2, uint16_t thickness, const SDL_Color &amp;color, std::array&lt; SDL_Vertex, 4 &gt; &amp;vertex, std::array&lt; int, 6 &gt; &amp;indices)</para>
+</listitem>
+            <listitem><para>void <link linkend="_namespace_s3_g_f_1_1_algorithm_1a4f34b3fb3e32b37a7632f387ebb8a91a">S3GF::Algorithm::calcRectangleBorder</link> (const <link linkend="_struct_s3_g_f_1_1_geometry_f">GeometryF</link> &amp;geometry, uint16_t border_size, std::array&lt; SDL_FRect, 4 &gt; &amp;borders)</para>
+</listitem>
+            <listitem><para>void <link linkend="_namespace_s3_g_f_1_1_algorithm_1abf15972793e314000989cde891bf29e7">S3GF::Algorithm::calcTriangle</link> (const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;pos1, const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;pos2, const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;pos3, const SDL_Color &amp;color, std::array&lt; SDL_Vertex, 3 &gt; &amp;vertices, std::array&lt; int, 3 &gt; &amp;indices)</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Macro Definition Documentation</title>
+<anchor xml:id="__draw_8h_1ace449d84319a3a1e4e14ce995c776e44"/><section>
+    <title>S3GF_DRAW_H</title>
+<indexterm><primary>S3GF_DRAW_H</primary><secondary>Draw.h</secondary></indexterm>
+<indexterm><primary>Draw.h</primary><secondary>S3GF_DRAW_H</secondary></indexterm>
+<para><computeroutput>#define S3GF_DRAW_H</computeroutput></para></section>
+</section>
+</section>

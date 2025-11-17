@@ -1,0 +1,58 @@
+.TH "S3GF::GeometryF" 3 "Version v0.0.1-beta" "S3GF" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+S3GF::GeometryF \- 位置、大小  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fR#include <Basic\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBGeometryF\fP (float x, float y, float w, float h)"
+.br
+.ti -1c
+.RI "\fBGeometryF\fP (const \fBVector2\fP &pos, const \fBSize\fP &size)"
+.br
+.ti -1c
+.RI "\fBGeometryF\fP (\fBVector2\fP &&pos, \fBSize\fP &&size)"
+.br
+.ti -1c
+.RI "void \fBreset\fP (const \fBVector2\fP &pos, const \fBSize\fP &size)"
+.br
+.ti -1c
+.RI "void \fBreset\fP (float x, float y, float width, float height)"
+.br
+.ti -1c
+.RI "void \fBreset\fP (const \fBGeometryF\fP &geometry)"
+.br
+.ti -1c
+.RI "void \fBresetPos\fP (const \fBVector2\fP &pos)"
+.br
+.ti -1c
+.RI "void \fBresetSize\fP (const \fBSize\fP &size)"
+.br
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "\fBVector2\fP \fBpos\fP"
+.br
+.ti -1c
+.RI "\fBSize\fP \fBsize\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+位置、大小 
+
+针对于 \fBVector2\fP 和 \fBSize\fP 组成，用于调整位置、大小 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for S3GF from the source code\&.

@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="__components_8h" xml:lang="en-US">
+<title>D:/Coding/S3GF/src/Components.h File Reference</title>
+<indexterm><primary>D:/Coding/S3GF/src/Components.h</primary></indexterm>
+<programlisting linenumbering="unnumbered">#include &quot;Basic.h&quot;<?linebreak?>#include &quot;Utils/Random.h&quot;<?linebreak?>#include &quot;Core.h&quot;<?linebreak?></programlisting><simplesect>
+    <title>Classes    </title>
+        <itemizedlist>
+            <listitem><para>struct <link linkend="_struct_s3_g_f_1_1_property">S3GF::Property</link></para>
+</listitem>
+            <listitem><para>class <link linkend="_class_s3_g_f_1_1_texture">S3GF::Texture</link></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Namespaces    </title>
+        <itemizedlist>
+            <listitem><para>namespace <link linkend="_namespace_s3_g_f">S3GF</link></para>
+
+<para><link linkend="_namespace_s3_g_f">S3GF</link> 空间 </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Macros    </title>
+        <itemizedlist>
+            <listitem><para>#define <link linkend="__components_8h_1adac0b40d4a8d1f30594e56a45f8ea42d">S3GF_COMPONETS_H</link></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Macro Definition Documentation</title>
+<anchor xml:id="__components_8h_1adac0b40d4a8d1f30594e56a45f8ea42d"/><section>
+    <title>S3GF_COMPONETS_H</title>
+<indexterm><primary>S3GF_COMPONETS_H</primary><secondary>Components.h</secondary></indexterm>
+<indexterm><primary>Components.h</primary><secondary>S3GF_COMPONETS_H</secondary></indexterm>
+<para><computeroutput>#define S3GF_COMPONETS_H</computeroutput></para></section>
+</section>
+</section>

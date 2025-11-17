@@ -1,0 +1,579 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_s3_g_f_1_1_cursor" xml:lang="en-US">
+<title>S3GF::Cursor Class Reference</title>
+<indexterm><primary>S3GF::Cursor</primary></indexterm>
+<para>
+
+<para>鼠标光标 </para>
+ 
+</para>
+<para>
+<computeroutput>#include &lt;Cursor.h&gt;</computeroutput>
+</para>
+<simplesect>
+    <title>Classes    </title>
+        <itemizedlist>
+            <listitem><para>struct <link linkend="_struct_s3_g_f_1_1_cursor_1_1_user_custom">UserCustom</link></para>
+
+<para>用户自定义鼠标光标数据 </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Public Types    </title>
+        <itemizedlist>
+            <listitem><para>enum <link linkend="_class_s3_g_f_1_1_cursor_1a800fcc8d85908d269af72d416a76001b">StdCursor</link> { <?linebreak?><emphasis role="strong">Default</emphasis> = 0x00
+, <emphasis role="strong">Normal</emphasis> = 0x00
+, <emphasis role="strong">Edit</emphasis> = 0x01
+, <emphasis role="strong">Wait</emphasis> = 0x02
+, <?linebreak?><emphasis role="strong">Crosshair</emphasis> = 0x03
+, <emphasis role="strong">Busy</emphasis> = 0x04
+, <emphasis role="strong">Resize_NWSE</emphasis> = 0x05
+, <emphasis role="strong">Resize_NESW</emphasis> = 0x06
+, <?linebreak?><emphasis role="strong">Resize_Horizontal</emphasis> = 0x07
+, <emphasis role="strong">Resize_EW</emphasis> = 0x07
+, <emphasis role="strong">Resize_Vertical</emphasis> = 0x08
+, <emphasis role="strong">Resize_NS</emphasis> = 0x08
+, <?linebreak?><emphasis role="strong">Move</emphasis> = 0x09
+, <emphasis role="strong">Not_Allowed</emphasis> = 0x0a
+, <emphasis role="strong">Forbidden</emphasis> = 0x0a
+, <emphasis role="strong">Hand</emphasis> = 0x0b
+, <?linebreak?><emphasis role="strong">Pointer</emphasis> = 0x0b
+, <emphasis role="strong">Resize_NW</emphasis> = 0x0c
+, <emphasis role="strong">Resize_N</emphasis> = 0x0d
+, <emphasis role="strong">Resize_NE</emphasis> = 0x0e
+, <?linebreak?><emphasis role="strong">Resize_E</emphasis> = 0x0f
+, <emphasis role="strong">Resize_SE</emphasis> = 0x10
+, <emphasis role="strong">Resize_S</emphasis> = 0x11
+, <emphasis role="strong">Resize_SW</emphasis> = 0x12
+, <?linebreak?><emphasis role="strong">Resize_W</emphasis> = 0x13
+, <emphasis role="strong">Count</emphasis> = 0x14
+, <emphasis role="strong">Custom</emphasis> = 0x15
+ }</para>
+
+<para>标准鼠标光标样式 </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_cursor_1a16271a0e8e6684ff6e72c8ef740618da"/><emphasis role="strong">Cursor</emphasis> (const <link linkend="_class_s3_g_f_1_1_cursor">Cursor</link> &amp;)=delete</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_cursor_1abd732114d3ddb98ba7bd5b1deadac515"/><emphasis role="strong">Cursor</emphasis> (<link linkend="_class_s3_g_f_1_1_cursor">Cursor</link> &amp;&amp;)=delete</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_cursor_1a2fa098bda16682d672588f80b95db40b"/><link linkend="_class_s3_g_f_1_1_cursor">Cursor</link> &amp; <emphasis role="strong">operator=</emphasis> (const <link linkend="_class_s3_g_f_1_1_cursor">Cursor</link> &amp;)=delete</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_cursor_1aa8cc6cb671dcdad1d0a821c838d61e3e"/><link linkend="_class_s3_g_f_1_1_cursor">Cursor</link> &amp; <emphasis role="strong">operator=</emphasis> (<link linkend="_class_s3_g_f_1_1_cursor">Cursor</link> &amp;&amp;)=delete</para>
+</listitem>
+            <listitem><para><link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> <link linkend="_class_s3_g_f_1_1_cursor_1abb15d202ab9526d82382c26ef2180d82">globalPosition</link> () const</para>
+
+<para>获取鼠标光标在显示器中所在的位置 </para>
+</listitem>
+            <listitem><para><link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> <link linkend="_class_s3_g_f_1_1_cursor_1a67b6b189ea170bbd1b05ebdc521f8580">position</link> () const</para>
+
+<para>获取鼠标光标在获得焦点的窗口下的位置 </para>
+</listitem>
+            <listitem><para>uint64_t <link linkend="_class_s3_g_f_1_1_cursor_1abcb7c50a91d72cf33403f0210df19909">focusOn</link> () const</para>
+
+<para>获取鼠标当前聚焦于哪个窗口 </para>
+</listitem>
+            <listitem><para>void <link linkend="_class_s3_g_f_1_1_cursor_1a012e8f6ce964a0d8f4b78a133a35e4eb">move</link> (const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;pos, const <link linkend="_class_s3_g_f_1_1_window">Window</link> *window=nullptr)</para>
+
+<para>移动鼠标光标至指定位置 </para>
+</listitem>
+            <listitem><para>void <link linkend="_class_s3_g_f_1_1_cursor_1a6d082a59a168d10605bd1e905f4d9427">move</link> (float x, float y, const <link linkend="_class_s3_g_f_1_1_window">Window</link> *window=nullptr)</para>
+
+<para>移动光标至指定位置 </para>
+</listitem>
+            <listitem><para>void <link linkend="_class_s3_g_f_1_1_cursor_1ad5f978895c4a83403d033b4f1ea8f765">moveToCenter</link> (const <link linkend="_class_s3_g_f_1_1_window">Window</link> *window=nullptr)</para>
+
+<para>将鼠标光标移动至画面中心点 </para>
+</listitem>
+            <listitem><para>void <link linkend="_class_s3_g_f_1_1_cursor_1a10e51d46417c509fc78adcda5b32d7ad">setCursor</link> (const <link linkend="_class_s3_g_f_1_1_cursor_1a800fcc8d85908d269af72d416a76001b">StdCursor</link> &amp;<link linkend="_class_s3_g_f_1_1_cursor_1a13f7409d774843b9ade9b20441e40249">cursor</link>)</para>
+
+<para>设置鼠标光标 </para>
+</listitem>
+            <listitem><para>void <link linkend="_class_s3_g_f_1_1_cursor_1a986ccde314863509b3558cf23e4100ff">setCursor</link> (const std::string &amp;path, int hot_x, int hot_y)</para>
+
+<para>设置自定义鼠标光标 </para>
+</listitem>
+            <listitem><para>void <link linkend="_class_s3_g_f_1_1_cursor_1a44cf4031a3ac05e577d48e9852ded1a3">setUserCustomEnabled</link> (bool enabled)</para>
+
+<para>是否允许使用自定义鼠标光标 </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_cursor_1a3766a5cb1663341f562d72fcbf3a8ff2"/>bool <emphasis role="strong">userCustomEnabled</emphasis> () const</para>
+
+<para>当前是否使用自定义鼠标光标 </para>
+</listitem>
+            <listitem><para>void <link linkend="_class_s3_g_f_1_1_cursor_1a945c58f1e4b91ebcb9210acf8c58dbac">setCustomCursor</link> (const <link linkend="_class_s3_g_f_1_1_cursor_1a800fcc8d85908d269af72d416a76001b">StdCursor</link> &amp;stdCursor, const std::string &amp;path, const <link linkend="_struct_s3_g_f_1_1_cursor_1_1_user_custom_1_1_hot_point">UserCustom::HotPoint</link> &amp;hot_point)</para>
+
+<para>设置自定义鼠标光标 </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_cursor_1a13f7409d774843b9ade9b20441e40249"/><link linkend="_class_s3_g_f_1_1_cursor_1a800fcc8d85908d269af72d416a76001b">StdCursor</link> <emphasis role="strong">cursor</emphasis> () const</para>
+
+<para>获取当前鼠标光标样式 </para>
+</listitem>
+            <listitem><para>void <link linkend="_class_s3_g_f_1_1_cursor_1a8d48c66ffd429e6348c9ec6651117c96">setVisible</link> (bool <link linkend="_class_s3_g_f_1_1_cursor_1a380fa8bdbc24a9ef4beedce724ba918d">visible</link>)</para>
+
+<para>显示/隐藏鼠标光标 </para>
+</listitem>
+            <listitem><para>bool <link linkend="_class_s3_g_f_1_1_cursor_1a380fa8bdbc24a9ef4beedce724ba918d">visible</link> () const</para>
+
+<para>获取当前鼠标光标是否显示 </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_cursor_1aae92ff2e842e773bf4355d1a17e03d3d"/>void <emphasis role="strong">unload</emphasis> ()</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Static Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_cursor_1a984a03baa8c281afb7b0829f39e48c46"/>static <link linkend="_class_s3_g_f_1_1_cursor">Cursor</link> * <emphasis role="strong">global</emphasis> ()</para>
+
+<para>获取鼠标光标全局 </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Detailed Description</title>
+
+<para>鼠标光标 </para>
+
+
+
+<para>用于全局控制鼠标光标的位置、样式 <note><title>Note</title>
+
+<para>需要使用 <computeroutput><link linkend="_class_s3_g_f_1_1_cursor_1a984a03baa8c281afb7b0829f39e48c46">global()</link></computeroutput> 获取全局 </para>
+</note>
+</para>
+</section>
+<section>
+<title>Member Enumeration Documentation</title>
+<anchor xml:id="_class_s3_g_f_1_1_cursor_1a800fcc8d85908d269af72d416a76001b"/><section>
+    <title>StdCursor</title>
+<indexterm><primary>StdCursor</primary><secondary>S3GF::Cursor</secondary></indexterm>
+<indexterm><primary>S3GF::Cursor</primary><secondary>StdCursor</secondary></indexterm>
+<para><computeroutput>enum <link linkend="_class_s3_g_f_1_1_cursor_1a800fcc8d85908d269af72d416a76001b">S3GF::Cursor::StdCursor</link></computeroutput></para><para>
+
+<para>标准鼠标光标样式 </para>
+</para>
+
+<para>获取系统下当前使用的鼠标光标 </para>
+</section>
+</section>
+<section>
+<title>Member Function Documentation</title>
+<anchor xml:id="_class_s3_g_f_1_1_cursor_1abcb7c50a91d72cf33403f0210df19909"/><section>
+    <title>focusOn()</title>
+<indexterm><primary>focusOn</primary><secondary>S3GF::Cursor</secondary></indexterm>
+<indexterm><primary>S3GF::Cursor</primary><secondary>focusOn</secondary></indexterm>
+<para><computeroutput>uint64_t S3GF::Cursor::focusOn ( ) const<computeroutput>[inline]</computeroutput></computeroutput></para><para>
+
+<para>获取鼠标当前聚焦于哪个窗口 </para>
+</para>
+
+<para><formalpara><title>Returns</title>
+
+<para>返回鼠标所在的窗口 ID </para>
+</formalpara>
+</para>
+</section>
+<anchor xml:id="_class_s3_g_f_1_1_cursor_1abb15d202ab9526d82382c26ef2180d82"/><section>
+    <title>globalPosition()</title>
+<indexterm><primary>globalPosition</primary><secondary>S3GF::Cursor</secondary></indexterm>
+<indexterm><primary>S3GF::Cursor</primary><secondary>globalPosition</secondary></indexterm>
+<para><computeroutput><link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> S3GF::Cursor::globalPosition ( ) const<computeroutput>[inline]</computeroutput></computeroutput></para><para>
+
+<para>获取鼠标光标在显示器中所在的位置 </para>
+</para>
+
+<para><formalpara><title>Returns</title>
+
+<para>返回全局坐标 </para>
+</formalpara>
+<formalpara><title>See also</title>
+
+<para><link linkend="_class_s3_g_f_1_1_cursor_1a67b6b189ea170bbd1b05ebdc521f8580">position</link> </para>
+
+<para><link linkend="_class_s3_g_f_1_1_cursor_1a012e8f6ce964a0d8f4b78a133a35e4eb">move</link> </para>
+</formalpara>
+</para>
+</section>
+<anchor xml:id="_class_s3_g_f_1_1_cursor_1a012e8f6ce964a0d8f4b78a133a35e4eb"/><section>
+    <title>move()<computeroutput>[1/2]</computeroutput></title>
+<indexterm><primary>move</primary><secondary>S3GF::Cursor</secondary></indexterm>
+<indexterm><primary>S3GF::Cursor</primary><secondary>move</secondary></indexterm>
+<para><computeroutput>void S3GF::Cursor::move (const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp; pos, const <link linkend="_class_s3_g_f_1_1_window">Window</link> * window = <computeroutput>nullptr</computeroutput>
+)<computeroutput>[inline]</computeroutput></computeroutput></para><para>
+
+<para>移动鼠标光标至指定位置 </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>pos</entry><entry>
+<para>指定位置 </para>
+</entry>
+                            </row>
+                            <row>
+<entry>window</entry><entry>
+<para>指定窗口 </para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                <note><title>Note</title>
+
+<para>若不指定 window 参数，将默认以全局显示器屏幕为主。 </para>
+</note>
+<formalpara><title>See also</title>
+
+<para><link linkend="_class_s3_g_f_1_1_cursor_1a67b6b189ea170bbd1b05ebdc521f8580">position</link> </para>
+
+<para><link linkend="_class_s3_g_f_1_1_cursor_1abb15d202ab9526d82382c26ef2180d82">globalPosition</link> </para>
+</formalpara>
+</para>
+</section>
+<anchor xml:id="_class_s3_g_f_1_1_cursor_1a6d082a59a168d10605bd1e905f4d9427"/><section>
+    <title>move()<computeroutput>[2/2]</computeroutput></title>
+<indexterm><primary>move</primary><secondary>S3GF::Cursor</secondary></indexterm>
+<indexterm><primary>S3GF::Cursor</primary><secondary>move</secondary></indexterm>
+<para><computeroutput>void S3GF::Cursor::move (float x, float y, const <link linkend="_class_s3_g_f_1_1_window">Window</link> * window = <computeroutput>nullptr</computeroutput>
+)<computeroutput>[inline]</computeroutput></computeroutput></para><para>
+
+<para>移动光标至指定位置 </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>x</entry><entry>
+<para>指定横坐标 </para>
+</entry>
+                            </row>
+                            <row>
+<entry>y</entry><entry>
+<para>指定纵坐标 </para>
+</entry>
+                            </row>
+                            <row>
+<entry>window</entry><entry>
+<para>指定窗口 </para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                <note><title>Note</title>
+
+<para>若不指定 window 参数，将默认以全局显示器屏幕为主。 </para>
+</note>
+<formalpara><title>See also</title>
+
+<para><link linkend="_class_s3_g_f_1_1_cursor_1a67b6b189ea170bbd1b05ebdc521f8580">position</link> </para>
+
+<para><link linkend="_class_s3_g_f_1_1_cursor_1abb15d202ab9526d82382c26ef2180d82">globalPosition</link> </para>
+</formalpara>
+</para>
+</section>
+<anchor xml:id="_class_s3_g_f_1_1_cursor_1ad5f978895c4a83403d033b4f1ea8f765"/><section>
+    <title>moveToCenter()</title>
+<indexterm><primary>moveToCenter</primary><secondary>S3GF::Cursor</secondary></indexterm>
+<indexterm><primary>S3GF::Cursor</primary><secondary>moveToCenter</secondary></indexterm>
+<para><computeroutput>void S3GF::Cursor::moveToCenter (const <link linkend="_class_s3_g_f_1_1_window">Window</link> * window = <computeroutput>nullptr</computeroutput>
+)<computeroutput>[inline]</computeroutput></computeroutput></para><para>
+
+<para>将鼠标光标移动至画面中心点 </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>window</entry><entry>
+<para>指定窗口 </para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                <note><title>Note</title>
+
+<para>若不设置 window 参数，将默认以全局显示器屏幕为主 </para>
+</note>
+</para>
+</section>
+<anchor xml:id="_class_s3_g_f_1_1_cursor_1a67b6b189ea170bbd1b05ebdc521f8580"/><section>
+    <title>position()</title>
+<indexterm><primary>position</primary><secondary>S3GF::Cursor</secondary></indexterm>
+<indexterm><primary>S3GF::Cursor</primary><secondary>position</secondary></indexterm>
+<para><computeroutput><link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> S3GF::Cursor::position ( ) const<computeroutput>[inline]</computeroutput></computeroutput></para><para>
+
+<para>获取鼠标光标在获得焦点的窗口下的位置 </para>
+</para>
+
+<para><formalpara><title>Returns</title>
+
+<para>返回鼠标光标相对获得焦点窗口下的位置 </para>
+</formalpara>
+<formalpara><title>See also</title>
+
+<para><link linkend="_class_s3_g_f_1_1_cursor_1abb15d202ab9526d82382c26ef2180d82">globalPosition</link> </para>
+
+<para><link linkend="_class_s3_g_f_1_1_cursor_1a012e8f6ce964a0d8f4b78a133a35e4eb">move</link> </para>
+</formalpara>
+</para>
+</section>
+<anchor xml:id="_class_s3_g_f_1_1_cursor_1a986ccde314863509b3558cf23e4100ff"/><section>
+    <title>setCursor()<computeroutput>[1/2]</computeroutput></title>
+<indexterm><primary>setCursor</primary><secondary>S3GF::Cursor</secondary></indexterm>
+<indexterm><primary>S3GF::Cursor</primary><secondary>setCursor</secondary></indexterm>
+<para><computeroutput>void S3GF::Cursor::setCursor (const std::string &amp; path, int hot_x, int hot_y)<computeroutput>[inline]</computeroutput></computeroutput></para><para>
+
+<para>设置自定义鼠标光标 </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>path</entry><entry>
+<para>指定路径下加载鼠标光标 </para>
+</entry>
+                            </row>
+                            <row>
+<entry>hot_x</entry><entry>
+<para>中心点横坐标 </para>
+</entry>
+                            </row>
+                            <row>
+<entry>hot_y</entry><entry>
+<para>中心点纵坐标 </para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                <note><title>Note</title>
+
+<para>若指定的 <computeroutput>path</computeroutput> 参数无效，则无法设置！</para>
+</note>
+从指定路径加载图像作为自定义鼠标光标，并设置热点坐标。 </para>
+</section>
+<anchor xml:id="_class_s3_g_f_1_1_cursor_1a10e51d46417c509fc78adcda5b32d7ad"/><section>
+    <title>setCursor()<computeroutput>[2/2]</computeroutput></title>
+<indexterm><primary>setCursor</primary><secondary>S3GF::Cursor</secondary></indexterm>
+<indexterm><primary>S3GF::Cursor</primary><secondary>setCursor</secondary></indexterm>
+<para><computeroutput>void S3GF::Cursor::setCursor (const <link linkend="_class_s3_g_f_1_1_cursor_1a800fcc8d85908d269af72d416a76001b">StdCursor</link> &amp; cursor)<computeroutput>[inline]</computeroutput></computeroutput></para><para>
+
+<para>设置鼠标光标 </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>cursor</entry><entry>
+<para>指定光标类型 <literallayout><computeroutput><link linkend="_class_s3_g_f_1_1_cursor_1a984a03baa8c281afb7b0829f39e48c46">Cursor::global</link>()-&gt;<link linkend="_class_s3_g_f_1_1_cursor_1a10e51d46417c509fc78adcda5b32d7ad">setCursor</link>(Cursor::Hand);
+</computeroutput></literallayout> </para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                <note><title>Note</title>
+
+<para>对于已经开启自定义鼠标光标的情况，将会改变对应类型的自定义光标； 若指定对应的光标类型没有定义鼠标光标，则会使用系统对应的鼠标光标！ </para>
+</note>
+<formalpara><title>See also</title>
+
+<para><link linkend="_class_s3_g_f_1_1_cursor_1a13f7409d774843b9ade9b20441e40249">cursor</link> </para>
+
+<para><link linkend="_class_s3_g_f_1_1_cursor_1a3766a5cb1663341f562d72fcbf3a8ff2">userCustomEnabled</link> </para>
+
+<para><link linkend="_class_s3_g_f_1_1_cursor_1a800fcc8d85908d269af72d416a76001b">StdCursor</link> </para>
+</formalpara>
+</para>
+</section>
+<anchor xml:id="_class_s3_g_f_1_1_cursor_1a945c58f1e4b91ebcb9210acf8c58dbac"/><section>
+    <title>setCustomCursor()</title>
+<indexterm><primary>setCustomCursor</primary><secondary>S3GF::Cursor</secondary></indexterm>
+<indexterm><primary>S3GF::Cursor</primary><secondary>setCustomCursor</secondary></indexterm>
+<para><computeroutput>void S3GF::Cursor::setCustomCursor (const <link linkend="_class_s3_g_f_1_1_cursor_1a800fcc8d85908d269af72d416a76001b">StdCursor</link> &amp; stdCursor, const std::string &amp; path, const <link linkend="_struct_s3_g_f_1_1_cursor_1_1_user_custom_1_1_hot_point">UserCustom::HotPoint</link> &amp; hot_point)<computeroutput>[inline]</computeroutput></computeroutput></para><para>
+
+<para>设置自定义鼠标光标 </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>stdCursor</entry><entry>
+<para>指定标准鼠标类型 </para>
+</entry>
+                            </row>
+                            <row>
+<entry>path</entry><entry>
+<para>指定本地路径 </para>
+</entry>
+                            </row>
+                            <row>
+<entry>hot_point</entry><entry>
+<para>指定热点 </para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                <formalpara><title>See also</title>
+
+<para><link linkend="_class_s3_g_f_1_1_cursor_1a44cf4031a3ac05e577d48e9852ded1a3">setUserCustomEnabled</link> </para>
+
+<para><link linkend="_class_s3_g_f_1_1_cursor_1a3766a5cb1663341f562d72fcbf3a8ff2">userCustomEnabled</link> </para>
+</formalpara>
+</para>
+</section>
+<anchor xml:id="_class_s3_g_f_1_1_cursor_1a44cf4031a3ac05e577d48e9852ded1a3"/><section>
+    <title>setUserCustomEnabled()</title>
+<indexterm><primary>setUserCustomEnabled</primary><secondary>S3GF::Cursor</secondary></indexterm>
+<indexterm><primary>S3GF::Cursor</primary><secondary>setUserCustomEnabled</secondary></indexterm>
+<para><computeroutput>void S3GF::Cursor::setUserCustomEnabled (bool enabled)<computeroutput>[inline]</computeroutput></computeroutput></para><para>
+
+<para>是否允许使用自定义鼠标光标 </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>enabled</entry><entry>
+<para>启用/禁用 </para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</section>
+<anchor xml:id="_class_s3_g_f_1_1_cursor_1a8d48c66ffd429e6348c9ec6651117c96"/><section>
+    <title>setVisible()</title>
+<indexterm><primary>setVisible</primary><secondary>S3GF::Cursor</secondary></indexterm>
+<indexterm><primary>S3GF::Cursor</primary><secondary>setVisible</secondary></indexterm>
+<para><computeroutput>void S3GF::Cursor::setVisible (bool visible)<computeroutput>[inline]</computeroutput></computeroutput></para><para>
+
+<para>显示/隐藏鼠标光标 </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>visible</entry><entry>
+<para>决定是否显示鼠标光标 </para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                <formalpara><title>See also</title>
+
+<para><link linkend="_class_s3_g_f_1_1_cursor_1a380fa8bdbc24a9ef4beedce724ba918d">visible</link> </para>
+</formalpara>
+</para>
+</section>
+<anchor xml:id="_class_s3_g_f_1_1_cursor_1a380fa8bdbc24a9ef4beedce724ba918d"/><section>
+    <title>visible()</title>
+<indexterm><primary>visible</primary><secondary>S3GF::Cursor</secondary></indexterm>
+<indexterm><primary>S3GF::Cursor</primary><secondary>visible</secondary></indexterm>
+<para><computeroutput>bool S3GF::Cursor::visible ( ) const<computeroutput>[inline]</computeroutput></computeroutput></para><para>
+
+<para>获取当前鼠标光标是否显示 </para>
+</para>
+
+<para><formalpara><title>See also</title>
+
+<para><link linkend="_class_s3_g_f_1_1_cursor_1a8d48c66ffd429e6348c9ec6651117c96">setVisible</link> </para>
+</formalpara>
+</para>
+</section>
+<para>
+The documentation for this class was generated from the following file:</para>
+D:/Coding/S3GF/src/Utils/Cursor.h</section>
+</section>

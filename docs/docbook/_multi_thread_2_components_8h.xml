@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="__multi_thread_2_components_8h" xml:lang="en-US">
+<title>D:/Coding/S3GF/src/MultiThread/Components.h File Reference</title>
+<indexterm><primary>D:/Coding/S3GF/src/MultiThread/Components.h</primary></indexterm>
+<programlisting linenumbering="unnumbered">#include &quot;Libs.h&quot;<?linebreak?></programlisting><simplesect>
+    <title>Classes    </title>
+        <itemizedlist>
+            <listitem><para>class <link linkend="_class_s3_g_f_1_1_timer">S3GF::Timer</link></para>
+</listitem>
+            <listitem><para>class <link linkend="_class_s3_g_f_1_1_trigger">S3GF::Trigger</link></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Namespaces    </title>
+        <itemizedlist>
+            <listitem><para>namespace <link linkend="_namespace_s3_g_f">S3GF</link></para>
+
+<para><link linkend="_namespace_s3_g_f">S3GF</link> 空间 </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Macros    </title>
+        <itemizedlist>
+            <listitem><para>#define <link linkend="__multi_thread_2_components_8h_1a88f863937f1cc9edea4e653736faee9f">S3GF_COMPONENTS_H</link></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Macro Definition Documentation</title>
+<anchor xml:id="__multi_thread_2_components_8h_1a88f863937f1cc9edea4e653736faee9f"/><section>
+    <title>S3GF_COMPONENTS_H</title>
+<indexterm><primary>S3GF_COMPONENTS_H</primary><secondary>Components.h</secondary></indexterm>
+<indexterm><primary>Components.h</primary><secondary>S3GF_COMPONENTS_H</secondary></indexterm>
+<para><computeroutput>#define S3GF_COMPONENTS_H</computeroutput></para></section>
+</section>
+</section>

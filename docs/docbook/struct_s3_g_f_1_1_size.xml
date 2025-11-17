@@ -1,0 +1,121 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_struct_s3_g_f_1_1_size" xml:lang="en-US">
+<title>S3GF::Size Struct Reference</title>
+<indexterm><primary>S3GF::Size</primary></indexterm>
+<para>
+
+<para>尺寸、大小 </para>
+ 
+</para>
+<para>
+<computeroutput>#include &lt;Basic.h&gt;</computeroutput>
+</para>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_size_1a6d88484f82cbfd6b39861ef0e4ee8b4e"/><emphasis role="strong">Size</emphasis> (float width, float height)</para>
+</listitem>
+            <listitem><para>void <link linkend="_struct_s3_g_f_1_1_size_1ab212d2fe7db7362bd9557d4a665ce771">reset</link> (float width, float height)</para>
+
+<para>重新设置新的尺寸 </para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_size_1a1f589bbaa7819be5adfb6ebea0175b86"/>void <emphasis role="strong">reset</emphasis> (const <link linkend="_struct_s3_g_f_1_1_size">Size</link> &amp;size)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_size_1a478fdd82be6363521332c3de203bbcaa"/><link linkend="_struct_s3_g_f_1_1_size">Size</link> <emphasis role="strong">operator+</emphasis> (const <link linkend="_struct_s3_g_f_1_1_size">Size</link> &amp;s) const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_size_1a11e7ff6b6c6fa62544f70a9748b4c7ff"/><link linkend="_struct_s3_g_f_1_1_size">Size</link> <emphasis role="strong">operator-</emphasis> (const <link linkend="_struct_s3_g_f_1_1_size">Size</link> &amp;s) const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_size_1a65b1f40814f12b9c2049d8ccfffedbc0"/><link linkend="_struct_s3_g_f_1_1_size">Size</link> <emphasis role="strong">operator*</emphasis> (const <link linkend="_struct_s3_g_f_1_1_size">Size</link> &amp;s) const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_size_1ab692427b020fa60189f49f8777ebe733"/><link linkend="_struct_s3_g_f_1_1_size">Size</link> <emphasis role="strong">operator*</emphasis> (float v) const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_size_1ac7317806cb3fe9dfc6f60d63c947b4e9"/><link linkend="_struct_s3_g_f_1_1_size">Size</link> <emphasis role="strong">operator/</emphasis> (const <link linkend="_struct_s3_g_f_1_1_size">Size</link> &amp;s) const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_size_1a6b647b1ebcaa8a3953dd033346f2b398"/><link linkend="_struct_s3_g_f_1_1_size">Size</link> <emphasis role="strong">operator/</emphasis> (float v) const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_size_1af309b17e680f88f7d012d540381fc591"/>void <emphasis role="strong">operator+=</emphasis> (const <link linkend="_struct_s3_g_f_1_1_size">Size</link> &amp;s)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_size_1a1db92bb7586d08cc3ade78fc12af4b28"/>void <emphasis role="strong">operator-=</emphasis> (const <link linkend="_struct_s3_g_f_1_1_size">Size</link> &amp;s)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_size_1ab10943ee38e5a729dd9dc8b8622e9f4e"/>void <emphasis role="strong">operator*=</emphasis> (const <link linkend="_struct_s3_g_f_1_1_size">Size</link> &amp;s)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_size_1aa714b248b1841a7f02c15cb2b367d136"/>void <emphasis role="strong">operator*=</emphasis> (float v)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_size_1abee1abcf71ae5caa7559ae661db35b44"/>void <emphasis role="strong">operator/=</emphasis> (const <link linkend="_struct_s3_g_f_1_1_size">Size</link> &amp;s)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_size_1a63693fef3e428b6e29e0729b380aa15e"/>void <emphasis role="strong">operator/=</emphasis> (float v)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_size_1a274984119d7b5f38d97d8415146e38bc"/>bool <emphasis role="strong">operator==</emphasis> (const <link linkend="_struct_s3_g_f_1_1_size">Size</link> &amp;s) const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_size_1ad94dd07b6db90c5113bd1647ebb894bc"/>bool <emphasis role="strong">operator!=</emphasis> (const <link linkend="_struct_s3_g_f_1_1_size">Size</link> &amp;s) const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_size_1a17be76ae34ee4ae1fbbe7efa515775cb"/>bool <emphasis role="strong">operator&gt;</emphasis> (const <link linkend="_struct_s3_g_f_1_1_size">Size</link> &amp;s) const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_size_1a67c4ed0c100e5c161e2fdbeea7f04269"/>bool <emphasis role="strong">operator&gt;=</emphasis> (const <link linkend="_struct_s3_g_f_1_1_size">Size</link> &amp;s) const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_size_1aa67f00452e0b4906868d4f487b5e1933"/>bool <emphasis role="strong">operator&lt;</emphasis> (const <link linkend="_struct_s3_g_f_1_1_size">Size</link> &amp;s) const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_size_1a82b361298acf357ba0709b5501862699"/>bool <emphasis role="strong">operator&lt;=</emphasis> (const <link linkend="_struct_s3_g_f_1_1_size">Size</link> &amp;s) const</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Public Attributes    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_size_1a7e0b3fadc3b8ce80db1522a124830829"/>float <emphasis role="strong">width</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_size_1a9b0436161a184fea5e7d6a2943df315b"/>float <emphasis role="strong">height</emphasis></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Detailed Description</title>
+
+<para>尺寸、大小 </para>
+
+
+
+<para>用于调整对象的尺寸、大小 </para>
+</section>
+<section>
+<title>Member Function Documentation</title>
+<anchor xml:id="_struct_s3_g_f_1_1_size_1ab212d2fe7db7362bd9557d4a665ce771"/><section>
+    <title>reset()</title>
+<indexterm><primary>reset</primary><secondary>S3GF::Size</secondary></indexterm>
+<indexterm><primary>S3GF::Size</primary><secondary>reset</secondary></indexterm>
+<para><computeroutput>void S3GF::Size::reset (float width, float height)<computeroutput>[inline]</computeroutput></computeroutput></para><para>
+
+<para>重新设置新的尺寸 </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>width</entry><entry>
+<para></para>
+</entry>
+                            </row>
+                            <row>
+<entry>height</entry><entry>
+<para></para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</section>
+<para>
+The documentation for this struct was generated from the following file:</para>
+D:/Coding/S3GF/src/<link linkend="__basic_8h">Basic.h</link></section>
+</section>

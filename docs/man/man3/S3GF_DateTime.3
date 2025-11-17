@@ -1,0 +1,82 @@
+.TH "S3GF::DateTime" 3 "Version v0.0.1-beta" "S3GF" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+S3GF::DateTime
+.SH SYNOPSIS
+.br
+.PP
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "struct \fBDT\fP"
+.br
+.in -1c
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "enum \fBWeekday\fP { \fBMonday\fP, \fBMon\fP = 0, \fBTuesday\fP, \fBTue\fP = 1, \fBWednesday\fP, \fBWed\fP = 2, \fBThursday\fP, \fBThu\fP = 3, \fBFriday\fP, \fBFri\fP = 4, \fBSaturday\fP, \fBSat\fP = 5, \fBSunday\fP, \fBSun\fP = 6 }"
+.br
+.ti -1c
+.RI "enum \fBMonth\fP { \fBJanuary\fP, \fBJan\fP = 0, \fBFebruary\fP, \fBFeb\fP = 1, \fBMarch\fP, \fBMar\fP = 2, \fBApril\fP, \fBApr\fP = 3, \fBMay\fP, \fBJune\fP, \fBJun\fP = 5, \fBJuly\fP, \fBJul\fP = 6, \fBAugust\fP, \fBAug\fP = 7, \fBSeptember\fP, \fBSep\fP = 8, \fBOctober\fP, \fBOct\fP = 9, \fBNovember\fP, \fBNov\fP = 10, \fBDecember\fP, \fBDec\fP = 11 }"
+.br
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBDateTime\fP (const \fBDateTime\fP &)=delete"
+.br
+.ti -1c
+.RI "\fBDateTime\fP (\fBDateTime\fP &&)=delete"
+.br
+.ti -1c
+.RI "\fBDateTime\fP & \fBoperator=\fP (const \fBDateTime\fP &)=delete"
+.br
+.ti -1c
+.RI "\fBDateTime\fP & \fBoperator=\fP (\fBDateTime\fP &&)=delete"
+.br
+.in -1c
+.SS "Static Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "static const char * \fBweekdayStr\fP (Weekday weekday, bool short_name=false)"
+.br
+.ti -1c
+.RI "static const char * \fBweekdayChineseStr\fP (Weekday weekday)"
+.br
+.ti -1c
+.RI "static const char * \fBmonthStr\fP (Month month, bool short_name=false)"
+.br
+.ti -1c
+.RI "static bool \fBsetDefaultTimezone\fP (const std::string &tz)"
+.br
+.ti -1c
+.RI "static std::string_view \fBcurrentTimezone\fP ()"
+.br
+.ti -1c
+.RI "static std::string \fBnow\fP ()"
+.br
+.ti -1c
+.RI "static \fBDT\fP \fBcurrentDateTime\fP ()"
+.br
+.ti -1c
+.RI "static uint64_t \fBgenerateTimestamp\fP (const \fBDT\fP &datetime)"
+.br
+.ti -1c
+.RI "static \fBDT\fP \fBparseFromTimestamp\fP (uint64_t timestamp)"
+.br
+.ti -1c
+.RI "static std::string \fBformatDateTime\fP (const \fBDT\fP &datetime, const std::string &format)"
+.br
+.ti -1c
+.RI "static std::string \fBformatCurrentDateTime\fP (const std::string &format)"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for S3GF from the source code\&.

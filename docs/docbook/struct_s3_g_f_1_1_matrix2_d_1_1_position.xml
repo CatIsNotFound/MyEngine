@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_struct_s3_g_f_1_1_matrix2_d_1_1_position" xml:lang="en-US">
+<title>S3GF::Matrix2D&lt; T &gt;::Position Struct Reference</title>
+<indexterm><primary>S3GF::Matrix2D&lt; T &gt;::Position</primary></indexterm>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_matrix2_d_1_1_position_1aa7430eaaa1aaaae4c5b0d7af829d801b"/><emphasis role="strong">Position</emphasis> (uint32_t row, uint32_t col)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_matrix2_d_1_1_position_1ad44864ad133bb421662e5af35cad97fa"/>bool <emphasis role="strong">isValid</emphasis> () const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_matrix2_d_1_1_position_1af03e1068af4847ff64eae7c1ed6f0303"/>bool <emphasis role="strong">operator==</emphasis> (const <link linkend="_struct_s3_g_f_1_1_matrix2_d_1_1_position">Position</link> &amp;p) const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_matrix2_d_1_1_position_1aa47674cd32d4cc25770eef64a01771fd"/>bool <emphasis role="strong">operator!=</emphasis> (const <link linkend="_struct_s3_g_f_1_1_matrix2_d_1_1_position">Position</link> &amp;p) const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_matrix2_d_1_1_position_1a262c8b5dfa22899059182bc4a9a539a0"/>bool <emphasis role="strong">operator&gt;</emphasis> (const <link linkend="_struct_s3_g_f_1_1_matrix2_d_1_1_position">Position</link> &amp;p) const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_matrix2_d_1_1_position_1a66b06489550bd6691958ef7301f4ff01"/>bool <emphasis role="strong">operator&lt;</emphasis> (const <link linkend="_struct_s3_g_f_1_1_matrix2_d_1_1_position">Position</link> &amp;p) const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_matrix2_d_1_1_position_1a6223296145773b75f3c3a6d754d17714"/>bool <emphasis role="strong">operator&gt;=</emphasis> (const <link linkend="_struct_s3_g_f_1_1_matrix2_d_1_1_position">Position</link> &amp;p) const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_matrix2_d_1_1_position_1a8e8d83e8a3d44d8f87e397495f3324b7"/>bool <emphasis role="strong">operator&lt;=</emphasis> (const <link linkend="_struct_s3_g_f_1_1_matrix2_d_1_1_position">Position</link> &amp;p) const</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Public Attributes    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_matrix2_d_1_1_position_1a48b18914217c543e51995edfe7552251"/>uint32_t <emphasis role="strong">row</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_s3_g_f_1_1_matrix2_d_1_1_position_1a07a95a18c60194ce3cbb2c223d309325"/>uint32_t <emphasis role="strong">col</emphasis></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<para>
+The documentation for this struct was generated from the following file:</para>
+D:/Coding/S3GF/src/<link linkend="__basic_8h">Basic.h</link></section>

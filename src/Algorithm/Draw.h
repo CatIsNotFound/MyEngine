@@ -37,7 +37,6 @@ namespace S3GF {
                 vertices.push_back({{x, y}, fcolor, {0, 0}});
             }
             
-            // 添加索引，确保最后一个三角形正确连接到起始顶点
             for (uint16_t i = 0; i < actual_count; ++i) {
                 indices.push_back(0);
                 indices.push_back(i + 1);
@@ -57,18 +56,109 @@ namespace S3GF {
 
             float px = nx * (float) thickness * 0.5f;
             float py = ny * (float) thickness * 0.5f;
+            
+            float extend = thickness * 0.5f;
+            float ex1 = -dx / len * extend;
+            float ey1 = -dy / len * extend;
+            float ex2 = dx / len * extend;
+            float ey2 = dy / len * extend;
 
             SDL_FColor fcolor = convert2FColor(color);
-            vertex[0] = {{x1 - px, y1 - py}, fcolor, {0, 0}};
-            vertex[1] = {{x1 + px, y1 + py}, fcolor, {0, 0}};
-            vertex[2] = {{x2 + px, y2 + py}, fcolor, {0, 0}};
-            vertex[3] = {{x2 - px, y2 - py}, fcolor, {0, 0}};
+            vertex[0] = {{x1 + ex1 - px, y1 + ey1 - py}, fcolor, {0, 0}};
+            vertex[1] = {{x1 + ex1 + px, y1 + ey1 + py}, fcolor, {0, 0}};
+            vertex[2] = {{x2 + ex2 + px, y2 + ey2 + py}, fcolor, {0, 0}};
+            vertex[3] = {{x2 + ex2 - px, y2 + ey2 - py}, fcolor, {0, 0}};
             indices[0] = 0;
             indices[1] = 1;
             indices[2] = 2;
             indices[3] = 0;
             indices[4] = 2;
             indices[5] = 3;
+        }
+
+        inline void calcRectangleBorder(const GeometryF& geometry, uint16_t border_size,
+                                        std::array<SDL_FRect, 4>& borders) {
+            const float THICKNESS = border_size;
+            const float X = geometry.pos.x;
+            const float Y = geometry.pos.y;
+            const float W = geometry.size.width;
+            const float H = geometry.size.height;
+            borders[0] = {X, Y, W, THICKNESS };
+            borders[1] = {X, Y + H - THICKNESS, W, THICKNESS };
+            borders[2] = {X, Y + THICKNESS, THICKNESS, H - 2 * THICKNESS };
+            borders[3] = {X + W - THICKNESS, Y + THICKNESS, THICKNESS, H - 2 * THICKNESS };
+        }
+
+        inline void calcTriangle(const Vector2& pos1, const Vector2& pos2, const Vector2& pos3, const SDL_Color& color,
+                                 std::array<SDL_Vertex, 3>& vertices, std::array<int, 3>& indices) {
+            SDL_FColor fcolor = convert2FColor(color);
+            vertices[0] = {{pos1.x, pos1.y}, fcolor};
+            vertices[1] = {{pos2.x, pos2.y}, fcolor};
+            vertices[2] = {{pos3.x, pos3.y}, fcolor};
+            indices[0] = 0;
+            indices[1] = 1;
+            indices[2] = 2;
+        }
+
+        inline void calcEllipse(const Vector2& center_pt, const Size& radius, const SDL_Color& color,
+                                float degree, uint16_t segment, std::vector<SDL_Vertex>& vertices,
+                                std::vector<int>& indices) {
+            vertices.clear();
+            indices.clear();
+            auto colorF = convert2FColor(color);
+            float rot = degree * M_PI / 180.f;
+            float cosRot = cosf(rot), sinRot = sinf(rot);
+
+            vertices.resize(segment + 2);
+            vertices[0] = { {center_pt.x, center_pt.y}, colorF, {0, 0} };
+            for (int i = 0; i <= segment; ++i) {
+                float theta = 2.f * M_PI * i / segment;
+                float x = radius.width * cosf(theta);
+                float y = radius.height * sinf(theta);
+                vertices[i + 1] = SDL_Vertex{{ center_pt.x + x * cosRot - y * sinRot,
+                               center_pt.y + x * sinRot + y * cosRot },
+                                             colorF, {0, 0} };
+            }
+            indices.resize(segment * 3);
+            for (int i = 0; i < segment; ++i) {
+                indices[3 * i] = 0;
+                indices[3 * i + 1] = i + 1;
+                indices[3 * i + 2] = i + 2;
+            }
+        }
+
+        inline void calcEllipseRing(const Vector2& center_pt, const Size& radius, uint16_t border_size,
+                                    const SDL_Color& border_color, float degree, uint16_t segment,
+                                    std::vector<SDL_Vertex>& vertices, std::vector<int>& indices) {
+            float rx2 = radius.width - border_size, ry2 = radius.height - border_size;
+            if (rx2 <= 0 || ry2 <= 0) return;
+            auto colorF = convert2FColor(border_color);
+            vertices.clear();
+            indices.clear();
+
+            float rot = degree * M_PI / 180.f;
+            float cosR = cosf(rot), sinR = sinf(rot);
+
+            vertices.reserve((segment + 1) * 2);
+            for (int i = 0; i <= segment; ++i) {
+                float theta = 2.f * M_PI * i / segment;
+                float ex = radius.width * cosf(theta);
+                float ey = radius.height * sinf(theta);
+                float ix = rx2 * cosf(theta);
+                float iy = ry2 * sinf(theta);
+                vertices.push_back({ {center_pt.x + ex * cosR - ey * sinR,
+                                      center_pt.y + ex * sinR + ey * cosR}, colorF,
+                                     {0,0} });
+                vertices.push_back({ {center_pt.x + ix * cosR - iy * sinR,
+                               center_pt.y + ix * sinR + iy * cosR}, colorF, {0,0} });
+            }
+
+            for (int i = 0; i < segment * 2; i += 2) {
+                indices.insert(indices.end(), { i, i + 1, i + 2,   i + 1, i + 3, i + 2 });
+            }
+
+            indices[indices.size() - 2] = 0;
+            indices[indices.size() - 1] = 1;
         }
     }
 }

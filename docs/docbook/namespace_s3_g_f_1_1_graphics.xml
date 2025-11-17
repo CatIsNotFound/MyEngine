@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_namespace_s3_g_f_1_1_graphics" xml:lang="en-US">
+<title>S3GF::Graphics Namespace Reference</title>
+<indexterm><primary>S3GF::Graphics</primary></indexterm>
+<simplesect>
+    <title>Classes    </title>
+        <itemizedlist>
+            <listitem><para>struct <link linkend="_struct_s3_g_f_1_1_graphics_1_1_ellipse">Ellipse</link></para>
+</listitem>
+            <listitem><para>class <link linkend="_class_s3_g_f_1_1_graphics_1_1_line">Line</link></para>
+</listitem>
+            <listitem><para>class <link linkend="_class_s3_g_f_1_1_graphics_1_1_point">Point</link></para>
+</listitem>
+            <listitem><para>class <link linkend="_class_s3_g_f_1_1_graphics_1_1_rectangle">Rectangle</link></para>
+</listitem>
+            <listitem><para>class <link linkend="_class_s3_g_f_1_1_graphics_1_1_triangle">Triangle</link></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+</section>

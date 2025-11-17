@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_s3_g_f_1_1_text_system" xml:lang="en-US">
+<title>S3GF::TextSystem Class Reference</title>
+<indexterm><primary>S3GF::TextSystem</primary></indexterm>
+<simplesect>
+    <title>Classes    </title>
+        <itemizedlist>
+            <listitem><para>struct <link linkend="_struct_s3_g_f_1_1_text_system_1_1_font_engine">FontEngine</link></para>
+</listitem>
+            <listitem><para>struct <link linkend="_struct_s3_g_f_1_1_text_system_1_1_text">Text</link></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_text_system_1a2c1d370771b2a07108bade9160dc25ff"/><emphasis role="strong">TextSystem</emphasis> (<link linkend="_class_s3_g_f_1_1_text_system">TextSystem</link> &amp;&amp;)=delete</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_text_system_1a7418ff04b726ae9049ebdd439d8905f4"/><emphasis role="strong">TextSystem</emphasis> (const <link linkend="_class_s3_g_f_1_1_text_system">TextSystem</link> &amp;)=delete</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_text_system_1afab3defb056a76361248b99598043aee"/><link linkend="_class_s3_g_f_1_1_text_system">TextSystem</link> &amp; <emphasis role="strong">operator=</emphasis> (<link linkend="_class_s3_g_f_1_1_text_system">TextSystem</link> &amp;&amp;)=delete</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_text_system_1a934db0375b0f151d0e02930ffa3acb62"/><link linkend="_class_s3_g_f_1_1_text_system">TextSystem</link> &amp; <emphasis role="strong">operator=</emphasis> (const <link linkend="_class_s3_g_f_1_1_text_system">TextSystem</link> &amp;)=delete</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_text_system_1a479273bcb9bdce441ca96e47780935c6"/>bool <emphasis role="strong">isLoaded</emphasis> () const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_text_system_1a253b6080c8ff4638db6a41c861ed41fd"/>void <emphasis role="strong">unload</emphasis> ()</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_text_system_1a186a72155bb6516d860e6140d9d0ca78"/>bool <emphasis role="strong">addFont</emphasis> (const std::string &amp;font_name, const std::string &amp;font_path, <link linkend="_class_s3_g_f_1_1_renderer">Renderer</link> *renderer)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_text_system_1a253869c60b351e660fd2066ea3c103ac"/>bool <emphasis role="strong">removeFont</emphasis> (const std::string &amp;font_name)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_text_system_1a32fc760f229d5c561ff4c02a6b2d767c"/><link linkend="_class_s3_g_f_1_1_font">Font</link> * <emphasis role="strong">font</emphasis> (const std::string &amp;font_name)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_text_system_1adaf6d4c576f3092fa484952e37325315"/>StringList <emphasis role="strong">fontNameList</emphasis> () const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_text_system_1a58dd9a1c2795e698d892078279f814a1"/>bool <emphasis role="strong">addText</emphasis> (uint64_t text_id, const std::string &amp;font_name, const std::string &amp;text)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_text_system_1ab02c09fbefe8ee9bac0a84b95706d2ec"/>bool <emphasis role="strong">removeText</emphasis> (uint64_t text_id)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_text_system_1acce6e844576922e2c936f69f620487b0"/>bool <emphasis role="strong">setText</emphasis> (uint64_t text_id, const std::string &amp;text)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_text_system_1a6abc5df32f718846c34da16eecfcebb2"/>bool <emphasis role="strong">appendText</emphasis> (uint64_t text_id, const std::string &amp;text)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_text_system_1a7bbb81a40497626ec5a31f97b25b7f68"/>bool <emphasis role="strong">setTextFont</emphasis> (uint64_t text_id, const std::string &amp;font_name)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_text_system_1a5b4756f4bcfd7e6ac9ecb1891ede3369"/>bool <emphasis role="strong">setTextColor</emphasis> (uint64_t text_id, const SDL_Color &amp;color)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_text_system_1a2add43c074baa8643f789853482e24e8"/><link linkend="_struct_s3_g_f_1_1_text_system_1_1_text">Text</link> * <emphasis role="strong">indexOfText</emphasis> (uint64_t text_id)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_text_system_1a43e415b16978d73875117cbab2d088c8"/>std::vector&lt; uint64_t &gt; <emphasis role="strong">textIDList</emphasis> () const</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_text_system_1aa579e91e537540e06cd5860fa121d15c"/>bool <emphasis role="strong">drawText</emphasis> (uint64_t text_id, const <link linkend="_struct_s3_g_f_1_1_vector2">Vector2</link> &amp;pos, <link linkend="_class_s3_g_f_1_1_renderer">Renderer</link> *renderer)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_text_system_1a488877419ef0adc58c8dfe016b383cb6"/>SDL_Surface * <emphasis role="strong">toImage</emphasis> (uint64_t text_id)</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Static Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_s3_g_f_1_1_text_system_1ae052d127810e5e062c515991e0d27057"/>static <link linkend="_class_s3_g_f_1_1_text_system">TextSystem</link> * <emphasis role="strong">global</emphasis> ()</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<para>
+The documentation for this class was generated from the following files:</para>
+D:/Coding/S3GF/src/Core.hD:/Coding/S3GF/src/Core.cpp</section>
