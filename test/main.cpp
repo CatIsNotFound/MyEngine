@@ -15,48 +15,32 @@ int main(int argc, char* argv[]) {
         win->setWindowTitle(std::format("FPS: {}", engine.fps()));
     });
 
-    Graphics::Triangle tri(100, 100, 200, 400, 300, 100, 8, StdColor::MixYellowLemon, StdColor::MixOrangeYellow);
-    Graphics::Point pt(400, 200, 64, StdColor::GreenBean);
-    Graphics::Point pt2(200, 200, 128, StdColor::RedLightPink, 320);
-    Graphics::Line line3;
-    Graphics::Rectangle rect(0, 0, 600, 400, 0, StdColor::GreenApple, StdColor::MixOrangeYellow);
-    Graphics::Ellipse eli(300, 240, 300, 200, 6, StdColor::BlueDark, StdColor::BlueIndigoTrans, -135.f, 64);
+    Graphics::Rectangle rect1(0, 0, 100, 100, 2, StdColor::RedDark, StdColor::RedLightTrans);
+    Graphics::Rectangle rect2(400, 300, 200, 150, 4, StdColor::BlueDark, StdColor::BlueSeaTrans);
 
-    line3.setColor(StdColor::MixYellow);
-    line3.setSize(20);
-    line3.setStartPosition(500, 400);
     Geometry clip_area(0, 0, 300, 300);
-    engine.window()->installPaintEvent([&pt, &pt2, &rect, &line3, &clip_area, &eli](Renderer* r) {
+    engine.window()->installPaintEvent([&rect1, &rect2](Renderer* r) {
         // r->setClipView(clip_area);
         r->setBlendMode(SDL_BLENDMODE_BLEND);
         r->fillBackground({142, 198, 128, 128});
-        r->drawRectangle(rect);
-        r->drawPoint(pt);
-        r->drawPoint(pt2);
+        r->drawRectangle(rect1);
+        r->drawRectangle(rect2);
     });
-    EventSystem::global()->appendEvent(10, [&rect, &pt, &pt2](SDL_Event ev) {
+    EventSystem::global()->appendEvent(10, [&rect1, &rect2](SDL_Event ev) {
         auto cur_pos = Cursor::global()->position();
-        static bool is_first = true;
-        if (is_first) {
-            pt.move(cur_pos);
+        rect1.setGeometry(cur_pos, rect1.geometry().size);
+        if (Algorithm::compareRects(rect1, rect2) >= 0) {
+            rect1.setBackgroundColor(StdColor::MixYellowTrans);
+            rect2.setBackgroundColor(StdColor::MixPurpleTrans);
         } else {
-            pt2.move(cur_pos);
+            rect1.setBackgroundColor(StdColor::RedLightTrans);
+            rect2.setBackgroundColor(StdColor::BlueSeaTrans);
         }
-        if (ev.button.down && ev.button.button == SDL_BUTTON_LEFT) { is_first = !is_first; }
-        if (Algorithm::comparePosInRect(cur_pos, rect) > 0) {
+        if (Algorithm::comparePosInRect(cur_pos, rect2) >= 0) {
             Cursor::global()->setCursor(Cursor::Hand);
         } else {
             Cursor::global()->setCursor(Cursor::Default);
         }
-
-        if (Algorithm::comparePoints(pt, pt2) >= 0) {
-            pt.setColor(StdColor::RedDarkTrans);
-            pt2.setColor(StdColor::MixYellowTrans);
-        } else {
-            pt.setColor(StdColor::BlueIndigoTrans);
-            pt2.setColor(StdColor::MixPurpleTrans);
-        }
-
     });
 
     timer.start(0);

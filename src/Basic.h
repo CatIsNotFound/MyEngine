@@ -1590,12 +1590,31 @@ namespace S3GF {
             }
             void setGeometry(float x, float y, float w, float h) {
                 _geometry.reset(x, y, w, h);
+                S3GF::Algorithm::calcRectangleBorder(_geometry, _border_size, _borders);
             }
             void setGeometry(const Vector2& pos, const Size& size) {
                 _geometry.reset(pos, size);
+                S3GF::Algorithm::calcRectangleBorder(_geometry, _border_size, _borders);
             }
             void setGeometry(const GeometryF& geometry) {
                 _geometry = geometry;
+                S3GF::Algorithm::calcRectangleBorder(_geometry, _border_size, _borders);
+            }
+            void move(const Vector2& pos) {
+                _geometry.pos.reset(pos);
+                S3GF::Algorithm::calcRectangleBorder(_geometry, _border_size, _borders);
+            }
+            void move(float x, float y) {
+                _geometry.pos.reset(x, y);
+                S3GF::Algorithm::calcRectangleBorder(_geometry, _border_size, _borders);
+            }
+            void resize(const Size& size) {
+                _geometry.size.reset(size);
+                S3GF::Algorithm::calcRectangleBorder(_geometry, _border_size, _borders);
+            }
+            void resize(float w, float h) {
+                _geometry.size.reset(w, h);
+                S3GF::Algorithm::calcRectangleBorder(_geometry, _border_size, _borders);
             }
             void setBorderSize(uint16_t border_size) {
                 _border_size = border_size;
