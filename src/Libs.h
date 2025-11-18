@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 #include <deque>
+#include <queue>
 #include <memory>
 #include <functional>
 #include <map>
@@ -20,6 +21,7 @@
 #include <chrono>
 #include <thread>
 #include <mutex>
+#include <future>
 #include <condition_variable>
 #include <atomic>
 #include <cstdint>

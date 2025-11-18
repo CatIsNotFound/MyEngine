@@ -1,16 +1,14 @@
 
 #include "Core.h"
+#include "Utils/Cursor.h"
+#include "Utils/Logger.h"
 
 namespace S3GF {
     std::unique_ptr<EventSystem> EventSystem::_instance{};
     SDL_WindowID Engine::_main_window_id{0};
     bool Engine::_quit_requested{false};
     int Engine::_return_code{0};
-    Logger::LogLevel Logger::_base_level = Logger::INFO;
-    Logger::LogLevel Logger::_last_log_level = Logger::DEBUG;
-    uint64_t Logger::_started_time = SDL_GetTicksNS();
-    uint64_t Logger::_running_time = 0;
-    std::string Logger::_last_log_info = "";
+
     std::unique_ptr<TextSystem> TextSystem::_instance{};
     std::unique_ptr<AudioSystem> AudioSystem::_instance{};
 
@@ -364,6 +362,37 @@ namespace S3GF {
 
     Renderer* Window::renderer() const {
         return _renderer.get();
+    }
+
+    void Window::setBorderless(bool enabled) {
+        bool _ok = SDL_SetWindowBordered(_window, !enabled);
+        if (_ok) _borderless = enabled;
+        else Logger::log(std::format("Window (ID {}): Can't set borderless for this window!", _winID),
+                         Logger::ERROR);
+    }
+
+    bool Window::borderless() const {
+        return _borderless;
+    }
+
+    void Window::setFullScreen(bool enabled, bool move_to_center) {
+        if (!move_to_center) {
+            _mouse_pos = Cursor::global()->globalPosition();
+        }
+        bool _ok = SDL_SetWindowFullscreen(_window, enabled);
+        if (!_ok) {
+            Logger::log(std::format("Window (ID {}): Can't set fullscreen for this window!", _winID),
+                        Logger::ERROR);
+        } else _fullscreen = enabled;
+        if (move_to_center) {
+            Cursor::global()->moveToCenter(_fullscreen ? this : nullptr);
+        } else {
+            Cursor::global()->move(_mouse_pos, nullptr);
+        }
+    }
+
+    bool Window::fullScreen() const {
+        return _fullscreen;
     }
 
     void Window::setWindowTitle(const std::string& title) {

@@ -1,6 +1,7 @@
 
 #include "MultiThread/Components.h"
 #include "Core.h"
+#include "Utils/Logger.h"
 
 namespace S3GF {
     Timer::~Timer() {

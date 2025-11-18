@@ -1831,11 +1831,23 @@ namespace S3GF {
                                              _background_color, _degree, _count,
                                              _vertices, _indices);
             }
+
+            void setRotate(float rotate) {
+                _degree = rotate;
+                S3GF::Algorithm::calcEllipse(_center_point, _radius,
+                                             _background_color, _degree, _count,
+                                             _vertices, _indices);
+                S3GF::Algorithm::calcEllipseRing(_center_point, _radius, _border_size,
+                                                 _border_color, _degree, _count,
+                                                 _border_vertices, _border_indices);
+            }
+
             const Vector2& centerPosition() const { return _center_point; }
             const Size& radius() const { return _radius; }
             uint16_t borderSize() const { return _border_size; }
             const SDL_Color& borderColor() const { return _border_color; }
             const SDL_Color& backgroundColor() const { return _background_color; }
+            float rotateDegree() const { return _degree; }
             const int *indices() const { return _indices.data(); }
             const SDL_Vertex *vertices() const { return _vertices.data(); }
             size_t indicesCount() const { return _indices.size(); }

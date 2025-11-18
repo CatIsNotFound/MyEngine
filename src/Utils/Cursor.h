@@ -276,6 +276,11 @@ namespace S3GF {
          * @see visible
          */
         void setVisible(bool visible) {
+            if (visible) {
+                SDL_ShowCursor();
+            } else {
+                SDL_HideCursor();
+            }
             _visible = visible;
         }
         /**
@@ -303,7 +308,7 @@ namespace S3GF {
         static std::unique_ptr<Cursor> _instance;
     };
 
-    std::unique_ptr<Cursor> Cursor::_instance{nullptr};
+    inline std::unique_ptr<Cursor> Cursor::_instance{nullptr};
 }
 
 

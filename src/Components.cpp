@@ -1,4 +1,5 @@
 #include "Components.h"
+#include "Utils/Logger.h"
 
 namespace S3GF {
     Texture::Texture(const std::string &path, Renderer *renderer) : _renderer(renderer) {

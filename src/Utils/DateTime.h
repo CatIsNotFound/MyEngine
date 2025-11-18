@@ -154,6 +154,11 @@ namespace S3GF {
             return timezone;
         }
 
+        static uint64_t currentTimestamp() {
+            auto now = std::chrono::system_clock::now();
+            return now.time_since_epoch().count();
+        }
+
         static std::string now() {
             auto now = std::chrono::system_clock::now();
             auto zoned = std::chrono::zoned_time(timezone, now);

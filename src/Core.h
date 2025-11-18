@@ -142,6 +142,12 @@ namespace S3GF {
         void setRenderer(Renderer* renderer);
         Renderer* renderer() const;
 
+        void setBorderless(bool enabled);
+        bool borderless() const;
+
+        void setFullScreen(bool enabled, bool move_to_center = false);
+        bool fullScreen() const;
+
         void setWindowTitle(const std::string& title);
         const std::string& windowTitle() const; 
 
@@ -161,6 +167,9 @@ namespace S3GF {
         std::string _title;
         bool _visible{true};
         bool _resizable{false};
+        bool _borderless{false};
+        bool _fullscreen{false};
+        Vector2 _mouse_pos{0, 0};
         std::function<void(Renderer*)> _paint_event;
     };
     class Engine;
@@ -221,61 +230,6 @@ namespace S3GF {
         uint32_t _real_fps{0};
         static SDL_WindowID _main_window_id;
         std::unordered_map<SDL_WindowID, std::unique_ptr<Window>> _window_list;
-    };
-
-    class Logger {
-    public:
-        enum LogLevel {
-            DEBUG,
-            INFO,
-            WARN,
-            ERROR,
-            FATAL
-        };
-        Logger() = delete;
-        Logger(Logger&&) = delete;
-        Logger(const Logger&) = delete;
-        Logger& operator=(Logger&&) = delete;
-        Logger& operator=(const Logger&) = delete;
-        ~Logger() = delete;
-
-        static void log(const std::string& message, LogLevel level = DEBUG) {
-            _running_time = SDL_GetTicksNS();
-            if (level < _base_level) return;
-            auto _real_time = (_running_time - _started_time) / 1e9;
-            if (level >= WARN) {
-                std::cerr << std::format("[{:.06f}] [{}] {}\n", _real_time, _logLevelToString(level), message);
-            } else {
-                std::cout << std::format("[{:.06f}] [{}] {}\n", _real_time, _logLevelToString(level), message);
-            }
-            _last_log_level = level;
-            _last_log_info = message;
-        }
-
-        static void setBaseLogLevel(LogLevel level) {
-            _base_level = level;
-        }
-
-        static std::string lastError() {
-            return (_last_log_level >= ERROR ? _last_log_info : "");
-        }
-    private:
-        static std::string _logLevelToString(LogLevel level) {
-            switch (level) {
-                case DEBUG: return "DEBUG";
-                case INFO: return "INFO";
-                case WARN: return "WARN";
-                case ERROR: return "ERROR";
-                case FATAL: return "FATAL";
-                default: return "UNKNOWN";
-            }
-        }
-
-        static LogLevel _base_level;
-        static LogLevel _last_log_level;
-        static std::string _last_log_info;
-        static uint64_t _started_time;
-        static uint64_t _running_time;
     };
 
     class Font {

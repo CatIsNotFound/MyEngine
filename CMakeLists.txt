@@ -42,37 +42,49 @@ find_package(SDL3_ttf REQUIRED)
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
     add_library(${PROJECT_NAME} SHARED
+            src/S3GF
             src/Basic.h
             src/Libs.h
             src/Core.cpp
             src/Core.h
             src/Components.cpp
             src/Components.h
+            src/MultiThread/All
             src/MultiThread/Components.cpp
             src/MultiThread/Components.h
+            src/Utils/All
             src/Utils/Random.cpp
             src/Utils/Random.h
+            src/Algorithm/All
             src/Algorithm/Draw.h
             src/Utils/DateTime.h
             src/Utils/Cursor.h
             src/Algorithm/Collider.h
+            src/MultiThread/ThreadPool.h
+            src/Utils/Logger.h
     )
 else ()
     add_library(${PROJECT_NAME} STATIC
+            src/S3GF
             src/Basic.h
             src/Libs.h
             src/Core.cpp
             src/Core.h
             src/Components.cpp
             src/Components.h
+            src/MultiThread/All
             src/MultiThread/Components.cpp
             src/MultiThread/Components.h
+            src/Utils/All
             src/Utils/Random.cpp
             src/Utils/Random.h
+            src/Algorithm/All
             src/Algorithm/Draw.h
             src/Utils/DateTime.h
             src/Utils/Cursor.h
             src/Algorithm/Collider.h
+            src/MultiThread/ThreadPool.h
+            src/Utils/Logger.h
     )
 endif ()
 
@@ -96,7 +108,7 @@ install(TARGETS ${PROJECT_NAME}
     INCLUDES DESTINATION include
 )
 
-install(FILES src/S3GF.h DESTINATION include)
+install(FILES src/S3GF DESTINATION include)
 
 install(EXPORT ${PROJECT_NAME}Targets
     FILE ${PROJECT_NAME}Targets.cmake
