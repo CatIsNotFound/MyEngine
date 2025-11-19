@@ -5,7 +5,7 @@
 
 namespace S3GF {
     namespace Algorithm {
-        int8_t comparePosInRect(const Vector2& vec, const Graphics::Rectangle& rect) {
+        inline int8_t comparePosInRect(const Vector2& vec, const Graphics::Rectangle& rect) {
             float left = rect.geometry().pos.x;
             float right = left + rect.geometry().size.width;
             float top = rect.geometry().pos.y;
@@ -19,7 +19,7 @@ namespace S3GF {
             return -1;
         }
 
-        int8_t comparePosInPoint(const Vector2& pos, const Graphics::Point& point) {
+        inline int8_t comparePosInPoint(const Vector2& pos, const Graphics::Point& point) {
             auto pt = point.position();
             if (point.size() < 2) {
                 return (point.position().isEqual(pos) ? 1 : -1);
@@ -34,7 +34,7 @@ namespace S3GF {
             return 1;
         }
 
-        int8_t comparePoints(const Graphics::Point& point1, const Graphics::Point& point2) {
+        inline int8_t comparePoints(const Graphics::Point& point1, const Graphics::Point& point2) {
             auto p1 = point1.position(), p2 = point2.position();
             if (point1.size() < 2 && point2.size() < 2) {
                 return (point1.position().isEqual(point2.position()) ? 1 : -1);
@@ -50,7 +50,7 @@ namespace S3GF {
             return 1;
         }
 
-        int8_t compareRects(const Graphics::Rectangle& rect1, const Graphics::Rectangle& rect2) {
+        inline int8_t compareRects(const Graphics::Rectangle& rect1, const Graphics::Rectangle& rect2) {
             float x1 = rect1.geometry().pos.x, x2 = rect1.geometry().pos.x + rect1.geometry().size.width,
                   y1 = rect1.geometry().pos.y, y2 = rect1.geometry().pos.y + rect1.geometry().size.height,
                   x3 = rect2.geometry().pos.x, x4 = rect2.geometry().pos.x + rect2.geometry().size.width,

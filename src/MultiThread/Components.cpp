@@ -2,6 +2,7 @@
 #include "MultiThread/Components.h"
 #include "Core.h"
 #include "Utils/Logger.h"
+#include "MultiThread/ThreadPool.h"
 
 namespace S3GF {
     Timer::~Timer() {
@@ -64,7 +65,7 @@ namespace S3GF {
     void Timer::running() {
         while (_enabled) {
             _lock.lock();
-            SDL_Delay(1);
+            sleepMS(1);
             _current_time = SDL_GetTicks();
             auto current_delay = _current_time - _start_time;
             if (current_delay >= _delay) {
@@ -139,7 +140,7 @@ namespace S3GF {
     void Trigger::running() {
         while (_enabled) {
             _mutex.lock();
-            SDL_Delay(1);
+            sleepMS(1);
             bool c_switch = false;
             if (_condition_function) {
                 c_switch = _condition_function();

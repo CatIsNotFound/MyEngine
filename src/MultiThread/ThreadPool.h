@@ -3,21 +3,24 @@
 #define S3GF_THREADPOOL_H
 #include "Libs.h"
 #include "Utils/Logger.h"
+#define sleep(sec) std::this_thread::sleep_for(std::chrono::seconds(sec))
+#define sleepMS(millisec) std::this_thread::sleep_for(std::chrono::milliseconds(millisec))
+#define sleepNS(nanosec) std::this_thread::sleep_for(std::chrono::nanoseconds(nanosec))
 
 namespace S3GF {
     class ThreadPool {
     public:
-        explicit ThreadPool(uint32_t max_waiting_threads, uint32_t nums = std::thread::hardware_concurrency())
-            : _nums_of_threads(nums), _max_threads_count(max_waiting_threads), _running(true) {
-            if (!nums) {
-                Logger::log("ThreadPool: Argument error: No one thread in thread pool!", Logger::FATAL);
-                throw std::invalid_argument("ThreadPool: Argument error: No one thread in thread pool!");
+        explicit ThreadPool(uint32_t max_waiting, uint32_t max_running = std::thread::hardware_concurrency())
+            : _nums_of_threads(max_running), _max_threads_count(max_waiting), _running(true) {
+            if (!max_running || max_running > std::thread::hardware_concurrency()) {
+                Logger::log("ThreadPool: Argument error: Maximum threads count argument is invalid!", Logger::FATAL);
+                throw std::invalid_argument("ThreadPool: Argument error: Maximum threads count argument is invalid!");
             }
-            if (!_max_threads_count) {
-                Logger::log("ThreadPool: Argument error: No one thread in waiting queue!", Logger::FATAL);
-                throw std::invalid_argument("ThreadPool: Argument error: No one thread in waiting thread queue!");
+            if (!max_waiting) {
+                Logger::log("ThreadPool: Argument error: Maximum waiting threads count argument is invalid!!", Logger::FATAL);
+                throw std::invalid_argument("ThreadPool: Argument error: Maximum waiting threads count argument is invalid!!");
             }
-            while (nums--) {
+            while (max_running--) {
                 _thread_list.emplace_back([this]{
                     std::function<void()> this_task;
                     while (true) {
@@ -29,7 +32,6 @@ namespace S3GF {
                         if (_waiting_queue.empty()) continue;
                         this_task = std::move(_waiting_queue.front());
                         _waiting_queue.pop();
-                        _condition_var.notify_one();
                         _running_thread_count += 1;
                         lock.unlock();
                         try {
@@ -40,6 +42,7 @@ namespace S3GF {
                         }
                         lock.lock();
                         _running_thread_count -= 1;
+                        _condition_var.notify_all();
                         lock.unlock();
                     }
                 });
@@ -69,10 +72,14 @@ namespace S3GF {
             _condition_var.notify_all();
         }
 
-        void wait() {
+        void wait(bool clear_queue = false) {
             std::unique_lock<std::mutex> lock(_mutex);
+            if (clear_queue && !_waiting_queue.empty()) {
+                _waiting_queue = {};
+                _condition_var.notify_all();
+            }
             _condition_var.wait(lock, [this] {
-                return _waiting_queue.empty() || _running_thread_count == 0;
+                return (_waiting_queue.empty() && _running_thread_count == 0) || !_running;
             });
         }
 
@@ -89,7 +96,42 @@ namespace S3GF {
             }
         }
 
-        [[nodiscard]] bool isRunning() const { return _running; }
+        void restartAll() {
+            if (_running) stopAll();
+
+            _thread_list.clear();
+            uint32_t nums = _nums_of_threads;
+            while (nums--) {
+                _thread_list.emplace_back([this]{
+                    std::function<void()> this_task;
+                    while (true) {
+                        std::unique_lock<std::mutex> lock(_mutex);
+                        _condition_var.wait(lock, [this] {
+                            return !_waiting_queue.empty() || !_running;
+                        });
+                        if (!_running && _waiting_queue.empty()) return;
+                        if (_waiting_queue.empty()) continue;
+                        this_task = std::move(_waiting_queue.front());
+                        _waiting_queue.pop();
+                        _running_thread_count += 1;
+                        lock.unlock();
+                        try {
+                            this_task();
+                        } catch (const std::exception& e) {
+                            Logger::log(std::format("ThreadPool: Task failed! "
+                                                    "Exception: {}", e.what()), Logger::ERROR);
+                        }
+                        lock.lock();
+                        _running_thread_count -= 1;
+                        _condition_var.notify_all();
+                        lock.unlock();
+                    }
+                });
+            }
+            startAll();
+        }
+
+        [[nodiscard]] bool isRunning() const { return _running.load(std::memory_order_acquire); }
         [[nodiscard]] uint32_t threadsCount() const { return _nums_of_threads; }
         [[nodiscard]] uint32_t waitingQueueCount() {
             std::unique_lock<std::mutex> lock(_mutex);
@@ -107,6 +149,60 @@ namespace S3GF {
         std::condition_variable _condition_var;
         std::queue<std::function<void()>> _waiting_queue;
         std::atomic<bool> _running;
+    };
+
+    class TasksManager : private ThreadPool {
+    public:
+        enum Priority {
+            Low,
+            Medium,
+            High
+        };
+
+        struct Task {
+            uint64_t id;
+            Priority priority;
+            std::function<void()> function;
+        };
+
+        struct TaskCmp {
+            bool operator()(Task& t1, Task& t2) {
+                if (t1.priority < t2.priority) return true;
+                if (t2.priority < t1.priority) return false;
+                return t1.id > t2.id;
+            }
+        };
+
+        explicit TasksManager(size_t max_tasks, size_t max_threads)
+            : ThreadPool(max_tasks, max_threads) {}
+
+        void addTask(std::function<void()> function, Priority priority = Low) {
+            _tasks_queue.emplace(_next_id++, priority, std::move(function));
+        }
+
+        void startAllTasks() {
+            while (!_tasks_queue.empty()) {
+                auto top = _tasks_queue.top();
+                append(top.function);
+                _tasks_queue.pop();
+            }
+        }
+
+        void start() {
+            if (_tasks_queue.empty()) return;
+            auto top = _tasks_queue.top();
+            append(top.function);
+            _tasks_queue.pop();
+        }
+
+        void stopAllTasks() { ThreadPool::wait(true); }
+        void wait() { ThreadPool::wait(); }
+
+        [[nodiscard]] size_t tasksCount() const { return _tasks_queue.size(); }
+        [[nodiscard]] size_t runningTasks() const { return runningThreadsCount(); }
+    private:
+        std::priority_queue<Task, std::vector<Task>, TaskCmp> _tasks_queue;
+        uint64_t _next_id{1};
     };
 }
 

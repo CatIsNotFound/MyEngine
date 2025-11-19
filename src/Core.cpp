@@ -247,9 +247,11 @@ namespace S3GF {
         SDL_FRect rect_dest = {scaled_pos.x, scaled_pos.y,
                         scaled_size.width, scaled_size.height};
         if (_property->clip_mode) {
-            SDL_RenderTextureRotated(renderer, _texture, &_property->clip_area, &rect_dest, _property->rotate_angle, nullptr, SDL_FLIP_NONE);
+            SDL_RenderTextureRotated(renderer, _texture, &_property->clip_area,
+                         &rect_dest, _property->rotate_angle, nullptr, SDL_FLIP_NONE);
         } else {
-            SDL_RenderTextureRotated(renderer, _texture, nullptr, &rect_dest, _property->rotate_angle, nullptr, SDL_FLIP_NONE);
+            SDL_RenderTextureRotated(renderer, _texture, nullptr,
+                             &rect_dest, _property->rotate_angle, nullptr, SDL_FLIP_NONE);
         }
     }
 
@@ -257,8 +259,8 @@ namespace S3GF {
         TTF_DrawRendererText(text, position.x, position.y);
     }
 
-    Window::Window(const std::string& title, int width, int height, GraphicEngine engine) 
-        : _title(title), _window_geometry(0, 0, width, height), _visible(true), _resizable(false) {
+    Window::Window(Engine* object, const std::string& title, int width, int height,  GraphicEngine engine)
+        : _title(title), _window_geometry(0, 0, width, height), _visible(true), _resizable(false), _engine(object) {
         if (engine == VULKAN)
             _window = SDL_CreateWindow(_title.c_str(), width, height, SDL_WINDOW_VULKAN);
         else
@@ -269,21 +271,29 @@ namespace S3GF {
         _renderer = std::make_shared<Renderer>(this);
         _winID = SDL_GetWindowID(_window);
         SDL_GetWindowPosition(_window, &_window_geometry.x, &_window_geometry.y);
-        Logger::log(std::format("Window '{}' created with ID {}", _title, _winID), Logger::DEBUG);
+        Logger::log(std::format("Window: created with ID {}", _winID), Logger::DEBUG);
+        if (object) {
+            object->newWindow(this);
+        } else {
+            Logger::log("Window: Can't find engine object!", Logger::FATAL);
+            Engine::throwFatalError();
+        }
     }
 
     Window::~Window() {
         if (_renderer) {
             _renderer.reset();
         }
-        SDL_DestroyWindow(_window);
-        Logger::log(std::format("Window '{}' with ID {} destroyed", _title, _winID), Logger::DEBUG);
+        if (_window) {
+            SDL_DestroyWindow(_window);
+            Logger::log(std::format("Window: ID {} destroyed",  _winID), Logger::DEBUG);
+        }
     }
 
     bool Window::move(int x, int y) {
         bool _ret = SDL_SetWindowPosition(_window, x, y);
         if (!_ret) {
-            Logger::log(std::format("Can't move window!\nException: {}", SDL_GetError()), Logger::ERROR); 
+            Logger::log(std::format("Window: Can't move window! Exception: {}", SDL_GetError()), Logger::ERROR);
             return false;
         }
         _window_geometry.x = x;
@@ -294,7 +304,7 @@ namespace S3GF {
     bool Window::resize(int width, int height) {
         bool _ret = SDL_SetWindowSize(_window, width, height);
         if (!_ret) {
-            Logger::log(std::format("Can't resize window!\nException: {}", SDL_GetError()), Logger::ERROR); 
+            Logger::log(std::format("Window: Can't resize window! Exception: {}", SDL_GetError()), Logger::ERROR);
             return false;
         }
         _window_geometry.width = width;
@@ -317,7 +327,7 @@ namespace S3GF {
     bool Window::show() {
         auto _ret = SDL_ShowWindow(_window);
         if (!_ret) {
-            Logger::log(std::format("Can't show window!\nException: {}", SDL_GetError()), Logger::ERROR); 
+            Logger::log(std::format("Window: Can't show window! Exception: {}", SDL_GetError()), Logger::ERROR);
             return false;
         }
         _visible = true;
@@ -327,7 +337,7 @@ namespace S3GF {
     bool Window::hide() {
         bool _ret = SDL_HideWindow(_window);
         if (!_ret) {
-            Logger::log(std::format("Can't hide window!\nException: {}", SDL_GetError()), Logger::ERROR); 
+            Logger::log(std::format("Window: Can't hide window! Exception: {}", SDL_GetError()), Logger::ERROR);
             return false;
         }
         _visible = false;
@@ -341,7 +351,7 @@ namespace S3GF {
     bool Window::setResizable(bool enabled) {
         auto _ret = SDL_SetWindowResizable(_window, enabled);
         if (!_ret) {
-            Logger::log(std::format("Can't set window resizable mode!\nException: {}", SDL_GetError()), Logger::ERROR); 
+            Logger::log(std::format("Window: Can't set window resizable mode! Exception: {}", SDL_GetError()), Logger::ERROR);
             return false;
         }
         _resizable = enabled;
@@ -354,7 +364,7 @@ namespace S3GF {
 
     void Window::setRenderer(Renderer* renderer) {
         if (!renderer) {
-            Logger::log("The specified renderer is not valid!", Logger::ERROR);
+            Logger::log("Window: The specified renderer is not valid!", Logger::ERROR);
             return;
         }
         _renderer = std::shared_ptr<Renderer>(renderer);
@@ -439,7 +449,14 @@ namespace S3GF {
 
     void Window::lostFocusEvent() {}
 
-    void Window::unloadEvent() {}
+    void Window::unloadEvent() {
+        if (_engine) {
+            Logger::log(std::format("Window: Unload window id {}", _winID));
+            _engine->removeWindow(_winID);
+        } else {
+            Logger::log(std::format("Window: Unload window id {} failed!", _winID));
+        }
+    }
 
     EventSystem::~EventSystem() = default;
 
@@ -480,12 +497,11 @@ namespace S3GF {
     bool EventSystem::run() {
         SDL_Event ev;
         if (SDL_PollEvent(&ev)) {
-            if (ev.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED) {
-                return false;
-            }
             for (auto i = _engine->begin(); i != _engine->end(); i++) {
                 if (ev.window.windowID != i->first) continue;
-                
+                if (ev.window.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED) {
+                    i->second->unloadEvent();
+                }
                 if (ev.type == SDL_EVENT_WINDOW_MOVED) {
                     i->second->moveEvent();
                 }
@@ -498,6 +514,7 @@ namespace S3GF {
                 if (ev.type == SDL_EVENT_WINDOW_FOCUS_LOST) {
                     i->second->lostFocusEvent();
                 }
+
             }
 
             for (auto& event : _event_list) {
@@ -541,7 +558,8 @@ namespace S3GF {
     void Engine::newWindow(Window* window) {
         if (!window) return;
         if (_main_window_id == 0) _main_window_id = window->windowID();
-        _window_list.emplace(window->windowID(), window);
+        if (!_window_list.contains(window->windowID()))
+            _window_list.emplace(window->windowID(), window);
     }
 
     void Engine::removeWindow(SDL_WindowID id) {
@@ -601,8 +619,8 @@ namespace S3GF {
         auto frames = 0ULL;
         auto start_ns = SDL_GetTicksNS();
         while (_running && !_quit_requested) {
-            // std::this_thread::sleep_for(std::chrono::milliseconds(1));
-            SDL_Delay(1);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            if (_window_list.empty()) break;
             _running = EventSystem::global(this)->run();
             if (!_running) break;
             auto current_time = SDL_GetTicks();

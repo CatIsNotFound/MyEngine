@@ -4,9 +4,11 @@
 #include "Components.h"
 
 namespace S3GF {
+    class Engine;
     class Window;
     struct Property;
     class Texture;
+    class EventSystem;
     class Renderer {
     public:
         explicit Renderer(Window* window = nullptr);
@@ -114,6 +116,8 @@ namespace S3GF {
     };
 
     class Window {
+        friend class Renderer;
+        friend class EventSystem;
     public:
         struct Geometry {
             int x, y, width, height;
@@ -122,7 +126,7 @@ namespace S3GF {
             OPENGL,
             VULKAN
         };
-        explicit Window(const std::string& title, int width = 800, int height = 600, GraphicEngine engine = OPENGL);
+        explicit Window(Engine* object, const std::string& title, int width = 800, int height = 600, GraphicEngine engine = OPENGL);
         ~Window();
 
         bool move(int x, int y);
@@ -153,6 +157,7 @@ namespace S3GF {
 
         SDL_Window* self() const;
         void installPaintEvent(const std::function<void(Renderer* renderer)>& paint_event);
+    protected:
         virtual void paintEvent();
         virtual void resizeEvent();
         virtual void moveEvent();
@@ -171,8 +176,9 @@ namespace S3GF {
         bool _fullscreen{false};
         Vector2 _mouse_pos{0, 0};
         std::function<void(Renderer*)> _paint_event;
+        Engine* _engine;
     };
-    class Engine;
+
     class EventSystem {
     public:
         EventSystem(EventSystem &&) = delete;

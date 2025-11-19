@@ -3,6 +3,7 @@ project(S3GF_TEST)
 
 add_executable(${PROJECT_NAME}
         testGraphic.cpp
+        testTaskManager.cpp
         main.cpp
 )
 

@@ -331,7 +331,7 @@ namespace S3GF {
 
     };
 
-    std::string DateTime::timezone{std::chrono::current_zone()->name()};
+    inline std::string DateTime::timezone{std::chrono::current_zone()->name()};
 }
 
 #endif //S3GF_DATETIME_H

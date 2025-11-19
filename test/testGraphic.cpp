@@ -3,9 +3,9 @@
 #include "MultiThread/All"
 
 using namespace S3GF;
-int test(int argc, char* argv[]) {
+int testGraphic(int argc, char* argv[]) {
     Engine engine;
-    engine.newWindow(new Window("Hello world!"));
+    engine.newWindow(new Window(&engine, "Hello world!"));
     auto win = engine.window();
     win->setResizable(true);
     engine.setFPS(120);
