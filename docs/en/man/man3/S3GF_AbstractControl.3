@@ -1,4 +1,4 @@
-.TH "S3GF::AbstractControl" 3 "Thu Nov 20 2025 20:40:12" "Version v0.1.0-beta" "S3GF" \" -*- nroff -*-
+.TH "S3GF::AbstractControl" 3 "Fri Nov 21 2025 16:18:19" "Version v0.1.0-beta" "S3GF" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -8,6 +8,8 @@ S3GF::AbstractControl
 .PP
 .PP
 \fR#include <Control\&.h>\fP
+.PP
+Inherited by \fBS3GF::Button\fP\&.
 .SS "Public Types"
 
 .in +1c
@@ -22,7 +24,7 @@ S3GF::AbstractControl
 .RI "\fBAbstractControl\fP (const std::string &\fBname\fP, \fBRenderer\fP *renderer, \fBGT\fP click_area=\fBGraphics::Rectangle\fP(), \fBAbstractControl\fP *parent=nullptr)"
 .br
 .ti -1c
-.RI "\fB~AbstractControl\fP ()"
+.RI "\fB~AbstractControl\fP ()=default"
 .br
 .ti -1c
 .RI "void \fBsetName\fP (const std::string &\fBname\fP)"
@@ -92,12 +94,6 @@ S3GF::AbstractControl
 .RI "virtual void \fBpaintEvent\fP (\fBRenderer\fP *)"
 .br
 .ti -1c
-.RI "virtual void \fBloadEvent\fP ()"
-.br
-.ti -1c
-.RI "virtual void \fBunloadEvent\fP ()"
-.br
-.ti -1c
 .RI "virtual void \fBmoveEvent\fP ()"
 .br
 .ti -1c
@@ -122,10 +118,10 @@ S3GF::AbstractControl
 .RI "virtual void \fBonLeft\fP ()"
 .br
 .ti -1c
-.RI "virtual void \fBenabledChanged\fP ()"
+.RI "virtual void \fBenabledChanged\fP (bool \fBenabled\fP)"
 .br
 .ti -1c
-.RI "virtual void \fBvisibleChanged\fP ()"
+.RI "virtual void \fBvisibleChanged\fP (bool \fBvisible\fP)"
 .br
 .ti -1c
 .RI "void \fB_update_click_area\fP ()"
@@ -184,79 +180,89 @@ S3GF::AbstractControl
 \f(BISelected \fP
 .SH "Constructor & Destructor Documentation"
 .PP 
-.SS "S3GF::AbstractControl::AbstractControl (const std::string & name, \fBRenderer\fP * renderer, \fBGT\fP click_area = \fR\fBGraphics::Rectangle\fP()\fP, \fBAbstractControl\fP * parent = \fRnullptr\fP)\fR [inline]\fP, \fR [explicit]\fP"
+.SS "S3GF::AbstractControl::AbstractControl (const std::string & name, \fBRenderer\fP * renderer, \fBGT\fP click_area = \fR\fBGraphics::Rectangle\fP()\fP, \fBAbstractControl\fP * parent = \fRnullptr\fP)\fR [explicit]\fP"
 
-.SS "S3GF::AbstractControl::~AbstractControl ()\fR [inline]\fP"
+.SS "S3GF::AbstractControl::~AbstractControl ()\fR [default]\fP"
 
 .SH "Member Function Documentation"
 .PP 
-.SS "void S3GF::AbstractControl::_update_click_area ()\fR [inline]\fP, \fR [protected]\fP"
+.SS "void S3GF::AbstractControl::_update_click_area ()\fR [protected]\fP"
 
 .SS "bool S3GF::AbstractControl::enabled () const\fR [inline]\fP, \fR [nodiscard]\fP"
 
-.SS "virtual void S3GF::AbstractControl::enabledChanged ()\fR [inline]\fP, \fR [protected]\fP, \fR [virtual]\fP"
+.SS "virtual void S3GF::AbstractControl::enabledChanged (bool enabled)\fR [inline]\fP, \fR [protected]\fP, \fR [virtual]\fP"
 
 .SS "const \fBGeometryF\fP & S3GF::AbstractControl::geometry () const\fR [inline]\fP, \fR [nodiscard]\fP"
 
-.SS "virtual void S3GF::AbstractControl::loadEvent ()\fR [inline]\fP, \fR [protected]\fP, \fR [virtual]\fP"
+.SS "void S3GF::AbstractControl::move (const \fBVector2\fP & pos)"
 
-.SS "void S3GF::AbstractControl::move (const \fBVector2\fP & pos)\fR [inline]\fP"
+.SS "void S3GF::AbstractControl::move (float x, float y)"
 
-.SS "void S3GF::AbstractControl::move (float x, float y)\fR [inline]\fP"
-
-.SS "void S3GF::AbstractControl::move (\fBVector2\fP && pos)\fR [inline]\fP"
+.SS "void S3GF::AbstractControl::move (\fBVector2\fP && pos)"
 
 .SS "virtual void S3GF::AbstractControl::moveEvent ()\fR [inline]\fP, \fR [protected]\fP, \fR [virtual]\fP"
 
-.SS "const std::string & S3GF::AbstractControl::name () const\fR [inline]\fP, \fR [nodiscard]\fP"
+.PP
+Reimplemented in \fBS3GF::Button\fP\&.
+.SS "const std::string & S3GF::AbstractControl::name () const\fR [nodiscard]\fP"
 
 .SS "virtual void S3GF::AbstractControl::onEntered ()\fR [inline]\fP, \fR [protected]\fP, \fR [virtual]\fP"
 
+.PP
+Reimplemented in \fBS3GF::Button\fP\&.
 .SS "virtual void S3GF::AbstractControl::onHovered ()\fR [inline]\fP, \fR [protected]\fP, \fR [virtual]\fP"
 
+.PP
+Reimplemented in \fBS3GF::Button\fP\&.
 .SS "virtual void S3GF::AbstractControl::onLeft ()\fR [inline]\fP, \fR [protected]\fP, \fR [virtual]\fP"
 
+.PP
+Reimplemented in \fBS3GF::Button\fP\&.
 .SS "virtual void S3GF::AbstractControl::onPressed ()\fR [inline]\fP, \fR [protected]\fP, \fR [virtual]\fP"
 
+.PP
+Reimplemented in \fBS3GF::Button\fP\&.
 .SS "virtual void S3GF::AbstractControl::onReleased ()\fR [inline]\fP, \fR [protected]\fP, \fR [virtual]\fP"
 
 .SS "virtual void S3GF::AbstractControl::onTriggered ()\fR [inline]\fP, \fR [protected]\fP, \fR [virtual]\fP"
 
 .SS "virtual void S3GF::AbstractControl::paintEvent (\fBRenderer\fP * )\fR [inline]\fP, \fR [protected]\fP, \fR [virtual]\fP"
 
+.PP
+Reimplemented in \fBS3GF::Button\fP\&.
 .SS "const \fBVector2\fP & S3GF::AbstractControl::position () const\fR [inline]\fP, \fR [nodiscard]\fP"
 
-.SS "void S3GF::AbstractControl::resize (const \fBSize\fP & size)\fR [inline]\fP"
+.SS "void S3GF::AbstractControl::resize (const \fBSize\fP & size)"
 
-.SS "void S3GF::AbstractControl::resize (float w, float h)\fR [inline]\fP"
+.SS "void S3GF::AbstractControl::resize (float w, float h)"
 
-.SS "void S3GF::AbstractControl::resize (\fBSize\fP && size)\fR [inline]\fP"
+.SS "void S3GF::AbstractControl::resize (\fBSize\fP && size)"
 
 .SS "virtual void S3GF::AbstractControl::resizeEvent ()\fR [inline]\fP, \fR [protected]\fP, \fR [virtual]\fP"
 
-.SS "void S3GF::AbstractControl::setEnabled (bool enabled)\fR [inline]\fP"
+.PP
+Reimplemented in \fBS3GF::Button\fP\&.
+.SS "void S3GF::AbstractControl::setEnabled (bool enabled)"
 
-.SS "void S3GF::AbstractControl::setGeometry (const \fBGeometryF\fP & geometry)\fR [inline]\fP"
+.SS "void S3GF::AbstractControl::setGeometry (const \fBGeometryF\fP & geometry)"
 
-.SS "void S3GF::AbstractControl::setGeometry (const \fBVector2\fP & pos, const \fBSize\fP & size)\fR [inline]\fP"
+.SS "void S3GF::AbstractControl::setGeometry (const \fBVector2\fP & pos, const \fBSize\fP & size)"
 
-.SS "void S3GF::AbstractControl::setGeometry (float x, float y, float w, float h)\fR [inline]\fP"
+.SS "void S3GF::AbstractControl::setGeometry (float x, float y, float w, float h)"
 
-.SS "void S3GF::AbstractControl::setGeometry (\fBGeometryF\fP && geometry)\fR [inline]\fP"
+.SS "void S3GF::AbstractControl::setGeometry (\fBGeometryF\fP && geometry)"
 
-.SS "void S3GF::AbstractControl::setGeometry (\fBVector2\fP && pos, \fBSize\fP && size)\fR [inline]\fP"
+.SS "void S3GF::AbstractControl::setGeometry (\fBVector2\fP && pos, \fBSize\fP && size)"
 
-.SS "void S3GF::AbstractControl::setName (const std::string & name)\fR [inline]\fP"
+.SS "void S3GF::AbstractControl::setName (const std::string & name)"
 
-.SS "void S3GF::AbstractControl::setVisible (bool visible)\fR [inline]\fP"
+.SS "void S3GF::AbstractControl::setVisible (bool visible)"
 
 .SS "const \fBSize\fP & S3GF::AbstractControl::size () const\fR [inline]\fP, \fR [nodiscard]\fP"
 
-.SS "virtual void S3GF::AbstractControl::unloadEvent ()\fR [inline]\fP, \fR [protected]\fP, \fR [virtual]\fP"
-
 .SS "bool S3GF::AbstractControl::visible () const\fR [inline]\fP, \fR [nodiscard]\fP"
 
-.SS "virtual void S3GF::AbstractControl::visibleChanged ()\fR [inline]\fP, \fR [protected]\fP, \fR [virtual]\fP"
+.SS "virtual void S3GF::AbstractControl::visibleChanged (bool visible)\fR [inline]\fP, \fR [protected]\fP, \fR [virtual]\fP"
 
 .SH "Member Data Documentation"
 .PP 

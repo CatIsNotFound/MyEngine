@@ -1,8 +1,8 @@
 
 #ifndef S3GF_THREADPOOL_H
 #define S3GF_THREADPOOL_H
-#include "Libs.h"
-#include "Utils/Logger.h"
+#include "../Libs.h"
+#include "../Utils/Logger.h"
 #define sleep(sec) std::this_thread::sleep_for(std::chrono::seconds(sec))
 #define sleepMS(millisec) std::this_thread::sleep_for(std::chrono::milliseconds(millisec))
 #define sleepNS(nanosec) std::this_thread::sleep_for(std::chrono::nanoseconds(nanosec))

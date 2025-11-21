@@ -1,6 +1,6 @@
 #include "Core.h"
 #include "Algorithm/All"
-#include "MultiThread/All"
+#include "MultiThread/Components.h"
 
 using namespace S3GF;
 int testGraphic(int argc, char* argv[]) {

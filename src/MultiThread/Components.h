@@ -1,7 +1,7 @@
 #pragma once
 #ifndef S3GF_COMPONENTS_H
 #define S3GF_COMPONENTS_H
-#include "Libs.h"
+#include "../Libs.h"
 namespace S3GF {
     class Timer {
     public:

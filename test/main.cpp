@@ -3,6 +3,7 @@
 #include "Controls/Control.h"
 #include "MultiThread/Components.h"
 #include "Utils/Random.h"
+#include "Utils/FileSystem.h"
 
 using namespace S3GF;
 
@@ -16,14 +17,6 @@ public:
         _click_area.setGraphic(_rect);
     }
 protected:
-    void loadEvent() override {
-        Logger::log(std::format("Loaded: {}", _name), S3GF::Logger::INFO);
-    }
-
-    void unloadEvent() override {
-        Logger::log(std::format("Unloaded: {}", _name), S3GF::Logger::INFO);
-    }
-
     void onEntered() override {
         Logger::log(std::format("Entered: {}", _name), S3GF::Logger::INFO);
     }
@@ -83,6 +76,12 @@ int main() {
     main_win->installPaintEvent([&pt, &rect1, &rect2](Renderer* r) {
         r->fillBackground(StdColor::MixGray);
     });
+//    FileSystem::setCurrentPath("../");
+    auto entry = FileSystem::listFilePaths("C:/Windows/Fonts", S3GF::FileSystem::FilesOnly);
+    for (auto& f : entry) {
+        Logger::log(std::format("- {}", f), S3GF::Logger::INFO);
+    }
+
 
     Timer timer(5000, [&con1, &rect1] {
         auto f1 = RandomGenerator::randFloat(20.f, 760.f);

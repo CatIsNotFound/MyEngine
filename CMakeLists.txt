@@ -1,9 +1,14 @@
 cmake_minimum_required(VERSION 3.14)
-project(S3GF LANGUAGES C CXX VERSION 0.1.0)
+project(S3GF LANGUAGES C CXX VERSION 0.1.1)
+
+include(CMakePackageConfigHelpers)
+include(CMakeFindDependencyMacro)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+message("Project ${PROJECT_NAME} is configuring...")
 
 if(WIN32)
         set(SDL3_LIB "C:/Program Files (x86)/SDL3" CACHE PATH "SDL3 Libs Path")
@@ -62,6 +67,11 @@ if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
             src/MultiThread/ThreadPool.h
             src/Utils/Logger.h
             src/Controls/Control.h
+            src/Controls/Control.cpp
+            src/Controls/Button.cpp
+            src/Controls/Button.h
+            src/Utils/FileSystem.cpp
+            src/Utils/FileSystem.h
     )
 else ()
     add_library(${PROJECT_NAME} STATIC
@@ -85,6 +95,11 @@ else ()
             src/MultiThread/ThreadPool.h
             src/Utils/Logger.h
             src/Controls/Control.h
+            src/Controls/Control.cpp
+            src/Controls/Button.cpp
+            src/Controls/Button.h
+            src/Utils/FileSystem.cpp
+            src/Utils/FileSystem.h
     )
 endif ()
 
@@ -108,7 +123,23 @@ install(TARGETS ${PROJECT_NAME}
     INCLUDES DESTINATION include
 )
 
-install(FILES src/S3GF DESTINATION include)
+install(DIRECTORY src/
+        DESTINATION include/S3GF
+        FILES_MATCHING
+            PATTERN "*.h"
+            PATTERN "All"
+)
+
+install(FILES src/S3GF
+    DESTINATION include/S3GF
+)
+
+install(FILES
+        LICENSE
+        README.md
+        README_zh.md
+        DESTINATION ${CMAKE_INSTALL_PREFIX}
+)
 
 install(EXPORT ${PROJECT_NAME}Targets
     FILE ${PROJECT_NAME}Targets.cmake
@@ -116,10 +147,33 @@ install(EXPORT ${PROJECT_NAME}Targets
     DESTINATION lib/cmake/${PROJECT_NAME}
 )
 
+set(CONFIG_PACKAGE_LOCATION lib/cmake/${PROJECT_NAME})
+
+configure_package_config_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+    INSTALL_DESTINATION ${CONFIG_PACKAGE_LOCATION}
+    PATH_VARS CMAKE_INSTALL_PREFIX
+)
+
+write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY SameMajorVersion
+)
+
+install(
+    FILES
+        "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+    DESTINATION ${CONFIG_PACKAGE_LOCATION}
+)
+
 set(PARENT_PROJECT_NAME ${PROJECT_NAME})
 add_subdirectory(test)
 
-message("============================================================")
+message("================= Configuration Result ======================")
+message("Project version: ${PROJECT_VERSION}")
 if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
     message("Build type: Release")
 else()
@@ -130,8 +184,14 @@ message("SDL3 image path: ${SDL3_IMAGE_LIB}")
 message("SDL3 mixer path: ${SDL3_MIXER_LIB}")
 message("SDL3 ttf   path: ${SDL3_TTF_LIB}")
 message("Install path: ${CMAKE_INSTALL_PREFIX}")
-message("Project version: ${PROJECT_VERSION}")
-message("============================================================")
+message("=============================================================")
+message("You can run command as below now: ")
+if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
+    message("  cmake --build . --target install")
+else()
+    message("  cmake --build .")
+endif()
+message("Have fun! :)")
 
 if (WIN32)
     set(POST_BUILD_COMMANDS

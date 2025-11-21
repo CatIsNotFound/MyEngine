@@ -1054,6 +1054,38 @@ namespace S3GF {
         return surface;
     }
 
+    FontList FontDatabase::getFontDatabaseFromSystem() {
+        StringList find_font_dir(8);
+#ifdef _WIN32
+        find_font_dir.emplace_back("C:/Windows/Fonts");
+#elif __linux__
+        find_font_dir.emplace_back("/usr/share/fonts");
+        if (FileSystem::isDir("~/.fonts")) {
+            find_font_dir.emplace_back("~/.fonts");
+        }
+        if (FileSystem::isDir("~/.local/share/fonts")) {
+            find_font_dir.emplace_back("~/.local/share/fonts");
+        }
+#elif __APPLE__
+        if (FileSystem::isDir("/System/Library/Fonts")) {
+            find_font_dir.emplace_back("/System/Library/Fonts");
+        }
+        if (FileSystem::isDir("/Library/Fonts")) {
+            find_font_dir.emplace_back("/Library/Fonts");
+        }
+        if (FileSystem::isDir("~/Library/Fonts")) {
+            find_font_dir.emplace_back("~/Library/Fonts");
+        }
+#endif
+
+        return std::unordered_map<std::string, std::string>();
+    }
+
+    bool FontDatabase::findFontFromSystem(const std::string &font_name, std::string &output_file_path,
+                                          std::string &output_font_name) {
+        return false;
+    }
+
     AudioSystem* AudioSystem::global() {
         if (!_instance) {
             _instance = std::unique_ptr<AudioSystem>(new AudioSystem());
@@ -1094,37 +1126,4 @@ namespace S3GF {
         _is_init = false;
     }
 
-    uint64_t AudioSystem::newAudio() {
-        MIX_Audio* new_audio = nullptr;
-        
-        if (!new_audio) {
-            Logger::log(std::format("AudioSystem: Can't create a new audio! Exception: {}", SDL_GetError()), 
-                Logger::ERROR);
-            return 0;
-        }
-        uint64_t id = 0;
-        do {
-            id = RandomGenerator::randBigUInt(1000, 9999999);
-        } while (_audios_map.contains(id));
-        // _audios_map.emplace(Audio{});
-        // _audios_map[id].self = nullptr;
-        // _audios_map[id].status = Status::Loaded;
-        // _audios_map[id].url = "";
-        
-        return id;
-    }
-
-    // bool AudioSystem::remove(uint64_t audio_id) {
-
-    // }
-
-    // void AudioSystem::clear() {
-
-    // }
-
-    // const AudioSystem::Audio& audio(uint64_t audio_id) const {
-
-    // }
-
-    
 }

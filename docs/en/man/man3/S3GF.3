@@ -1,4 +1,4 @@
-.TH "S3GF" 3 "Thu Nov 20 2025 20:40:12" "Version v0.1.0-beta" "S3GF" \" -*- nroff -*-
+.TH "S3GF" 3 "Fri Nov 21 2025 16:18:19" "Version v0.1.0-beta" "S3GF" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -30,6 +30,9 @@ S3GF \- \fBS3GF\fP 空间
 .RI "class \fBAudioSystem\fP"
 .br
 .ti -1c
+.RI "class \fBButton\fP"
+.br
+.ti -1c
 .RI "class \fBClickArea\fP"
 .br
 .ti -1c
@@ -46,7 +49,14 @@ S3GF \- \fBS3GF\fP 空间
 .RI "class \fBEventSystem\fP"
 .br
 .ti -1c
+.RI "class \fBFileSystem\fP"
+.br
+.RI "文件系统 "
+.ti -1c
 .RI "class \fBFont\fP"
+.br
+.ti -1c
+.RI "class \fBFontDatabase\fP"
 .br
 .ti -1c
 .RI "struct \fBGeometry\fP"
@@ -111,6 +121,9 @@ S3GF \- \fBS3GF\fP 空间
 .ti -1c
 .RI "using \fBGT\fP = std::variant<std::monostate, \fBGraphics::Point\fP, \fBGraphics::Rectangle\fP>"
 .br
+.ti -1c
+.RI "using \fBFontList\fP = std::unordered_map<std::string, std::string>"
+.br
 .in -1c
 .SS "Variables"
 
@@ -126,6 +139,8 @@ S3GF \- \fBS3GF\fP 空间
 所有库都将被存储于此命名空间 
 .SH "Typedef Documentation"
 .PP 
+.SS "using \fBS3GF::FontList\fP = std::unordered_map<std::string, std::string>"
+
 .SS "using \fBS3GF::GT\fP = std::variant<std::monostate, \fBGraphics::Point\fP, \fBGraphics::Rectangle\fP>"
 
 .SH "Variable Documentation"

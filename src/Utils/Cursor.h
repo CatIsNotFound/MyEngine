@@ -2,7 +2,7 @@
 #ifndef S3GF_CURSOR_H
 #define S3GF_CURSOR_H
 #include "Logger.h"
-#include "Components.h"
+#include "../Components.h"
 
 namespace S3GF {
     /**

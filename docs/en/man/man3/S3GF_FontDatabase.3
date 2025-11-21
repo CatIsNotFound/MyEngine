@@ -1,0 +1,66 @@
+.TH "S3GF::FontDatabase" 3 "Fri Nov 21 2025 16:18:19" "Version v0.1.0-beta" "S3GF" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+S3GF::FontDatabase
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fR#include <Core\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBFontDatabase\fP ()=delete"
+.br
+.ti -1c
+.RI "\fBFontDatabase\fP (const \fBFontDatabase\fP &)=delete"
+.br
+.ti -1c
+.RI "\fBFontDatabase\fP (\fBFontDatabase\fP &&)=delete"
+.br
+.ti -1c
+.RI "\fB~FontDatabase\fP ()=delete"
+.br
+.ti -1c
+.RI "\fBFontDatabase\fP & \fBoperator=\fP (const \fBFontDatabase\fP &)=delete"
+.br
+.ti -1c
+.RI "\fBFontDatabase\fP & \fBoperator=\fP (\fBFontDatabase\fP &&)=delete"
+.br
+.in -1c
+.SS "Static Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "static \fBFontList\fP \fBgetFontDatabaseFromSystem\fP ()"
+.br
+.ti -1c
+.RI "static bool \fBfindFontFromSystem\fP (const std::string &font_name, std::string &output_file_path, std::string &output_font_name)"
+.br
+.in -1c
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "S3GF::FontDatabase::FontDatabase ()\fR [delete]\fP"
+
+.SS "S3GF::FontDatabase::FontDatabase (const \fBFontDatabase\fP & )\fR [delete]\fP"
+
+.SS "S3GF::FontDatabase::FontDatabase (\fBFontDatabase\fP && )\fR [delete]\fP"
+
+.SS "S3GF::FontDatabase::~FontDatabase ()\fR [delete]\fP"
+
+.SH "Member Function Documentation"
+.PP 
+.SS "bool S3GF::FontDatabase::findFontFromSystem (const std::string & font_name, std::string & output_file_path, std::string & output_font_name)\fR [static]\fP"
+
+.SS "\fBFontList\fP S3GF::FontDatabase::getFontDatabaseFromSystem ()\fR [static]\fP"
+
+.SS "\fBFontDatabase\fP & S3GF::FontDatabase::operator= (const \fBFontDatabase\fP & )\fR [delete]\fP"
+
+.SS "\fBFontDatabase\fP & S3GF::FontDatabase::operator= (\fBFontDatabase\fP && )\fR [delete]\fP"
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for S3GF from the source code\&.

@@ -1,4 +1,4 @@
-.TH "D:/Coding/S3GF/src/Core.h" 3 "Thu Nov 20 2025 20:40:12" "Version v0.1.0-beta" "S3GF" \" -*- nroff -*-
+.TH "D:/Coding/S3GF/src/Core.h" 3 "Fri Nov 21 2025 16:18:19" "Version v0.1.0-beta" "S3GF" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -40,6 +40,9 @@ D:/Coding/S3GF/src/Core.h
 .RI "struct \fBS3GF::TextSystem::FontEngine\fP"
 .br
 .ti -1c
+.RI "class \fBS3GF::FontDatabase\fP"
+.br
+.ti -1c
 .RI "class \fBS3GF::AudioSystem\fP"
 .br
 .ti -1c
@@ -59,6 +62,13 @@ D:/Coding/S3GF/src/Core.h
 .in +1c
 .ti -1c
 .RI "#define \fBS3GF_CORE_H\fP"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "using \fBS3GF::FontList\fP = std::unordered_map<std::string, std::string>"
 .br
 .in -1c
 .SH "Macro Definition Documentation"

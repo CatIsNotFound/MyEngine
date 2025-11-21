@@ -84,7 +84,7 @@ S3GF（SDL3 Graphics Framework）是基于 SDL3 以及衍生库开发的图形�
            SDL3_image::SDL3_image
            SDL3_ttf::SDL3_ttf
            SDL3_mixer::SDL3_mixer
-           S3GF
+           S3GF::S3GF
    )
    ```
 
@@ -96,8 +96,8 @@ S3GF（SDL3 Graphics Framework）是基于 SDL3 以及衍生库开发的图形�
    
    int main() {
        Engine engine;
-       Window* win = new Window("My first app");
-       return 0;
+       Window* win = new Window("Hello world!");
+       return engine.exec();
    }
    ```
 

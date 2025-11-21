@@ -1,0 +1,214 @@
+.TH "S3GF::Button" 3 "2025年 十一月 21日 星期五 16:18:24" "Version v0.1.0-beta" "S3GF" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+S3GF::Button
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fR#include <Button\&.h>\fP
+.PP
+继承自 \fBS3GF::AbstractControl\fP \&.
+.SS "Public 成员函数"
+
+.in +1c
+.ti -1c
+.RI "\fBButton\fP (const std::string &\fBname\fP, \fBRenderer\fP *renderer, const \fBVector2\fP &\fBposition\fP={0, 0}, \fBAbstractControl\fP *parent=nullptr)"
+.br
+.in -1c
+
+Public 成员函数 继承自 \fBS3GF::AbstractControl\fP
+.in +1c
+.ti -1c
+.RI "\fBAbstractControl\fP (const std::string &\fBname\fP, \fBRenderer\fP *renderer, \fBGT\fP click_area=\fBGraphics::Rectangle\fP(), \fBAbstractControl\fP *parent=nullptr)"
+.br
+.ti -1c
+.RI "\fB~AbstractControl\fP ()=default"
+.br
+.ti -1c
+.RI "void \fBsetName\fP (const std::string &\fBname\fP)"
+.br
+.ti -1c
+.RI "const std::string & \fBname\fP () const"
+.br
+.ti -1c
+.RI "void \fBmove\fP (float x, float y)"
+.br
+.ti -1c
+.RI "void \fBmove\fP (const \fBVector2\fP &pos)"
+.br
+.ti -1c
+.RI "void \fBmove\fP (\fBVector2\fP &&pos)"
+.br
+.ti -1c
+.RI "void \fBresize\fP (float w, float h)"
+.br
+.ti -1c
+.RI "void \fBresize\fP (const \fBSize\fP &\fBsize\fP)"
+.br
+.ti -1c
+.RI "void \fBresize\fP (\fBSize\fP &&\fBsize\fP)"
+.br
+.ti -1c
+.RI "void \fBsetGeometry\fP (float x, float y, float w, float h)"
+.br
+.ti -1c
+.RI "void \fBsetGeometry\fP (const \fBVector2\fP &pos, const \fBSize\fP &\fBsize\fP)"
+.br
+.ti -1c
+.RI "void \fBsetGeometry\fP (\fBVector2\fP &&pos, \fBSize\fP &&\fBsize\fP)"
+.br
+.ti -1c
+.RI "void \fBsetGeometry\fP (const \fBGeometryF\fP &\fBgeometry\fP)"
+.br
+.ti -1c
+.RI "void \fBsetGeometry\fP (\fBGeometryF\fP &&\fBgeometry\fP)"
+.br
+.ti -1c
+.RI "const \fBGeometryF\fP & \fBgeometry\fP () const"
+.br
+.ti -1c
+.RI "const \fBVector2\fP & \fBposition\fP () const"
+.br
+.ti -1c
+.RI "const \fBSize\fP & \fBsize\fP () const"
+.br
+.ti -1c
+.RI "void \fBsetVisible\fP (bool \fBvisible\fP)"
+.br
+.ti -1c
+.RI "bool \fBvisible\fP () const"
+.br
+.ti -1c
+.RI "void \fBsetEnabled\fP (bool \fBenabled\fP)"
+.br
+.ti -1c
+.RI "bool \fBenabled\fP () const"
+.br
+.in -1c
+.SS "Protected 成员函数"
+
+.in +1c
+.ti -1c
+.RI "void \fBonEntered\fP () override"
+.br
+.ti -1c
+.RI "void \fBonHovered\fP () override"
+.br
+.ti -1c
+.RI "void \fBonLeft\fP () override"
+.br
+.ti -1c
+.RI "void \fBonPressed\fP () override"
+.br
+.ti -1c
+.RI "void \fBresizeEvent\fP () override"
+.br
+.ti -1c
+.RI "void \fBmoveEvent\fP () override"
+.br
+.ti -1c
+.RI "void \fBpaintEvent\fP (\fBRenderer\fP *ren) override"
+.br
+.in -1c
+
+Protected 成员函数 继承自 \fBS3GF::AbstractControl\fP
+.in +1c
+.ti -1c
+.RI "virtual void \fBonReleased\fP ()"
+.br
+.ti -1c
+.RI "virtual void \fBonTriggered\fP ()"
+.br
+.ti -1c
+.RI "virtual void \fBenabledChanged\fP (bool \fBenabled\fP)"
+.br
+.ti -1c
+.RI "virtual void \fBvisibleChanged\fP (bool \fBvisible\fP)"
+.br
+.ti -1c
+.RI "void \fB_update_click_area\fP ()"
+.br
+.in -1c
+.SS "额外继承的成员函数"
+
+
+Public 类型 继承自 \fBS3GF::AbstractControl\fP
+.in +1c
+.ti -1c
+.RI "enum \fBState\fP { \fBNormal\fP, \fBHover\fP, \fBPressed\fP, \fBDisabled\fP, \fBSelected\fP }"
+.br
+.in -1c
+
+Protected 属性 继承自 \fBS3GF::AbstractControl\fP
+.in +1c
+.ti -1c
+.RI "uint64_t \fB_id\fP {0}"
+.br
+.ti -1c
+.RI "std::string \fB_name\fP"
+.br
+.ti -1c
+.RI "\fBRenderer\fP * \fB_renderer\fP"
+.br
+.ti -1c
+.RI "\fBAbstractControl\fP * \fB_parent\fP"
+.br
+.ti -1c
+.RI "\fBGeometryF\fP \fB_geometry\fP"
+.br
+.ti -1c
+.RI "\fBClickArea\fP \fB_click_area\fP"
+.br
+.ti -1c
+.RI "bool \fB_is_down\fP {false}"
+.br
+.ti -1c
+.RI "bool \fB_visible\fP {true}"
+.br
+.ti -1c
+.RI "bool \fB_enabled\fP {true}"
+.br
+.ti -1c
+.RI "bool \fB_entered\fP {false}"
+.br
+.in -1c
+.SH "构造及析构函数说明"
+.PP 
+.SS "S3GF::Button::Button (const std::string & name, \fBRenderer\fP * renderer, const \fBVector2\fP & position = \fR{0, 0}\fP, \fBAbstractControl\fP * parent = \fRnullptr\fP)\fR [explicit]\fP"
+
+.SH "成员函数说明"
+.PP 
+.SS "void S3GF::Button::moveEvent ()\fR [override]\fP, \fR [protected]\fP, \fR [virtual]\fP"
+
+.PP
+重载 \fBS3GF::AbstractControl\fP \&.
+.SS "void S3GF::Button::onEntered ()\fR [override]\fP, \fR [protected]\fP, \fR [virtual]\fP"
+
+.PP
+重载 \fBS3GF::AbstractControl\fP \&.
+.SS "void S3GF::Button::onHovered ()\fR [override]\fP, \fR [protected]\fP, \fR [virtual]\fP"
+
+.PP
+重载 \fBS3GF::AbstractControl\fP \&.
+.SS "void S3GF::Button::onLeft ()\fR [override]\fP, \fR [protected]\fP, \fR [virtual]\fP"
+
+.PP
+重载 \fBS3GF::AbstractControl\fP \&.
+.SS "void S3GF::Button::onPressed ()\fR [override]\fP, \fR [protected]\fP, \fR [virtual]\fP"
+
+.PP
+重载 \fBS3GF::AbstractControl\fP \&.
+.SS "void S3GF::Button::paintEvent (\fBRenderer\fP * ren)\fR [override]\fP, \fR [protected]\fP, \fR [virtual]\fP"
+
+.PP
+重载 \fBS3GF::AbstractControl\fP \&.
+.SS "void S3GF::Button::resizeEvent ()\fR [override]\fP, \fR [protected]\fP, \fR [virtual]\fP"
+
+.PP
+重载 \fBS3GF::AbstractControl\fP \&.
+
+.SH "作者"
+.PP 
+由 Doyxgen 通过分析 S3GF 的 源代码自动生成\&.

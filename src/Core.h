@@ -376,6 +376,23 @@ namespace S3GF {
         TTF_TextEngine* _text_engine{nullptr};
     };
 
+    using FontList = std::unordered_map<std::string, std::string>;
+    class FontDatabase {
+    public:
+        FontDatabase() = delete;
+        FontDatabase(const FontDatabase&) = delete;
+        FontDatabase(FontDatabase&&) = delete;
+        ~FontDatabase() = delete;
+        FontDatabase& operator=(const FontDatabase&) = delete;
+        FontDatabase& operator=(FontDatabase&&) = delete;
+
+        static FontList getFontDatabaseFromSystem();
+        static bool findFontFromSystem(const std::string& font_name,
+                                       std::string& output_file_path,
+                                       std::string& output_font_name);
+    private:
+    };
+
     class AudioSystem {
     public:
         enum class Status {

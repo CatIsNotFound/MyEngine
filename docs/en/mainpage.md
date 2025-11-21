@@ -84,7 +84,7 @@ Currently, no official version has been released yet. It is expected to be relea
            SDL3_image::SDL3_image
            SDL3_ttf::SDL3_ttf
            SDL3_mixer::SDL3_mixer
-           S3GF
+           S3GF::S3GF
    )
    ```
 
@@ -96,8 +96,8 @@ Currently, no official version has been released yet. It is expected to be relea
    
    int main() {
        Engine engine;
-       Window* win = new Window("My first app");
-       return 0;
+       Window* win = new Window("Hello world!");
+       return engine.exec();
    }
    ```
 

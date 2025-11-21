@@ -24,5 +24,6 @@
 #include <future>
 #include <condition_variable>
 #include <atomic>
+#include <filesystem>
 #include <cstdint>
 #include <csignal>

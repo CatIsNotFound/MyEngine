@@ -1,7 +1,7 @@
 #pragma once
 #ifndef S3GF_RANDOM_H
 #define S3GF_RANDOM_H
-#include "Libs.h"
+#include "../Libs.h"
 
 namespace S3GF {
     class RandomGenerator {
@@ -15,7 +15,10 @@ namespace S3GF {
 
         static int randInt(int start, int end) {
             std::uniform_int_distribution<int> uni(start, end);
-            if (!_is_init) _def_rand_eng.seed(time(0));
+            if (!_is_init) {
+                _def_rand_eng.seed(time(nullptr));
+                _is_init = true;
+            }
             return uni(_def_rand_eng);
         }
 
