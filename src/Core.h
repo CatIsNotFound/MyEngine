@@ -29,6 +29,8 @@ namespace S3GF {
         void drawEllipse(Graphics::Ellipse&& ellipse);
         void drawTexture(SDL_Texture* texture, Property* property);
         void drawText(TTF_Text* text, const Vector2& position);
+        void drawPixelText(const std::string& text, const Vector2& position,
+                           const Vector2& scaled, const SDL_Color& color);
         void setViewport(const Geometry& geometry);
         void setClipView(const Geometry& geometry);
         void setBlendMode(const SDL_BlendMode& blend_mode);
@@ -111,6 +113,15 @@ namespace S3GF {
                 : Command(renderer), text(text), position(position) {}
             TTF_Text* text;
             Vector2 position;
+            void exec() override;
+        };
+        struct PixelTextCMD : public Command {
+            explicit PixelTextCMD(SDL_Renderer* renderer, const std::string& text,
+                                  const Vector2& pos, const Vector2& scaled, const SDL_Color& color)
+                : Command(renderer), text(text), pos(pos), scaled(scaled), color(color) {}
+            std::string text;
+            Vector2 pos, scaled;
+            SDL_Color color;
             void exec() override;
         };
         

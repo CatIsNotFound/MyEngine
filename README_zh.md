@@ -59,42 +59,42 @@ S3GF（SDL3 Graphics Framework）是基于 SDL3 以及衍生库开发的图形�
 1. 新建 `CMakeLists.txt` 文件，并写入如下内容：
 
    ```cmake
-cmake_minimum_required(VERSION 3.31)
-project(Demo)
-
-set(CMAKE_CXX_STANDARD 20)
-
-# Need to set these paths before cmake configuration.
-set(SDL_DIR       "/path/to/SDL3_mingw")
-set(SDL_IMAGE_DIR "/path/to/SDL3_image")
-set(SDL_TTF_DIR   "/path/to/SDL3_ttf")
-set(SDL_MIXER_DIR "/path/to/SDL3_mixer")
-set(S3GF_DIR      "/path/to/S3GF")
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-list(APPEND CMAKE_PREFIX_PATH ${SDL_DIR})
-list(APPEND CMAKE_PREFIX_PATH ${SDL_IMAGE_DIR})
-list(APPEND CMAKE_PREFIX_PATH ${SDL_TTF_DIR})
-list(APPEND CMAKE_PREFIX_PATH ${SDL_MIXER_DIR})
-list(APPEND CMAKE_PREFIX_PATH ${S3GF_DIR})
-
-find_package(SDL3 REQUIRED)
-find_package(SDL3_image REQUIRED)
-find_package(SDL3_ttf REQUIRED)
-find_package(SDL3_mixer REQUIRED)
-find_package(S3GF REQUIRED)
-
-add_executable(${PROJECT_NAME}
-        main.cpp
-)
-
-target_link_libraries(${PROJECT_NAME} PRIVATE
-        SDL3::SDL3
-        SDL3_image::SDL3_image
-        SDL3_ttf::SDL3_ttf
-        SDL3_mixer::SDL3_mixer
-        S3GF::S3GF
-)
+    cmake_minimum_required(VERSION 3.31)
+    project(Demo)
+    
+    set(CMAKE_CXX_STANDARD 20)
+    
+    # Need to set these paths before cmake configuration.
+    set(SDL_DIR       "/path/to/SDL3_mingw")
+    set(SDL_IMAGE_DIR "/path/to/SDL3_image")
+    set(SDL_TTF_DIR   "/path/to/SDL3_ttf")
+    set(SDL_MIXER_DIR "/path/to/SDL3_mixer")
+    set(S3GF_DIR      "/path/to/S3GF")
+    set(CMAKE_INCLUDE_CURRENT_DIR ON)
+    
+    list(APPEND CMAKE_PREFIX_PATH ${SDL_DIR})
+    list(APPEND CMAKE_PREFIX_PATH ${SDL_IMAGE_DIR})
+    list(APPEND CMAKE_PREFIX_PATH ${SDL_TTF_DIR})
+    list(APPEND CMAKE_PREFIX_PATH ${SDL_MIXER_DIR})
+    list(APPEND CMAKE_PREFIX_PATH ${S3GF_DIR})
+    
+    find_package(SDL3 REQUIRED)
+    find_package(SDL3_image REQUIRED)
+    find_package(SDL3_ttf REQUIRED)
+    find_package(SDL3_mixer REQUIRED)
+    find_package(S3GF REQUIRED)
+    
+    add_executable(${PROJECT_NAME}
+            main.cpp
+    )
+    
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+            SDL3::SDL3
+            SDL3_image::SDL3_image
+            SDL3_ttf::SDL3_ttf
+            SDL3_mixer::SDL3_mixer
+            S3GF::S3GF
+    )
    ```
 
 2. 编辑 `main.cpp` 文件：

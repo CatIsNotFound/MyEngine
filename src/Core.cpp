@@ -99,6 +99,12 @@ namespace S3GF {
         _cmd_list.push_back(std::make_unique<TextCMD>(_renderer, text, position));
     }
 
+    void Renderer::drawPixelText(const std::string &text, const S3GF::Vector2 &position,
+                                 const S3GF::Vector2 &scaled, const SDL_Color& color) {
+        if (text.empty() || scaled.x == 0 || scaled.y == 0) return;
+        _cmd_list.push_back(std::make_unique<PixelTextCMD>(_renderer, text, position, scaled, color));
+    }
+
     void Renderer::setViewport(const Geometry& geometry) {
         if (geometry.width == 0 || geometry.height == 0) {
             _cmd_list.push_back(std::make_unique<ViewportCMD>(_renderer, true));
@@ -260,6 +266,13 @@ namespace S3GF {
 
     void Renderer::TextCMD::exec() {
         TTF_DrawRendererText(text, position.x, position.y);
+    }
+
+    void Renderer::PixelTextCMD::exec() {
+        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, SDL_ALPHA_OPAQUE);
+        SDL_SetRenderScale(renderer, scaled.x, scaled.y);
+        SDL_RenderDebugText(renderer, pos.x, pos.y, text.c_str());
+        SDL_SetRenderScale(renderer, 1.0f, 1.0f);
     }
 
     Window::Window(Engine* object, const std::string& title, int width, int height,  GraphicEngine engine)
