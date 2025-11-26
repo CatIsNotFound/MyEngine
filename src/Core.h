@@ -13,8 +13,8 @@ namespace S3GF {
     public:
         explicit Renderer(Window* window = nullptr);
         ~Renderer();
-        SDL_Renderer* self() const;
-        Window* window() const;
+        [[nodiscard]] SDL_Renderer* self() const;
+        [[nodiscard]] Window* window() const;
         void _update();
         void fillBackground(const SDL_Color& color, bool covered = false);
         void drawPoint(const Graphics::Point& point);
@@ -30,7 +30,7 @@ namespace S3GF {
         void drawTexture(SDL_Texture* texture, Property* property);
         void drawText(TTF_Text* text, const Vector2& position);
         void drawPixelText(const std::string& text, const Vector2& position,
-                           const Vector2& scaled, const SDL_Color& color);
+                           const Vector2& scaled = {1.f, 1.f}, const SDL_Color& color = StdColor::White);
         void setViewport(const Geometry& geometry);
         void setClipView(const Geometry& geometry);
         void setBlendMode(const SDL_BlendMode& blend_mode);
@@ -209,6 +209,7 @@ namespace S3GF {
         void appendEvent(uint64_t id, const std::function<void(SDL_Event)>& event);
         void removeEvent(uint64_t id);
         void clearEvent();
+        size_t eventCount() const;
         bool run();
         [[nodiscard]] bool isKeyDown() const;
         [[nodiscard]] bool isMouseButtonDown() const;
@@ -245,6 +246,8 @@ namespace S3GF {
         uint32_t fps() const; 
         static void throwFatalError();
 
+        void installCleanUpEvent(const std::function<void()>& event);
+
     private:
         void cleanUp();
         void running();
@@ -256,6 +259,7 @@ namespace S3GF {
         uint32_t _real_fps{0};
         static SDL_WindowID _main_window_id;
         std::unordered_map<SDL_WindowID, std::unique_ptr<Window>> _window_list;
+        std::function<void()> _clean_up_event;
     };
 
     class Font {
@@ -347,12 +351,12 @@ namespace S3GF {
             TTF_Text* self;
             std::string text;
             std::string font_name;
-            SDL_Color font_color;
+            SDL_Color font_color{StdColor::Black};
         };
         struct FontEngine {
             TTF_TextEngine* engine;
             TTF_TextEngine* surface_engine;
-            std::unique_ptr<Font> font;
+            std::shared_ptr<Font> font;
         };
         TextSystem(TextSystem &&) = delete;
         TextSystem(const TextSystem &) = delete;
@@ -398,10 +402,10 @@ namespace S3GF {
         FontDatabase& operator=(FontDatabase&&) = delete;
 
         static FontList getFontDatabaseFromSystem();
-        static bool findFontFromSystem(const std::string& font_name,
-                                       std::string& output_file_path,
-                                       std::string& output_font_name);
+        static std::string findFontFromSystem(const std::string &font_name);
     private:
+        static bool _is_loaded;
+        static FontList _font_db;
     };
 
     class AudioSystem {
@@ -418,11 +422,11 @@ namespace S3GF {
             MIX_Audio* self;
             Status status;
             std::string url;
-
-            struct {
+            bool is_stream;
+            union {
                 MIX_Track* self{nullptr};
-                uint64_t duration{0};
-                uint64_t position{0};
+                uint64_t duration;
+                uint64_t position;
             } track;
         };
 

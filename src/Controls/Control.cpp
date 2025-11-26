@@ -23,20 +23,27 @@ namespace S3GF {
                 default:
                     break;
             }
+//            // Avoid the issue of triggering prematurely
+//            // when the mouse moves into the clickable area before pressing the mouse button.
+//            static bool needs_tri = false;
             if (tri > 0) {
+                _is_left = false;
                 if (!_is_hovered) {
                     _is_hovered = true;
                 }
-                if (ev.button.type == SDL_EVENT_MOUSE_BUTTON_DOWN || ev.key.type == SDL_EVENT_KEY_DOWN) {
+                if (ev.button.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
                     _is_down = true;
-                } else if (ev.button.type == SDL_EVENT_MOUSE_BUTTON_UP || ev.key.type == SDL_EVENT_KEY_UP) {
+                    _need_triggered = true;
+                } else if (ev.button.type == SDL_EVENT_MOUSE_BUTTON_UP) {
                     _is_down = false;
-                    _is_pressed = true;
+                    if (_need_triggered) { _is_pressed = true; _need_triggered = false; }
                 }
             } else {
                 _is_hovered = false;
                 _is_pressed = false;
                 _is_entered = false;
+                _is_left = true;
+                _need_triggered = false;
             }
             if (_is_hovered && !_is_entered) _is_entered = true;
             if (_is_pressed && _func) {
@@ -115,10 +122,11 @@ namespace S3GF {
     bool ClickArea::isHovered() const { return _is_hovered; }
     bool ClickArea::isEntered() const { return _is_entered; }
     bool ClickArea::isDown() const { return _is_down; }
+    bool ClickArea::isLeft() const { return _is_left; }
     size_t ClickArea::index() const { return _base.index(); }
 
     AbstractControl::AbstractControl(const std::string& name, Renderer* renderer,
-                                     GT click_area, AbstractControl* parent)
+                                     AbstractControl* parent, GT click_area)
         : _name(name), _renderer(renderer), _parent(parent), _id(++_next_id),
           _click_area(renderer->window()->windowID(), std::move(click_area)) {
 
@@ -135,16 +143,44 @@ namespace S3GF {
                 _entered = _click_area.isEntered();
                 if (_entered) onEntered(); else onLeft();
             }
-            if (_click_area.isHovered()) onHovered();
+            bool _button_hoverd_changed = (_is_hovered != _click_area.isHovered());
+            if (_button_hoverd_changed) {
+                _is_hovered = _click_area.isHovered();
+                if (_is_hovered) onHovered();
+            }
             bool _button_down_changed = (_is_down != _click_area.isDown());
             if (_button_down_changed) {
                 _is_down = _click_area.isDown();
                 if (_is_down) onPressed(); else onReleased();
             }
-            if (_click_area.isPressed()) {
-                onTriggered();
+            if (_active && !ev.key.repeat && (_key_code != 0 && ev.key.key == _key_code)) {
+                if (ev.key.down) {
+                    onKeyPressed();
+                } else {
+                    onKeyReleased();
+                    if (_checkable) {
+                        _is_checked = !_is_checked;
+                        onChecked(_is_checked);
+                    } else {
+                        onTriggered();
+                    }
+                    _click_area.resetPress();
+                }
+            }
+
+            if (_click_area.isPressed() && _is_hovered) {
+                if (_checkable) {
+                    _is_checked = !_is_checked;
+                    onChecked(_is_checked);
+                } else {
+                    onTriggered();
+                }
                 _click_area.resetPress();
             }
+            if (_click_area.isLeft()) {
+                _entered = false;
+            }
+
         });
 
         if (_click_area.index() == 1) {
@@ -247,6 +283,31 @@ namespace S3GF {
         enabledChanged(enabled);
     }
 
+
+    void AbstractControl::setKey(SDL_Keycode key) {
+        _key_code = key;
+    }
+
+    void AbstractControl::setCheckable(bool checkable) {
+        _checkable = checkable;
+        if (!checkable) {
+            _is_checked = false;
+        }
+    }
+
+    void AbstractControl::setChecked(bool checked) {
+        _is_checked = checked;
+        onChecked(checked);
+    }
+
+    bool AbstractControl::checkable() const {
+        return _checkable;
+    }
+
+    bool AbstractControl::isChecked() const {
+        return _is_checked;
+    }
+
     void AbstractControl::_update_click_area() {
         if (_click_area.index() == 1) {
             auto min = std::min(_geometry.size.width, _geometry.size.height);
@@ -254,10 +315,11 @@ namespace S3GF {
             _click_area.setPoint(_geometry.pos, real_size);
         } else if (_click_area.index() == 2) {
             _click_area.setRect(_geometry);
-            Logger::log(std::format("Changed: {}, {} {}x{}",
+            Logger::log(std::format("AbstractControl Changed: ({}, {}) ({}x{})",
                     _geometry.pos.x, _geometry.pos.y, _geometry.size.width, _geometry.size.height));
         }
     }
+
 
 }
 

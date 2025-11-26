@@ -72,6 +72,7 @@ if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
             src/Controls/Button.h
             src/Utils/FileSystem.cpp
             src/Utils/FileSystem.h
+            src/Utils/RGBAColor.h
     )
 else ()
     add_library(${PROJECT_NAME} STATIC
@@ -100,6 +101,7 @@ else ()
             src/Controls/Button.h
             src/Utils/FileSystem.cpp
             src/Utils/FileSystem.h
+            src/Utils/RGBAColor.h
     )
 endif ()
 

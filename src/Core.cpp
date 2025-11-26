@@ -1,7 +1,9 @@
 
 #include "Core.h"
-#include "Utils/Cursor.h"
-#include "Utils/Logger.h"
+
+#include <memory>
+#include "Utils/All"
+#include "MultiThread/All"
 
 namespace S3GF {
     std::unique_ptr<EventSystem> EventSystem::_instance{};
@@ -9,6 +11,8 @@ namespace S3GF {
     SDL_WindowID Engine::_main_window_id{0};
     bool Engine::_quit_requested{false};
     int Engine::_return_code{0};
+    bool FontDatabase::_is_loaded{false};
+    FontList FontDatabase::_font_db{};
 
     std::unique_ptr<TextSystem> TextSystem::_instance{};
     std::unique_ptr<AudioSystem> AudioSystem::_instance{};
@@ -514,6 +518,8 @@ namespace S3GF {
         Logger::log("Cleared all events.");
     }
 
+    size_t EventSystem::eventCount() const { return _event_list.size(); }
+
     bool EventSystem::run() {
         SDL_Event ev;
         if (SDL_PollEvent(&ev)) {
@@ -536,7 +542,6 @@ namespace S3GF {
                 if (ev.type == SDL_EVENT_WINDOW_FOCUS_LOST) {
                     i->second->lostFocusEvent();
                 }
-
             }
 
             for (auto& event : _event_list) {
@@ -629,7 +634,14 @@ namespace S3GF {
         throw std::runtime_error(err);
     }
 
+    void Engine::installCleanUpEvent(const std::function<void()> &event) {
+        _clean_up_event = event;
+    }
+
     void Engine::cleanUp() {
+        if (_clean_up_event) {
+            _clean_up_event();
+        }
         for (auto& win : _window_list) {
             win.second.reset();
         }
@@ -643,7 +655,7 @@ namespace S3GF {
         auto frames = 0ULL;
         auto start_ns = SDL_GetTicksNS();
         while (_running && !_quit_requested) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            //std::this_thread::sleep_for(std::chrono::milliseconds(1));
             if (_window_list.empty()) break;
             _running = EventSystem::global(this)->run();
             if (!_running) break;
@@ -883,7 +895,7 @@ namespace S3GF {
         }
         _font_map.emplace(font_name, 
                 FontEngine{TTF_CreateRendererTextEngine(renderer->self()), TTF_CreateSurfaceTextEngine(),
-                std::unique_ptr<Font>(new Font(font_path, 12.0f))});
+                std::make_unique<Font>(font_path, 12.0f)});
         auto& new_font = _font_map.at(font_name);
         if (!new_font.font->self()) {
             TTF_DestroyRendererTextEngine(new_font.engine);
@@ -928,7 +940,7 @@ namespace S3GF {
             return false;
         }
         
-        _text_map.emplace(text_id, Text(nullptr, text, font_name, StdColor::White));
+        _text_map.emplace(text_id, Text(nullptr, text, font_name));
         _text_map[text_id].self = TTF_CreateText(_font_map[font_name].engine, _font_map[font_name].font->self(), text.c_str(), text.size());
         if (!_text_map[text_id].self) {
             Logger::log(std::format("Can't create text!\nException: {}", SDL_GetError()), Logger::ERROR);
@@ -1038,6 +1050,7 @@ namespace S3GF {
             Logger::log(std::format("Text ID {} is not in the text list!", text_id), Logger::ERROR);
             return false;
         }
+
         renderer->drawText(_text_map[text_id].self, pos);
         return true;
     }
@@ -1067,36 +1080,53 @@ namespace S3GF {
         return surface;
     }
 
-    FontList FontDatabase::getFontDatabaseFromSystem() {
-        StringList find_font_dir(8);
-#ifdef _WIN32
-        find_font_dir.emplace_back("C:/Windows/Fonts");
-#elif __linux__
-        find_font_dir.emplace_back("/usr/share/fonts");
-        if (FileSystem::isDir("~/.fonts")) {
-            find_font_dir.emplace_back("~/.fonts");
-        }
-        if (FileSystem::isDir("~/.local/share/fonts")) {
-            find_font_dir.emplace_back("~/.local/share/fonts");
-        }
-#elif __APPLE__
-        if (FileSystem::isDir("/System/Library/Fonts")) {
-            find_font_dir.emplace_back("/System/Library/Fonts");
-        }
-        if (FileSystem::isDir("/Library/Fonts")) {
-            find_font_dir.emplace_back("/Library/Fonts");
-        }
-        if (FileSystem::isDir("~/Library/Fonts")) {
-            find_font_dir.emplace_back("~/Library/Fonts");
-        }
-#endif
 
-        return std::unordered_map<std::string, std::string>();
+    FontList FontDatabase::getFontDatabaseFromSystem() {
+        if (!_is_loaded) {
+            StringList find_font_dir(8);
+#ifdef _WIN32
+            find_font_dir.emplace_back("C:/Windows/Fonts");
+#endif
+#ifdef __linux__
+            find_font_dir.emplace_back("/usr/share/fonts");
+            if (FileSystem::isDir("~/.fonts")) {
+                find_font_dir.emplace_back("~/.fonts");
+            }
+            if (FileSystem::isDir("~/.local/share/fonts")) {
+                find_font_dir.emplace_back("~/.local/share/fonts");
+            }
+#endif
+#ifdef __APPLE__
+            if (FileSystem::isDir("/System/Library/Fonts")) {
+                find_font_dir.emplace_back("/System/Library/Fonts");
+            }
+            if (FileSystem::isDir("/Library/Fonts")) {
+                find_font_dir.emplace_back("/Library/Fonts");
+            }
+            if (FileSystem::isDir("~/Library/Fonts")) {
+                find_font_dir.emplace_back("~/Library/Fonts");
+            }
+#endif
+            for (auto& font_dir : find_font_dir) {
+                StringList font_files = FileSystem::listFilePaths(font_dir, FileSystem::FilesOnly,
+                                                            {".ttf", ".otf", ".ttc", ".woff", ".eot"});
+                for (auto& file : font_files) {
+                    auto short_file = FileSystem::getShortFileName(file, true);
+                    if (!_font_db.contains(short_file)) {
+                        _font_db.insert({FileSystem::getShortFileName(file, true), file});
+                    }
+                }
+            }
+            Logger::log("FontDatabase: Get Font files from system!", Logger::DEBUG);
+            _is_loaded = true;
+        }
+        return _font_db;
     }
 
-    bool FontDatabase::findFontFromSystem(const std::string &font_name, std::string &output_file_path,
-                                          std::string &output_font_name) {
-        return false;
+    std::string FontDatabase::findFontFromSystem(const std::string &font_name) {
+        if (!_is_loaded) getFontDatabaseFromSystem();
+        if (!_font_db.contains(font_name)) return {};
+        return _font_db[font_name];
     }
 
     AudioSystem* AudioSystem::global() {

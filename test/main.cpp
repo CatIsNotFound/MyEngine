@@ -1,95 +1,68 @@
 #include "Core.h"
 #include "Utils/Logger.h"
-#include "Controls/Control.h"
 #include "MultiThread/Components.h"
-#include "Utils/Random.h"
-#include "Utils/FileSystem.h"
-
+#include "Utils/RGBAColor.h"
+#include "Controls/Button.h"
 using namespace S3GF;
 
-class TestControl : public AbstractControl {
-public:
-    explicit TestControl(const std::string& name, Renderer* renderer, const Vector2& position = {0, 0},
-                          AbstractControl* parent = nullptr)
-          : AbstractControl(name, renderer, Graphics::Point(), parent) {
-        _geometry.reset(position.x, position.y, 80, 60);
-        _rect.reset(_geometry, 1, StdColor::Black, StdColor::MixGrayLight);
-        _click_area.setGraphic(_rect);
-    }
-protected:
-    void onEntered() override {
-        Logger::log(std::format("Entered: {}", _name), S3GF::Logger::INFO);
-    }
-
-    void onHovered() override {
-        Cursor::global()->setCursor(Cursor::Hand);
-        _rect.setBackgroundColor(StdColor::BlueLight);
-    }
-
-    void onLeft() override {
-        Logger::log(std::format("Left: {}", _name), S3GF::Logger::INFO);
-        Cursor::global()->setCursor(Cursor::Default);
-        _rect.setBackgroundColor(StdColor::MixGrayLight);
-    }
-
-    void onPressed() override {
-        Logger::log(std::format("Pressed: {}", _name), S3GF::Logger::INFO);
-        _rect.setBackgroundColor(StdColor::MixGrayDark);
-    }
-
-    void resizeEvent() override {
-        AbstractControl::resizeEvent();
-        _click_area.getRect(_rect);
-    }
-
-    void moveEvent() override {
-        _click_area.getRect(_rect);
-    }
-
-    void paintEvent(Renderer* ren) override {
-        ren->drawRectangle(_rect);
-    }
-
-private:
-    Graphics::Rectangle _rect;
-};
-
 int main() {
-//    Logger::setBaseLogLevel(S3GF::Logger::DEBUG);
+    Logger::setBaseLogLevel(S3GF::Logger::DEBUG);
     Engine engine;
-    Window* main_win = new Window(&engine, "我的第一个窗口");
-//    Window* sec_win = new Window(&engine, "第二个");
-    Graphics::Point pt(300, 300, 20);
-    Graphics::Rectangle rect1(100, 100, 100, 100, 1, StdColor::BlueDark);
-    Graphics::Rectangle rect2(150, 150, 100, 100);
-
-    TestControl con1("con1", main_win->renderer(), {100, 200});
-    TestControl con2("con2", main_win->renderer(), {200, 300});
-
-    Logger::log(std::format("Created {}: ({}, {}), ({} x {})",
-                            con1.name(), con1.position().x, con1.position().y,
-                            con1.size().width, con1.size().height));
-    Logger::log(std::format("Created {}: ({}, {}), ({} x {})",
-                            con2.name(), con2.position().x, con2.position().y,
-                            con2.size().width, con2.size().height));
-
-    main_win->installPaintEvent([&pt, &rect1, &rect2](Renderer* r) {
-        r->fillBackground(StdColor::MixGray);
+    engine.setFPS(60);
+    auto bg_color = StdColor::GreenLight;
+    auto main_win = new Window(&engine, "我的第一个窗口");
+    main_win->setResizable(true);
+    auto font_path = FontDatabase::findFontFromSystem("arial");
+    TextSystem::global()->addFont("arial1", font_path, main_win->renderer());
+    TextSystem::global()->addFont("arial2", font_path, main_win->renderer());
+    Button button("btn", main_win->renderer());
+    button.setFont("arial1");
+    TextSystem::global()->font("arial1")->setFontSize(24.f);
+    button.setText("Button 1");
+    button.setKey(SDLK_SPACE);
+    button.setActive();
+    button.move(60, 60);
+    button.resize(120, 70);
+    button.setCheckable(true);
+    button.setEnabled(false);
+    button.setEvent([&bg_color] {
+        bg_color = StdColor::RedLightPink;
     });
-//    FileSystem::setCurrentPath("../");
-    auto entry = FileSystem::listFilePaths("C:/Windows/Fonts", S3GF::FileSystem::FilesOnly);
-    for (auto& f : entry) {
-        Logger::log(std::format("- {}", f), S3GF::Logger::INFO);
-    }
-
-
-    Timer timer(5000, [&con1, &rect1] {
-        auto f1 = RandomGenerator::randFloat(20.f, 760.f);
-        auto f2 = RandomGenerator::randFloat(20.f, 560.f);
-        Logger::log(std::format("Rand: {} {}", f1, f2), S3GF::Logger::INFO);
-        con1.move(f1, f2);
-        rect1.move(f1, f2);
+    Texture normal("./back_button_1.png", main_win->renderer());
+    Texture hovered("./back_button_2.png", main_win->renderer());
+    Texture pressed("./back_button_3.png", main_win->renderer());
+    Texture invalid("./back_button_4.png", main_win->renderer());
+    normal.property()->color_alpha = StdColor::BlueIce;
+    hovered.property()->color_alpha = StdColor::BlueSea;
+    pressed.property()->color_alpha = StdColor::BlueDark;
+    TextureButton textureButton("test", main_win->renderer());
+    textureButton.setTextures(&normal, &hovered, &pressed, &invalid);
+    textureButton.move(400.f - textureButton.size().width / 2 + 40, 300.f - textureButton.size().height);
+    textureButton.setKey(SDLK_RETURN);
+    textureButton.setActive();
+    textureButton.setFont("arial2");
+    TextSystem::global()->font("arial2")->setFontSize(40.f);
+    textureButton.setText("Hello!");
+    auto& text_color_status = textureButton.textColor();
+    text_color_status.active = StdColor::BlueDark;
+    text_color_status.pressed = StdColor::BlueIce;
+    auto size = textureButton.textSize();
+    auto s_size = textureButton.geometry().size;
+    textureButton.setTextPosition({s_size.width / 2 - size.width / 2, s_size.height / 2 - size.height / 2});
+    textureButton.setTextVisible(true);
+    textureButton.setEvent([&bg_color]{ bg_color = StdColor::BlueLight; });
+    Timer timer(3000, [&button, &textureButton] {
+        button.setEnabled(!button.enabled());
+        textureButton.setEnabled(!textureButton.enabled());
+        auto size = button.textSize();
+        Logger::log(std::format("Size: {}x{}", size.width, size.height));
     });
     timer.start(0);
+    main_win->installPaintEvent([&engine, &bg_color](Renderer* r) {
+        r->fillBackground(bg_color);
+        r->drawPixelText(std::format("FPS: {}, Button: {}",
+                                     engine.fps(), EventSystem::global()->isMouseButtonDown() ? "true" : "false"), {20, 20});
+    });
+    Logger::log(std::format("Event count: {}", EventSystem::global()->eventCount()), S3GF::Logger::INFO);
     return engine.exec();
 }

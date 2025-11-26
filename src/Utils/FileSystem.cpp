@@ -328,7 +328,7 @@ namespace S3GF {
                 auto filename = getShortFileName(file_path);
                 std::string ext_name;
                 auto pos = filename.find_last_of('.');
-                if (pos != std::string::npos && pos > 0) ext_name = filename.substr(pos + 1);
+                if (pos != std::string::npos && pos > 0) ext_name = filename.substr(pos);
                 for (auto &ext: file_ext_list) {
                     if (ext_name == ext) {
                         out.emplace_back(file_path);

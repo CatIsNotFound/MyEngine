@@ -317,6 +317,7 @@ namespace S3GF {
         constexpr SColor MixAmberTrans = {255, 215, 105, 192};
     }
 
+    struct GeometryF;
     /**
      * @struct Geometry
      * @brief 位置、大小
@@ -603,6 +604,14 @@ namespace S3GF {
             this->size.height = size.height;
         }
     };
+
+    inline Geometry toGeometryInt(const GeometryF& geo) {
+        return {(int)geo.pos.x, (int)geo.pos.y, (int)geo.size.width, (int)geo.size.height};
+    }
+
+    inline GeometryF toGeometryFloat(const Geometry& geo) {
+        return GeometryF((float)geo.x, (float)geo.y, (float)geo.width, (float)geo.height);
+    }
 
     /**
      * @struct Matrix2D

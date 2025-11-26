@@ -80,9 +80,12 @@ namespace S3GF {
         explicit Texture(Renderer* renderer, SDL_PixelFormat format, int width, int height, SDL_TextureAccess access);
         ~Texture();
 
-        bool setImagePath(const std::string& path);
+        Renderer* render() const;
 
-        SDL_Texture* self() const;
+        bool setImagePath(const std::string& path);
+        bool setImageFromSurface(SDL_Surface* surface, bool deep_copy = false);
+
+        [[nodiscard]] SDL_Texture* self() const;
         Property* property();
 
         void draw() const;
@@ -92,6 +95,8 @@ namespace S3GF {
         std::unique_ptr<Property> _property;
         Renderer* _renderer;
     };
+
+
 }
 #include "Core.h"
 #endif // !S3GF_COMPONETS_H

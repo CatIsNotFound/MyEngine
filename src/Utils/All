@@ -5,5 +5,7 @@
 #include "DateTime.h"
 #include "Logger.h"
 #include "Random.h"
+#include "FileSystem.h"
+#include "RGBAColor.h"
 
 #endif //S3GF_UTILS_H
