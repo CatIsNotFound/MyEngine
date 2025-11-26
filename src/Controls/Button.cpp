@@ -7,11 +7,11 @@ namespace S3GF {
         : AbstractControl(name, renderer, parent, Graphics::Rectangle()),
           _btn_text(), _is_valid(false) {
         _btn_skin.border = {StdColor::MixGrayDark, StdColor::BlueDark,StdColor::MixGrayDark,
-                            StdColor::MixGrayLight, StdColor::MixGrayDark};
+                            StdColor::MixGrayLight, StdColor::BlueDark};
         _btn_skin.background = {StdColor::BlueIce, StdColor::BlueLight, StdColor::MixGray,
-                                StdColor::MixGray, StdColor::MixGrayLight};
+                                StdColor::MixGray, StdColor::BlueLight};
         _btn_skin.font = {StdColor::MixGrayDark, StdColor::BlueDark, StdColor::MixGrayDark,
-                          StdColor::MixGrayLight, StdColor::MixGrayDark};
+                          StdColor::MixGrayLight, StdColor::BlueDark};
         _geometry.reset(0, 0, 80, 60);
         _rect.reset(_geometry, 1, StdColor::Black, StdColor::MixGrayLight);
         _click_area.setGraphic(_rect);
@@ -77,9 +77,10 @@ namespace S3GF {
 
     void Button::onLeft() {
         AbstractControl::onLeft();
-        _rect.setBorderColor(_btn_skin.border.normal);
-        _rect.setBackgroundColor(_btn_skin.background.normal);
-        if (_is_valid) TextSystem::global()->setTextColor(_id, _btn_skin.font.normal);
+        _rect.setBorderColor(_checkable && _is_checked ? _btn_skin.border.checked : _btn_skin.border.normal);
+        _rect.setBackgroundColor(_checkable && _is_checked ? _btn_skin.background.checked : _btn_skin.background.normal);
+        if (_is_valid) TextSystem::global()->setTextColor(_id, _checkable && _is_checked ?
+                                                            _btn_skin.font.checked : _btn_skin.font.normal);
     }
 
     void Button::onPressed() {
@@ -112,9 +113,12 @@ namespace S3GF {
             _rect.setBackgroundColor(_btn_skin.background.active);
             if (_is_valid) TextSystem::global()->setTextColor(_id, _btn_skin.font.active);
         } else {
-            _rect.setBorderColor(_btn_skin.border.normal);
-            _rect.setBackgroundColor(_btn_skin.background.normal);
-            if (_is_valid) TextSystem::global()->setTextColor(_id, _btn_skin.font.normal);
+            _rect.setBorderColor(_checkable && _is_checked ?
+                                        _btn_skin.border.checked : _btn_skin.border.normal);
+            _rect.setBackgroundColor(_checkable && _is_checked ?
+                                        _btn_skin.background.checked : _btn_skin.background.normal);
+            if (_is_valid) TextSystem::global()->setTextColor(_id, _checkable && _is_checked ?
+                                        _btn_skin.font.checked : _btn_skin.font.normal);
         }
     }
 

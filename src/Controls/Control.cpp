@@ -275,11 +275,13 @@ namespace S3GF {
 
     void AbstractControl::setVisible(bool visible) {
         _visible = visible;
+        _is_checked = false;
         visibleChanged(visible);
     }
 
     void AbstractControl::setEnabled(bool enabled) {
         _enabled = enabled;
+        _is_checked = false;
         enabledChanged(enabled);
     }
 
