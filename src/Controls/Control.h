@@ -1,8 +1,8 @@
 #ifndef S3GF_CONTROL_H
 #define S3GF_CONTROL_H
-#include "Core.h"
+#include "../Core.h"
 #include "../Utils/Cursor.h"
-#include "Algorithm/Collider.h"
+#include "../Algorithm/Collider.h"
 
 namespace S3GF {
     using GT = std::variant<std::monostate, Graphics::Point, Graphics::Rectangle>;
@@ -44,6 +44,40 @@ namespace S3GF {
         bool _enabled{true}, _need_triggered{false};
         std::function<void()> _func;
     };
+
+    class HoldableArea {
+    public:
+        explicit HoldableArea(uint64_t window_id, GT graphic);
+
+        void setEnabled(bool enabled);
+        bool enabled();
+
+        void setHover(bool enabled);
+        void setRelease();
+
+        void setGraphic(GT graphic);
+        bool setPoint(const Vector2& position, uint16_t size);
+        bool setRect(const GeometryF& geometry);
+
+        Graphics::Point& point();
+        Graphics::Rectangle& rectangle();
+
+        bool getPoint(Graphics::Point& point);
+        bool getRect(Graphics::Rectangle& rect);
+
+        [[nodiscard]] bool isHovered() const;
+        [[nodiscard]] bool isEntered() const;
+        [[nodiscard]] bool isDown() const;
+        [[nodiscard]] bool isLeft() const;
+        [[nodiscard]] size_t index() const;
+    private:
+        GT _base;
+        uint64_t _winID;
+        bool _is_hovered{false}, _is_entered{false},
+                _is_down{false}, _is_left{true};
+        bool _enabled{true}, _sp_trigger{false};
+    };
+
 
     struct ColorStatus {
         SDL_Color normal;
@@ -94,6 +128,8 @@ namespace S3GF {
         void setChecked(bool checked);
         [[nodiscard]] bool checkable() const;
         [[nodiscard]] bool isChecked() const;
+        [[nodiscard]] bool isDown() const;
+        [[nodiscard]] bool isHovered() const;
 
     protected:
         virtual void paintEvent(Renderer*) {}
@@ -124,8 +160,8 @@ namespace S3GF {
         bool _is_down{false}, _is_hovered{false}, _is_checked{false};
         bool _visible{true}, _enabled{true}, _entered{false}, _active{false},
              _checkable{false};
-
     };
+
 } // S3GF
 
 #endif //S3GF_CONTROL_H

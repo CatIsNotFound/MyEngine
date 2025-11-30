@@ -1666,8 +1666,12 @@ namespace S3GF {
             SDL_Color _background_color;
             std::array<SDL_Vertex, 3> _vertices;
             std::array<int, 3> _indices;
-            std::array<SDL_Vertex, 4> _bd1, _bd2, _bd3;
-            std::array<int, 6> _bdi1, _bdi2, _bdi3;
+            std::array<SDL_Vertex, 4> _bd1;
+            std::array<SDL_Vertex, 4> _bd2;
+            std::array<SDL_Vertex, 4> _bd3;
+            std::array<int, 6> _bdi1;
+            std::array<int, 6> _bdi2;
+            std::array<int, 6> _bdi3;
         };
 
         class Ellipse {

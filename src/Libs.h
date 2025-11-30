@@ -11,12 +11,14 @@
 #include <string>
 #include <variant>
 #include <vector>
+#include <array>
 #include <deque>
 #include <queue>
 #include <memory>
 #include <functional>
 #include <map>
 #include <unordered_map>
+#include <utility>
 #include <random>
 #include <ranges>
 #include <chrono>

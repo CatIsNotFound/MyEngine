@@ -87,27 +87,6 @@ namespace S3GF {
             }
         }
 
-        static const char* weekdayChineseStr(Weekday weekday) {
-            switch (weekday) {
-                case Mon:
-                    return "一";
-                case Tue:
-                    return "二";
-                case Wed:
-                    return "三";
-                case Thu:
-                    return "四";
-                case Fri:
-                    return "五";
-                case Sat:
-                    return "六";
-                case Sun:
-                    return "日";
-                default:
-                    return "";
-            }
-        }
-
         static const char* monthStr(Month month, bool short_name = false) {
             switch (month) {
                 case Jan:

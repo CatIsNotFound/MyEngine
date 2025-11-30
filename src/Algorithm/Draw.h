@@ -2,7 +2,9 @@
 #pragma once
 #ifndef S3GF_DRAW_H
 #define S3GF_DRAW_H
-
+#ifndef M_PI
+#define M_PI		3.14159265358979323846
+#endif
 #include "../Libs.h"
 
 namespace S3GF {

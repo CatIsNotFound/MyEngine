@@ -23,11 +23,11 @@ namespace S3GF {
                 default:
                     break;
             }
-//            // Avoid the issue of triggering prematurely
-//            // when the mouse moves into the clickable area before pressing the mouse button.
-//            static bool needs_tri = false;
+            // Avoid the issue of triggering prematurely
+            // when the mouse moves into the clickable area before pressing the mouse button.
             if (tri > 0) {
                 _is_left = false;
+                auto state = SDL_GetMouseState(nullptr, nullptr);
                 if (!_is_hovered) {
                     _is_hovered = true;
                 }
@@ -124,6 +124,104 @@ namespace S3GF {
     bool ClickArea::isDown() const { return _is_down; }
     bool ClickArea::isLeft() const { return _is_left; }
     size_t ClickArea::index() const { return _base.index(); }
+
+    HoldableArea::HoldableArea(uint64_t window_id, GT graphic) : _base(std::move(graphic)), _winID(window_id) {
+        EventSystem::global()->appendEvent(_next_id++, [this] (SDL_Event ev) {
+            if (ev.window.windowID != _winID) {
+                _is_hovered = false;
+                return;
+            }
+            if (!_enabled) return;
+            Vector2 cur_pos = Cursor::global()->position();
+            int8_t tri = -1;
+            switch (_base.index()) {
+                case 1:
+                    tri = Algorithm::comparePosInPoint(cur_pos, std::get<Graphics::Point>(_base));
+                    break;
+                case 2:
+                    tri = Algorithm::comparePosInRect(cur_pos, std::get<Graphics::Rectangle>(_base));
+                    break;
+                default:
+                    break;
+            }
+            auto state = SDL_GetMouseState(nullptr, nullptr);
+            if (tri > 0) {
+                _is_left = false;
+                if (!_is_hovered) {
+                    _is_hovered = true;
+                }
+                if (state > 0) {
+                    if (_sp_trigger) _is_down = true;
+                } else {
+                    _is_down = false;
+                }
+            } else {
+                _is_hovered = false;
+                _is_entered = false;
+                _is_left = true;
+                _sp_trigger = false;
+            }
+            if (_is_hovered && !_is_entered) {_is_entered = true; _sp_trigger = true; }
+        });
+    }
+
+    void HoldableArea::setEnabled(bool enabled) {
+        _enabled = enabled;
+    }
+
+    bool HoldableArea::enabled() {
+        return _enabled;
+    }
+
+    void HoldableArea::setHover(bool enabled) {
+        _is_hovered = enabled;
+    }
+
+    void HoldableArea::setRelease() { _is_down = false; _sp_trigger = false; }
+
+    void HoldableArea::setGraphic(GT graphic) {
+        _base = std::move(graphic);
+    }
+
+    bool HoldableArea::setPoint(const Vector2 &position, uint16_t size) {
+        if (_base.index() != 1) return false;
+        auto& pt = std::get<Graphics::Point>(_base);
+        pt.reset(position, size, pt.color());
+        return true;
+    }
+
+    bool HoldableArea::setRect(const GeometryF &geometry) {
+        if (_base.index() != 2) return false;
+        auto& rect = std::get<Graphics::Rectangle>(_base);
+        rect.setGeometry(geometry);
+        return true;
+    }
+
+    Graphics::Point &HoldableArea::point() {
+        return std::get<Graphics::Point>(_base);
+    }
+
+    Graphics::Rectangle &HoldableArea::rectangle() {
+        return std::get<Graphics::Rectangle>(_base);
+    }
+
+    bool HoldableArea::getPoint(Graphics::Point &point) {
+        if (_base.index() != 1) return false;
+        point = std::get<Graphics::Point>(_base);
+        return true;
+    }
+
+    bool HoldableArea::getRect(Graphics::Rectangle &rect) {
+        if (_base.index() != 2) return false;
+        rect = std::get<Graphics::Rectangle>(_base);
+        return true;
+    }
+
+    bool HoldableArea::isHovered() const { return _is_hovered;}
+    bool HoldableArea::isEntered() const { return _is_entered; }
+    bool HoldableArea::isDown() const { return _is_down; }
+    bool HoldableArea::isLeft() const { return _is_left; }
+    size_t HoldableArea::index() const { return _base.index(); }
 
     AbstractControl::AbstractControl(const std::string& name, Renderer* renderer,
                                      AbstractControl* parent, GT click_area)
@@ -310,10 +408,18 @@ namespace S3GF {
         return _is_checked;
     }
 
+    bool AbstractControl::isDown() const {
+        return _is_down;
+    }
+
+    bool AbstractControl::isHovered() const {
+        return _is_hovered;
+    }
+
     void AbstractControl::_update_click_area() {
         if (_click_area.index() == 1) {
             auto min = std::min(_geometry.size.width, _geometry.size.height);
-            auto real_size = std::min(static_cast<int>(min), UINT16_MAX);
+            auto real_size = std::min(static_cast<int>(min), 65535);
             _click_area.setPoint(_geometry.pos, real_size);
         } else if (_click_area.index() == 2) {
             _click_area.setRect(_geometry);
@@ -321,6 +427,7 @@ namespace S3GF {
                     _geometry.pos.x, _geometry.pos.y, _geometry.size.width, _geometry.size.height));
         }
     }
+
 
 
 }

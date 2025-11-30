@@ -38,10 +38,11 @@ int main() {
     hovered.property()->color_alpha = RGBAColor::RGBAValue2Color(0xfff8f8);
     pressed.property()->color_alpha = RGBAColor::BlueDark;
     TextureButton textureButton("test", main_win->renderer());
-    textureButton.setTextures(&normal, &hovered, &pressed, &invalid);
+    textureButton.setTextures(&normal, &hovered, &pressed, &invalid, &pressed);
     textureButton.move(400.f - textureButton.size().width / 2 + 40, 300.f - textureButton.size().height);
     textureButton.setKey(SDLK_RETURN);
     textureButton.setActive();
+    textureButton.setCheckable(true);
     textureButton.setFont(font2.font_name);
     TextSystem::global()->font(font2.font_name)->setFontSize(40.f);
     textureButton.setText("Hello!");
@@ -53,6 +54,28 @@ int main() {
     textureButton.setTextPosition({s_size.width / 2 - size.width / 2, s_size.height / 2 - size.height / 2});
     textureButton.setTextVisible(true);
     textureButton.setEvent([&bg_color]{ bg_color = RGBAColor::BlueLight; });
+    Graphics::Rectangle cr(200, 300, 100, 100, 2, StdColor::LightGray, StdColor::Orange);
+    HoldableArea holdableArea(main_win->windowID(), cr);
+    holdableArea.setRect(GeometryF{100, 100, 300, 300});
+    holdableArea.getRect(cr);
+    EventSystem::global()->appendEvent(5544, [&textureButton, &button, &cr, &holdableArea](SDL_Event e) {
+        bool a = holdableArea.isDown(),
+             b = holdableArea.isHovered(),
+             c = holdableArea.isLeft();
+        if (textureButton.isDown() || button.isDown()) {
+            holdableArea.setRelease();
+            cr.setBackgroundColor(StdColor::Orange);
+            return;
+        }
+        if (c) {
+            cr.setBackgroundColor(StdColor::Orange);
+        } else if (a) {
+            cr.setBackgroundColor(StdColor::DarkRed);
+        } else if (b) {
+            cr.setBackgroundColor(StdColor::Yellow);
+        }
+
+    });
     Timer timer(3000, [&button, &textureButton] {
         button.setEnabled(!button.enabled());
         textureButton.setEnabled(!textureButton.enabled());
@@ -60,8 +83,9 @@ int main() {
         Logger::log(std::format("Size: {}x{}", size.width, size.height));
     });
     timer.start(0);
-    main_win->installPaintEvent([&engine, &bg_color](Renderer* r) {
+    main_win->installPaintEvent([&engine, &bg_color, &cr](Renderer* r) {
         r->fillBackground(bg_color);
+        r->drawRectangle(cr);
         r->drawPixelText(std::format("FPS: {}, Button: {}",
                                      engine.fps(), EventSystem::global()->isMouseButtonDown() ? "true" : "false"), {20, 20});
     });
