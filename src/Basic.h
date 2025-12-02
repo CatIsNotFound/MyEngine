@@ -34,13 +34,6 @@ using StringList    = std::vector<std::string>;
  */
 namespace S3GF {
     /**
-     * @ref basic_func_add
-     */
-    inline int add(int a, int b) {
-        return a + b;
-    }
-
-    /**
      * @namespace StdColor
      * @brief Predefined Standard Color (40 colors)
      */
@@ -92,151 +85,6 @@ namespace S3GF {
         constexpr SColor Gray = {128, 128, 128, 255};
         constexpr SColor LightGray = {200, 200, 200, 255};
         constexpr SColor DarkGray = {64, 64, 64, 255};
-    }
-
-    /**
-     * @namespace RGBAColor
-     * @brief Predefined colors, named in RGBA format
-     * @see Basic.h
-     */
-    namespace RGBAColor {
-        constexpr SColor Transparent = {255, 255, 255, 0};
-        constexpr SColor HalfTransparent = {255, 255, 255, 128};
-        constexpr SColor Black = {0, 0, 0, 255};
-        constexpr SColor White = {255, 255, 255, 255};
-
-        constexpr SColor RedPure = {255, 0, 0, 255};
-        constexpr SColor RedDark = {153, 0, 0, 255};
-        constexpr SColor RedDarker = {102, 0, 0, 255};
-        constexpr SColor RedWine = {85, 0, 34, 255};
-        constexpr SColor RedRose = {255, 26, 99, 255};
-        constexpr SColor RedPink = {255, 105, 180, 255};
-        constexpr SColor RedLightPink = {255, 179, 217, 255};
-        constexpr SColor RedPalePink = {255, 218, 232, 255};
-        constexpr SColor RedCoral = {255, 114, 86, 255};
-        constexpr SColor RedOrange = {255, 69, 0, 255};
-        constexpr SColor RedBrick = {178, 34, 34, 255};
-        constexpr SColor RedRust = {183, 65, 14, 255};
-        constexpr SColor RedScarlet = {255, 36, 0, 255};
-        constexpr SColor RedMagenta = {255, 0, 255, 255};
-        constexpr SColor RedFuchsia = {219, 112, 219, 255};
-        constexpr SColor RedRosePink = {255, 52, 179, 255};
-        constexpr SColor RedDeepPink = {255, 20, 147, 255};
-        constexpr SColor RedPeachPink = {255, 153, 170, 255};
-        constexpr SColor RedCherryBlossom = {255, 228, 225, 255};
-        constexpr SColor RedRouge = {210, 0, 82, 255};
-        constexpr SColor RedVermilion = {227, 38, 54, 255};
-        constexpr SColor RedBegonia = {255, 99, 71, 255};
-        constexpr SColor RedPomegranate = {204, 0, 0, 255};
-        constexpr SColor RedLightTrans = {255, 192, 192, 192};
-        constexpr SColor RedPaleTrans = {255, 224, 224, 192};
-        constexpr SColor RedDarkTrans = {153, 50, 50, 192};
-        constexpr SColor RedRoseTrans = {255, 105, 180, 192};
-        constexpr SColor RedMagentaTrans = {255, 153, 255, 192};
-        constexpr SColor RedCoralTrans = {255, 160, 122, 192};
-        constexpr SColor RedOrangeTrans = {255, 127, 80, 192};
-        constexpr SColor RedFuchsiaTrans = {230, 145, 230, 192};
-        constexpr SColor RedBrickTrans = {199, 21, 133, 192};
-        
-        constexpr SColor GreenPure = {0, 255, 0, 255};
-        constexpr SColor GreenDark = {0, 153, 0, 255};
-        constexpr SColor GreenInk = {0, 102, 51, 255};
-        constexpr SColor GreenOlive = {107, 142, 35, 255};
-        constexpr SColor GreenGrass = {34, 139, 34, 255};
-        constexpr SColor GreenLight = {144, 238, 144, 255};
-        constexpr SColor GreenPale = {152, 251, 152, 255};
-        constexpr SColor GreenMint = {189, 252, 201, 255};
-        constexpr SColor GreenEmerald = {0, 201, 87, 255};
-        constexpr SColor GreenJade = {50, 205, 50, 255};
-        constexpr SColor GreenPine = {2, 94, 47, 255};
-        constexpr SColor GreenWillow = {134, 204, 204, 255};
-        constexpr SColor GreenBean = {194, 231, 181, 255};
-        constexpr SColor GreenMoss = {115, 147, 115, 255};
-        constexpr SColor GreenBamboo = {0, 168, 107, 255};
-        constexpr SColor GreenLime = {50, 205, 50, 255};
-        constexpr SColor GreenApple = {145, 238, 145, 255};
-        constexpr SColor GreenForest = {34, 139, 34, 255};
-        constexpr SColor GreenIvy = {7, 101, 68, 255};
-        constexpr SColor GreenPeacock = {0, 166, 166, 255};
-        constexpr SColor GreenCyan = {0, 255, 255, 255};
-        constexpr SColor GreenTurquoise = {64, 224, 208, 255};
-        constexpr SColor GreenMintCyan = {102, 255, 204, 255};
-        constexpr SColor GreenLightTrans = {173, 255, 173, 192};
-        constexpr SColor GreenPaleTrans = {204, 255, 204, 192};
-        constexpr SColor GreenDarkTrans = {50, 153, 50, 192};
-        constexpr SColor GreenOliveTrans = {138, 154, 70, 192};
-        constexpr SColor GreenJadeTrans = {102, 255, 102, 192};
-        constexpr SColor GreenLimeTrans = {127, 255, 0, 192};
-        constexpr SColor GreenCyanTrans = {102, 255, 255, 192};
-        constexpr SColor GreenTurquoiseTrans = {128, 240, 224, 192};
-        constexpr SColor GreenMossTrans = {143, 188, 143, 192};
-        constexpr SColor GreenBambooTrans = {51, 204, 153, 192};
-
-        constexpr SColor BluePure = {0, 0, 255, 255};
-        constexpr SColor BlueDark = {0, 0, 153, 255};
-        constexpr SColor BlueNavy = {0, 32, 96, 255};
-        constexpr SColor BlueSapphire = {0, 102, 204, 255};
-        constexpr SColor BlueSky = {135, 206, 235, 255};
-        constexpr SColor BlueLight = {173, 216, 230, 255};
-        constexpr SColor BluePale = {204, 232, 255, 255};
-        constexpr SColor BlueBaby = {176, 224, 230, 255};
-        constexpr SColor BlueSea = {28, 134, 238, 255};
-        constexpr SColor BlueLake = {0, 191, 255, 255};
-        constexpr SColor BlueCobalt = {65, 105, 225, 255};
-        constexpr SColor BlueIndigo = {75, 0, 130, 255};
-        constexpr SColor BlueViolet = {138, 43, 226, 255};
-        constexpr SColor BlueLavender = {191, 211, 254, 255};
-        constexpr SColor BlueStone = {100, 149, 237, 255};
-        constexpr SColor BlueIce = {240, 248, 255, 255};
-        constexpr SColor BlueSteel = {70, 130, 180, 255};
-        constexpr SColor BluePrussian = {29, 53, 87, 255};
-        constexpr SColor BlueRoyal = {0, 64, 128, 255};
-        constexpr SColor BluePeacock = {30, 144, 255, 255};
-        constexpr SColor BlueCyan = {0, 255, 255, 255};
-        constexpr SColor BlueLilac = {169, 184, 208, 255};
-        constexpr SColor BlueDeepSky = {0, 191, 255, 255};
-        constexpr SColor BlueLightTrans = {173, 216, 230, 192};
-        constexpr SColor BluePaleTrans = {211, 235, 250, 192};
-        constexpr SColor BlueDarkTrans = {65, 105, 225, 192};
-        constexpr SColor BlueNavyTrans = {30, 144, 255, 192};
-        constexpr SColor BlueSapphireTrans = {0, 128, 255, 192};
-        constexpr SColor BlueIndigoTrans = {106, 90, 205, 192};
-        constexpr SColor BlueVioletTrans = {153, 102, 255, 192};
-        constexpr SColor BlueSeaTrans = {64, 170, 255, 192};
-        constexpr SColor BlueSteelTrans = {100, 149, 237, 192};
-
-        constexpr SColor MixYellow = {255, 255, 0, 255};
-        constexpr SColor MixYellowDark = {204, 204, 0, 255};
-        constexpr SColor MixYellowLemon = {255, 246, 143, 255};
-        constexpr SColor MixOrangeYellow = {255, 165, 0, 255};
-        constexpr SColor MixAmber = {255, 193, 37, 255};
-        constexpr SColor MixGold = {255, 215, 0, 255};
-        constexpr SColor MixPurple = {128, 0, 128, 255};
-        constexpr SColor MixPurpleDark = {72, 61, 139, 255};
-        constexpr SColor MixPurpleLight = {199, 21, 133, 255};
-        constexpr SColor MixPurplePale = {216, 191, 216, 255};
-        constexpr SColor MixViolet = {143, 0, 255, 255};
-        constexpr SColor MixFuchsia = {255, 0, 255, 255};
-        constexpr SColor MixCyan = {0, 255, 255, 255};
-        constexpr SColor MixCyanDark = {0, 139, 139, 255};
-        constexpr SColor MixCyanLight = {175, 238, 238, 255};
-        constexpr SColor MixGray = {128, 128, 128, 255};
-        constexpr SColor MixGrayDark = {64, 64, 64, 255};
-        constexpr SColor MixGrayLight = {192, 192, 192, 255};
-        constexpr SColor MixSilver = {192, 192, 192, 255};
-        constexpr SColor MixBrown = {165, 42, 42, 255};
-        constexpr SColor MixBrownDark = {101, 67, 33, 255};
-        constexpr SColor MixBrownLight = {210, 180, 140, 255};
-        constexpr SColor MixKhaki = {240, 230, 140, 255};
-        constexpr SColor MixBeige = {245, 245, 220, 255};
-        constexpr SColor MixCream = {255, 253, 208, 255};
-        constexpr SColor MixYellowTrans = {255, 255, 153, 192};
-        constexpr SColor MixPurpleTrans = {204, 153, 255, 192};
-        constexpr SColor MixCyanTrans = {153, 255, 255, 192};
-        constexpr SColor MixGrayTrans = {192, 192, 192, 192};
-        constexpr SColor MixBrownTrans = {205, 133, 63, 192};
-        constexpr SColor MixKhakiTrans = {245, 245, 205, 192};
-        constexpr SColor MixAmberTrans = {255, 215, 105, 192};
     }
 
     struct GeometryF;
@@ -1391,8 +1239,8 @@ namespace S3GF {
             std::vector<int> _indices;
             uint16_t _count{32};
         public:
-            explicit Point() : _position(0, 0), _size(1), _color(RGBAColor::Black), _count(32) { update(); }
-            Point(float x, float y, uint16_t size = 1, const SDL_Color& color = RGBAColor::Black,
+            explicit Point() : _position(0, 0), _size(1), _color(StdColor::Black), _count(32) { update(); }
+            Point(float x, float y, uint16_t size = 1, const SDL_Color& color = StdColor::Black,
                   uint16_t count = 32)
                 : _position(x, y), _size(size), _color(color), _count(count) { update(); }
             void move(float x, float y) { _position.reset(x, y); update(); }
@@ -1425,7 +1273,7 @@ namespace S3GF {
 
         class Line {
         public:
-            explicit Line() : _start_position(), _end_position(), _size(1), _color(RGBAColor::Black) {}
+            explicit Line() : _start_position(), _end_position(), _size(1), _color(StdColor::Black) {}
             explicit Line(float x1, float y1, float x2, float y2, uint16_t size, const SDL_Color& color)
                 : _start_position(x1, y1), _end_position(x2, y2), _size(size), _color(color) {update();}
             explicit Line(const Vector2& start, const Vector2& end, uint16_t size, const SDL_Color &color)
@@ -1483,10 +1331,10 @@ namespace S3GF {
 
         public:
             explicit Rectangle() : _geometry(0, 0, 0, 0), _border_size(0),
-                                   _border_color(RGBAColor::Transparent), _background_color(RGBAColor::Transparent) {}
+                                   _border_color(StdColor::Black), _background_color(StdColor::Black) {}
             explicit Rectangle(float x, float y, float w, float h,
-                               uint16_t border = 1, const SDL_Color& border_color = RGBAColor::Black,
-                               const SDL_Color& background_color = RGBAColor::Transparent)
+                               uint16_t border = 1, const SDL_Color& border_color = StdColor::Black,
+                               const SDL_Color& background_color = StdColor::Black)
                                : _geometry(x, y, w, h), _border_size(border),
                                  _border_color(border_color), _background_color(background_color) {
                 S3GF::Algorithm::calcRectangleBorder(_geometry, _border_size, _borders);
@@ -1564,10 +1412,10 @@ namespace S3GF {
         class Triangle {
         public:
             explicit Triangle() : _p1(0, 0), _p2(0, 0), _p3(0, 0),
-                                  _border_size(0), _border_color(RGBAColor::Transparent), _background_color(RGBAColor::Black) {}
+                                  _border_size(0), _border_color(StdColor::Black), _background_color(StdColor::Black) {}
             explicit Triangle(float x1, float y1, float x2, float y2, float x3, float y3,
-                              uint16_t border_size = 0, const SDL_Color& border_color = RGBAColor::Transparent,
-                              const SDL_Color& back_color = RGBAColor::Black)
+                              uint16_t border_size = 0, const SDL_Color& border_color = StdColor::Black,
+                              const SDL_Color& back_color = StdColor::Black)
                 : _p1(x1, y1), _p2(x2, y2), _p3(x3, y3),
                   _border_size(border_size), _border_color(border_color), _background_color(back_color)
                 { updateTri(); updateBorder(); }
@@ -1673,12 +1521,12 @@ namespace S3GF {
         class Ellipse {
         public:
             explicit Ellipse() : _center_point(0, 0), _radius(0, 0),
-                                 _border_size(0), _border_color(RGBAColor::Transparent), _background_color(RGBAColor::Transparent),
+                                 _border_size(0), _border_color(StdColor::Black), _background_color(StdColor::Black),
                                  _degree(0.f), _count(0) {}
 
             Ellipse(float cx, float cy, float rw, float rh, uint16_t border_size = 1,
-                    const SDL_Color& border_color = RGBAColor::Black,
-                    const SDL_Color& back_color = RGBAColor::Transparent,
+                    const SDL_Color& border_color = StdColor::Black,
+                    const SDL_Color& back_color = StdColor::Black,
                     float degree = 0.f, uint16_t segment = 32)
                     : _center_point(cx, cy), _radius(rw, rh), _border_size(border_size),
                       _border_color(border_color), _background_color(back_color),

@@ -1,4 +1,4 @@
-
+#pragma once
 #ifndef S3GF_FILESYSTEM_H
 #define S3GF_FILESYSTEM_H
 
@@ -20,6 +20,14 @@ namespace S3GF {
             All,
             FilesOnly,
             DirectoriesOnly
+        };
+
+        enum DataSize {
+            B,
+            KB,
+            MB,
+            GB,
+            TB
         };
 
         /**
@@ -132,6 +140,11 @@ namespace S3GF {
          * @return 返回完整的二进制内容
          */
         static std::vector<uint8_t> readBinaryFile(const std::string& path, bool ignore_error = false, bool* ok = nullptr);
+
+        static size_t getFileSize(const std::string& file_path);
+
+        static float readableSize(const std::string& file_path, DataSize data_size = MB);
+
         /**
          * @brief 获取绝对路径
          * @param path 指定路径

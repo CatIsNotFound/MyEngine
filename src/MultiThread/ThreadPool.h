@@ -1,4 +1,4 @@
-
+#pragma once
 #ifndef S3GF_THREADPOOL_H
 #define S3GF_THREADPOOL_H
 #include "../Libs.h"

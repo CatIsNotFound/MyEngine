@@ -173,7 +173,8 @@ namespace S3GF {
     bool ClickArea::isLeft() const { return _is_left; }
     size_t ClickArea::index() const { return _base.index(); }
 
-    HoldableArea::HoldableArea(uint64_t window_id, GT graphic) : _base(std::move(graphic)), _winID(window_id) {
+    HoldableArea::HoldableArea(uint64_t window_id, GT graphic) : _base(std::move(graphic)), _winID(window_id),
+                                                                 _real_base(std::monostate()) {
         EventSystem::global()->appendEvent(_next_id++, [this] (SDL_Event ev) {
             if (ev.window.windowID != _winID) {
                 _is_hovered = false;

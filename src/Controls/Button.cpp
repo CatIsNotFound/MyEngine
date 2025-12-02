@@ -1,6 +1,6 @@
 
 #include "Button.h"
-
+#include "Utils/RGBAColor.h"
 namespace S3GF {
 
     Button::Button(const std::string &name, Renderer *renderer, AbstractControl *parent)

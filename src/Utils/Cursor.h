@@ -1,4 +1,4 @@
-
+#pragma once
 #ifndef S3GF_CURSOR_H
 #define S3GF_CURSOR_H
 #include "Logger.h"
@@ -240,7 +240,7 @@ namespace S3GF {
             }
             SDL_Surface *temp = IMG_Load(path.data());
             if (!temp) {
-                SDL_Log("[ERROR] Can't load image while setting cursor: %s", path.data());
+                Logger::log(std::format("[ERROR] Can't load image while setting cursor: {}", path), Logger::ERROR);
                 return;
             }
             SDL_DestroyCursor(_cursor);
@@ -280,11 +280,13 @@ namespace S3GF {
             }
             auto new_cursor = IMG_Load(path.c_str());
             if (!new_cursor) {
-                SDL_Log("[ERROR] Can't set custom cursor, because the current path \"%s\" is not valid!", path.c_str());
+                Logger::log(std::format("[ERROR] Can't set custom cursor, "
+                                        "because the current path \"{}\" is not valid!", path), Logger::ERROR);
                 return;
             }
             if (_user_custom.contains(stdCursor)) {
-                if (_user_custom.at(stdCursor).cursor) SDL_DestroySurface(_user_custom.at(stdCursor).cursor.get());
+                if (_user_custom.at(stdCursor).cursor)
+                    SDL_DestroySurface(_user_custom.at(stdCursor).cursor.get());
                 _user_custom.at(stdCursor).cursor = std::unique_ptr<SDL_Surface>(new_cursor);
                 _user_custom.at(stdCursor).hot_point = hot_point;
             } else {

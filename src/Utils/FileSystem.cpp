@@ -249,6 +249,31 @@ namespace S3GF {
         return ret;
     }
 
+    size_t FileSystem::getFileSize(const std::string &file_path) {
+        if (std::filesystem::exists(file_path)) {
+            return std::filesystem::file_size(file_path);
+        } else {
+            Logger::log(std::format("FileSystem: Can't open file '{}'!", file_path), Logger::WARN);
+            return 0;
+        }
+    }
+
+    float FileSystem::readableSize(const std::string &file_path, S3GF::FileSystem::DataSize data_size) {
+        auto size = getFileSize(file_path);
+        switch (data_size) {
+            case B:
+                return static_cast<float>(size);
+            case KB:
+                return static_cast<float>(size) / 1024.0f;
+            case MB:
+                return static_cast<float>(size) / 1024.0f / 1024.f;
+            case GB:
+                return static_cast<float>(size) / 1024.0f / 1024.f / 1024.f;
+            case TB:
+                return static_cast<float>(size) / 1024.0f / 1024.f / 1024.f / 1024.f;
+        }
+    }
+
     std::string FileSystem::getAbsolutePath(const std::string &path) {
         if (path[1] == ':' || path[0] == '~' || path[0] == '/') return path;
         if (path.front() == '.') {

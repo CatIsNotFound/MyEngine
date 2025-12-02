@@ -2,16 +2,160 @@
 #ifndef S3GF_COMPONETS_H
 #define S3GF_COMPONETS_H
 #include "Basic.h"
-#include "Utils/Random.h"
 
 namespace S3GF {
+    class Font {
+    public:
+        enum Style {
+            Regular = 0x0,
+            Bold = 0x1,
+            Italic = 0x2,
+            Underline = 0x4,
+            Strikethrough = 0x8
+        };
+        enum Direction {
+            LeftToRight = 4,
+            RightToLeft,
+            TopToBottom,
+            BottomToTop
+        };
+        enum Hinting {
+            Normal,
+            Light,
+            Mono,
+            None,
+            SubPixel
+        };
+        Font(Font &&) = delete;
+        Font(const Font &) = delete;
+        Font &operator=(Font &&) = delete;
+        Font &operator=(const Font &) = delete;
+        explicit Font(const std::string& font_path, float font_size = 9.f);
+        ~Font();
+
+        void setFontSize(float size);
+        float fontSize() const;
+        void setFontColor(const SDL_Color& color);
+        const SDL_Color fontColor() const;
+        void setStyle(uint32_t flags);
+        void setOutline(uint32_t value = 0);
+        uint32_t outline() const;
+        void setOutlineColor(const SDL_Color& color);
+        const SDL_Color outlineColor() const;
+        void setFontDirection(Direction direction);
+        Direction fontDirection() const;
+        void setFontHinting(uint32_t flags);
+        void setFontKerning(bool enabled);
+        bool fontKerning() const;
+        void setLineSpacing(uint32_t spacing);
+        uint32_t lineSpacing() const;
+        SDL_Surface* toImage(const std::string& text);
+        SDL_Surface* toImage(const std::string& text, const SDL_Color& backgrond_color);
+
+        TTF_Font* self() const;
+    private:
+        TTF_Font* _font{nullptr};
+        float _font_size{};
+        SColor _font_color{};
+        uint32_t _font_style_flags{};
+        uint32_t _font_outline{};
+        SColor _outline_color{};
+        Direction _font_direction{};
+        uint32_t _font_hinting{};
+        bool _font_kerning{};
+        uint32_t _line_spacing{};
+        bool _font_is_loaded{false};
+    };
+
+    using FontMap = std::unordered_map<std::string, std::string>;
+    class FontDatabase {
+    public:
+        FontDatabase() = delete;
+        FontDatabase(const FontDatabase&) = delete;
+        FontDatabase(FontDatabase&&) = delete;
+        ~FontDatabase() = delete;
+        FontDatabase& operator=(const FontDatabase&) = delete;
+        FontDatabase& operator=(FontDatabase&&) = delete;
+        struct FontInfo {
+            std::string font_name;
+            std::string font_path;
+        };
+
+        static FontMap getFontDatabaseFromSystem();
+        static std::string findFontFromSystem(const std::string &font_name);
+        static std::vector<FontInfo> getSystemDefaultFont();
+    private:
+        static bool _is_loaded;
+        static FontMap _font_db;
+    };
+
+    class BGM {
+    public:
+        explicit BGM(MIX_Mixer* mixer, const std::string& path = {});
+        ~BGM();
+
+        void setPath(const std::string& path);
+        [[nodiscard]] const std::string& path() const;
+        [[nodiscard]] bool isLoaded() const;
+
+        bool play(int64_t position = 0, bool loop = false, int64_t fade_in_duration = 0);
+        void stop(int64_t fade_out_duration = 0);
+        void pause();
+        bool resume();
+        bool forward(int64_t ms = 3000);
+        bool backward(int64_t ms = 3000);
+        bool playAt(int64_t position);
+        [[nodiscard]] int64_t position() const;
+        [[nodiscard]] int64_t duration() const;
+        [[nodiscard]] bool playing() const;
+        [[nodiscard]] bool isPaused() const;
+        [[nodiscard]] bool isLoop() const;
+        void load();
+        void unload();
+    private:
+        bool _is_load{false}, _is_loop{false},
+             _is_playing{false}, _paused{false};
+        std::string _path;
+        int64_t _pos{};
+        SDL_PropertiesID _prop_id{0};
+        MIX_Mixer* _mixer;
+        MIX_Audio* _audio{nullptr};
+        MIX_Track* _track{nullptr};
+    };
+
+    class SFX {
+    public:
+        explicit SFX(MIX_Mixer* mixer, const std::string& path = {});
+        ~SFX();
+
+        void setPath(const std::string& path);
+        [[nodiscard]] const std::string& path() const;
+        [[nodiscard]] bool isLoaded() const;
+
+        bool play(bool loop = false, float ratio = 1.f, MIX_Point3D&& surround_pos = {0, 0, 0});
+        void stop(int64_t fade_out_duration = 0);
+        [[nodiscard]] int64_t position() const;
+        [[nodiscard]] int64_t duration() const;
+
+        [[nodiscard]] bool isLoop() const;
+        void load();
+        void unload();
+    private:
+        bool _is_load{false}, _is_loop{false}, _is_playing{false};
+        std::string _path;
+        SDL_PropertiesID _prop_id{0};
+        MIX_Mixer* _mixer;
+        MIX_Audio* _audio{nullptr};
+        MIX_Track* _track{nullptr};
+    };
+
     class Renderer;
-    struct Property {
+    struct TextureProperty {
         bool clip_mode;
         SDL_FRect clip_area;
         SDL_Color color_alpha;
         double rotate_angle;
-        void reset(const Property& property) {
+        void reset(const TextureProperty& property) {
             _position = property._position;
             _size = property._size;
             _scale = property._scale;
@@ -22,7 +166,7 @@ namespace S3GF {
             color_alpha = property.color_alpha;
             rotate_angle = property.rotate_angle;
         }
-        void reset(Property&& property) {
+        void reset(TextureProperty&& property) {
             _position = property._position;
             _size = property._size;
             _scale = property._scale;
@@ -111,14 +255,14 @@ namespace S3GF {
 
         [[nodiscard]] SDL_Texture* self() const;
         [[nodiscard]] bool isValid() const;
-        Property* property();
+        TextureProperty* property();
 
         virtual void draw() const;
     private:
         SDL_Surface* _surface;
         SDL_Texture* _texture;
         std::string _path;
-        std::unique_ptr<Property> _property;
+        std::unique_ptr<TextureProperty> _property;
         Renderer* _renderer;
     };
 
@@ -133,15 +277,15 @@ namespace S3GF {
         explicit TextureAtlas(SDL_Surface* surface, Renderer *renderer, bool deep_copy = false);
         ~TextureAtlas();
 
-        void setTiles(const std::string& tiles_name, Property&& tiles_property);
-        Property* tilesProperty(const std::string& tiles_name);
+        void setTiles(const std::string& tiles_name, TextureProperty&& tiles_property);
+        TextureProperty* tilesProperty(const std::string& tiles_name);
         void setCurrentTiles(const std::string& tiles_name);
         [[nodiscard]] const std::string& currentTiles() const;
 
         void draw() const override;
         void draw(const std::string& tiles_name) const;
     private:
-        std::unordered_map<std::string, std::shared_ptr<Property>> _tiles_map;
+        std::unordered_map<std::string, std::shared_ptr<TextureProperty>> _tiles_map;
         std::string _current_tiles;
     };
 }

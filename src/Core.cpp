@@ -96,7 +96,7 @@ namespace S3GF {
         _cmd_list.push_back(std::make_unique<EllipseCMD>(_renderer, ellipse));
     }
 
-    void Renderer::drawTexture(SDL_Texture* texture, Property* property) {
+    void Renderer::drawTexture(SDL_Texture* texture, TextureProperty* property) {
         if (!texture || !property) return;
         _cmd_list.push_back(std::make_unique<TextureCMD>(_renderer, texture, property));
     }
@@ -631,25 +631,25 @@ namespace S3GF {
 
     void EventSystem::appendEvent(uint64_t id, const std::function<void(SDL_Event)>& event) {
         if (_event_list.contains(id)) {
-            Logger::log(std::format("The event with ID {} is already exists!", id), Logger::WARN);
+            Logger::log(std::format("EventSystem: The event with ID {} is already exists!", id), Logger::WARN);
             return;
         }
         _event_list.emplace(id, event);
-        Logger::log(std::format("Append a new event with ID {}", id));
+        Logger::log(std::format("EventSystem: Append a new event with ID {}", id));
     }
 
     void EventSystem::removeEvent(uint64_t id) {
         if (_event_list.contains(id)) {
             _event_list.erase(id);
-            Logger::log(std::format("Removed the event with ID {}", id));
+            Logger::log(std::format("EventSystem: Removed the event with ID {}", id));
         } else {
-            Logger::log(std::format("The event with ID {} is not found!", id), Logger::WARN);
+            Logger::log(std::format("EventSystem: The event with ID {} is not found!", id), Logger::WARN);
         }
     }
 
     void EventSystem::clearEvent() {
         _event_list.clear();
-        Logger::log("Cleared all events.");
+        Logger::log("EventSystem: Cleared all events.");
     }
 
     size_t EventSystem::eventCount() const { return _event_list.size(); }
@@ -705,7 +705,9 @@ namespace S3GF {
             throwFatalError();
         }
         SDL_SetAppMetadata(app_name.c_str(), app_version.c_str(), app_id.c_str());
+        Logger::log("Engine: Started up application!");
         TextSystem::global();
+        AudioSystem::global();
         EventSystem::global(this);
         // AudioSystem::global();
         signal(SIGINT, Engine::exit);
@@ -827,8 +829,9 @@ namespace S3GF {
             win.second.reset();
         }
         TextSystem::global()->unload();
-        // AudioSystem::global()->unload();
+        AudioSystem::global()->unload();
         SDL_Quit();
+        Logger::log("Engine: Clean up finished!");
     }
 
     void Engine::running() {
@@ -858,176 +861,6 @@ namespace S3GF {
                 start_time = SDL_GetTicks();
             }
         }
-    }
-
-    Font::Font(const std::string& font_path, float font_size) 
-        : _font_size(font_size){
-        _font = TTF_OpenFont(font_path.c_str(), font_size);
-        if (!_font) {
-            Logger::log(std::format("Can't load font from path '{}'.", font_path), Logger::ERROR);
-        }
-        _font_is_loaded = true;
-    }
-
-    Font::~Font() {
-        if (_font) {
-            TTF_CloseFont(_font);
-        }
-    }
-    
-    void Font::setFontSize(float size) {
-        auto _ret = TTF_SetFontSize(_font, size);
-        if (_ret) {
-            _font_size = size;
-        }
-    }
-
-    float Font::fontSize() const {
-        return _font_size;
-    }
-
-    void Font::setFontColor(const SDL_Color& color) {
-        _font_color = color;
-    }
-
-    const SDL_Color Font::fontColor() const {
-        return _font_color;
-    }
-
-    void Font::setStyle(uint32_t flags) {
-        TTF_SetFontStyle(_font, static_cast<TTF_FontStyleFlags>(flags));
-        _font_style_flags = flags;
-    }
-
-    void Font::setOutline(uint32_t value) {
-        _font_outline = value;
-    }
-
-    uint32_t Font::outline() const {
-        return _font_outline;
-    }
-
-    void Font::setOutlineColor(const SDL_Color& color) {
-        _outline_color = color;
-    }
-
-    const SDL_Color Font::outlineColor() const {
-        return _outline_color;
-    }
-
-    void Font::setFontDirection(Direction direction) {
-        auto _ret = TTF_SetFontDirection(_font, static_cast<TTF_Direction>(direction));
-        if (_ret) {
-            _font_direction = direction;
-        }
-    }
-
-    Font::Direction Font::fontDirection() const {
-        return _font_direction;
-    }
-
-    void Font::setFontHinting(uint32_t flags) {
-        TTF_SetFontHinting(_font, static_cast<TTF_HintingFlags>(flags));
-        _font_hinting = flags;
-    }
-
-    void Font::setFontKerning(bool enabled) {
-        TTF_SetFontKerning(_font, enabled);
-        _font_kerning = enabled;
-    }
-
-    bool Font::fontKerning() const {
-        return _font_kerning;
-    }
-
-    void Font::setLineSpacing(uint32_t spacing) {
-        TTF_SetFontLineSkip(_font, spacing);
-        _line_spacing = spacing;
-    }
-
-    uint32_t Font::lineSpacing() const {
-        return _line_spacing;
-    }
-
-    SDL_Surface* Font::toImage(const std::string& text) {
-        SDL_Surface* surface;
-        if (!_font_is_loaded) {
-            Logger::log("Font is not loaded! Did you forgot to load font?", Logger::ERROR);
-            return nullptr;
-        }
-        if (_font_outline) {
-            if (_font_color.a > 0) {
-                auto filled_surface = TTF_RenderText_Blended(_font, text.c_str(), 0, _font_color);
-                TTF_SetFontOutline(_font, _font_outline);
-                auto bordered_surface = TTF_RenderText_Blended(_font, text.c_str(), 0, _outline_color);
-                TTF_SetFontOutline(_font, 0);
-                int real_width = bordered_surface->w, real_height = bordered_surface->h;
-                surface = SDL_CreateSurface(real_width, real_height, bordered_surface->format);
-
-                SDL_FillSurfaceRect(surface, nullptr, SDL_MapSurfaceRGBA(surface, 0, 0, 0, 0));
-                SDL_BlitSurface(bordered_surface, nullptr, surface, nullptr);
-                SDL_Rect rect(real_width / 2 - filled_surface->w / 2, 
-                              real_height / 2 - filled_surface->h / 2, 
-                              filled_surface->w, filled_surface->h);
-                SDL_BlitSurface(filled_surface, nullptr, surface, &rect);
-
-                SDL_DestroySurface(filled_surface);
-                SDL_DestroySurface(bordered_surface);
-            } else {
-                TTF_SetFontOutline(_font, _font_outline);
-                surface = TTF_RenderText_Blended(_font, text.c_str(), 0, _outline_color);
-                TTF_SetFontOutline(_font, 0);
-            }
-        } else {
-            surface = TTF_RenderText_Blended(_font, text.c_str(), 0, _font_color);
-        }
-        if (!surface) {
-            Logger::log(std::format("Can't drawEvent the current text!\nException: {}", SDL_GetError()), Logger::ERROR);
-        }
-        return surface;
-    }
-
-    SDL_Surface* Font::toImage(const std::string& text, const SDL_Color& backgrond_color) {
-        SDL_Surface* surface = nullptr;
-        if (!_font_is_loaded) {
-            Logger::log("Font is not loaded! Did you forget to load font?", Logger::ERROR);
-            return nullptr;
-        }
-        if (_font_outline) {
-            if (_font_color.a > 0) {
-                auto filled_surface = TTF_RenderText_Blended(_font, text.c_str(), 0, _font_color);
-                TTF_SetFontOutline(_font, _font_outline);
-                auto bordered_surface = TTF_RenderText_LCD(_font, text.c_str(), 0, _outline_color, backgrond_color);
-                TTF_SetFontOutline(_font, 0);
-                int real_width = bordered_surface->w, real_height = bordered_surface->h;
-                surface = SDL_CreateSurface(real_width, real_height, bordered_surface->format);
-
-                SDL_FillSurfaceRect(surface, nullptr, SDL_MapSurfaceRGBA(surface, 0, 0, 0, 0));
-                SDL_BlitSurface(bordered_surface, nullptr, surface, nullptr);
-                SDL_Rect rect(real_width / 2 - filled_surface->w / 2, 
-                              real_height / 2 - filled_surface->h / 2, 
-                              filled_surface->w, filled_surface->h);
-                SDL_BlitSurface(filled_surface, nullptr, surface, &rect);
-
-                SDL_DestroySurface(filled_surface);
-                SDL_DestroySurface(bordered_surface);
-            } else {
-                TTF_SetFontOutline(_font, _font_outline);
-                surface = TTF_RenderText_LCD(_font, text.c_str(), 0, _outline_color, backgrond_color);
-                TTF_SetFontOutline(_font, 0);
-            }
-        } else {
-            surface = TTF_RenderText_LCD(_font, text.c_str(), 0, _font_color, backgrond_color);
-        }
-        if (!surface) {
-            Logger::log(std::format("Can't drawEvent the current text!\nException: {}", SDL_GetError()), Logger::ERROR);
-        }
-        return surface;
-    }
-
-
-    TTF_Font* Font::self() const {
-        return _font;
     }
 
     TextSystem::TextSystem() {
@@ -1261,82 +1094,6 @@ namespace S3GF {
         return surface;
     }
 
-
-    FontMap FontDatabase::getFontDatabaseFromSystem() {
-        if (!_is_loaded) {
-            StringList find_font_dir;
-#ifdef _WIN32
-            find_font_dir.emplace_back("C:/Windows/Fonts");
-#endif
-#ifdef __linux__
-            find_font_dir.emplace_back("/usr/share/fonts");
-            if (FileSystem::isDir("~/.fonts")) {
-                find_font_dir.emplace_back("~/.fonts");
-            }
-            if (FileSystem::isDir("~/.local/share/fonts")) {
-                find_font_dir.emplace_back("~/.local/share/fonts");
-            }
-#endif
-#ifdef __APPLE__
-            if (FileSystem::isDir("/System/Library/Fonts")) {
-                find_font_dir.emplace_back("/System/Library/Fonts");
-            }
-            if (FileSystem::isDir("/Library/Fonts")) {
-                find_font_dir.emplace_back("/Library/Fonts");
-            }
-            if (FileSystem::isDir("~/Library/Fonts")) {
-                find_font_dir.emplace_back("~/Library/Fonts");
-            }
-#endif
-            for (auto& font_dir : find_font_dir) {
-                StringList font_files = FileSystem::listFilesRecursively(font_dir,
-                                                            {".ttf", ".otf", ".ttc", ".woff", ".eot"});
-                for (auto& file : font_files) {
-                    auto short_file = FileSystem::getShortFileName(file, true);
-                    if (!_font_db.contains(short_file)) {
-                        _font_db.insert({FileSystem::getShortFileName(file, true), file});
-                    }
-                }
-            }
-            Logger::log("FontDatabase: Get Font files from system!", Logger::DEBUG);
-            _is_loaded = true;
-        }
-        return _font_db;
-    }
-
-    std::string FontDatabase::findFontFromSystem(const std::string &font_name) {
-        if (!_is_loaded) getFontDatabaseFromSystem();
-        if (!_font_db.contains(font_name)) return {};
-        return _font_db[font_name];
-    }
-
-    std::vector<FontDatabase::FontInfo> FontDatabase::getSystemDefaultFont() {
-        if (!_is_loaded) getFontDatabaseFromSystem();
-        std::vector<FontDatabase::FontInfo> default_fonts;
-#ifdef _WIN32
-        StringList common_fonts = { "arial", "segoeui", "tahoma", "verdana", "calibri" };
-        for (auto& font_name : common_fonts) {
-            auto path = findFontFromSystem(font_name);
-            if (!path.empty()) default_fonts.push_back({font_name, path});
-        }
-#endif
-#ifdef __linux__
-        StringList common_fonts = { "AdwaitaSans-Regular", "DejaVuSans", "Roboto-Regular", "Ubuntu-R" };
-        for (auto& font_name : common_fonts) {
-            auto path = findFontFromSystem(font_name);
-            if (!path.empty()) default_fonts.push_back({font_name, path});
-        }
-#endif
-#ifdef __APPLE__
-        StringList common_fonts = { "SanFrancisco-Regular", "HelveticaNeue", "ArialMT", "TimesNewRomanPSMT" };
-        for (auto& font_name : common_fonts) {
-            auto path = findFontFromSystem(font_name);
-            if (!path.empty()) default_fonts.push_back({font_name, path});
-        }
-#endif
-        return default_fonts;
-    }
-
     AudioSystem* AudioSystem::global() {
         if (!_instance) {
             _instance = std::unique_ptr<AudioSystem>(new AudioSystem());
@@ -1358,23 +1115,82 @@ namespace S3GF {
                 SDL_GetError()), Logger::ERROR);
             return false;
         }
+
         SDL_AudioSpec _audio_spec(SDL_AUDIO_S16, 2, 44100);
-        _mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &_audio_spec);
-        if (!_mixer) {
+        auto new_mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &_audio_spec);
+        if (!new_mixer) {
             Logger::log(std::format("AudioSystem: Can't initilized audio system! Exception: {}", 
                 SDL_GetError()), Logger::ERROR);
             return false;
         }
+        _mixer_list.push_back(new_mixer);
         Logger::log("AudioSystem: Loaded audio system!");
         return true;
     }
 
     void AudioSystem::unload() {
         if (!_is_init) return;
-        if (_mixer) MIX_DestroyMixer(_mixer);
+        /// TODO: Not sure the audio map should be unload?
+        /// ...
+
+        std::for_each(_mixer_list.begin(), _mixer_list.end(), [this](MIX_Mixer* m) {
+            if (m) MIX_DestroyMixer(m);
+        });
         MIX_Quit();
         Logger::log("AudioSystem: Unloaded audio system!");
         _is_init = false;
+    }
+
+    void AudioSystem::appendNewMixer(size_t count) {
+        if (!_is_init) return;
+        while (count--) {
+            SDL_AudioSpec _audio_spec(SDL_AUDIO_S16, 2, 44100);
+            auto new_mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &_audio_spec);
+            if (!new_mixer) {
+                Logger::log(std::format("AudioSystem: Can't create the new mixer device! Exception: {}",
+                                        SDL_GetError()), Logger::ERROR);
+            } else {
+                _mixer_list.push_back(new_mixer);
+            }
+        }
+    }
+
+    MIX_Mixer *AudioSystem::mixer(size_t index) const {
+        if (_mixer_list.size() <= index) {
+            Logger::log(std::format("AudioSystem: Can't get index '{}' of mixer!"
+                                    " Did you forget to call `AudioSystem::appendNewMixer()` function?", index),
+                        Logger::ERROR);
+            return nullptr;
+        }
+        return _mixer_list.at(index);
+    }
+
+    size_t AudioSystem::mixerCount() const {
+        return _mixer_list.size();
+    }
+
+    void AudioSystem::appendBGM(const std::string &name, const std::string &path) {
+
+    }
+
+    void AudioSystem::appendSFX(const std::string &name, const std::string &path) {
+
+    }
+
+    void AudioSystem::remove(const std::string &name) {
+
+    }
+
+    BGM *AudioSystem::getBGM(const std::string &name) {
+        return nullptr;
+    }
+
+    SFX *AudioSystem::getSFX(const std::string &name) {
+        return nullptr;
+    }
+
+    size_t AudioSystem::size() const {
+        return _audio_map.size();
     }
 
 }

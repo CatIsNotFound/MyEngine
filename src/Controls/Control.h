@@ -83,7 +83,7 @@ namespace S3GF {
         [[nodiscard]] bool isLeft() const;
         [[nodiscard]] size_t index() const;
     private:
-        GT _base;
+        GT _base, _real_base;
         Geometry _viewport;
         bool _viewport_enabled{false};
         uint64_t _winID;

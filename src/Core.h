@@ -8,7 +8,7 @@
 namespace S3GF {
     class Engine;
     class Window;
-    struct Property;
+    struct TextureProperty;
     class Texture;
     class EventSystem;
 
@@ -30,7 +30,7 @@ namespace S3GF {
         void drawTriangle(Graphics::Triangle&& triangle);
         void drawEllipse(const Graphics::Ellipse& ellipse);
         void drawEllipse(Graphics::Ellipse&& ellipse);
-        void drawTexture(SDL_Texture* texture, Property* property);
+        void drawTexture(SDL_Texture* texture, TextureProperty* property);
         void drawText(TTF_Text* text, const Vector2& position);
         void drawPixelText(const std::string& text, const Vector2& position,
                            const Vector2& scaled = {1.f, 1.f}, const SDL_Color& color = StdColor::White);
@@ -105,10 +105,10 @@ namespace S3GF {
             void exec() override;
         };
         struct TextureCMD : public Command {
-            explicit TextureCMD(SDL_Renderer* renderer, SDL_Texture* texture, Property* property)
+            explicit TextureCMD(SDL_Renderer* renderer, SDL_Texture* texture, TextureProperty* property)
                 : Command(renderer), _texture(texture), _property(property) {}
             SDL_Texture* _texture;
-            Property* _property;
+            TextureProperty* _property;
             void exec() override;
         };
         struct TextCMD : public Command {
@@ -283,73 +283,6 @@ namespace S3GF {
         std::string _app_name, _app_id, _app_version;
     };
 
-    class Font {
-    public:
-        /**
-         * @enum Style
-         * @brief 字体样式
-         */
-        enum Style {
-            Regular = 0x0,
-            Bold = 0x1,
-            Italic = 0x2,
-            Underline = 0x4,
-            Strikethrough = 0x8
-        };
-        enum Direction {
-            LeftToRight = 4,
-            RightToLeft,
-            TopToBottom,
-            BottomToTop
-        };
-        enum Hinting {
-            Normal,
-            Light,
-            Mono,
-            None,
-            SubPixel
-        };
-        Font(Font &&) = delete;
-        Font(const Font &) = delete;
-        Font &operator=(Font &&) = delete;
-        Font &operator=(const Font &) = delete;
-        explicit Font(const std::string& font_path, float font_size = 9.f);
-        ~Font();
-        
-        void setFontSize(float size);
-        float fontSize() const;
-        void setFontColor(const SDL_Color& color);
-        const SDL_Color fontColor() const;
-        void setStyle(uint32_t flags);
-        void setOutline(uint32_t value = 0);
-        uint32_t outline() const;
-        void setOutlineColor(const SDL_Color& color);
-        const SDL_Color outlineColor() const;
-        void setFontDirection(Direction direction);
-        Direction fontDirection() const;
-        void setFontHinting(uint32_t flags);
-        void setFontKerning(bool enabled);
-        bool fontKerning() const;
-        void setLineSpacing(uint32_t spacing);
-        uint32_t lineSpacing() const;
-        SDL_Surface* toImage(const std::string& text);
-        SDL_Surface* toImage(const std::string& text, const SDL_Color& backgrond_color);
-
-        TTF_Font* self() const;
-    private:
-        TTF_Font* _font{nullptr};
-        float _font_size{};
-        SColor _font_color{};
-        uint32_t _font_style_flags{};
-        uint32_t _font_outline{};
-        SColor _outline_color{};
-        Direction _font_direction{};
-        uint32_t _font_hinting{};
-        bool _font_kerning{};
-        uint32_t _line_spacing{};
-        bool _font_is_loaded{false};
-    };
-
     class TextSystem {
     public:
         struct Text {
@@ -396,49 +329,9 @@ namespace S3GF {
         TTF_TextEngine* _text_engine{nullptr};
     };
 
-    using FontMap = std::unordered_map<std::string, std::string>;
-    class FontDatabase {
-    public:
-        FontDatabase() = delete;
-        FontDatabase(const FontDatabase&) = delete;
-        FontDatabase(FontDatabase&&) = delete;
-        ~FontDatabase() = delete;
-        FontDatabase& operator=(const FontDatabase&) = delete;
-        FontDatabase& operator=(FontDatabase&&) = delete;
-        struct FontInfo {
-            std::string font_name;
-            std::string font_path;
-        };
-
-        static FontMap getFontDatabaseFromSystem();
-        static std::string findFontFromSystem(const std::string &font_name);
-        static std::vector<FontInfo> getSystemDefaultFont();
-    private:
-        static bool _is_loaded;
-        static FontMap _font_db;
-    };
-
     class AudioSystem {
     public:
-        enum class Status {
-            Unknown,
-            NoLoaded,
-            Loading,
-            Invalid,
-            Loaded
-        };
-        
-        struct Audio {
-            MIX_Audio* self;
-            Status status;
-            std::string url;
-            bool is_stream;
-            union {
-                MIX_Track* self{nullptr};
-                uint64_t duration;
-                uint64_t position;
-            } track;
-        };
+        using Audio = std::variant<std::monostate, BGM, SFX>;
 
         AudioSystem(AudioSystem &&) = delete;
         AudioSystem(const AudioSystem &) = delete;
@@ -449,13 +342,23 @@ namespace S3GF {
         bool isValid() const;
         bool load();
         void unload();
-        
+        void appendNewMixer(size_t count = 1);
+        [[nodiscard]] MIX_Mixer* mixer(size_t index = 0) const;
+        [[nodiscard]] size_t mixerCount() const;
+
+        void appendBGM(const std::string& name, const std::string& path);
+        void appendSFX(const std::string& name, const std::string& path);
+        void remove(const std::string& name);
+        BGM* getBGM(const std::string& name);
+        SFX* getSFX(const std::string& name);
+        [[nodiscard]] size_t size() const;
+
     private:
         explicit AudioSystem();
         static std::unique_ptr<AudioSystem> _instance;
         bool _is_init{false};
-        MIX_Mixer* _mixer;
-        std::unordered_map<uint64_t, Audio> _audios_map;
+        std::vector<MIX_Mixer*> _mixer_list;
+        std::unordered_map<std::string, std::unique_ptr<Audio>> _audio_map;
     };
 }
 

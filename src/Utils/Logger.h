@@ -1,4 +1,4 @@
-
+#pragma once
 #ifndef S3GF_LOGGER_H
 #define S3GF_LOGGER_H
 #include "../Libs.h"
@@ -27,7 +27,7 @@ namespace S3GF {
         ~Logger() = delete;
 
         static void log(const std::string &message, LogLevel level = DEBUG) {
-            _running_time = SDL_GetTicksNS();
+            _running_time = std::chrono::system_clock::now().time_since_epoch().count();
             if (level < _base_level) return;
             auto _real_time = (float) (_running_time - _started_time) / 1e9;
             if (level >= WARN) {
@@ -74,7 +74,7 @@ namespace S3GF {
 
     inline Logger::LogLevel Logger::_base_level = Logger::INFO;
     inline Logger::LogLevel Logger::_last_log_level = Logger::DEBUG;
-    inline uint64_t Logger::_started_time = SDL_GetTicksNS();
+    inline uint64_t Logger::_started_time = std::chrono::system_clock::now().time_since_epoch().count();
     inline uint64_t Logger::_running_time = 0;
     inline std::string Logger::_last_log_info;
 }

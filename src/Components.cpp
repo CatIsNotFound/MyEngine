@@ -1,16 +1,264 @@
 #include "Components.h"
 #include "Utils/Logger.h"
+#include "Utils/FileSystem.h"
+#include "Utils/Random.h"
+#include "Utils/RGBAColor.h"
+#define MAX_AUDIO_FILE_SIZE 2 * 1024 * 1024 /// Defined the larger audio file
 
 namespace S3GF {
+    Font::Font(const std::string& font_path, float font_size)
+            : _font_size(font_size){
+        _font = TTF_OpenFont(font_path.c_str(), font_size);
+        if (!_font) {
+            Logger::log(std::format("Can't load font from path '{}'.", font_path), Logger::ERROR);
+        }
+        _font_is_loaded = true;
+    }
+
+    Font::~Font() {
+        if (_font) {
+            TTF_CloseFont(_font);
+        }
+    }
+
+    void Font::setFontSize(float size) {
+        auto _ret = TTF_SetFontSize(_font, size);
+        if (_ret) {
+            _font_size = size;
+        }
+    }
+
+    float Font::fontSize() const {
+        return _font_size;
+    }
+
+    void Font::setFontColor(const SDL_Color& color) {
+        _font_color = color;
+    }
+
+    const SDL_Color Font::fontColor() const {
+        return _font_color;
+    }
+
+    void Font::setStyle(uint32_t flags) {
+        TTF_SetFontStyle(_font, static_cast<TTF_FontStyleFlags>(flags));
+        _font_style_flags = flags;
+    }
+
+    void Font::setOutline(uint32_t value) {
+        _font_outline = value;
+    }
+
+    uint32_t Font::outline() const {
+        return _font_outline;
+    }
+
+    void Font::setOutlineColor(const SDL_Color& color) {
+        _outline_color = color;
+    }
+
+    const SDL_Color Font::outlineColor() const {
+        return _outline_color;
+    }
+
+    void Font::setFontDirection(Direction direction) {
+        auto _ret = TTF_SetFontDirection(_font, static_cast<TTF_Direction>(direction));
+        if (_ret) {
+            _font_direction = direction;
+        }
+    }
+
+    Font::Direction Font::fontDirection() const {
+        return _font_direction;
+    }
+
+    void Font::setFontHinting(uint32_t flags) {
+        TTF_SetFontHinting(_font, static_cast<TTF_HintingFlags>(flags));
+        _font_hinting = flags;
+    }
+
+    void Font::setFontKerning(bool enabled) {
+        TTF_SetFontKerning(_font, enabled);
+        _font_kerning = enabled;
+    }
+
+    bool Font::fontKerning() const {
+        return _font_kerning;
+    }
+
+    void Font::setLineSpacing(uint32_t spacing) {
+        TTF_SetFontLineSkip(_font, spacing);
+        _line_spacing = spacing;
+    }
+
+    uint32_t Font::lineSpacing() const {
+        return _line_spacing;
+    }
+
+    SDL_Surface* Font::toImage(const std::string& text) {
+        SDL_Surface* surface;
+        if (!_font_is_loaded) {
+            Logger::log("Font is not loaded! Did you forgot to load font?", Logger::ERROR);
+            return nullptr;
+        }
+        if (_font_outline) {
+            if (_font_color.a > 0) {
+                auto filled_surface = TTF_RenderText_Blended(_font, text.c_str(), 0, _font_color);
+                TTF_SetFontOutline(_font, _font_outline);
+                auto bordered_surface = TTF_RenderText_Blended(_font, text.c_str(), 0, _outline_color);
+                TTF_SetFontOutline(_font, 0);
+                int real_width = bordered_surface->w, real_height = bordered_surface->h;
+                surface = SDL_CreateSurface(real_width, real_height, bordered_surface->format);
+
+                SDL_FillSurfaceRect(surface, nullptr, SDL_MapSurfaceRGBA(surface, 0, 0, 0, 0));
+                SDL_BlitSurface(bordered_surface, nullptr, surface, nullptr);
+                SDL_Rect rect(real_width / 2 - filled_surface->w / 2,
+                              real_height / 2 - filled_surface->h / 2,
+                              filled_surface->w, filled_surface->h);
+                SDL_BlitSurface(filled_surface, nullptr, surface, &rect);
+
+                SDL_DestroySurface(filled_surface);
+                SDL_DestroySurface(bordered_surface);
+            } else {
+                TTF_SetFontOutline(_font, _font_outline);
+                surface = TTF_RenderText_Blended(_font, text.c_str(), 0, _outline_color);
+                TTF_SetFontOutline(_font, 0);
+            }
+        } else {
+            surface = TTF_RenderText_Blended(_font, text.c_str(), 0, _font_color);
+        }
+        if (!surface) {
+            Logger::log(std::format("Can't drawEvent the current text!\nException: {}", SDL_GetError()), Logger::ERROR);
+        }
+        return surface;
+    }
+
+    SDL_Surface* Font::toImage(const std::string& text, const SDL_Color& backgrond_color) {
+        SDL_Surface* surface = nullptr;
+        if (!_font_is_loaded) {
+            Logger::log("Font is not loaded! Did you forget to load font?", Logger::ERROR);
+            return nullptr;
+        }
+        if (_font_outline) {
+            if (_font_color.a > 0) {
+                auto filled_surface = TTF_RenderText_Blended(_font, text.c_str(), 0, _font_color);
+                TTF_SetFontOutline(_font, _font_outline);
+                auto bordered_surface = TTF_RenderText_LCD(_font, text.c_str(), 0, _outline_color, backgrond_color);
+                TTF_SetFontOutline(_font, 0);
+                int real_width = bordered_surface->w, real_height = bordered_surface->h;
+                surface = SDL_CreateSurface(real_width, real_height, bordered_surface->format);
+
+                SDL_FillSurfaceRect(surface, nullptr, SDL_MapSurfaceRGBA(surface, 0, 0, 0, 0));
+                SDL_BlitSurface(bordered_surface, nullptr, surface, nullptr);
+                SDL_Rect rect(real_width / 2 - filled_surface->w / 2,
+                              real_height / 2 - filled_surface->h / 2,
+                              filled_surface->w, filled_surface->h);
+                SDL_BlitSurface(filled_surface, nullptr, surface, &rect);
+
+                SDL_DestroySurface(filled_surface);
+                SDL_DestroySurface(bordered_surface);
+            } else {
+                TTF_SetFontOutline(_font, _font_outline);
+                surface = TTF_RenderText_LCD(_font, text.c_str(), 0, _outline_color, backgrond_color);
+                TTF_SetFontOutline(_font, 0);
+            }
+        } else {
+            surface = TTF_RenderText_LCD(_font, text.c_str(), 0, _font_color, backgrond_color);
+        }
+        if (!surface) {
+            Logger::log(std::format("Can't drawEvent the current text!\nException: {}", SDL_GetError()), Logger::ERROR);
+        }
+        return surface;
+    }
+
+    TTF_Font* Font::self() const {
+        return _font;
+    }
+
+    FontMap FontDatabase::getFontDatabaseFromSystem() {
+        if (!_is_loaded) {
+            StringList find_font_dir;
+#ifdef _WIN32
+            find_font_dir.emplace_back("C:/Windows/Fonts");
+#endif
+#ifdef __linux__
+            find_font_dir.emplace_back("/usr/share/fonts");
+            if (FileSystem::isDir("~/.fonts")) {
+                find_font_dir.emplace_back("~/.fonts");
+            }
+            if (FileSystem::isDir("~/.local/share/fonts")) {
+                find_font_dir.emplace_back("~/.local/share/fonts");
+            }
+#endif
+#ifdef __APPLE__
+            if (FileSystem::isDir("/System/Library/Fonts")) {
+                find_font_dir.emplace_back("/System/Library/Fonts");
+            }
+            if (FileSystem::isDir("/Library/Fonts")) {
+                find_font_dir.emplace_back("/Library/Fonts");
+            }
+            if (FileSystem::isDir("~/Library/Fonts")) {
+                find_font_dir.emplace_back("~/Library/Fonts");
+            }
+#endif
+            for (auto& font_dir : find_font_dir) {
+                StringList font_files = FileSystem::listFilesRecursively(font_dir,
+                                                                         {".ttf", ".otf", ".ttc", ".woff", ".eot"});
+                for (auto& file : font_files) {
+                    auto short_file = FileSystem::getShortFileName(file, true);
+                    if (!_font_db.contains(short_file)) {
+                        _font_db.insert({FileSystem::getShortFileName(file, true), file});
+                    }
+                }
+            }
+            Logger::log("FontDatabase: Get Font files from system!", Logger::DEBUG);
+            _is_loaded = true;
+        }
+        return _font_db;
+    }
+
+    std::string FontDatabase::findFontFromSystem(const std::string &font_name) {
+        if (!_is_loaded) getFontDatabaseFromSystem();
+        if (!_font_db.contains(font_name)) return {};
+        return _font_db[font_name];
+    }
+
+    std::vector<FontDatabase::FontInfo> FontDatabase::getSystemDefaultFont() {
+        if (!_is_loaded) getFontDatabaseFromSystem();
+        std::vector<FontDatabase::FontInfo> default_fonts;
+#ifdef _WIN32
+        StringList common_fonts = { "arial", "segoeui", "tahoma", "verdana", "calibri" };
+        for (auto& font_name : common_fonts) {
+            auto path = findFontFromSystem(font_name);
+            if (!path.empty()) default_fonts.push_back({font_name, path});
+        }
+#endif
+#ifdef __linux__
+        StringList common_fonts = { "AdwaitaSans-Regular", "DejaVuSans", "Roboto-Regular", "Ubuntu-R" };
+        for (auto& font_name : common_fonts) {
+            auto path = findFontFromSystem(font_name);
+            if (!path.empty()) default_fonts.push_back({font_name, path});
+        }
+#endif
+#ifdef __APPLE__
+        StringList common_fonts = { "SanFrancisco-Regular", "HelveticaNeue", "ArialMT", "TimesNewRomanPSMT" };
+        for (auto& font_name : common_fonts) {
+            auto path = findFontFromSystem(font_name);
+            if (!path.empty()) default_fonts.push_back({font_name, path});
+        }
+#endif
+        return default_fonts;
+    }
+
     Texture::Texture(const std::string &path, Renderer *renderer) : _renderer(renderer), _texture(nullptr), _path(path) {
         _surface = IMG_Load(path.c_str());
         if (!_surface) {
             Logger::log(std::format("The image path '{}' is not found!", path), Logger::ERROR);
-            _property = std::make_unique<Property>();
+            _property = std::make_unique<TextureProperty>();
             return;
         }
         _texture = SDL_CreateTextureFromSurface(_renderer->self(), _surface);
-        _property = std::make_unique<Property>();
+        _property = std::make_unique<TextureProperty>();
         _property->resize(_surface->w, _surface->h);
         _property->clip_mode = false;
         _property->color_alpha = RGBAColor::White;
@@ -22,12 +270,12 @@ namespace S3GF {
     Texture::Texture(SDL_Surface* surface, Renderer *renderer, bool deep_copy) : _renderer(renderer), _texture(nullptr) {
         if (!surface) {
             Logger::log(std::format("The surface is not valid!\nException: {}", SDL_GetError()), Logger::ERROR);
-            _property = std::make_unique<Property>();
+            _property = std::make_unique<TextureProperty>();
             return;
         }
         _surface = (deep_copy ? SDL_DuplicateSurface(surface) : surface);
         _texture = SDL_CreateTextureFromSurface(_renderer->self(), _surface);
-        _property = std::make_unique<Property>();
+        _property = std::make_unique<TextureProperty>();
         _property->resize(_surface->w, _surface->h);
         _property->clip_mode = false;
         _property->color_alpha = RGBAColor::White;
@@ -41,10 +289,10 @@ namespace S3GF {
         _texture = SDL_CreateTexture(renderer->self(), format, access, width, height);
         if (!_texture) {
             Logger::log(std::format("Created texture failed!\nException: {}", SDL_GetError()), Logger::ERROR);
-            _property = std::make_unique<Property>();
+            _property = std::make_unique<TextureProperty>();
             return;
         }
-        _property = std::make_unique<Property>();
+        _property = std::make_unique<TextureProperty>();
         _property->resize(width, height);
         _property->setScale(1.0f);
         _property->clip_mode = false;
@@ -94,12 +342,12 @@ namespace S3GF {
     bool Texture::setImageFromSurface(SDL_Surface *surface, bool deep_copy) {
         if (!surface) {
             Logger::log(std::format("The surface is not valid!\nException: {}", SDL_GetError()), Logger::ERROR);
-            _property = std::make_unique<Property>();
+            _property = std::make_unique<TextureProperty>();
             return false;
         }
         _surface = (deep_copy ? SDL_DuplicateSurface(surface) : surface);
         _texture = SDL_CreateTextureFromSurface(_renderer->self(), _surface);
-        _property = std::make_unique<Property>();
+        _property = std::make_unique<TextureProperty>();
         _property->resize((float)_surface->w, (float)_surface->h);
         _property->clip_mode = false;
         _property->color_alpha = RGBAColor::White;
@@ -120,7 +368,7 @@ namespace S3GF {
         return (_texture != nullptr);
     }
 
-    Property* Texture::property() {
+    TextureProperty* Texture::property() {
         return _property.get();
     }
 
@@ -140,15 +388,15 @@ namespace S3GF {
 
     TextureAtlas::~TextureAtlas() {}
 
-    void TextureAtlas::setTiles(const std::string &tiles_name, Property &&tiles_property) {
+    void TextureAtlas::setTiles(const std::string &tiles_name, TextureProperty &&tiles_property) {
         if (_tiles_map.contains(tiles_name)) {
             _tiles_map[tiles_name]->reset(tiles_property);
         } else {
-            _tiles_map.emplace(tiles_name, std::shared_ptr<Property>(new Property(tiles_property)));
+            _tiles_map.emplace(tiles_name, std::shared_ptr<TextureProperty>(new TextureProperty(tiles_property)));
         }
     }
 
-    Property *TextureAtlas::tilesProperty(const std::string &tiles_name) {
+    TextureProperty *TextureAtlas::tilesProperty(const std::string &tiles_name) {
         if (_tiles_map.contains(tiles_name)) {
             return _tiles_map[tiles_name].get();
         } else {
@@ -185,7 +433,288 @@ namespace S3GF {
             render()->drawTexture(self(), _tiles_map.at(tiles_name).get());
         } else {
             Logger::log(std::format("TextureAtlas: Tiles '{}' is not in tiles map! "
-                                    "Did you forget to use `TextureAtlas::setTiles()`?", tiles_name), Logger::ERROR);
+                         "Did you forget to use `TextureAtlas::setTiles()`?", tiles_name), Logger::ERROR);
         }
+    }
+
+    BGM::BGM(MIX_Mixer *mixer, const std::string &path) : _mixer(mixer), _path(path) {
+        if (!_mixer) {
+            Logger::log("BGM: The specified mixer can not be null!", Logger::FATAL);
+            Engine::throwFatalError();
+        }
+        load();
+    }
+
+    BGM::~BGM() {
+        if (_is_load) unload();
+    }
+
+    void BGM::setPath(const std::string &path) {
+        _path = path;
+    }
+
+    const std::string &BGM::path() const {
+        return _path;
+    }
+
+    bool BGM::isLoaded() const {
+        return _is_load;
+    }
+
+    bool BGM::play(int64_t position, bool loop, int64_t fade_in_duration) {
+        if (!_is_load) {
+            Logger::log("BGM: Can't play current audio! Current audio is not valid!", Logger::ERROR);
+            _is_playing = false;
+            return false;
+        }
+        _prop_id = SDL_CreateProperties();
+        SDL_SetNumberProperty(_prop_id, MIX_PROP_PLAY_START_MILLISECOND_NUMBER, position);
+        SDL_SetNumberProperty(_prop_id, MIX_PROP_PLAY_LOOPS_NUMBER, (loop ? -1 : 0));
+        SDL_SetNumberProperty(_prop_id, MIX_PROP_PLAY_FADE_IN_MILLISECONDS_NUMBER, fade_in_duration);
+        if (_is_playing) {
+            return resume();
+        } else if (!MIX_PlayTrack(_track, _prop_id)) {
+            Logger::log(std::format("BGM: Play audio failed! The file path '{}' is not valid! "
+                                    "Exception: {}", _path, SDL_GetError()), Logger::ERROR);
+            _is_playing = false;
+            return false;
+        }
+        _is_playing = true;
+        return true;
+    }
+
+    void BGM::stop(int64_t fade_out_duration) {
+        if (!_is_load) {
+            Logger::log("BGM: Can't stop current audio! Current audio is not valid!", Logger::ERROR);
+        }
+        auto ms = (fade_out_duration > 0 ? MIX_TrackMSToFrames(_track, fade_out_duration) : 0);
+        MIX_StopTrack(_track, ms);
+        _is_playing = false;
+    }
+
+    void BGM::pause() {
+        if (!_is_load || !_is_playing) {
+            Logger::log("BGM: Can't pause current audio! Current status is not valid!", Logger::ERROR);
+        }
+        MIX_PauseTrack(_track);
+        _paused = true;
+    }
+
+    bool BGM::resume() {
+        if (!_is_load || !_is_playing) {
+            Logger::log("BGM: Can't resume current audio! Current status is not valid!", Logger::ERROR);
+            return false;
+        }
+        if (position() >= duration()) playAt(0);
+        auto _ret = MIX_ResumeTrack(_track);
+        if (!_ret) {
+            Logger::log("BGM: Can't resume current audio! Current status is not valid!", Logger::ERROR);
+            return false;
+        }
+        _paused = false;
+        return true;
+    }
+
+    bool BGM::forward(int64_t ms) {
+        auto pos = position();
+        auto new_pos = std::min(pos + ms, duration());
+        if (new_pos < 0) new_pos = 0;
+        if (!MIX_SetTrackPlaybackPosition(_track, MIX_TrackMSToFrames(_track, new_pos))) {
+            Logger::log("BGM: Failed to set playback position!", Logger::ERROR);
+            return false;
+        }
+        return true;
+    }
+
+    bool BGM::backward(int64_t ms) {
+        auto pos = position();
+        auto new_pos = std::min(pos - ms, duration());
+        if (new_pos < 0) new_pos = 0;
+        if (!MIX_SetTrackPlaybackPosition(_track, MIX_TrackMSToFrames(_track, new_pos))) {
+            Logger::log("BGM: Failed to set playback position!", Logger::ERROR);
+            return false;
+        }
+        return true;
+    }
+
+    bool BGM::playAt(int64_t position) {
+        auto new_pos = std::min(position, duration());
+        if (new_pos < 0) new_pos = 0;
+        if (!MIX_SetTrackPlaybackPosition(_track, MIX_TrackMSToFrames(_track, new_pos))) {
+            Logger::log("BGM: Failed to set playback position!", Logger::ERROR);
+            return false;
+        }
+        return true;
+    }
+
+    int64_t BGM::position() const {
+        if (!_is_load) {
+            Logger::log("BGM: Can't pause current audio! Current audio is not valid!", Logger::ERROR);
+            return 0;
+        }
+        return MIX_TrackFramesToMS(_track, MIX_GetTrackPlaybackPosition(_track));
+    }
+
+    int64_t BGM::duration() const {
+        if (!_is_load) {
+            Logger::log("BGM: Can't pause current audio! Current audio is not valid!", Logger::ERROR);
+            return 0;
+        }
+        return MIX_TrackFramesToMS(_track, MIX_GetAudioDuration(_audio));
+    }
+
+    bool BGM::playing() const {
+        return _is_playing;
+    }
+
+    bool BGM::isPaused() const {
+        return _paused;
+    }
+
+    bool BGM::isLoop() const {
+        return _is_loop;
+    }
+
+    void BGM::load() {
+        _audio = MIX_LoadAudio(_mixer, _path.c_str(), false);
+        if (!_audio) {
+            Logger::log(std::format("BGM: The specified file path '{}' is not valid! Exception: {}",
+                                    _path, SDL_GetError()), Logger::ERROR);
+            _is_load = false;
+            return;
+        }
+        _track = MIX_CreateTrack(_mixer);
+        if (!_track) {
+            Logger::log(std::format("BGM: Create audio track failed! Exception: {}"
+                    , SDL_GetError()), Logger::ERROR);
+            _is_load = false;
+            return;
+        }
+        if (!MIX_SetTrackAudio(_track, _audio)) {
+            Logger::log(std::format("BGM: The specified file path '{}' can not set as audio track! Exception: {}",
+                                    _path, SDL_GetError()), Logger::ERROR);
+            _is_load = false;
+            return;
+        }
+        _is_load = true;
+    }
+
+    void BGM::unload() {
+        if (_track) {
+            MIX_DestroyTrack(_track);
+        }
+        if (_audio) {
+            MIX_DestroyAudio(_audio);
+        }
+        SDL_DestroyProperties(_prop_id);
+        _is_load = false;
+    }
+
+    SFX::SFX(MIX_Mixer *mixer, const std::string &path) : _mixer(mixer), _path(path) {
+        if (!_mixer) {
+            Logger::log("BGM: The specified mixer can not be null!", Logger::FATAL);
+            Engine::throwFatalError();
+        }
+        load();
+    }
+
+    SFX::~SFX() {
+        if (_is_load) unload();
+    }
+
+    void SFX::setPath(const std::string &path) {
+        _path = path;
+    }
+
+    const std::string &SFX::path() const {
+        return _path;
+    }
+
+    bool SFX::isLoaded() const {
+        return _is_load;
+    }
+
+    bool SFX::play(bool loop, float ratio, MIX_Point3D&& surround_pos) {
+        if (!_is_load) {
+            Logger::log("BGM: Can't play current audio! Current audio is not valid!", Logger::ERROR);
+            _is_playing = false;
+            return false;
+        }
+        _prop_id = SDL_CreateProperties();
+        SDL_SetNumberProperty(_prop_id, MIX_PROP_PLAY_LOOPS_NUMBER, (loop ? -1 : 0));
+        auto new_ratio = (ratio <= 0 ? 0 : (ratio > 100.f ? 100.f : ratio));
+        MIX_SetTrackFrequencyRatio(_track, new_ratio);
+        MIX_SetTrack3DPosition(_track, &surround_pos);
+        if (!MIX_PlayTrack(_track, _prop_id)) {
+            Logger::log(std::format("BGM: Play audio failed! The file path '{}' is not valid! "
+                                    "Exception: {}", _path, SDL_GetError()), Logger::ERROR);
+            return false;
+        }
+        return true;
+    }
+
+    void SFX::stop(int64_t fade_out_duration) {
+        if (!_is_load) {
+            Logger::log("BGM: Can't stop current audio! Current audio is not valid!", Logger::ERROR);
+        }
+        auto ms = (fade_out_duration > 0 ? MIX_TrackMSToFrames(_track, fade_out_duration) : 0);
+        MIX_StopTrack(_track, ms);
+        _is_playing = false;
+    }
+
+    int64_t SFX::position() const {
+        if (!_is_load) {
+            Logger::log("BGM: Can't pause current audio! Current audio is not valid!", Logger::ERROR);
+            return 0;
+        }
+        return MIX_TrackFramesToMS(_track, MIX_GetTrackPlaybackPosition(_track));
+    }
+
+    int64_t SFX::duration() const {
+        if (!_is_load) {
+            Logger::log("BGM: Can't pause current audio! Current audio is not valid!", Logger::ERROR);
+            return 0;
+        }
+        return MIX_TrackFramesToMS(_track, MIX_GetAudioDuration(_audio));
+    }
+
+    bool SFX::isLoop() const {
+        return _is_loop;
+    }
+
+    void SFX::load() {
+        auto size = FileSystem::readableSize(_path, FileSystem::MB);
+        _audio = MIX_LoadAudio(_mixer, _path.c_str(), (size >= MAX_AUDIO_FILE_SIZE));
+        if (!_audio) {
+            Logger::log(std::format("BGM: The specified file path '{}' is not valid! Exception: {}",
+                                    _path, SDL_GetError()), Logger::ERROR);
+            _is_load = false;
+            return;
+        }
+        _track = MIX_CreateTrack(_mixer);
+        if (!_track) {
+            Logger::log(std::format("BGM: Create audio track failed! Exception: {}"
+                    , SDL_GetError()), Logger::ERROR);
+            _is_load = false;
+            return;
+        }
+        if (!MIX_SetTrackAudio(_track, _audio)) {
+            Logger::log(std::format("BGM: The specified file path '{}' can not set as audio track! Exception: {}",
+                                    _path, SDL_GetError()), Logger::ERROR);
+            _is_load = false;
+            return;
+        }
+        _is_load = true;
+    }
+
+    void SFX::unload() {
+        if (_track) {
+            MIX_DestroyTrack(_track);
+        }
+        if (_audio) {
+            MIX_DestroyAudio(_audio);
+        }
+        SDL_DestroyProperties(_prop_id);
+        _is_load = false;
     }
 }

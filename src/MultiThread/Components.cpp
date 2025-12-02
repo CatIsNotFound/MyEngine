@@ -1,7 +1,8 @@
 
 #include "Components.h"
 #include "Core.h"
-#include "../Utils/Logger.h"
+#include "Utils/Logger.h"
+#include "Utils/Random.h"
 
 namespace S3GF {
     Timer::~Timer() {
