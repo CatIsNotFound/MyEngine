@@ -20,42 +20,53 @@ int main() {
     SFX sfx(AudioSystem::global()->mixer(2), "./sound.oga");
     size_t index = 0;
     auto win = new Window(&engine, "Test window");
+    win->setBorderless(true);
+    Cursor::global()->setCursor(Cursor::Hand);
     win->installPaintEvent([&bgm_list, &index, &sfx](Renderer* r) {
         r->fillBackground(StdColor::DarkGray);
-        r->drawPixelText(std::format("Playing BGM {}: {} / {}", index,
-                                     bgm_list[index]->position(), bgm_list[index]->duration()), {20, 20});
-        r->drawPixelText(std::format("SFX: {} / {}", sfx.position(), sfx.duration()), {20, 30});
+        r->drawPixelText(std::format("{} BGM {}: {} / {} Vol: {:.02f}", bgm_list[0]->playStatusText(), 0,
+                                     bgm_list[0]->position(), bgm_list[0]->duration(), bgm_list[0]->volume()), {20, 20});
+        r->drawPixelText(std::format("{} BGM {}: {} / {} Vol: {:.02f}", bgm_list[1]->playStatusText(), 1,
+                                     bgm_list[1]->position(), bgm_list[1]->duration(), bgm_list[1]->volume()), {20, 30});
+        r->drawPixelText(std::format("SFX: {} / {}", sfx.position(), sfx.duration()), {20, 40});
+        auto is_space_down = EventSystem::global()->captureKeyboard(SDL_SCANCODE_SPACE);
+        auto is_mouse_down = EventSystem::global()->captureMouse(EventSystem::Left);
+        r->drawPixelText(std::format("Get Mouse status: {}, Space: {}", is_mouse_down, is_space_down), {20, 50});
+
     });
-    EventSystem::global()->appendEvent(100, [&bgm_list, &sfx, &index](SDL_Event ev) {
+    EventSystem::global()->appendEvent(IDGenerator::getNewEventID(), [&bgm_list, &sfx, &index](SDL_Event ev) {
         if (ev.key.type == SDL_EVENT_KEY_DOWN) {
             if (ev.key.key == SDLK_2) {
                 index = 1;
-                bgm_list[0]->stop(3000);
+                bgm_list[0]->stop(5000);
                 bgm_list[1]->play(0, true, 5000);
             } else if (ev.key.key == SDLK_1) {
                 index = 0;
-                bgm_list[1]->stop(3000);
+                bgm_list[1]->stop(5000);
                 bgm_list[0]->play(0, true, 5000);
             } else if (ev.key.key == SDLK_SPACE) {
-                if (!bgm_list[index]->isPaused())
+                if (bgm_list[index]->playStatus() == BGM::Playing)
                     bgm_list[index]->pause();
                 else
                     bgm_list[index]->play();
+            } else if (ev.key.key == SDLK_UP) {
+                bgm_list[index]->setVolume(bgm_list[index]->volume() + 0.01f);
+            } else if (ev.key.key == SDLK_DOWN) {
+                bgm_list[index]->setVolume(bgm_list[index]->volume() - 0.01f);
+            } else if (ev.key.key == SDLK_R) {
+                bgm_list[index]->setMuted(!bgm_list[index]->isMuted());
             } else if (ev.key.key == SDLK_LEFT) {
                 bgm_list[index]->backward();
             } else if (ev.key.key == SDLK_RIGHT) {
                 bgm_list[index]->forward();
             } else if (ev.key.key == SDLK_ESCAPE) {
-                Engine::exit();
+                bgm_list[index]->stop(5000);
             } else {
-                auto x = RandomGenerator::randFloat(-1.f, 1.f);
-                auto y = RandomGenerator::randFloat(-1.f, 1.f);
-                auto z = RandomGenerator::randFloat(-1.f, 1.f);
-                auto r = RandomGenerator::randFloat(0.5f, 3.0f);
-                sfx.play(false, r,{x, y, z});
-                Logger::log(std::format("Play SFX: ({:.02f}, {:.02f}, {:.02f}), {:.02f}", x, y, z, r));
+                sfx.play(false);
             }
         }
     });
+
+
     return engine.exec();
 }

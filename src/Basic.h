@@ -8,8 +8,11 @@
  */
 
 #include "Libs.h"
+/// Use `S3GF::delay()` is better.
 #define SLEEP(sec) std::this_thread::sleep_for(std::chrono::seconds(sec))
+/// Use `S3GF::delayMS()` is better.
 #define SLEEP_MS(millisec) std::this_thread::sleep_for(std::chrono::milliseconds(millisec))
+/// Use `S3GF::delayNS()` is better.
 #define SLEEP_NS(nanosec) std::this_thread::sleep_for(std::chrono::nanoseconds(nanosec))
 
 using SRenderer     = SDL_Renderer;
@@ -24,7 +27,11 @@ using SCursor       = SDL_Cursor;
 using SStdCursor    = SDL_SystemCursor;
 using SAudioSpec    = SDL_AudioSpec;
 
-using StringList    = std::vector<std::string>; 
+using StringList    = std::vector<std::string>;
+
+
+
+#include "Utils/Logger.h"
 
 /**
  * @namespace S3GF
@@ -86,6 +93,50 @@ namespace S3GF {
         constexpr SColor LightGray = {200, 200, 200, 255};
         constexpr SColor DarkGray = {64, 64, 64, 255};
     }
+
+    /// Set how many seconds to delay on this process.
+    inline void delay(uint64_t sec) { std::this_thread::sleep_for(std::chrono::seconds(sec)); }
+    /// Set how many milliseconds to delay on this process.
+    inline void delayMS(uint64_t ms) { std::this_thread::sleep_for(std::chrono::milliseconds(ms)); }
+    /// Set how many nanoseconds to delay on this process.
+    inline void delayNS(uint64_t ns) { std::this_thread::sleep_for(std::chrono::nanoseconds(ns)); }
+
+    /// For EventSystem while using IDGenerator.
+    constexpr size_t NewEventID = 1;
+    /// For EventSystem while using IDGenerator.
+    constexpr size_t NewGlobalEventID = 2;
+
+    /// ID Generator
+    class IDGenerator {
+    public:
+        IDGenerator() = delete;
+        ~IDGenerator() = delete;
+        IDGenerator(const IDGenerator&) = delete;
+        IDGenerator(IDGenerator&&) = delete;
+        IDGenerator& operator=(const IDGenerator&) = delete;
+        IDGenerator& operator=(IDGenerator&&) = delete;
+        static size_t newIDGenerator() {
+            _id_list.emplace_back(0);
+            return _id_list.size() - 1;
+        }
+        static uint64_t getNewEventID() {
+            return _id_list[NewEventID];
+        }
+        static uint64_t getNewGlobalEventID() {
+            return _id_list[NewGlobalEventID];
+        }
+        static uint64_t getID(size_t index = 0) {
+            if (index >= _id_list.size()) {
+                Logger::log(std::format("IDGenerator: The index of {} is not exist!", index));
+                return 0;
+            }
+            _id_list.at(index) += 1;
+            return _id_list[index];
+        }
+    private:
+        static std::vector<uint64_t> _id_list;
+    };
+    inline std::vector<uint64_t> IDGenerator::_id_list(3, 0);
 
     struct GeometryF;
     /**

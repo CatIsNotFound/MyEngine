@@ -2,6 +2,7 @@
 #ifndef S3GF_COMPONETS_H
 #define S3GF_COMPONETS_H
 #include "Basic.h"
+#include "MultiThread/Components.h"
 
 namespace S3GF {
     class Font {
@@ -91,6 +92,15 @@ namespace S3GF {
 
     class BGM {
     public:
+        enum PlayStatus {
+            Invalid,
+            Loading,
+            Loaded,
+            Playing,
+            Paused,
+            FadingIn,
+            FadingOut
+        };
         explicit BGM(MIX_Mixer* mixer, const std::string& path = {});
         ~BGM();
 
@@ -98,7 +108,7 @@ namespace S3GF {
         [[nodiscard]] const std::string& path() const;
         [[nodiscard]] bool isLoaded() const;
 
-        bool play(int64_t position = 0, bool loop = false, int64_t fade_in_duration = 0);
+        bool play(int64_t start_position = 0, bool loop = false, int64_t fade_in_duration = 0);
         void stop(int64_t fade_out_duration = 0);
         void pause();
         bool resume();
@@ -107,20 +117,28 @@ namespace S3GF {
         bool playAt(int64_t position);
         [[nodiscard]] int64_t position() const;
         [[nodiscard]] int64_t duration() const;
-        [[nodiscard]] bool playing() const;
-        [[nodiscard]] bool isPaused() const;
-        [[nodiscard]] bool isLoop() const;
+        [[nodiscard]] PlayStatus playStatus() const;
+        [[nodiscard]] std::string playStatusText() const;
+        bool setVolume(float volume);
+        bool setMuted(bool enabled);
+        bool set3DPosition(float x, float y, float z);
+        [[nodiscard]] bool isMuted() const;
+        [[nodiscard]] float volume() const;
+        [[nodiscard]] const MIX_Point3D& get3DPosition() const;
         void load();
         void unload();
     private:
-        bool _is_load{false}, _is_loop{false},
-             _is_playing{false}, _paused{false};
+        PlayStatus _play_status;
         std::string _path;
         int64_t _pos{};
+        float _volume{1.f};
+        bool _muted{false};
+        MIX_Point3D _mix_3d{0, 0, 0};
         SDL_PropertiesID _prop_id{0};
         MIX_Mixer* _mixer;
         MIX_Audio* _audio{nullptr};
         MIX_Track* _track{nullptr};
+        uint64_t _global_ev_id{0};
     };
 
     class SFX {
@@ -132,7 +150,7 @@ namespace S3GF {
         [[nodiscard]] const std::string& path() const;
         [[nodiscard]] bool isLoaded() const;
 
-        bool play(bool loop = false, float ratio = 1.f, MIX_Point3D&& surround_pos = {0, 0, 0});
+        bool play(bool loop = false);
         void stop(int64_t fade_out_duration = 0);
         [[nodiscard]] int64_t position() const;
         [[nodiscard]] int64_t duration() const;

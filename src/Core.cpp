@@ -631,7 +631,9 @@ namespace S3GF {
 
     void EventSystem::appendEvent(uint64_t id, const std::function<void(SDL_Event)>& event) {
         if (_event_list.contains(id)) {
-            Logger::log(std::format("EventSystem: The event with ID {} is already exists!", id), Logger::WARN);
+            Logger::log(std::format("EventSystem: The event with ID {} is already exists! "
+                                    "It will overwrite it!", id), Logger::WARN);
+            _event_list[id] = event;
             return;
         }
         _event_list.emplace(id, event);
@@ -652,13 +654,40 @@ namespace S3GF {
         Logger::log("EventSystem: Cleared all events.");
     }
 
+    void EventSystem::appendGlobalEvent(uint64_t g_id, const std::function<void()>& event) {
+        if (_global_event_list.contains(g_id)) {
+            Logger::log(std::format("EventSystem: The global event with ID {} is already exists! "
+                                    "It will overwrite it!", g_id), Logger::WARN);
+            _global_event_list[g_id] = event;
+        } else {
+            _global_event_list.emplace(g_id, event);
+            Logger::log(std::format("EventSystem: Append a global event by ID {}", g_id));
+        }
+    }
+
+    void EventSystem::removeGlobalEvent(uint64_t g_id) {
+        if (_global_event_list.contains(g_id)) {
+            _global_event_list.erase(g_id);
+            Logger::log(std::format("EventSystem: Removed a global event with ID {}", g_id));
+        } else {
+            Logger::log(std::format("EventSystem: The global event with ID {} is not found!", g_id),
+                        Logger::WARN);
+        }
+    }
+
+    void EventSystem::clearGlobalEvent() {
+        _global_event_list.clear();
+        Logger::log("EventSystem: Cleared all global events!");
+    }
+
+
     size_t EventSystem::eventCount() const { return _event_list.size(); }
 
     bool EventSystem::run() {
         SDL_Event ev;
         if (SDL_PollEvent(&ev)) {
-            _is_key_down = (ev.key.type == SDL_EVENT_KEY_DOWN);
-            _is_mouse_down = (ev.button.type == SDL_EVENT_MOUSE_BUTTON_DOWN);
+            _kb_events = const_cast<bool*>(SDL_GetKeyboardState(nullptr));
+            _mouse_events = SDL_GetMouseState(nullptr, nullptr);
             if (!_engine->windowCount()) return false;
             auto win_id_list = _engine->windowIDList();
             std::for_each(win_id_list.begin(), win_id_list.end(), [this, &ev](uint32_t id) {
@@ -685,11 +714,31 @@ namespace S3GF {
                 if (event.second) event.second(ev);
             }
         }
+        for (auto& e : _global_event_list) {
+            if (e.second) e.second();
+        }
         return true;
     }
 
-    bool EventSystem::isKeyDown() const { return _is_key_down; }
-    bool EventSystem::isMouseButtonDown() const { return _is_mouse_down; }
+    size_t EventSystem::globalEventCount() const {
+        return _global_event_list.size();
+    }
+
+    uint32_t EventSystem::captureMouseStatus() const {
+        return _mouse_events;
+    }
+
+    bool EventSystem::captureMouse(EventSystem::MouseStatus mouse_status) const {
+        return _mouse_events == mouse_status;
+    }
+
+    const bool *EventSystem::captureKeyboardStatus() const {
+        return _kb_events;
+    }
+
+    bool EventSystem::captureKeyboard(SDL_Scancode code) const {
+        return _kb_events[code];
+    }
 
     Engine::Engine(std::string&& app_name, std::string&& app_version, std::string&& app_id)
         : _app_id(app_id), _app_name(app_name), _app_version(app_version), _running(true) {

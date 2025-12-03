@@ -3,6 +3,7 @@
 #include "Utils/FileSystem.h"
 #include "Utils/Random.h"
 #include "Utils/RGBAColor.h"
+#include "Utils/DateTime.h"
 #define MAX_AUDIO_FILE_SIZE 2 * 1024 * 1024 /// Defined the larger audio file
 
 namespace S3GF {
@@ -442,11 +443,27 @@ namespace S3GF {
             Logger::log("BGM: The specified mixer can not be null!", Logger::FATAL);
             Engine::throwFatalError();
         }
+        _global_ev_id = IDGenerator::getID(NewGlobalEventID);
+        EventSystem::global()->appendGlobalEvent(_global_ev_id, [this]() {
+            if (_play_status == FadingOut && !MIX_TrackPlaying(_track)) {
+                _play_status = Loaded;
+            } else if (_play_status == FadingIn) {
+                auto start_pos = SDL_GetNumberProperty(_prop_id,
+                                                       MIX_PROP_PLAY_START_MILLISECOND_NUMBER, 0);
+                auto fade_in_dur = SDL_GetNumberProperty(_prop_id,
+                                                         MIX_PROP_PLAY_FADE_IN_MILLISECONDS_NUMBER, 0);
+                auto end_point = std::min(start_pos + fade_in_dur, duration());
+                if (position() >= end_point) {
+                    _play_status = Playing;
+                }
+            }
+        });
         load();
     }
 
     BGM::~BGM() {
-        if (_is_load) unload();
+        if (_play_status > Invalid) unload();
+        EventSystem::global()->removeGlobalEvent(_global_ev_id);
     }
 
     void BGM::setPath(const std::string &path) {
@@ -458,51 +475,68 @@ namespace S3GF {
     }
 
     bool BGM::isLoaded() const {
-        return _is_load;
+        return _play_status >= Loaded;
     }
 
-    bool BGM::play(int64_t position, bool loop, int64_t fade_in_duration) {
-        if (!_is_load) {
+    bool BGM::play(int64_t start_position, bool loop, int64_t fade_in_duration) {
+        if (_play_status < Loaded) {
             Logger::log("BGM: Can't play current audio! Current audio is not valid!", Logger::ERROR);
-            _is_playing = false;
+            _play_status = Invalid;
             return false;
         }
-        _prop_id = SDL_CreateProperties();
-        SDL_SetNumberProperty(_prop_id, MIX_PROP_PLAY_START_MILLISECOND_NUMBER, position);
+        if (!_prop_id) { _prop_id = SDL_CreateProperties(); }
+        SDL_SetNumberProperty(_prop_id, MIX_PROP_PLAY_START_MILLISECOND_NUMBER, start_position);
         SDL_SetNumberProperty(_prop_id, MIX_PROP_PLAY_LOOPS_NUMBER, (loop ? -1 : 0));
         SDL_SetNumberProperty(_prop_id, MIX_PROP_PLAY_FADE_IN_MILLISECONDS_NUMBER, fade_in_duration);
-        if (_is_playing) {
+        if (_play_status == Paused) {
             return resume();
-        } else if (!MIX_PlayTrack(_track, _prop_id)) {
-            Logger::log(std::format("BGM: Play audio failed! The file path '{}' is not valid! "
-                                    "Exception: {}", _path, SDL_GetError()), Logger::ERROR);
-            _is_playing = false;
-            return false;
+        } else if (_play_status == Loaded) {
+            if (!MIX_PlayTrack(_track, _prop_id)) {
+                Logger::log(std::format("BGM: Play audio failed! The file path '{}' is not valid! "
+                                        "Exception: {}", _path, SDL_GetError()), Logger::ERROR);
+                _play_status = Invalid;
+                return false;
+            }
+            _play_status = (fade_in_duration ? FadingIn : Playing);
         }
-        _is_playing = true;
         return true;
     }
 
     void BGM::stop(int64_t fade_out_duration) {
-        if (!_is_load) {
+        if (_play_status < Loaded) {
             Logger::log("BGM: Can't stop current audio! Current audio is not valid!", Logger::ERROR);
         }
+        if (_play_status == FadingOut || _play_status == Loaded) return;
+
         auto ms = (fade_out_duration > 0 ? MIX_TrackMSToFrames(_track, fade_out_duration) : 0);
         MIX_StopTrack(_track, ms);
-        _is_playing = false;
+        if (!fade_out_duration) {
+            _play_status = Loaded;
+            return;
+        }
+        _play_status = FadingOut;
     }
 
     void BGM::pause() {
-        if (!_is_load || !_is_playing) {
+        if (_play_status < Loaded) {
             Logger::log("BGM: Can't pause current audio! Current status is not valid!", Logger::ERROR);
+            return;
+        }
+        if (_play_status != Playing) {
+            Logger::log("BGM: Current audio is not playing!", Logger::WARN);
+            return;
         }
         MIX_PauseTrack(_track);
-        _paused = true;
+        _play_status = Paused;
     }
 
     bool BGM::resume() {
-        if (!_is_load || !_is_playing) {
+        if (_play_status < Loaded) {
             Logger::log("BGM: Can't resume current audio! Current status is not valid!", Logger::ERROR);
+            return false;
+        }
+        if (_play_status != Paused) {
+            Logger::log("BGM: Current audio is already playing!", Logger::WARN);
             return false;
         }
         if (position() >= duration()) playAt(0);
@@ -511,7 +545,7 @@ namespace S3GF {
             Logger::log("BGM: Can't resume current audio! Current status is not valid!", Logger::ERROR);
             return false;
         }
-        _paused = false;
+        _play_status = Playing;
         return true;
     }
 
@@ -520,7 +554,7 @@ namespace S3GF {
         auto new_pos = std::min(pos + ms, duration());
         if (new_pos < 0) new_pos = 0;
         if (!MIX_SetTrackPlaybackPosition(_track, MIX_TrackMSToFrames(_track, new_pos))) {
-            Logger::log("BGM: Failed to set playback position!", Logger::ERROR);
+            Logger::log("BGM: Failed to set playback position!", Logger::WARN);
             return false;
         }
         return true;
@@ -531,7 +565,7 @@ namespace S3GF {
         auto new_pos = std::min(pos - ms, duration());
         if (new_pos < 0) new_pos = 0;
         if (!MIX_SetTrackPlaybackPosition(_track, MIX_TrackMSToFrames(_track, new_pos))) {
-            Logger::log("BGM: Failed to set playback position!", Logger::ERROR);
+            Logger::log("BGM: Failed to set playback position!", Logger::WARN);
             return false;
         }
         return true;
@@ -541,14 +575,14 @@ namespace S3GF {
         auto new_pos = std::min(position, duration());
         if (new_pos < 0) new_pos = 0;
         if (!MIX_SetTrackPlaybackPosition(_track, MIX_TrackMSToFrames(_track, new_pos))) {
-            Logger::log("BGM: Failed to set playback position!", Logger::ERROR);
+            Logger::log("BGM: Failed to set playback position!", Logger::WARN);
             return false;
         }
         return true;
     }
 
     int64_t BGM::position() const {
-        if (!_is_load) {
+        if (_play_status < Loaded) {
             Logger::log("BGM: Can't pause current audio! Current audio is not valid!", Logger::ERROR);
             return 0;
         }
@@ -556,47 +590,103 @@ namespace S3GF {
     }
 
     int64_t BGM::duration() const {
-        if (!_is_load) {
+        if (_play_status < Loaded) {
             Logger::log("BGM: Can't pause current audio! Current audio is not valid!", Logger::ERROR);
             return 0;
         }
         return MIX_TrackFramesToMS(_track, MIX_GetAudioDuration(_audio));
     }
 
-    bool BGM::playing() const {
-        return _is_playing;
+    BGM::PlayStatus BGM::playStatus() const {
+        return _play_status;
     }
 
-    bool BGM::isPaused() const {
-        return _paused;
+    std::string BGM::playStatusText() const {
+        switch (_play_status) {
+            case Loading:
+                return "Loading";
+            case Loaded:
+                return "Loaded";
+            case Playing:
+                return "Playing";
+            case Paused:
+                return "Paused";
+            case FadingIn:
+                return "Fading in";
+            case FadingOut:
+                return "Fading out";
+            default:
+                return "Invalid";
+        }
     }
 
-    bool BGM::isLoop() const {
-        return _is_loop;
+    bool BGM::setVolume(float volume) {
+        auto new_vol = volume < 0 ? 0 : std::min(volume, 10.f);
+        if (MIX_SetTrackGain(_track, new_vol)) {
+            _volume = new_vol;
+            return true;
+        }
+        return false;
     }
+
+    bool BGM::setMuted(bool enabled) {
+        if (MIX_SetTrackGain(_track, (enabled ? 0.f : _volume))) {
+            _muted = enabled;
+            return true;
+        }
+        return false;
+    }
+
+    bool BGM::set3DPosition(float x, float y, float z) {
+        _mix_3d = {
+                .x = x,
+                .y = y,
+                .z = z
+        };
+        if (!MIX_SetTrack3DPosition(_track, &_mix_3d)) {
+            Logger::log(std::format("BGM::set3DPosition: Failed to set 3D position! Exception: {}", SDL_GetError()), Logger::WARN);
+            return false;
+        }
+        return true;
+    }
+
+    float BGM::volume() const {
+        return _volume;
+    }
+
+    bool BGM::isMuted() const {
+        return _muted;
+    }
+
+    const MIX_Point3D& BGM::get3DPosition() const {
+        return _mix_3d;
+    }
+
+
 
     void BGM::load() {
+        _play_status = Loading;
         _audio = MIX_LoadAudio(_mixer, _path.c_str(), false);
         if (!_audio) {
             Logger::log(std::format("BGM: The specified file path '{}' is not valid! Exception: {}",
                                     _path, SDL_GetError()), Logger::ERROR);
-            _is_load = false;
+            _play_status = Invalid;
             return;
         }
         _track = MIX_CreateTrack(_mixer);
         if (!_track) {
             Logger::log(std::format("BGM: Create audio track failed! Exception: {}"
                     , SDL_GetError()), Logger::ERROR);
-            _is_load = false;
+            _play_status = Invalid;
             return;
         }
         if (!MIX_SetTrackAudio(_track, _audio)) {
             Logger::log(std::format("BGM: The specified file path '{}' can not set as audio track! Exception: {}",
                                     _path, SDL_GetError()), Logger::ERROR);
-            _is_load = false;
+            _play_status = Invalid;
             return;
         }
-        _is_load = true;
+        _play_status = Loaded;
     }
 
     void BGM::unload() {
@@ -607,7 +697,7 @@ namespace S3GF {
             MIX_DestroyAudio(_audio);
         }
         SDL_DestroyProperties(_prop_id);
-        _is_load = false;
+        _play_status = Invalid;
     }
 
     SFX::SFX(MIX_Mixer *mixer, const std::string &path) : _mixer(mixer), _path(path) {
@@ -634,7 +724,7 @@ namespace S3GF {
         return _is_load;
     }
 
-    bool SFX::play(bool loop, float ratio, MIX_Point3D&& surround_pos) {
+    bool SFX::play(bool loop) {
         if (!_is_load) {
             Logger::log("BGM: Can't play current audio! Current audio is not valid!", Logger::ERROR);
             _is_playing = false;
@@ -642,9 +732,6 @@ namespace S3GF {
         }
         _prop_id = SDL_CreateProperties();
         SDL_SetNumberProperty(_prop_id, MIX_PROP_PLAY_LOOPS_NUMBER, (loop ? -1 : 0));
-        auto new_ratio = (ratio <= 0 ? 0 : (ratio > 100.f ? 100.f : ratio));
-        MIX_SetTrackFrequencyRatio(_track, new_ratio);
-        MIX_SetTrack3DPosition(_track, &surround_pos);
         if (!MIX_PlayTrack(_track, _prop_id)) {
             Logger::log(std::format("BGM: Play audio failed! The file path '{}' is not valid! "
                                     "Exception: {}", _path, SDL_GetError()), Logger::ERROR);

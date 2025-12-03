@@ -7,9 +7,7 @@
 namespace S3GF {
     Timer::~Timer() {
         stop();
-        if (_thread.joinable()) {
-            _thread.join();
-        }
+        if (_thread.joinable()) { _thread.join(); }
     }
 
     Timer::Timer(uint64_t delay, const std::function<void()>& event)
@@ -32,6 +30,7 @@ namespace S3GF {
         _run_count = count;
         _finish_count = 0;
         _current_time = SDL_GetTicks();
+        if (_thread.joinable()) { _thread.join(); }
         _thread = std::thread(&Timer::running, this);
         Logger::log(std::format("The timer ID {} is started!", _timer_id));
     }
@@ -116,6 +115,7 @@ namespace S3GF {
         _enabled = true;
         _run_count = count;
         _finish_count = 0;
+        if (_thread.joinable()) _thread.join();
         _thread = std::thread(&Trigger::running, this);
         Logger::log(std::format("Trigger ID {} is started!", _trigger_id));
     }

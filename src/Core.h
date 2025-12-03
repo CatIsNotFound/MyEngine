@@ -203,6 +203,16 @@ namespace S3GF {
 
     class EventSystem {
     public:
+        enum MouseStatus {
+            None,
+            Left,
+            Middle,
+            LeftMiddle,
+            Right,
+            LeftRight,
+            MiddleRight,
+            LeftMiddleRight
+        };
         EventSystem(EventSystem &&) = delete;
         EventSystem(const EventSystem &) = delete;
         EventSystem &operator=(EventSystem &&) = delete;
@@ -214,16 +224,24 @@ namespace S3GF {
         void appendEvent(uint64_t id, const std::function<void(SDL_Event)>& event);
         void removeEvent(uint64_t id);
         void clearEvent();
-        size_t eventCount() const;
+        void appendGlobalEvent(uint64_t g_id, const std::function<void()>& event);
+        void removeGlobalEvent(uint64_t g_id);
+        void clearGlobalEvent();
+        [[nodiscard]] size_t eventCount() const;
+        [[nodiscard]] size_t globalEventCount() const;
+        [[nodiscard]] const bool* captureKeyboardStatus() const;
+        [[nodiscard]] bool captureKeyboard(SDL_Scancode code) const;
+        [[nodiscard]] uint32_t captureMouseStatus() const;
+        [[nodiscard]] bool captureMouse(MouseStatus mouse_status) const;
         bool run();
-        [[nodiscard]] bool isKeyDown() const;
-        [[nodiscard]] bool isMouseButtonDown() const;
     private:
         explicit EventSystem(Engine* engine) : _engine(engine) {}
         static std::unique_ptr<EventSystem> _instance;
         Engine* _engine{nullptr};
-        bool _is_mouse_down{false}, _is_key_down{false};
+        bool* _kb_events{nullptr};
+        uint32_t _mouse_events{0};
         std::map<uint64_t, std::function<void(SDL_Event)>> _event_list;
+        std::map<uint64_t, std::function<void()>> _global_event_list;
     };
 
     class Engine {
