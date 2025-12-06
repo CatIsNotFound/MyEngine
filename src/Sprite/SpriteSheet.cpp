@@ -1,71 +1,278 @@
 
 #include "SpriteSheet.h"
+#include "Utils/RGBAColor.h"
 
 S3GF::SpriteSheet::SpriteSheet(S3GF::TextureAtlas *textureAtlas) : _atlas(textureAtlas) {
+    _global_prop = std::make_shared<TextureProperty>();
+    if (!_atlas) {
+        Logger::log("SpriteSheet: The current texture atlas is not valid!", Logger::ERROR);
+        return;
+    }
+    _global_prop->resize(_atlas->property()->size());
+    _event_id = IDGenerator::getNewGlobalEventID();
+    EventSystem::global()->appendGlobalEvent(_event_id, [this] {
+        if (!_animate) return;
+        /// If current animation name is null or not in the animation map, skipped!
+        if (_cur_ani_name.empty() || !_animation_map.contains(_cur_ani_name)) return;
+        if (_start_time == 0) _start_time = SDL_GetTicks();
+        auto cur_time = SDL_GetTicks();
+        auto& ani = _animation_map.at(_cur_ani_name);
+        if (cur_time - _start_time >= ani.duration_per_frame) {
+            _cur_frame += 1;
+            _start_time = SDL_GetTicks();
+            if (_cur_frame >= ani.sequence_list.size()) {
+                _cur_frame = 0;
+            }
+        }
+    });
 }
 
 S3GF::SpriteSheet::SpriteSheet(const std::string &path, S3GF::Renderer *renderer) {
-
+    _atlas = new TextureAtlas(path, renderer);
+    _delete_later = true;
+    if (!_atlas->isValid()) {
+        Logger::log("SpriteSheet: The current texture atlas is not valid!", Logger::ERROR);
+    }
+    _global_prop = std::make_shared<TextureProperty>();
+    _global_prop->resize(_atlas->property()->size());
+    _event_id = IDGenerator::getNewGlobalEventID();
+    EventSystem::global()->appendGlobalEvent(_event_id, [this] {
+        if (!_animate) return;
+        /// If current animation name is null or not in the animation map, skipped!
+        if (_cur_ani_name.empty() || !_animation_map.contains(_cur_ani_name)) return;
+        if (_start_time == 0) _start_time = SDL_GetTicks();
+        auto cur_time = SDL_GetTicks();
+        auto& ani = _animation_map.at(_cur_ani_name);
+        if (cur_time - _start_time >= ani.duration_per_frame) {
+            _cur_frame += 1;
+            _start_time = SDL_GetTicks();
+            if (_cur_frame >= ani.sequence_list.size()) {
+                _cur_frame = 0;
+            }
+        }
+    });
 }
 
 S3GF::SpriteSheet::~SpriteSheet() {
+    if (_delete_later) {
+        delete _atlas;
+    }
+    EventSystem::global()->removeGlobalEvent(_event_id);
+}
 
+void S3GF::SpriteSheet::move(float x, float y) {
+    _global_prop->move(x, y);
+    for (auto& [name, prop] : *_atlas) {
+        prop->move(x, y);
+    }
+}
+
+void S3GF::SpriteSheet::move(const S3GF::Vector2 &pos) {
+    _global_prop->move(pos);
+    for (auto& [name, prop] : *_atlas) {
+        prop->move(pos);
+    }
+}
+
+const S3GF::Vector2 &S3GF::SpriteSheet::position() const {
+    return _global_prop->position();
+}
+
+void S3GF::SpriteSheet::resize(float w, float h) {
+    _global_prop->resize(w, h);
+    for (auto& [name, prop] : *_atlas) {
+        prop->resize(w, h);
+    }
+}
+
+void S3GF::SpriteSheet::resize(const S3GF::Size &size) {
+    _global_prop->resize(size);
+    for (auto& [name, prop] : *_atlas) {
+        prop->resize(size);
+    }
+}
+
+const S3GF::Size &S3GF::SpriteSheet::size() const {
+    return _global_prop->size();
+}
+
+void S3GF::SpriteSheet::setScale(float scale) {
+    _global_prop->setScale(scale);
+    for (auto& [name, prop] : *_atlas) {
+        prop->setScale(scale);
+    }
+}
+
+float S3GF::SpriteSheet::scale() const {
+    return _global_prop->scale();
+}
+
+void S3GF::SpriteSheet::setColorAlpha(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+    _global_prop->color_alpha = { .r = r, .g = g, .b = b, .a = a };
+    for (auto& [name, prop] : *_atlas) {
+        prop->color_alpha = { .r = r, .g = g, .b = b, .a = a };
+    }
+}
+
+void S3GF::SpriteSheet::setColorAlpha(uint64_t hex_code) {
+    auto [r, g, b, a] = RGBAColor::RGBAValue2Color(hex_code, true);
+    _global_prop->color_alpha = { .r = r, .g = g, .b = b, .a = a };
+    for (auto& [name, prop] : *_atlas) {
+        prop->color_alpha = { .r = r, .g = g, .b = b, .a = a };
+    }
+}
+
+void S3GF::SpriteSheet::setColorAlpha(const SDL_Color &color) {
+    _global_prop->color_alpha = color;
+    for (auto& [name, prop] : *_atlas) {
+        prop->color_alpha = color;
+    }
+}
+
+const SDL_Color &S3GF::SpriteSheet::colorAlpha() const {
+    return _global_prop->color_alpha;
+}
+
+void S3GF::SpriteSheet::appendTiles(const std::string &tiles_name, const S3GF::GeometryF &clip_geometry) {
+    _atlas->setTiles(tiles_name, clip_geometry);
+    _atlas->tilesProperty(tiles_name)->move(_global_prop->position());
+    _atlas->tilesProperty(tiles_name)->resize(_global_prop->size());
+    _atlas->tilesProperty(tiles_name)->setScale(_global_prop->scale());
+    _atlas->tilesProperty(tiles_name)->color_alpha = _global_prop->color_alpha;
+}
+
+void S3GF::SpriteSheet::removeTiles(const std::string &tiles_name) {
+    _atlas->eraseTiles(tiles_name);
+}
+
+const S3GF::TextureProperty *S3GF::SpriteSheet::propertyOfTiles(const std::string &tiles_name) const {
+    return _atlas->tilesProperty(tiles_name);
 }
 
 void S3GF::SpriteSheet::setTextureAtlas(S3GF::TextureAtlas *textureAtlas) {
-
+    if (_delete_later) {
+        delete _atlas;
+    }
+    _atlas = textureAtlas;
+    if (!_atlas) {
+        Logger::log("SpriteSheet: You have set 'nullptr' to current texture atlas! "
+                    "It will be thrown error while drawing.",Logger::WARN);
+    }
 }
 
 S3GF::TextureAtlas *S3GF::SpriteSheet::textureAtlas() const {
-    return nullptr;
+    return _atlas;
 }
 
 bool S3GF::SpriteSheet::appendAnimation(const std::string &name, const StringList &sequence_list,
                                         uint64_t duration_per_frame) {
-    return false;
+    if (_animation_map.contains(name)) {
+        Logger::log(std::format("SpriteSheet: The frame animation named {} already exists!", name),
+                    Logger::ERROR);
+        return false;
+    }
+    for (auto& sequence : sequence_list) {
+        if (!_atlas->isTilesNameExist(sequence)) {
+            Logger::log(std::format("SpriteSheet: The tiles named {} is not in current texture atlas!",
+                                    sequence), Logger::ERROR);
+            return false;
+        }
+    }
+    _animation_map.emplace(name, FrameAnimation(sequence_list, duration_per_frame));
+    return true;
 }
 
-bool S3GF::SpriteSheet::insertAnimation(size_t index, const std::string &name, const StringList &sequence_list,
-                                        uint64_t duration_per_frame) {
-    return false;
+bool S3GF::SpriteSheet::removeAnimation(const std::string &name) {
+    if (!_animation_map.contains(name)) {
+        Logger::log(std::format("SpriteSheet: The animation named {} is not exist!", name), Logger::ERROR);
+        return false;
+    }
+    if (_cur_ani_name == name) {
+        Logger::log(std::format("SpriteSheet: Can not remove current animation! "
+                    "Please use `SpriteSheet::setCurrentAnimation()` to instead at first!", name), Logger::ERROR);
+        return false;
+    }
+    _animation_map.erase(name);
+    return true;
 }
 
-bool S3GF::SpriteSheet::popAnimation() {
-    return false;
-}
-
-bool S3GF::SpriteSheet::removeAnimation(size_t index, const std::string &name) {
-    return false;
-}
-
-StringList S3GF::SpriteSheet::sequenceListFromAnimation(const std::string &animation_name) {
-    return StringList();
+StringList S3GF::SpriteSheet::sequenceListFromAnimation(const std::string &name) {
+    StringList out;
+    if (!_animation_map.contains(name)) {
+        Logger::log(std::format("SpriteSheet: The animation named {} is not exist!", name), Logger::ERROR);
+        return out;
+    }
+    for (auto& a : _animation_map.at(name).sequence_list) {
+        out.emplace_back(a);
+    }
+    return out;
 }
 
 size_t S3GF::SpriteSheet::sizeOf() const {
-    return 0;
+    return _animation_map.size();
 }
 
 StringList S3GF::SpriteSheet::animationList() const {
-    return StringList();
+    StringList out;
+    for (auto& a : _animation_map) {
+        out.emplace_back(a.first);
+    }
+    return out;
 }
 
-void S3GF::SpriteSheet::setDurationPerFrame(const std::string &animation_name, uint64_t ms) {
-
+bool S3GF::SpriteSheet::setDurationPerFrame(const std::string &name, uint64_t ms) {
+    if (!_animation_map.contains(name)) {
+        Logger::log(std::format("SpriteSheet: The animation named {} is not exist!", name), Logger::ERROR);
+        return false;
+    }
+    _animation_map.at(name).duration_per_frame = ms;
+    return true;
 }
 
-uint64_t S3GF::SpriteSheet::durationPerFrameFromAnimation(const std::string &animation_name) {
-    return 0;
+uint64_t S3GF::SpriteSheet::durationPerFrameFromAnimation(const std::string &name) {
+    if (!_animation_map.contains(name)) {
+        Logger::log(std::format("SpriteSheet: The animation named {} is not exist!", name), Logger::ERROR);
+        return false;
+    }
+    return _animation_map.at(name).duration_per_frame;
 }
 
-size_t S3GF::SpriteSheet::indexOfAnimation(const std::string &animation_name) {
-    return 0;
+bool S3GF::SpriteSheet::setCurrentAnimation(const std::string &name) {
+    if (!_animation_map.contains(name)) {
+        Logger::log(std::format("SpriteSheet: The animation named {} is not exist!", name), Logger::ERROR);
+        return false;
+    }
+    _cur_ani_name = name;
+    return true;
 }
 
 const std::string &S3GF::SpriteSheet::currentAnimation() const {
-    return <#initializer#>;
+    return _cur_ani_name;
 }
 
-void S3GF::SpriteSheet::draw(const std::string &animation_name) {
-
+void S3GF::SpriteSheet::draw() {
+    if (!_animation_map.contains(_cur_ani_name)) {
+        Logger::log(std::format("SpriteSheet: Renderer failed! "
+                                "The animation named '{}' is not exist! "
+                                "Did you forget to use `SpriteSheet::setCurrentAnimation()`?",
+                                _cur_ani_name), Logger::FATAL);
+        Engine::throwFatalError();
+    }
+    auto& frame_name = _animation_map.at(_cur_ani_name).sequence_list[_cur_frame];
+    if (!_atlas->isTilesNameExist(frame_name)) {
+        Logger::log(std::format("SpriteSheet: Renderer failed! "
+                                "The animation named '{}' of frame '{}' is not valid! ",
+                                _cur_ani_name, frame_name), Logger::FATAL);
+        Engine::throwFatalError();
+    }
+    _atlas->draw(frame_name);
 }
+
+void S3GF::SpriteSheet::setAnimateEnabled(bool animate) {
+    _animate = animate;
+}
+
+bool S3GF::SpriteSheet::animateEnabled() const {
+    return _animate;
+}
+

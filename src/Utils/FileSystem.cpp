@@ -261,8 +261,6 @@ namespace S3GF {
     float FileSystem::readableSize(const std::string &file_path, S3GF::FileSystem::DataSize data_size) {
         auto size = getFileSize(file_path);
         switch (data_size) {
-            case B:
-                return static_cast<float>(size);
             case KB:
                 return static_cast<float>(size) / 1024.0f;
             case MB:
@@ -271,6 +269,8 @@ namespace S3GF {
                 return static_cast<float>(size) / 1024.0f / 1024.f / 1024.f;
             case TB:
                 return static_cast<float>(size) / 1024.0f / 1024.f / 1024.f / 1024.f;
+            default:
+                return static_cast<float>(size);
         }
     }
 

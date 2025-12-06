@@ -120,18 +120,17 @@ namespace S3GF {
             return _id_list.size() - 1;
         }
         static uint64_t getNewEventID() {
-            return _id_list[NewEventID];
+            return ++_id_list[NewEventID];
         }
         static uint64_t getNewGlobalEventID() {
-            return _id_list[NewGlobalEventID];
+            return ++_id_list[NewGlobalEventID];
         }
         static uint64_t getID(size_t index = 0) {
             if (index >= _id_list.size()) {
                 Logger::log(std::format("IDGenerator: The index of {} is not exist!", index));
                 return 0;
             }
-            _id_list.at(index) += 1;
-            return _id_list[index];
+            return ++_id_list[index];
         }
     private:
         static std::vector<uint64_t> _id_list;

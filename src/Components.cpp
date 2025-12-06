@@ -389,12 +389,35 @@ namespace S3GF {
 
     TextureAtlas::~TextureAtlas() {}
 
+    void TextureAtlas::setTiles(const std::string &tiles_name, const S3GF::GeometryF &clip_geometry) {
+        if (_tiles_map.contains(tiles_name)) {
+            _tiles_map[tiles_name]->clip_area = {clip_geometry.pos.x, clip_geometry.pos.y,
+                                                 clip_geometry.size.width, clip_geometry.size.height};
+        } else {
+            TextureProperty prop;
+            prop.clip_mode = true;
+            prop.clip_area = {clip_geometry.pos.x, clip_geometry.pos.y,
+                              clip_geometry.size.width, clip_geometry.size.height};
+            prop.color_alpha = StdColor::White;
+            prop.resize(clip_geometry.size);
+            _tiles_map.emplace(tiles_name, std::shared_ptr<TextureProperty>(new TextureProperty(prop)));
+        }
+    }
+
     void TextureAtlas::setTiles(const std::string &tiles_name, TextureProperty &&tiles_property) {
         if (_tiles_map.contains(tiles_name)) {
             _tiles_map[tiles_name]->reset(tiles_property);
         } else {
             _tiles_map.emplace(tiles_name, std::shared_ptr<TextureProperty>(new TextureProperty(tiles_property)));
         }
+    }
+
+    bool TextureAtlas::eraseTiles(const std::string &tiles_name) {
+        if (_tiles_map.contains(tiles_name)) {
+            _tiles_map.erase(tiles_name);
+            return true;
+        }
+        return false;
     }
 
     TextureProperty *TextureAtlas::tilesProperty(const std::string &tiles_name) {
@@ -428,6 +451,10 @@ namespace S3GF {
         return out;
     }
 
+    bool TextureAtlas::isTilesNameExist(const std::string& tiles_name) const {
+        return _tiles_map.contains(tiles_name);
+    }
+
     void TextureAtlas::draw() const {
         if (_tiles_map.contains(_current_tiles)) {
             render()->drawTexture(self(), _tiles_map.at(_current_tiles).get());
@@ -451,7 +478,7 @@ namespace S3GF {
             Logger::log("BGM: The specified mixer can not be null!", Logger::FATAL);
             Engine::throwFatalError();
         }
-        _global_ev_id = IDGenerator::getID(NewGlobalEventID);
+        _global_ev_id = IDGenerator::getNewGlobalEventID();
         EventSystem::global()->appendGlobalEvent(_global_ev_id, [this]() {
             if (_play_status == FadingOut && !MIX_TrackPlaying(_track)) {
                 _play_status = Loaded;
@@ -646,8 +673,8 @@ namespace S3GF {
     }
 
     bool BGM::setLRChannel(float left, float right) {
-        _stereo_gains.left = (_stereo_gains.left > 0 ? std::min(left, 10.f) : 0.f);
-        _stereo_gains.right = (_stereo_gains.right > 0 ? std::min(right, 10.f) : 0.f);
+        if (left >= 0 && left <= 10.f) _stereo_gains.left = left;
+        if (right >= 0 && right <= 10.f) _stereo_gains.right = right;
         return MIX_SetTrackStereo(_track, &_stereo_gains);
     }
 

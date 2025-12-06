@@ -1,15 +1,30 @@
 
 #include "Sprite.h"
+#include "Utils/RGBAColor.h"
 
 S3GF::Sprite::Sprite(S3GF::Texture *texture) : _texture(texture) {
     _property = std::make_unique<TextureProperty>(texture->property());
 }
 
-S3GF::Sprite::~Sprite() {
+S3GF::Sprite::Sprite(const std::string &path, S3GF::Renderer *renderer) {
+    _texture = new Texture(path, renderer);
+    _delete_later = true;
+    if (!_texture->isValid()) {
+        Logger::log("Sprite: Current texture is not valid!", Logger::ERROR);
+    }
+}
 
+S3GF::Sprite::~Sprite() {
+    if (_delete_later) {
+        delete _texture;
+    }
 }
 
 void S3GF::Sprite::setTexture(S3GF::Texture *new_texture) {
+    if (_delete_later) {
+        delete _texture;
+        _delete_later = false;
+    }
     _texture = new_texture;
     if (!new_texture) {
         Logger::log("Sprite: You have set 'nullptr' to current texture! It will be thrown error while drawing.",
@@ -69,6 +84,23 @@ void S3GF::Sprite::setOpacity(float opcacity) {
 
 float S3GF::Sprite::opacity() const {
     return static_cast<float>(_property->color_alpha.a) / 255.f;
+}
+
+void S3GF::Sprite::setColorAlpha(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+    _property->color_alpha = { .r = r, .g = g, .b = b, .a = a };
+}
+
+void S3GF::Sprite::setColorAlpha(uint64_t hex_code) {
+    auto [r, g, b, a] = RGBAColor::RGBAValue2Color(hex_code, true);
+    _property->color_alpha = { .r = r, .g = g, .b = b, .a = a };
+}
+
+void S3GF::Sprite::setColorAlpha(const SDL_Color &color) {
+    _property->color_alpha = color;
+}
+
+const SDL_Color& S3GF::Sprite::colorAlpha() const {
+    return _property->color_alpha;
 }
 
 void S3GF::Sprite::setVisible(bool visible) {

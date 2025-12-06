@@ -187,7 +187,7 @@ namespace S3GF {
     public:
         bool clip_mode{false};
         SDL_FRect clip_area{};
-        SDL_Color color_alpha{StdColor::Black};
+        SDL_Color color_alpha{StdColor::White};
         double rotate_angle{0.0};
         SDL_FlipMode flip_mode{SDL_FLIP_NONE};
         TextureProperty() {
@@ -336,6 +336,8 @@ namespace S3GF {
 
     class TextureAtlas : public Texture {
     public:
+        using constIter = std::unordered_map<std::string, std::shared_ptr<TextureProperty>>::const_iterator;
+        using iter = std::unordered_map<std::string, std::shared_ptr<TextureProperty>>::iterator;
         TextureAtlas(const TextureAtlas &) = delete;
         TextureAtlas(TextureAtlas &&) = delete;
         TextureAtlas &operator=(const TextureAtlas &) = delete;
@@ -345,11 +347,20 @@ namespace S3GF {
         explicit TextureAtlas(SDL_Surface* surface, Renderer *renderer, bool deep_copy = false);
         ~TextureAtlas();
 
+        iter begin() { return _tiles_map.begin(); }
+        constIter begin() const { return _tiles_map.cbegin(); }
+        iter end() { return _tiles_map.end(); }
+        constIter end() const { return _tiles_map.cend(); }
+        size_t count() { return _tiles_map.size(); }
+
+        void setTiles(const std::string& tiles_name, const GeometryF& clip_geometry);
         void setTiles(const std::string& tiles_name, TextureProperty&& tiles_property);
+        bool eraseTiles(const std::string& tiles_name);
         TextureProperty* tilesProperty(const std::string& tiles_name);
         void setCurrentTiles(const std::string& tiles_name);
         [[nodiscard]] const std::string& currentTiles() const;
         StringList tilesNameList() const;
+        [[nodiscard]] bool isTilesNameExist(const std::string& tiles_name) const;
 
         void draw() const override;
         void draw(const std::string& tiles_name) const;
