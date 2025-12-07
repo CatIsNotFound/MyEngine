@@ -42,12 +42,12 @@ Currently, no official version has been released yet. It is expected to be relea
    ```shell
    cd MyEngine
    mkdir build ; cd build
-   cmake .. -DCMAKE_BUILD_TYPE="Release" -DSDL3_LIB=/path/to/SDL3 -DSDL3_IMAGE_LIB=/path/to/SDL3_image -DSDL3_MIXER_LIB=/path/to/SDL3_mixer -DSDL3_TTF_LIB=/path/to/SDL3_ttf
+   cmake .. -DCMAKE_BUILD_TYPE="Release" -DCMAKE_INSTALL_PREFIX="/path/to/MyEngine" -DSDL3_LIB=/path/to/SDL3 -DSDL3_IMAGE_LIB=/path/to/SDL3_image -DSDL3_MIXER_LIB=/path/to/SDL3_mixer -DSDL3_TTF_LIB=/path/to/SDL3_ttf
    ```
    
    > ❗ Note:
    > 
-   > You need to replace the shared library paths for `SDL3_LIB`, `SDL3_IMAGE_LIB`, `SDL3_TTF_LIB`, and `SDL3_MIXER_LIB`.
+   > You need to replace the static library paths for `CMAKE_INSTALL_PREFIX`, `SDL3_LIB`, `SDL3_IMAGE_LIB`, `SDL3_TTF_LIB`, and `SDL3_MIXER_LIB`.
 
 3. Compile and install the project
 
@@ -67,17 +67,17 @@ Currently, no official version has been released yet. It is expected to be relea
     set(CMAKE_CXX_STANDARD 20)
     
     # Need to set these paths before cmake configuration.
-    set(SDL_DIR       "/path/to/SDL3")
-    set(SDL_IMAGE_DIR "/path/to/SDL3_image")
-    set(SDL_TTF_DIR   "/path/to/SDL3_ttf")
-    set(SDL_MIXER_DIR "/path/to/SDL3_mixer")
+    set(SDL3_DIR       "/path/to/SDL3")
+    set(SDL3_IMAGE_DIR "/path/to/SDL3_image")
+    set(SDL3_TTF_DIR   "/path/to/SDL3_ttf")
+    set(SDL3_MIXER_DIR "/path/to/SDL3_mixer")
     set(MYENGINE_DIR      "/path/to/MyEngine")
     set(CMAKE_INCLUDE_CURRENT_DIR ON)
     
-    list(APPEND CMAKE_PREFIX_PATH ${SDL_DIR})
-    list(APPEND CMAKE_PREFIX_PATH ${SDL_IMAGE_DIR})
-    list(APPEND CMAKE_PREFIX_PATH ${SDL_TTF_DIR})
-    list(APPEND CMAKE_PREFIX_PATH ${SDL_MIXER_DIR})
+    list(APPEND CMAKE_PREFIX_PATH ${SDL3_DIR})
+    list(APPEND CMAKE_PREFIX_PATH ${SDL3_IMAGE_DIR})
+    list(APPEND CMAKE_PREFIX_PATH ${SDL3_TTF_DIR})
+    list(APPEND CMAKE_PREFIX_PATH ${SDL3_MIXER_DIR})
     list(APPEND CMAKE_PREFIX_PATH ${MYENGINE_DIR})
     
     find_package(SDL3 REQUIRED)
@@ -97,6 +97,28 @@ Currently, no official version has been released yet. It is expected to be relea
             SDL3_mixer::SDL3_mixer
             MyEngine::MyEngine
     )
+   
+    if (WIN32)
+    set(POST_BUILD_COMMANDS
+            COMMAND ${CMAKE_COMMAND} -E copy_directory ${SDL3_LIB}/bin ${CMAKE_BINARY_DIR}/bin
+            COMMAND ${CMAKE_COMMAND} -E copy_directory ${SDL3_MIXER_LIB}/bin ${CMAKE_BINARY_DIR}/bin
+    )
+    if (MINGW)
+        list(APPEND POST_BUILD_COMMANDS
+                COMMAND ${CMAKE_COMMAND} -E copy_directory ${SDL3_IMAGE_LIB}/x86_64-w64-mingw32/bin ${CMAKE_BINARY_DIR}/bin
+                COMMAND ${CMAKE_COMMAND} -E copy_directory ${SDL3_TTF_LIB}/x86_64-w64-mingw32/bin ${CMAKE_BINARY_DIR}/bin
+        )
+    else ()
+        list(APPEND POST_BUILD_COMMANDS
+                COMMAND ${CMAKE_COMMAND} -E copy_directory ${SDL3_IMAGE_LIB}/bin ${CMAKE_BINARY_DIR}/bin
+                COMMAND ${CMAKE_COMMAND} -E copy_directory ${SDL3_TTF_LIB}/bin ${CMAKE_BINARY_DIR}/bin
+        )
+    endif()
+
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            ${POST_BUILD_COMMANDS}
+    )
+    endif()
    ```
 
 2. Edit the `main.cpp` file:

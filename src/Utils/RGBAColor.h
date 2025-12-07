@@ -1,7 +1,7 @@
 #pragma once
 #ifndef MYENGINE_RGBACOLOR_H
 #define MYENGINE_RGBACOLOR_H
-#include "Libs.h"
+#include "../Libs.h"
 
 namespace MyEngine {
     /**

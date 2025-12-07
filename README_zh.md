@@ -40,12 +40,12 @@ MyEngine 是一个轻量级但功能强大的 2D 图形框架，构建于 SDL3 �
    ```shell
    cd MyEngine
    mkdir build ; cd build
-   cmake .. -DCMAKE_BUILD_TYPE="Release" -DSDL3_LIB=/path/to/SDL3 -DSDL3_IMAGE_LIB=/path/to/SDL3_image -DSDL3_MIXER_LIB=/path/to/SDL3_mixer -DSDL3_TTF_LIB=/path/to/SDL3_ttf
+   cmake .. -DCMAKE_BUILD_TYPE="Release" -DCMAKE_INSTALL_PREFIX="/path/to/MyEngine" -DSDL3_LIB=/path/to/SDL3 -DSDL3_IMAGE_LIB=/path/to/SDL3_image -DSDL3_MIXER_LIB=/path/to/SDL3_mixer -DSDL3_TTF_LIB=/path/to/SDL3_ttf
    ```
    
    > ❗ 注意：
    > 
-   > 需要替换 `SDL3_LIB`, `SDL3_IMAGE_LIB`, `SDL3_TTF_LIB`, `SDL3_MIXER_LIB` 的共享库路径。
+   > 需要替换 `CMAKE_INSTALL_PREFIX`, `SDL3_LIB`, `SDL3_IMAGE_LIB`, `SDL3_TTF_LIB`, `SDL3_MIXER_LIB` 的静态库路径。
 
 3. 编译并安装项目
 
@@ -65,17 +65,17 @@ MyEngine 是一个轻量级但功能强大的 2D 图形框架，构建于 SDL3 �
     set(CMAKE_CXX_STANDARD 20)
     
     # Need to set these paths before cmake configuration.
-    set(SDL_DIR       "/path/to/SDL")
-    set(SDL_IMAGE_DIR "/path/to/SDL3_image")
-    set(SDL_TTF_DIR   "/path/to/SDL3_ttf")
-    set(SDL_MIXER_DIR "/path/to/SDL3_mixer")
+    set(SDL3_DIR       "/path/to/SDL")
+    set(SDL3_IMAGE_DIR "/path/to/SDL3_image")
+    set(SDL3_TTF_DIR   "/path/to/SDL3_ttf")
+    set(SDL3_MIXER_DIR "/path/to/SDL3_mixer")
     set(MYENGINE_DIR      "/path/to/MyEngine")
     set(CMAKE_INCLUDE_CURRENT_DIR ON)
     
-    list(APPEND CMAKE_PREFIX_PATH ${SDL_DIR})
-    list(APPEND CMAKE_PREFIX_PATH ${SDL_IMAGE_DIR})
-    list(APPEND CMAKE_PREFIX_PATH ${SDL_TTF_DIR})
-    list(APPEND CMAKE_PREFIX_PATH ${SDL_MIXER_DIR})
+    list(APPEND CMAKE_PREFIX_PATH ${SDL3_DIR})
+    list(APPEND CMAKE_PREFIX_PATH ${SDL3_IMAGE_DIR})
+    list(APPEND CMAKE_PREFIX_PATH ${SDL3_TTF_DIR})
+    list(APPEND CMAKE_PREFIX_PATH ${SDL3_MIXER_DIR})
     list(APPEND CMAKE_PREFIX_PATH ${MYENGINE_DIR})
     
     find_package(SDL3 REQUIRED)

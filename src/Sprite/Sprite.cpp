@@ -78,8 +78,8 @@ double MyEngine::Sprite::rotation() const {
     return _property->rotate_angle;
 }
 
-void MyEngine::Sprite::setOpacity(float opcacity) {
-    _property->color_alpha.a = static_cast<uint8_t>(255.f * opcacity);
+void MyEngine::Sprite::setOpacity(float opacity) {
+    _property->color_alpha.a = static_cast<uint8_t>(255.f * opacity);
 }
 
 float MyEngine::Sprite::opacity() const {

@@ -27,7 +27,7 @@ namespace MyEngine {
         void setRotation(double rotation);
         [[nodiscard]] double rotation() const;
 
-        void setOpacity(float opcacity);
+        void setOpacity(float opacity);
         [[nodiscard]] float opacity() const;
 
         void setColorAlpha(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
