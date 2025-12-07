@@ -7,11 +7,11 @@ namespace MyEngine {
     class Logger {
     public:
         enum LogLevel {
-            DEBUG,
-            INFO,
-            WARN,
-            ERROR,
-            FATAL
+            Debug,
+            Info,
+            Warn,
+            Error,
+            Fatal
         };
 
         Logger() = delete;
@@ -26,11 +26,11 @@ namespace MyEngine {
 
         ~Logger() = delete;
 
-        static void log(const std::string &message, LogLevel level = DEBUG) {
+        static void log(const std::string &message, LogLevel level = Debug) {
             _running_time = std::chrono::system_clock::now().time_since_epoch().count();
             if (level < _base_level) return;
             auto _real_time = (float) (_running_time - _started_time) / 1e9;
-            if (level >= WARN) {
+            if (level >= Warn) {
                 std::cerr << std::format("[{:.06f}] [{}] {}\n", _real_time, _logLevelToString(level), message);
             } else {
                 std::cout << std::format("[{:.06f}] [{}] {}\n", _real_time, _logLevelToString(level), message);
@@ -44,21 +44,21 @@ namespace MyEngine {
         }
 
         static std::string lastError() {
-            return (_last_log_level >= ERROR ? _last_log_info : "");
+            return (_last_log_level >= Error ? _last_log_info : "");
         }
 
     private:
         static std::string _logLevelToString(LogLevel level) {
             switch (level) {
-                case DEBUG:
+                case Debug:
                     return "DEBUG";
-                case INFO:
+                case Info:
                     return "INFO";
-                case WARN:
+                case Warn:
                     return "WARN";
-                case ERROR:
+                case Error:
                     return "ERROR";
-                case FATAL:
+                case Fatal:
                     return "FATAL";
                 default:
                     return "UNKNOWN";
@@ -72,8 +72,8 @@ namespace MyEngine {
         static uint64_t _running_time;
     };
 
-    inline Logger::LogLevel Logger::_base_level = Logger::INFO;
-    inline Logger::LogLevel Logger::_last_log_level = Logger::DEBUG;
+    inline Logger::LogLevel Logger::_base_level = Logger::Info;
+    inline Logger::LogLevel Logger::_last_log_level = Logger::Debug;
     inline uint64_t Logger::_started_time = std::chrono::system_clock::now().time_since_epoch().count();
     inline uint64_t Logger::_running_time = 0;
     inline std::string Logger::_last_log_info;

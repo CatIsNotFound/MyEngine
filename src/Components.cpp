@@ -11,7 +11,7 @@ namespace MyEngine {
             : _font_size(font_size){
         _font = TTF_OpenFont(font_path.c_str(), font_size);
         if (!_font) {
-            Logger::log(std::format("Can't load font from path '{}'.", font_path), Logger::ERROR);
+            Logger::log(std::format("Can't load font from path '{}'.", font_path), Logger::Error);
         }
         _font_is_loaded = true;
     }
@@ -99,7 +99,7 @@ namespace MyEngine {
     SDL_Surface* Font::toImage(const std::string& text) {
         SDL_Surface* surface;
         if (!_font_is_loaded) {
-            Logger::log("Font is not loaded! Did you forgot to load font?", Logger::ERROR);
+            Logger::log("Font is not loaded! Did you forgot to load font?", Logger::Error);
             return nullptr;
         }
         if (_font_outline) {
@@ -129,7 +129,7 @@ namespace MyEngine {
             surface = TTF_RenderText_Blended(_font, text.c_str(), 0, _font_color);
         }
         if (!surface) {
-            Logger::log(std::format("Can't drawEvent the current text!\nException: {}", SDL_GetError()), Logger::ERROR);
+            Logger::log(std::format("Can't drawEvent the current text!\nException: {}", SDL_GetError()), Logger::Error);
         }
         return surface;
     }
@@ -137,7 +137,7 @@ namespace MyEngine {
     SDL_Surface* Font::toImage(const std::string& text, const SDL_Color& backgrond_color) {
         SDL_Surface* surface = nullptr;
         if (!_font_is_loaded) {
-            Logger::log("Font is not loaded! Did you forget to load font?", Logger::ERROR);
+            Logger::log("Font is not loaded! Did you forget to load font?", Logger::Error);
             return nullptr;
         }
         if (_font_outline) {
@@ -167,7 +167,7 @@ namespace MyEngine {
             surface = TTF_RenderText_LCD(_font, text.c_str(), 0, _font_color, backgrond_color);
         }
         if (!surface) {
-            Logger::log(std::format("Can't drawEvent the current text!\nException: {}", SDL_GetError()), Logger::ERROR);
+            Logger::log(std::format("Can't drawEvent the current text!\nException: {}", SDL_GetError()), Logger::Error);
         }
         return surface;
     }
@@ -212,7 +212,7 @@ namespace MyEngine {
                     }
                 }
             }
-            Logger::log("FontDatabase: Get Font files from system!", Logger::DEBUG);
+            Logger::log("FontDatabase: Get Font files from system!", Logger::Debug);
             _is_loaded = true;
         }
         return _font_db;
@@ -254,7 +254,7 @@ namespace MyEngine {
     Texture::Texture(const std::string &path, Renderer *renderer) : _renderer(renderer), _texture(nullptr), _path(path) {
         _surface = IMG_Load(path.c_str());
         if (!_surface) {
-            Logger::log(std::format("The image path '{}' is not found!", path), Logger::ERROR);
+            Logger::log(std::format("The image path '{}' is not found!", path), Logger::Error);
             _property = std::make_unique<TextureProperty>();
             return;
         }
@@ -264,13 +264,13 @@ namespace MyEngine {
         _property->clip_mode = false;
         _property->color_alpha = RGBAColor::White;
         _property->setScale(1.0f);
-        Logger::log(std::format("Texture created from image path '{}'", path), Logger::DEBUG);
-        Logger::log(std::format("Texture size set to {}x{}", _surface->w, _surface->h), Logger::DEBUG);
+        Logger::log(std::format("Texture created from image path '{}'", path), Logger::Debug);
+        Logger::log(std::format("Texture size set to {}x{}", _surface->w, _surface->h), Logger::Debug);
     }
 
     Texture::Texture(SDL_Surface* surface, Renderer *renderer, bool deep_copy) : _renderer(renderer), _texture(nullptr) {
         if (!surface) {
-            Logger::log(std::format("The surface is not valid!\nException: {}", SDL_GetError()), Logger::ERROR);
+            Logger::log(std::format("The surface is not valid!\nException: {}", SDL_GetError()), Logger::Error);
             _property = std::make_unique<TextureProperty>();
             return;
         }
@@ -281,15 +281,15 @@ namespace MyEngine {
         _property->clip_mode = false;
         _property->color_alpha = RGBAColor::White;
         _property->setScale(1.0f);
-        Logger::log(std::format("Texture created from surface"), Logger::DEBUG);
-        Logger::log(std::format("Texture size set to {}x{}", _surface->w, _surface->h), Logger::DEBUG);
+        Logger::log(std::format("Texture created from surface"), Logger::Debug);
+        Logger::log(std::format("Texture size set to {}x{}", _surface->w, _surface->h), Logger::Debug);
     }
 
     Texture::Texture(Renderer* renderer, SDL_PixelFormat format, int width, int height, SDL_TextureAccess access)
         : _renderer(renderer), _surface(nullptr), _texture(nullptr) {
         _texture = SDL_CreateTexture(renderer->self(), format, access, width, height);
         if (!_texture) {
-            Logger::log(std::format("Created texture failed!\nException: {}", SDL_GetError()), Logger::ERROR);
+            Logger::log(std::format("Created texture failed!\nException: {}", SDL_GetError()), Logger::Error);
             _property = std::make_unique<TextureProperty>();
             return;
         }
@@ -298,8 +298,8 @@ namespace MyEngine {
         _property->setScale(1.0f);
         _property->clip_mode = false;
         _property->color_alpha = RGBAColor::White;
-        Logger::log(std::format("Texture created from custom"), Logger::DEBUG);
-        Logger::log(std::format("Texture size set to {}x{}", width, height), Logger::DEBUG);
+        Logger::log(std::format("Texture created from custom"), Logger::Debug);
+        Logger::log(std::format("Texture size set to {}x{}", width, height), Logger::Debug);
     }
 
     Texture::~Texture() {
@@ -319,7 +319,7 @@ namespace MyEngine {
         auto img = IMG_Load(path.c_str());
         _path = path;
         if (!img) {
-            Logger::log(std::format("The image path '{}' is not found!", path), Logger::ERROR);
+            Logger::log(std::format("The image path '{}' is not found!", path), Logger::Error);
             return false;
         }
         if (_texture) {
@@ -331,8 +331,8 @@ namespace MyEngine {
         _surface = img;
         _texture = SDL_CreateTextureFromSurface(_renderer->self(), _surface);
         _property->resize(_surface->w, _surface->h);
-        Logger::log(std::format("Texture image changed to '{}'", path), Logger::DEBUG);
-        Logger::log(std::format("Texture size updated to {}x{}", _surface->w, _surface->h), Logger::DEBUG);
+        Logger::log(std::format("Texture image changed to '{}'", path), Logger::Debug);
+        Logger::log(std::format("Texture size updated to {}x{}", _surface->w, _surface->h), Logger::Debug);
         return true;
     }
 
@@ -342,7 +342,7 @@ namespace MyEngine {
 
     bool Texture::setImageFromSurface(SDL_Surface *surface, bool deep_copy) {
         if (!surface) {
-            Logger::log(std::format("The surface is not valid!\nException: {}", SDL_GetError()), Logger::ERROR);
+            Logger::log(std::format("The surface is not valid!\nException: {}", SDL_GetError()), Logger::Error);
             _property = std::make_unique<TextureProperty>();
             return false;
         }
@@ -353,14 +353,14 @@ namespace MyEngine {
         _property->clip_mode = false;
         _property->color_alpha = RGBAColor::White;
         _property->setScale(1.0f);
-        Logger::log(std::format("Texture created from surface"), Logger::DEBUG);
-        Logger::log(std::format("Texture size set to {}x{}", _surface->w, _surface->h), Logger::DEBUG);
+        Logger::log(std::format("Texture created from surface"), Logger::Debug);
+        Logger::log(std::format("Texture size set to {}x{}", _surface->w, _surface->h), Logger::Debug);
         return true;
     }
 
     SDL_Texture* Texture::self() const {
         if (!_texture) {
-            Logger::log("Texture: The current texture is not created or not valid!", Logger::ERROR);
+            Logger::log("Texture: The current texture is not created or not valid!", Logger::Error);
         }
         return _texture;
     }
@@ -375,7 +375,7 @@ namespace MyEngine {
 
     void Texture::draw() const {
         if (!_texture) {
-            Logger::log("The texture is not created!", Logger::ERROR);
+            Logger::log("The texture is not created!", Logger::Error);
             return;
         }
         _renderer->drawTexture(_texture, _property.get());
@@ -425,7 +425,7 @@ namespace MyEngine {
             return _tiles_map[tiles_name].get();
         } else {
             Logger::log(std::format("TextureAtlas: Tiles '{}' is not in tiles map! "
-                        "Did you forget to use `TextureAtlas::setTiles()`?", tiles_name), Logger::ERROR);
+                        "Did you forget to use `TextureAtlas::setTiles()`?", tiles_name), Logger::Error);
             return nullptr;
         }
     }
@@ -435,7 +435,7 @@ namespace MyEngine {
             _current_tiles = tiles_name;
         } else {
             Logger::log(std::format("TextureAtlas: Tiles '{}' is not in tiles map! "
-                        "Did you forget to use `TextureAtlas::setTiles()`?", tiles_name), Logger::ERROR);
+                        "Did you forget to use `TextureAtlas::setTiles()`?", tiles_name), Logger::Error);
         }
     }
 
@@ -460,7 +460,7 @@ namespace MyEngine {
             render()->drawTexture(self(), _tiles_map.at(_current_tiles).get());
         } else {
             Logger::log(std::format("TextureAtlas: Tiles '{}' is not in tiles map! "
-                         "Did you forget to use `TextureAtlas::setTiles()`?", _current_tiles), Logger::ERROR);
+                         "Did you forget to use `TextureAtlas::setTiles()`?", _current_tiles), Logger::Error);
         }
     }
 
@@ -469,13 +469,13 @@ namespace MyEngine {
             render()->drawTexture(self(), _tiles_map.at(tiles_name).get());
         } else {
             Logger::log(std::format("TextureAtlas: Tiles '{}' is not in tiles map! "
-                         "Did you forget to use `TextureAtlas::setTiles()`?", tiles_name), Logger::ERROR);
+                         "Did you forget to use `TextureAtlas::setTiles()`?", tiles_name), Logger::Error);
         }
     }
 
     BGM::BGM(MIX_Mixer *mixer, const std::string &path) : _mixer(mixer), _path(path) {
         if (!_mixer) {
-            Logger::log("BGM: The specified mixer can not be null!", Logger::FATAL);
+            Logger::log("BGM: The specified mixer can not be null!", Logger::Fatal);
             Engine::throwFatalError();
         }
         _global_ev_id = IDGenerator::getNewGlobalEventID();
@@ -515,7 +515,7 @@ namespace MyEngine {
 
     bool BGM::play(int64_t start_position, bool loop, int64_t fade_in_duration) {
         if (_play_status < Loaded) {
-            Logger::log("BGM: Can't play current audio! Current audio is not valid!", Logger::ERROR);
+            Logger::log("BGM: Can't play current audio! Current audio is not valid!", Logger::Error);
             _play_status = Invalid;
             return false;
         }
@@ -528,7 +528,7 @@ namespace MyEngine {
         } else if (_play_status == Loaded) {
             if (!MIX_PlayTrack(_track, _prop_id)) {
                 Logger::log(std::format("BGM: Play audio failed! The file path '{}' is not valid! "
-                                        "Exception: {}", _path, SDL_GetError()), Logger::ERROR);
+                                        "Exception: {}", _path, SDL_GetError()), Logger::Error);
                 _play_status = Invalid;
                 return false;
             }
@@ -539,7 +539,7 @@ namespace MyEngine {
 
     void BGM::stop(int64_t fade_out_duration) {
         if (_play_status < Loaded) {
-            Logger::log("BGM: Can't stop current audio! Current audio is not valid!", Logger::ERROR);
+            Logger::log("BGM: Can't stop current audio! Current audio is not valid!", Logger::Error);
         }
         if (_play_status == FadingOut || _play_status == Loaded) return;
 
@@ -554,11 +554,11 @@ namespace MyEngine {
 
     void BGM::pause() {
         if (_play_status < Loaded) {
-            Logger::log("BGM: Can't pause current audio! Current status is not valid!", Logger::ERROR);
+            Logger::log("BGM: Can't pause current audio! Current status is not valid!", Logger::Error);
             return;
         }
         if (_play_status != Playing) {
-            Logger::log("BGM: Current audio is not playing!", Logger::WARN);
+            Logger::log("BGM: Current audio is not playing!", Logger::Warn);
             return;
         }
         MIX_PauseTrack(_track);
@@ -567,17 +567,17 @@ namespace MyEngine {
 
     bool BGM::resume() {
         if (_play_status < Loaded) {
-            Logger::log("BGM: Can't resume current audio! Current status is not valid!", Logger::ERROR);
+            Logger::log("BGM: Can't resume current audio! Current status is not valid!", Logger::Error);
             return false;
         }
         if (_play_status != Paused) {
-            Logger::log("BGM: Current audio is already playing!", Logger::WARN);
+            Logger::log("BGM: Current audio is already playing!", Logger::Warn);
             return false;
         }
         if (position() >= duration()) playAt(0);
         auto _ret = MIX_ResumeTrack(_track);
         if (!_ret) {
-            Logger::log("BGM: Can't resume current audio! Current status is not valid!", Logger::ERROR);
+            Logger::log("BGM: Can't resume current audio! Current status is not valid!", Logger::Error);
             return false;
         }
         _play_status = Playing;
@@ -589,7 +589,7 @@ namespace MyEngine {
         auto new_pos = std::min(pos + ms, duration());
         if (new_pos < 0) new_pos = 0;
         if (!MIX_SetTrackPlaybackPosition(_track, MIX_TrackMSToFrames(_track, new_pos))) {
-            Logger::log("BGM: Failed to set playback position!", Logger::WARN);
+            Logger::log("BGM: Failed to set playback position!", Logger::Warn);
             return false;
         }
         return true;
@@ -600,7 +600,7 @@ namespace MyEngine {
         auto new_pos = std::min(pos - ms, duration());
         if (new_pos < 0) new_pos = 0;
         if (!MIX_SetTrackPlaybackPosition(_track, MIX_TrackMSToFrames(_track, new_pos))) {
-            Logger::log("BGM: Failed to set playback position!", Logger::WARN);
+            Logger::log("BGM: Failed to set playback position!", Logger::Warn);
             return false;
         }
         return true;
@@ -610,7 +610,7 @@ namespace MyEngine {
         auto new_pos = std::min(position, duration());
         if (new_pos < 0) new_pos = 0;
         if (!MIX_SetTrackPlaybackPosition(_track, MIX_TrackMSToFrames(_track, new_pos))) {
-            Logger::log("BGM: Failed to set playback position!", Logger::WARN);
+            Logger::log("BGM: Failed to set playback position!", Logger::Warn);
             return false;
         }
         return true;
@@ -618,7 +618,7 @@ namespace MyEngine {
 
     int64_t BGM::position() const {
         if (_play_status < Loaded) {
-            Logger::log("BGM: Can't pause current audio! Current audio is not valid!", Logger::ERROR);
+            Logger::log("BGM: Can't pause current audio! Current audio is not valid!", Logger::Error);
             return 0;
         }
         return MIX_TrackFramesToMS(_track, MIX_GetTrackPlaybackPosition(_track));
@@ -626,7 +626,7 @@ namespace MyEngine {
 
     int64_t BGM::duration() const {
         if (_play_status < Loaded) {
-            Logger::log("BGM: Can't pause current audio! Current audio is not valid!", Logger::ERROR);
+            Logger::log("BGM: Can't pause current audio! Current audio is not valid!", Logger::Error);
             return 0;
         }
         return MIX_TrackFramesToMS(_track, MIX_GetAudioDuration(_audio));
@@ -681,7 +681,7 @@ namespace MyEngine {
     bool BGM::set3DPosition(float x, float y, float z) {
         _mix_3d = { .x = x, .y = y, .z = z };
         if (!MIX_SetTrack3DPosition(_track, &_mix_3d)) {
-            Logger::log(std::format("BGM::set3DPosition: Failed to set 3D position! Exception: {}", SDL_GetError()), Logger::WARN);
+            Logger::log(std::format("BGM::set3DPosition: Failed to set 3D position! Exception: {}", SDL_GetError()), Logger::Warn);
             return false;
         }
         return true;
@@ -708,20 +708,20 @@ namespace MyEngine {
         _audio = MIX_LoadAudio(_mixer, _path.c_str(), false);
         if (!_audio) {
             Logger::log(std::format("BGM: The specified file path '{}' is not valid! Exception: {}",
-                                    _path, SDL_GetError()), Logger::ERROR);
+                                    _path, SDL_GetError()), Logger::Error);
             _play_status = Invalid;
             return;
         }
         _track = MIX_CreateTrack(_mixer);
         if (!_track) {
             Logger::log(std::format("BGM: Create audio track failed! Exception: {}"
-                    , SDL_GetError()), Logger::ERROR);
+                    , SDL_GetError()), Logger::Error);
             _play_status = Invalid;
             return;
         }
         if (!MIX_SetTrackAudio(_track, _audio)) {
             Logger::log(std::format("BGM: The specified file path '{}' can not set as audio track! Exception: {}",
-                                    _path, SDL_GetError()), Logger::ERROR);
+                                    _path, SDL_GetError()), Logger::Error);
             _play_status = Invalid;
             return;
         }
@@ -741,7 +741,7 @@ namespace MyEngine {
 
     SFX::SFX(MIX_Mixer *mixer, const std::string &path) : _mixer(mixer), _path(path) {
         if (!_mixer) {
-            Logger::log("BGM: The specified mixer can not be null!", Logger::FATAL);
+            Logger::log("BGM: The specified mixer can not be null!", Logger::Fatal);
             Engine::throwFatalError();
         }
         load();
@@ -765,7 +765,7 @@ namespace MyEngine {
 
     bool SFX::play(bool loop, int64_t fade_in_duration) {
         if (!_is_load) {
-            Logger::log("BGM: Can't play current audio! Current audio is not valid!", Logger::ERROR);
+            Logger::log("BGM: Can't play current audio! Current audio is not valid!", Logger::Error);
             _is_playing = false;
             return false;
         }
@@ -774,7 +774,7 @@ namespace MyEngine {
         SDL_SetNumberProperty(_prop_id, MIX_PROP_PLAY_FADE_IN_MILLISECONDS_NUMBER, fade_in_duration);
         if (!MIX_PlayTrack(_track, _prop_id)) {
             Logger::log(std::format("BGM: Play audio failed! The file path '{}' is not valid! "
-                                    "Exception: {}", _path, SDL_GetError()), Logger::ERROR);
+                                    "Exception: {}", _path, SDL_GetError()), Logger::Error);
             return false;
         }
         return true;
@@ -782,7 +782,7 @@ namespace MyEngine {
 
     void SFX::stop(int64_t fade_out_duration) {
         if (!_is_load) {
-            Logger::log("BGM: Can't stop current audio! Current audio is not valid!", Logger::ERROR);
+            Logger::log("BGM: Can't stop current audio! Current audio is not valid!", Logger::Error);
         }
         auto ms = (fade_out_duration > 0 ? MIX_TrackMSToFrames(_track, fade_out_duration) : 0);
         MIX_StopTrack(_track, ms);
@@ -791,7 +791,7 @@ namespace MyEngine {
 
     int64_t SFX::position() const {
         if (!_is_load) {
-            Logger::log("BGM: Can't pause current audio! Current audio is not valid!", Logger::ERROR);
+            Logger::log("BGM: Can't pause current audio! Current audio is not valid!", Logger::Error);
             return 0;
         }
         return MIX_TrackFramesToMS(_track, MIX_GetTrackPlaybackPosition(_track));
@@ -799,7 +799,7 @@ namespace MyEngine {
 
     int64_t SFX::duration() const {
         if (!_is_load) {
-            Logger::log("BGM: Can't pause current audio! Current audio is not valid!", Logger::ERROR);
+            Logger::log("BGM: Can't pause current audio! Current audio is not valid!", Logger::Error);
             return 0;
         }
         return MIX_TrackFramesToMS(_track, MIX_GetAudioDuration(_audio));
@@ -839,7 +839,7 @@ namespace MyEngine {
     bool SFX::set3DPosition(float x, float y, float z) {
         _mix_3d = { .x = x, .y = y, .z = z };
         if (!MIX_SetTrack3DPosition(_track, &_mix_3d)) {
-            Logger::log(std::format("BGM::set3DPosition: Failed to set 3D position! Exception: {}", SDL_GetError()), Logger::WARN);
+            Logger::log(std::format("BGM::set3DPosition: Failed to set 3D position! Exception: {}", SDL_GetError()), Logger::Warn);
             return false;
         }
         return true;
@@ -866,20 +866,20 @@ namespace MyEngine {
         _audio = MIX_LoadAudio(_mixer, _path.c_str(), (size >= MAX_AUDIO_FILE_SIZE));
         if (!_audio) {
             Logger::log(std::format("BGM: The specified file path '{}' is not valid! Exception: {}",
-                                    _path, SDL_GetError()), Logger::ERROR);
+                                    _path, SDL_GetError()), Logger::Error);
             _is_load = false;
             return;
         }
         _track = MIX_CreateTrack(_mixer);
         if (!_track) {
             Logger::log(std::format("BGM: Create audio track failed! Exception: {}"
-                    , SDL_GetError()), Logger::ERROR);
+                    , SDL_GetError()), Logger::Error);
             _is_load = false;
             return;
         }
         if (!MIX_SetTrackAudio(_track, _audio)) {
             Logger::log(std::format("BGM: The specified file path '{}' can not set as audio track! Exception: {}",
-                                    _path, SDL_GetError()), Logger::ERROR);
+                                    _path, SDL_GetError()), Logger::Error);
             _is_load = false;
             return;
         }

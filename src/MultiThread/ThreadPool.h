@@ -10,11 +10,11 @@ namespace MyEngine {
         explicit ThreadPool(uint32_t max_waiting, uint32_t max_running = std::thread::hardware_concurrency())
             : _nums_of_threads(max_running), _max_threads_count(max_waiting), _running(true) {
             if (!max_running || max_running > std::thread::hardware_concurrency()) {
-                Logger::log("ThreadPool: Argument error: Maximum threads count argument is invalid!", Logger::FATAL);
+                Logger::log("ThreadPool: Argument error: Maximum threads count argument is invalid!", Logger::Fatal);
                 throw std::invalid_argument("ThreadPool: Argument error: Maximum threads count argument is invalid!");
             }
             if (!max_waiting) {
-                Logger::log("ThreadPool: Argument error: Maximum waiting threads count argument is invalid!!", Logger::FATAL);
+                Logger::log("ThreadPool: Argument error: Maximum waiting threads count argument is invalid!!", Logger::Fatal);
                 throw std::invalid_argument("ThreadPool: Argument error: Maximum waiting threads count argument is invalid!!");
             }
             while (max_running--) {
@@ -35,7 +35,7 @@ namespace MyEngine {
                             this_task();
                         } catch (const std::exception& e) {
                             Logger::log(std::format("ThreadPool: Task failed! "
-                                                    "Exception: {}", e.what()), Logger::ERROR);
+                                                    "Exception: {}", e.what()), Logger::Error);
                         }
                         lock.lock();
                         _running_thread_count -= 1;
@@ -116,7 +116,7 @@ namespace MyEngine {
                             this_task();
                         } catch (const std::exception& e) {
                             Logger::log(std::format("ThreadPool: Task failed! "
-                                                    "Exception: {}", e.what()), Logger::ERROR);
+                                                    "Exception: {}", e.what()), Logger::Error);
                         }
                         lock.lock();
                         _running_thread_count -= 1;

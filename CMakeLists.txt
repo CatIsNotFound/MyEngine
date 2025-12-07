@@ -80,6 +80,7 @@ if (BUILD_SHARED_LIBS_ONLY)
             src/Sprite/Sprite.h
             src/Sprite/SpriteSheet.cpp
             src/Sprite/SpriteSheet.h
+            src/Utils/SysMemory.h
     )
 else ()
     add_library(${PROJECT_NAME} STATIC
@@ -113,6 +114,7 @@ else ()
             src/Sprite/Sprite.h
             src/Sprite/SpriteSheet.cpp
             src/Sprite/SpriteSheet.h
+            src/Utils/SysMemory.h
     )
 endif ()
 

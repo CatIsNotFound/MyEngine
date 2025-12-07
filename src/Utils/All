@@ -7,5 +7,6 @@
 #include "Random.h"
 #include "FileSystem.h"
 #include "RGBAColor.h"
+#include "SysMemory.h"
 
 #endif //MYENGINE_UTILS_H

@@ -123,7 +123,7 @@ namespace MyEngine {
                 std::chrono::locate_zone(tz);
                 timezone = tz;
             } catch (const std::runtime_error& e) {
-                Logger::log(std::format("DateTime: Can't set invalid timezone: {}", tz), Logger::ERROR);
+                Logger::log(std::format("DateTime: Can't set invalid timezone: {}", tz), Logger::Error);
                 return false;
             }
             return true;
@@ -170,7 +170,7 @@ namespace MyEngine {
             year_month_day ymd(y, m, d);
             auto days = sys_days{ymd};
             if (!ymd.ok()) {
-                Logger::log("DateTime: Current date is not valid!", Logger::ERROR);
+                Logger::log("DateTime: Current date is not valid!", Logger::Error);
                 return 0;
             }
             auto time = hours(datetime.hour) + minutes(datetime.minute) + seconds(datetime.second);
@@ -202,7 +202,7 @@ namespace MyEngine {
             day d(datetime.day);
             year_month_day ymd(y, m, d);
             if (!ymd.ok()) {
-                Logger::log("DateTime: Current date is not valid!", Logger::ERROR);
+                Logger::log("DateTime: Current date is not valid!", Logger::Error);
                 return 0;
             }
             auto t_sys = sys_days{ymd};

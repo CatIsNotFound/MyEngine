@@ -1308,13 +1308,13 @@ namespace MyEngine {
                 _count = segment;
                 update();
             }
-            const Vector2& position() const { return _position; }
-            uint16_t size() const { return _size; }
-            const SDL_Color& color() const { return _color; }
-            const SDL_Vertex* vertices() const { return _vertices.data(); }
-            const int* indices() const { return _indices.data(); }
-            size_t verticesCount() const { return _vertices.size(); }
-            size_t indicesCount() const { return _indices.size(); }
+            [[nodiscard]] const Vector2& position() const { return _position; }
+            [[nodiscard]] uint16_t size() const { return _size; }
+            [[nodiscard]] const SDL_Color& color() const { return _color; }
+            [[nodiscard]] const SDL_Vertex* vertices() const { return _vertices.data(); }
+            [[nodiscard]] const int* indices() const { return _indices.data(); }
+            [[nodiscard]] size_t verticesCount() const { return _vertices.size(); }
+            [[nodiscard]] size_t indicesCount() const { return _indices.size(); }
         };
 
         class Line {
@@ -1327,17 +1327,17 @@ namespace MyEngine {
 
             const int *indices() { return _indices.data(); }
             const SDL_Vertex *vertices() { return _vertices.data(); }
-            size_t indicesCount() const { return _indices.size(); }
-            size_t vertexCount() const { return _vertices.size(); }
-            const Vector2& startPosition() const { return _start_position; }
-            const Vector2& endPosition() const { return _end_position; }
+            [[nodiscard]] size_t indicesCount() const { return _indices.size(); }
+            [[nodiscard]] size_t vertexCount() const { return _vertices.size(); }
+            [[nodiscard]] const Vector2& startPosition() const { return _start_position; }
+            [[nodiscard]] const Vector2& endPosition() const { return _end_position; }
             void setStartPosition(const Vector2& pos) { _start_position.reset(pos.x, pos.y); update(); }
             void setStartPosition(float x, float y) { _start_position.reset(x, y); update(); }
             void setEndPosition(const Vector2& pos) { _end_position.reset(pos.x, pos.y); update(); }
             void setEndPosition(float x, float y) { _end_position.reset(x, y); update(); }
-            uint8_t size() const { return _size; }
+            [[nodiscard]] uint8_t size() const { return _size; }
             void setSize(uint8_t new_size) { _size = new_size; update(); }
-            const SDL_Color& color() const { return _color; }
+            [[nodiscard]] const SDL_Color& color() const { return _color; }
             void setColor(const SDL_Color& color) { _color = color; update(); }
             void reset(float sx, float sy, float ex, float ey, uint8_t size, const SDL_Color &color) {
                 _start_position.reset(sx, sy);
@@ -1512,7 +1512,7 @@ namespace MyEngine {
                 _background_color = color;
                 updateTri();
             }
-            const Vector2& position(uint8_t index = 0) const {
+            [[nodiscard]] const Vector2& position(uint8_t index = 0) const {
                 switch (index % 3) {
                     case 0:
                         return _p1;
@@ -1523,9 +1523,9 @@ namespace MyEngine {
                 }
                 return _p1;
             }
-            uint16_t borderSize() const { return _border_size; }
-            const SDL_Color& borderColor() const { return _border_color; }
-            const SDL_Color& backgroundColor() const { return _background_color; }
+            [[nodiscard]] uint16_t borderSize() const { return _border_size; }
+            [[nodiscard]] const SDL_Color& borderColor() const { return _border_color; }
+            [[nodiscard]] const SDL_Color& backgroundColor() const { return _background_color; }
             const int *indices() { return _indices.data(); }
             const SDL_Vertex *vertices() { return _vertices.data(); }
             const int *borderIndices1() { return _bdi1.data(); }
@@ -1534,10 +1534,10 @@ namespace MyEngine {
             const SDL_Vertex *borderVertices1() { return _bd1.data(); }
             const SDL_Vertex *borderVertices2() { return _bd2.data(); }
             const SDL_Vertex *borderVertices3() { return _bd3.data(); }
-            size_t borderIndicesCount() const { return _bdi1.size(); }
-            size_t borderVerticesCount() const { return _bd1.size(); }
-            size_t indicesCount() const { return _indices.size(); }
-            size_t vertexCount() const { return _vertices.size(); }
+            [[nodiscard]] size_t borderIndicesCount() const { return _bdi1.size(); }
+            [[nodiscard]] size_t borderVerticesCount() const { return _bd1.size(); }
+            [[nodiscard]] size_t indicesCount() const { return _indices.size(); }
+            [[nodiscard]] size_t vertexCount() const { return _vertices.size(); }
         private:
             void updateTri() {
                 MyEngine::Algorithm::calcTriangle(_p1, _p2, _p3, _background_color, _vertices, _indices);
@@ -1668,22 +1668,25 @@ namespace MyEngine {
                                                  _border_vertices, _border_indices);
             }
 
-            const Vector2& centerPosition() const { return _center_point; }
-            const Size& radius() const { return _radius; }
-            uint16_t borderSize() const { return _border_size; }
-            const SDL_Color& borderColor() const { return _border_color; }
-            const SDL_Color& backgroundColor() const { return _background_color; }
-            float rotateDegree() const { return _degree; }
-            const int *indices() const { return _indices.data(); }
-            const SDL_Vertex *vertices() const { return _vertices.data(); }
-            size_t indicesCount() const { return _indices.size(); }
-            size_t vertexCount() const { return _vertices.size(); }
-            const int *borderIndices() const { return _border_indices.data(); }
-            const SDL_Vertex *borderVertices() const { return _border_vertices.data(); }
-            size_t borderIndicesCount() const { return _border_indices.size(); }
-            size_t borderVerticesCount() const { return _border_vertices.size(); }
+            [[nodiscard]] const Vector2& centerPosition() const { return _center_point; }
+            [[nodiscard]] const Size& radius() const { return _radius; }
+            [[nodiscard]] uint16_t borderSize() const { return _border_size; }
+            [[nodiscard]] const SDL_Color& borderColor() const { return _border_color; }
+            [[nodiscard]] const SDL_Color& backgroundColor() const { return _background_color; }
+            [[nodiscard]] float rotateDegree() const { return _degree; }
+            [[nodiscard]] const int *indices() const { return _indices.data(); }
+            [[nodiscard]] const SDL_Vertex *vertices() const { return _vertices.data(); }
+            [[nodiscard]] size_t indicesCount() const { return _indices.size(); }
+            [[nodiscard]] size_t vertexCount() const { return _vertices.size(); }
+            [[nodiscard]] const int *borderIndices() const { return _border_indices.data(); }
+            [[nodiscard]] const SDL_Vertex *borderVertices() const { return _border_vertices.data(); }
+            [[nodiscard]] size_t borderIndicesCount() const { return _border_indices.size(); }
+            [[nodiscard]] size_t borderVerticesCount() const { return _border_vertices.size(); }
 
         private:
+            void update() {
+
+            }
             Vector2 _center_point;
             Size _radius;
             uint16_t _border_size;

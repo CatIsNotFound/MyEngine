@@ -8,7 +8,7 @@ namespace MyEngine {
             _main_path = std::filesystem::absolute(main_directory).string();
             return true;
         }
-        Logger::log(std::format("FileSystem: Path '{}' is not found!", main_directory), Logger::ERROR);
+        Logger::log(std::format("FileSystem: Path '{}' is not found!", main_directory), Logger::Error);
         return false;
     }
 
@@ -39,7 +39,7 @@ namespace MyEngine {
         if (std::filesystem::is_directory(temp)) {
             if (ignore_error) {
                 Logger::log(std::format("FileSystem: Directory '{}' is exist!", temp.string()),
-                            Logger::ERROR);
+                            Logger::Error);
             }
             return false;
         } else {
@@ -83,12 +83,12 @@ namespace MyEngine {
                 if (rm_paths.empty()) {
                     if (ignore_error) {
                         Logger::log(std::format("FileSystem: Directory '{}' can not be removed!", temp.string()),
-                                    Logger::ERROR);
+                                    Logger::Error);
                     }
                     return false;
                 }
                 for (int64_t idx = (int64_t)(rm_paths.size()) - 1; idx >= 0; idx--) {
-                    Logger::log(std::format("Delete: {}", rm_paths[idx]), Logger::ERROR);
+                    Logger::log(std::format("Delete: {}", rm_paths[idx]), Logger::Error);
                     std::filesystem::remove(rm_paths[idx]);
                 }
             } else {
@@ -98,13 +98,13 @@ namespace MyEngine {
                     } catch (const std::exception &e) {
                         if (!ignore_error)
                             Logger::log(std::format("FileSystem: Directory '{}' can not be removed!\n"
-                                         "Exception: {}", temp.string(), e.what()), Logger::ERROR);
+                                         "Exception: {}", temp.string(), e.what()), Logger::Error);
                         return false;
                     }
                 } else {
                     if (!ignore_error) { 
                         Logger::log(std::format("FileSystem: Directory '{}' is not exist!", temp.string()),
-                                    Logger::ERROR);
+                                    Logger::Error);
                     }
                     return false;
                 }
@@ -124,7 +124,7 @@ namespace MyEngine {
         std::ofstream file(temp.string());
         if (!file.is_open()) {
             if (!ignore_error) Logger::log(std::format("FileSystem: Can't create file '{}'!", temp.string()),
-                                           Logger::ERROR);
+                                           Logger::Error);
         }
         file << "";
         file.close();
@@ -138,7 +138,7 @@ namespace MyEngine {
             return true;
         }
         if (!ignore_error) Logger::log(std::format("FileSystem: Can't remove the file '{}'", temp.string()),
-                                       Logger::ERROR);
+                                       Logger::Error);
         return false;
     }
 
@@ -147,7 +147,7 @@ namespace MyEngine {
         std::ofstream file(temp.string(),((append_mode ? (std::ios::in | std::ios::app) : std::ios::in)));
         if (!file.is_open()) {
             if (!ignore_error) Logger::log(std::format("FileSystem: Can't create file '{}'!", temp.string()),
-                                           Logger::ERROR);
+                                           Logger::Error);
             return false;
         }
         file << context;
@@ -160,7 +160,7 @@ namespace MyEngine {
         std::ifstream file(temp.string(), std::ios::in);
         if (!file.is_open()) {
             if (!ignore_error) Logger::log(std::format("FileSystem: File '{}' is not found!", temp.string()),
-                                           Logger::ERROR);
+                                           Logger::Error);
             if (ok) *ok = false;
             return "";
         }
@@ -176,7 +176,7 @@ namespace MyEngine {
             }
         } catch (const std::exception &exception) {
             Logger::log(std::format("FileSystem: Read file '{}' failed at line {}!",
-                                    temp.string(), line), Logger::ERROR);
+                                    temp.string(), line), Logger::Error);
         }
         file.close();
         if (ok) *ok = true;
@@ -190,7 +190,7 @@ namespace MyEngine {
                                            std::ios::in | std::ios::binary)));
         if (!file.is_open()) {
             if (!ignore_error) Logger::log(std::format("FileSystem: Can't create file '{}'!",
-                                                       temp.string()), Logger::ERROR);
+                                                       temp.string()), Logger::Error);
             return false;
         }
         if (how2WriteFile) how2WriteFile(file);
@@ -205,7 +205,7 @@ namespace MyEngine {
                                            std::ios::in | std::ios::binary)));
         if (!file.is_open()) {
             if (!ignore_error) Logger::log(std::format("FileSystem: Can't create file '{}'!",
-                                                       temp.string()), Logger::ERROR);
+                                                       temp.string()), Logger::Error);
             return false;
         }
         for (auto& bin : binaries) {
@@ -221,7 +221,7 @@ namespace MyEngine {
         std::ifstream file(temp.string(), std::ios::in | std::ios::binary);
         if (!file.is_open()) {
             if (!ignore_error) Logger::log(std::format("FileSystem: File '{}' is not found!",
-                                                       temp.string()), Logger::ERROR);
+                                                       temp.string()), Logger::Error);
             return false;
         }
         if (how2ReadFile) how2ReadFile(file);
@@ -234,7 +234,7 @@ namespace MyEngine {
         std::ifstream file(temp.string(), std::ios::in | std::ios::binary);
         if (!file.is_open()) {
             if (!ignore_error) Logger::log(std::format("FileSystem: File '{}' is not found!",
-                                                       temp.string()), Logger::ERROR);
+                                                       temp.string()), Logger::Error);
             if (ok) *ok = false;
             return {};
         }
@@ -253,7 +253,7 @@ namespace MyEngine {
         if (std::filesystem::exists(file_path)) {
             return std::filesystem::file_size(file_path);
         } else {
-            Logger::log(std::format("FileSystem: Can't open file '{}'!", file_path), Logger::WARN);
+            Logger::log(std::format("FileSystem: Can't open file '{}'!", file_path), Logger::Warn);
             return 0;
         }
     }
@@ -334,7 +334,7 @@ namespace MyEngine {
         std::vector<std::string> out;
         if (!std::filesystem::is_directory(real_path)) {
             if (!ignore_error) Logger::log(std::format("FileSystem: Path '{}' is not found! ",
-                                                       real_path), Logger::ERROR);
+                                                       real_path), Logger::Error);
             return {};
         }
         for (const auto& file : std::filesystem::directory_iterator(real_path)) {
@@ -363,7 +363,7 @@ namespace MyEngine {
             } catch (const std::filesystem::filesystem_error& e) {
                 if (!ignore_error) {
                     Logger::log(std::format("FileSystem: Access file '{}' error! Exception: {}",
-                                            real_path, e.what()), Logger::ERROR);
+                                            real_path, e.what()), Logger::Error);
                 }
             }
         }
@@ -377,7 +377,7 @@ namespace MyEngine {
         std::vector<std::string> out;
         if (!std::filesystem::is_directory(real_path)) {
             if (!ignore_error) Logger::log(std::format("FileSystem: Path '{}' is not found! ",
-                                                       real_path), Logger::ERROR);
+                                                       real_path), Logger::Error);
             return {};
         }
         for (const auto& file : std::filesystem::recursive_directory_iterator(real_path)) {
@@ -405,7 +405,7 @@ namespace MyEngine {
             } catch (const std::filesystem::filesystem_error& e) {
                 if (!ignore_error) {
                     Logger::log(std::format("FileSystem: Access file '{}' error! Exception: {}",
-                                            real_path, e.what()), Logger::ERROR);
+                                            real_path, e.what()), Logger::Error);
                 }
             }
         }
@@ -418,7 +418,7 @@ namespace MyEngine {
         std::vector<std::string> out;
         if (!std::filesystem::is_directory(real_path)) {
             if (!ignore_error) Logger::log(std::format("FileSystem: Path '{}' is not found! ",
-                                                       real_path), Logger::ERROR);
+                                                       real_path), Logger::Error);
             return {};
         }
         for (const auto& file : std::filesystem::directory_iterator(real_path)) {
@@ -447,7 +447,7 @@ namespace MyEngine {
             } catch (const std::filesystem::filesystem_error& e) {
                 if (!ignore_error) {
                     Logger::log(std::format("FileSystem: Access file '{}' error! Exception: {}",
-                                            real_path, e.what()), Logger::ERROR);
+                                            real_path, e.what()), Logger::Error);
                 }
             }
         }

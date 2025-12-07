@@ -23,7 +23,7 @@ namespace MyEngine {
     void Timer::start(uint32_t count) {
         if (_enabled) {
             Logger::log(std::format("The timer ID {} is already started! Please stop the current timer at first!", _timer_id),
-                        Logger::ERROR);
+                        Logger::Error);
             return;
         }
         _enabled = true;
@@ -109,7 +109,7 @@ namespace MyEngine {
     void Trigger::start(uint32_t count) {
         if (_enabled) {
             Logger::log(std::format("Trigger ID {} is already started! "
-                                    "Please stop the current trigger at first", _trigger_id), Logger::ERROR);
+                                    "Please stop the current trigger at first", _trigger_id), Logger::Error);
             return;
         }
         _enabled = true;

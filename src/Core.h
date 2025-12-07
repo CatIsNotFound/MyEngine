@@ -41,6 +41,7 @@ namespace MyEngine {
         static void updateBackground(const SDL_Color& color) {
             _background_color = color;
         }
+        /// Command Mode for Renderer
         struct Command {
             explicit Command(SDL_Renderer* renderer) : renderer(renderer) {}
             virtual void exec() = 0;
@@ -127,7 +128,6 @@ namespace MyEngine {
             SDL_Color color;
             void exec() override;
         };
-        
         SDL_Renderer* _renderer{nullptr};
         Window* _window{nullptr};
         static SDL_Color _background_color;
@@ -264,10 +264,12 @@ namespace MyEngine {
         void setApplicationVersion(const std::string& app_version);
         void setApplicationVersion(std::string&& app_version);
 
-
         [[nodiscard]] const std::string& applicationID() const;
         [[nodiscard]] const std::string& applicationName() const;
         [[nodiscard]] const std::string& applicationVersion() const;
+
+        void setLimitMaxMemorySize(size_t memory_size);
+        [[nodiscard]] size_t limitMaxMemorySize() const;
 
         bool isRunning() const;
         static void exit(int code = 0);
@@ -303,6 +305,7 @@ namespace MyEngine {
         std::unordered_map<SDL_WindowID, std::unique_ptr<Window>> _window_list;
         std::function<void()> _clean_up_event;
         std::string _app_name, _app_id, _app_version;
+        size_t _used_mem_size{0}, _max_mem_size{0}, _warn_mem_size{0};
     };
 
     class TextSystem {

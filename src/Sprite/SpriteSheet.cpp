@@ -5,7 +5,7 @@
 MyEngine::SpriteSheet::SpriteSheet(MyEngine::TextureAtlas *textureAtlas) : _atlas(textureAtlas) {
     _global_prop = std::make_shared<TextureProperty>();
     if (!_atlas) {
-        Logger::log("SpriteSheet: The current texture atlas is not valid!", Logger::ERROR);
+        Logger::log("SpriteSheet: The current texture atlas is not valid!", Logger::Error);
         return;
     }
     _global_prop->resize(_atlas->property()->size());
@@ -31,7 +31,7 @@ MyEngine::SpriteSheet::SpriteSheet(const std::string &path, MyEngine::Renderer *
     _atlas = new TextureAtlas(path, renderer);
     _delete_later = true;
     if (!_atlas->isValid()) {
-        Logger::log("SpriteSheet: The current texture atlas is not valid!", Logger::ERROR);
+        Logger::log("SpriteSheet: The current texture atlas is not valid!", Logger::Error);
     }
     _global_prop = std::make_shared<TextureProperty>();
     _global_prop->resize(_atlas->property()->size());
@@ -156,7 +156,7 @@ void MyEngine::SpriteSheet::setTextureAtlas(MyEngine::TextureAtlas *textureAtlas
     _atlas = textureAtlas;
     if (!_atlas) {
         Logger::log("SpriteSheet: You have set 'nullptr' to current texture atlas! "
-                    "It will be thrown error while drawing.",Logger::WARN);
+                    "It will be thrown error while drawing.",Logger::Warn);
     }
 }
 
@@ -168,13 +168,13 @@ bool MyEngine::SpriteSheet::appendAnimation(const std::string &name, const Strin
                                         uint64_t duration_per_frame) {
     if (_animation_map.contains(name)) {
         Logger::log(std::format("SpriteSheet: The frame animation named {} already exists!", name),
-                    Logger::ERROR);
+                    Logger::Error);
         return false;
     }
     for (auto& sequence : sequence_list) {
         if (!_atlas->isTilesNameExist(sequence)) {
             Logger::log(std::format("SpriteSheet: The tiles named {} is not in current texture atlas!",
-                                    sequence), Logger::ERROR);
+                                    sequence), Logger::Error);
             return false;
         }
     }
@@ -184,12 +184,12 @@ bool MyEngine::SpriteSheet::appendAnimation(const std::string &name, const Strin
 
 bool MyEngine::SpriteSheet::removeAnimation(const std::string &name) {
     if (!_animation_map.contains(name)) {
-        Logger::log(std::format("SpriteSheet: The animation named {} is not exist!", name), Logger::ERROR);
+        Logger::log(std::format("SpriteSheet: The animation named {} is not exist!", name), Logger::Error);
         return false;
     }
     if (_cur_ani_name == name) {
         Logger::log(std::format("SpriteSheet: Can not remove current animation! "
-                    "Please use `SpriteSheet::setCurrentAnimation()` to instead at first!", name), Logger::ERROR);
+                    "Please use `SpriteSheet::setCurrentAnimation()` to instead at first!", name), Logger::Error);
         return false;
     }
     _animation_map.erase(name);
@@ -199,7 +199,7 @@ bool MyEngine::SpriteSheet::removeAnimation(const std::string &name) {
 StringList MyEngine::SpriteSheet::sequenceListFromAnimation(const std::string &name) {
     StringList out;
     if (!_animation_map.contains(name)) {
-        Logger::log(std::format("SpriteSheet: The animation named {} is not exist!", name), Logger::ERROR);
+        Logger::log(std::format("SpriteSheet: The animation named {} is not exist!", name), Logger::Error);
         return out;
     }
     for (auto& a : _animation_map.at(name).sequence_list) {
@@ -222,7 +222,7 @@ StringList MyEngine::SpriteSheet::animationList() const {
 
 bool MyEngine::SpriteSheet::setDurationPerFrame(const std::string &name, uint64_t ms) {
     if (!_animation_map.contains(name)) {
-        Logger::log(std::format("SpriteSheet: The animation named {} is not exist!", name), Logger::ERROR);
+        Logger::log(std::format("SpriteSheet: The animation named {} is not exist!", name), Logger::Error);
         return false;
     }
     _animation_map.at(name).duration_per_frame = ms;
@@ -231,7 +231,7 @@ bool MyEngine::SpriteSheet::setDurationPerFrame(const std::string &name, uint64_
 
 uint64_t MyEngine::SpriteSheet::durationPerFrameFromAnimation(const std::string &name) {
     if (!_animation_map.contains(name)) {
-        Logger::log(std::format("SpriteSheet: The animation named {} is not exist!", name), Logger::ERROR);
+        Logger::log(std::format("SpriteSheet: The animation named {} is not exist!", name), Logger::Error);
         return false;
     }
     return _animation_map.at(name).duration_per_frame;
@@ -239,7 +239,7 @@ uint64_t MyEngine::SpriteSheet::durationPerFrameFromAnimation(const std::string 
 
 bool MyEngine::SpriteSheet::setCurrentAnimation(const std::string &name) {
     if (!_animation_map.contains(name)) {
-        Logger::log(std::format("SpriteSheet: The animation named {} is not exist!", name), Logger::ERROR);
+        Logger::log(std::format("SpriteSheet: The animation named {} is not exist!", name), Logger::Error);
         return false;
     }
     _cur_ani_name = name;
@@ -255,14 +255,14 @@ void MyEngine::SpriteSheet::draw() {
         Logger::log(std::format("SpriteSheet: Renderer failed! "
                                 "The animation named '{}' is not exist! "
                                 "Did you forget to use `SpriteSheet::setCurrentAnimation()`?",
-                                _cur_ani_name), Logger::FATAL);
+                                _cur_ani_name), Logger::Fatal);
         Engine::throwFatalError();
     }
     auto& frame_name = _animation_map.at(_cur_ani_name).sequence_list[_cur_frame];
     if (!_atlas->isTilesNameExist(frame_name)) {
         Logger::log(std::format("SpriteSheet: Renderer failed! "
                                 "The animation named '{}' of frame '{}' is not valid! ",
-                                _cur_ani_name, frame_name), Logger::FATAL);
+                                _cur_ani_name, frame_name), Logger::Fatal);
         Engine::throwFatalError();
     }
     _atlas->draw(frame_name);

@@ -10,7 +10,7 @@ MyEngine::Sprite::Sprite(const std::string &path, MyEngine::Renderer *renderer) 
     _texture = new Texture(path, renderer);
     _delete_later = true;
     if (!_texture->isValid()) {
-        Logger::log("Sprite: Current texture is not valid!", Logger::ERROR);
+        Logger::log("Sprite: Current texture is not valid!", Logger::Error);
     }
 }
 
@@ -28,7 +28,7 @@ void MyEngine::Sprite::setTexture(MyEngine::Texture *new_texture) {
     _texture = new_texture;
     if (!new_texture) {
         Logger::log("Sprite: You have set 'nullptr' to current texture! It will be thrown error while drawing.",
-                    Logger::WARN);
+                    Logger::Warn);
         return;
     }
     _property->reset(*new_texture->property());
@@ -122,7 +122,7 @@ SDL_FlipMode MyEngine::Sprite::flipMode() const {
 void MyEngine::Sprite::draw() const {
     if (!_visible) return;
     if (!_texture) {
-        Logger::log("Sprite: Current sprite is not valid! Maybe the texture is 'nullptr'?", Logger::FATAL);
+        Logger::log("Sprite: Current sprite is not valid! Maybe the texture is 'nullptr'?", Logger::Fatal);
         Engine::throwFatalError();
         return;
     }

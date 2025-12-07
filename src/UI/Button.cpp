@@ -42,7 +42,7 @@ namespace MyEngine {
         if (_is_valid) {
             TextSystem::global()->setText(_id, text);
         } else {
-            Logger::log("Button: Current button have not set the font!", Logger::ERROR);
+            Logger::log("Button: Current button have not set the font!", Logger::Error);
         }
     }
 
@@ -189,12 +189,12 @@ namespace MyEngine {
     void TextureButton::setTextures(Texture *normal, Texture *active, Texture *pressed,
                                     Texture *invalid, Texture *checked) {
         if (!normal) {
-            Logger::log("TextureButton: The specified texture is not valid!", Logger::FATAL);
+            Logger::log("TextureButton: The specified texture is not valid!", Logger::Fatal);
             Engine::throwFatalError();
         }
         if (!normal->isValid()) {
             Logger::log(std::format("TextureButton: The specified texture path '{}' is not valid!",
-                                    normal->imagePath()), Logger::FATAL);
+                                    normal->imagePath()), Logger::Fatal);
             Engine::throwFatalError();
         }
         if (!_textures) {
@@ -240,7 +240,7 @@ namespace MyEngine {
         if (_font_loaded) {
             TextSystem::global()->setText(_id, text);
         } else {
-            Logger::log("Button: Current button have not set the font!", Logger::ERROR);
+            Logger::log("Button: Current button have not set the font!", Logger::Error);
         }
     }
 

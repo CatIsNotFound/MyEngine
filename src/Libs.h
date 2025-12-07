@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <format>
 #include <string>
 #include <variant>

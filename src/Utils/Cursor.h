@@ -99,7 +99,7 @@ namespace MyEngine {
          */
         Vector2 globalPosition() const {
             if (!SDL_HasMouse()) {
-                Logger::log("Cursor: No mouse device!", Logger::WARN);
+                Logger::log("Cursor: No mouse device!", Logger::Warn);
             }
             Vector2 _pos;
             SDL_GetGlobalMouseState(&_pos.x, &_pos.y);
@@ -113,7 +113,7 @@ namespace MyEngine {
          */
         Vector2 position() const {
             if (!SDL_HasMouse()) {
-                Logger::log("Cursor: No mouse device!", Logger::WARN);
+                Logger::log("Cursor: No mouse device!", Logger::Warn);
             }
             Vector2 _pos;
             SDL_GetMouseState(&_pos.x, &_pos.y);
@@ -125,7 +125,7 @@ namespace MyEngine {
          */
         uint64_t focusOn() const {
             if (!SDL_HasMouse()) {
-                Logger::log("Cursor: No mouse device!", Logger::WARN);
+                Logger::log("Cursor: No mouse device!", Logger::Warn);
             }
             return SDL_GetWindowID(SDL_GetMouseFocus());
         }
@@ -139,7 +139,7 @@ namespace MyEngine {
          */
         void move(const Vector2& pos, const Window* window = nullptr) {
             if (!SDL_HasMouse()) {
-                Logger::log("Cursor: No mouse device!", Logger::WARN);
+                Logger::log("Cursor: No mouse device!", Logger::Warn);
             }
             if (window) {
                 SDL_WarpMouseInWindow(window->self(), pos.x, pos.y);
@@ -158,7 +158,7 @@ namespace MyEngine {
          */
         void move(float x, float y, const Window* window = nullptr) {
             if (!SDL_HasMouse()) {
-                Logger::log("Cursor: No mouse device!", Logger::WARN);
+                Logger::log("Cursor: No mouse device!", Logger::Warn);
             }
             if (window) {
                 SDL_WarpMouseInWindow(window->self(), x, y);
@@ -173,7 +173,7 @@ namespace MyEngine {
          */
         void moveToCenter(const Window* window = nullptr) {
             if (!SDL_HasMouse()) {
-                Logger::log("Cursor: No mouse device!", Logger::WARN);
+                Logger::log("Cursor: No mouse device!", Logger::Warn);
             }
             Vector2 pos;
             if (window) {
@@ -202,7 +202,7 @@ namespace MyEngine {
          */
         void setCursor(const StdCursor& cursor) {
             if (!SDL_HasMouse()) {
-                Logger::log("Cursor: No mouse device!", Logger::WARN);
+                Logger::log("Cursor: No mouse device!", Logger::Warn);
             }
             if (this->cursor() == cursor) return;
             if (_custom_cursor && _user_custom.contains(cursor)) {
@@ -236,11 +236,11 @@ namespace MyEngine {
          */
         void setCursor(const std::string &path, int hot_x, int hot_y) {
             if (!SDL_HasMouse()) {
-                Logger::log("Cursor: No mouse device!", Logger::WARN);
+                Logger::log("Cursor: No mouse device!", Logger::Warn);
             }
             SDL_Surface *temp = IMG_Load(path.data());
             if (!temp) {
-                Logger::log(std::format("[ERROR] Can't load image while setting cursor: {}", path), Logger::ERROR);
+                Logger::log(std::format("[ERROR] Can't load image while setting cursor: {}", path), Logger::Error);
                 return;
             }
             SDL_DestroyCursor(_cursor);
@@ -276,12 +276,12 @@ namespace MyEngine {
          */
         void setCustomCursor(const StdCursor& stdCursor, const std::string& path, const UserCustom::HotPoint& hot_point) {
             if (!SDL_HasMouse()) {
-                Logger::log("Cursor: No mouse device!", Logger::WARN);
+                Logger::log("Cursor: No mouse device!", Logger::Warn);
             }
             auto new_cursor = IMG_Load(path.c_str());
             if (!new_cursor) {
                 Logger::log(std::format("[ERROR] Can't set custom cursor, "
-                                        "because the current path \"{}\" is not valid!", path), Logger::ERROR);
+                                        "because the current path \"{}\" is not valid!", path), Logger::Error);
                 return;
             }
             if (_user_custom.contains(stdCursor)) {
@@ -307,7 +307,7 @@ namespace MyEngine {
          */
         void setVisible(bool visible) {
             if (!SDL_HasMouse()) {
-                Logger::log("Cursor: No mouse device!", Logger::WARN);
+                Logger::log("Cursor: No mouse device!", Logger::Warn);
             }
             if (visible) {
                 SDL_ShowCursor();
@@ -331,7 +331,7 @@ namespace MyEngine {
     private:
         explicit Cursor() {
             if (!SDL_HasMouse()) {
-                Logger::log("Cursor: No mouse device!", Logger::WARN);
+                Logger::log("Cursor: No mouse device!", Logger::Warn);
             }
             _cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_DEFAULT);
         }

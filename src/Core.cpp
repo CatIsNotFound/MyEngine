@@ -22,7 +22,7 @@ namespace MyEngine {
     Renderer::Renderer(Window* window) : _window(window) {
         _renderer = SDL_CreateRenderer(_window->self(), nullptr);
         if (!_renderer) {
-            Logger::log("The renderer is not created!", Logger::FATAL);
+            Logger::log("The renderer is not created!", Logger::Fatal);
             Engine::throwFatalError();
         }
     }
@@ -49,6 +49,7 @@ namespace MyEngine {
         }
         SDL_RenderPresent(_renderer);
         _cmd_list.clear();
+        _cmd_list.shrink_to_fit();
         _window->paintEvent();
     }
 
@@ -140,12 +141,12 @@ namespace MyEngine {
             _ret = SDL_SetRenderDrawColor(renderer, bg_color.r, bg_color.g, bg_color.b, bg_color.a);
             if (!_ret) {
                 Logger::log(std::format("Renderer: Set render draw color failed! Exception: {}",
-                                        SDL_GetError()), Logger::WARN);
+                                        SDL_GetError()), Logger::Warn);
             }
             _ret = SDL_RenderClear(renderer);
             if (!_ret) {
                 Logger::log(std::format("Renderer: Render clear failed! Exception: {}",
-                                        SDL_GetError()), Logger::ERROR);
+                                        SDL_GetError()), Logger::Error);
             }
         } else {
             Renderer::updateBackground(bg_color);
@@ -156,7 +157,7 @@ namespace MyEngine {
         bool _ret = SDL_SetRenderClipRect(renderer, (_reset ? nullptr : &_clip_area));
         if (!_ret) {
             Logger::log(std::format("Renderer: Set renderer clip area failed! Exception: {}",
-                                    SDL_GetError()), Logger::WARN);
+                                    SDL_GetError()), Logger::Warn);
         }
     }
 
@@ -164,7 +165,7 @@ namespace MyEngine {
         bool _ret = SDL_SetRenderViewport(renderer, (_reset ? nullptr : &_viewport_area));
         if (!_ret) {
             Logger::log(std::format("Renderer: Set renderer viewport failed! Exception: {}",
-                                    SDL_GetError()), Logger::WARN);
+                                    SDL_GetError()), Logger::Warn);
         }
     }
 
@@ -172,7 +173,7 @@ namespace MyEngine {
         bool _ret = SDL_SetRenderDrawBlendMode(renderer, _blend_mode);
         if (!_ret) {
             Logger::log(std::format("Renderer: Set render draw blend mode failed! Exception: {}",
-                                    SDL_GetError()), Logger::WARN);
+                                    SDL_GetError()), Logger::Warn);
         }
     }
 
@@ -183,20 +184,20 @@ namespace MyEngine {
         auto _ret = SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
         if (!_ret) {
             Logger::log(std::format("Renderer: Set renderer draw color failed! Exception: {}",
-                                    SDL_GetError()), Logger::WARN);
+                                    SDL_GetError()), Logger::Warn);
         }
         if (point.size() == 1) {
             _ret = SDL_RenderPoint(renderer, pos.x, pos.y);
             if (!_ret) {
                 Logger::log(std::format("Renderer: Set render point failed! Exception: {}",
-                                        SDL_GetError()), Logger::ERROR);
+                                        SDL_GetError()), Logger::Error);
             }
         } else {
             _ret = SDL_RenderGeometry(renderer, nullptr, point.vertices(), point.verticesCount(),
                                point.indices(), point.indicesCount());
             if (!_ret) {
                 Logger::log(std::format("Renderer: Set render geometry failed! Exception: {}",
-                                        SDL_GetError()), Logger::ERROR);
+                                        SDL_GetError()), Logger::Error);
             }
         }
     }
@@ -210,21 +211,21 @@ namespace MyEngine {
         auto _ret = SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
         if (!_ret) {
             Logger::log(std::format("Renderer: Set render draw color failed! Exception: {}",
-                                    SDL_GetError()), Logger::WARN);
+                                    SDL_GetError()), Logger::Warn);
         }
         if (SIZE == 1) {
             _ret = SDL_RenderLine(renderer, START.x, START.y,
                            END.x, END.y);
             if (!_ret) {
                 Logger::log(std::format("Renderer: Set render line failed! Exception: {}",
-                                        SDL_GetError()), Logger::ERROR);
+                                        SDL_GetError()), Logger::Error);
             }
         } else {
             _ret = SDL_RenderGeometry(renderer, nullptr, line.vertices(),
                            line.vertexCount(), line.indices(), line.indicesCount());
             if (!_ret) {
                 Logger::log(std::format("Renderer: Set render geometry failed! Exception: {}",
-                                        SDL_GetError()), Logger::ERROR);
+                                        SDL_GetError()), Logger::Error);
             }
         }
     }
@@ -241,12 +242,12 @@ namespace MyEngine {
             _ret = SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
             if (!_ret) {
                 Logger::log(std::format("Renderer: Set render draw color failed! Exception: {}",
-                                        SDL_GetError()), Logger::WARN);
+                                        SDL_GetError()), Logger::Warn);
             }
             _ret = SDL_RenderFillRect(renderer, &r);
             if (!_ret) {
                 Logger::log(std::format("Renderer: Set render fill rectangle failed! Exception: {}",
-                                        SDL_GetError()), Logger::ERROR);
+                                        SDL_GetError()), Logger::Error);
             }
         }
         if (draw_bordered) {
@@ -254,19 +255,19 @@ namespace MyEngine {
             _ret = SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
             if (!_ret) {
                 Logger::log(std::format("Renderer: Set render draw color failed! Exception: {}",
-                                        SDL_GetError()), Logger::WARN);
+                                        SDL_GetError()), Logger::Warn);
             }
             if (rectangle.borderSize() == 1) {
                 _ret = SDL_RenderRect(renderer, &r);
                 if (!_ret) {
                     Logger::log(std::format("Renderer: Set render rectangle failed! Exception: {}",
-                                            SDL_GetError()), Logger::ERROR);
+                                            SDL_GetError()), Logger::Error);
                 }
             } else {
                 _ret = SDL_RenderFillRects(renderer, rectangle.bordersRect(), 4);
                 if (!_ret) {
                     Logger::log(std::format("Renderer: Set render fill rectangles failed! Exception: {}",
-                                            SDL_GetError()), Logger::ERROR);
+                                            SDL_GetError()), Logger::Error);
                 }
             }
         }
@@ -281,7 +282,7 @@ namespace MyEngine {
                                triangle.indices(), 3);
             if (!_ret) {
                 Logger::log(std::format("Renderer: Set render geometry failed! Exception: {}",
-                                        SDL_GetError()), Logger::ERROR);
+                                        SDL_GetError()), Logger::Error);
             }
         }
         if (bordered) {
@@ -290,7 +291,7 @@ namespace MyEngine {
             _ret = SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
             if (!_ret) {
                 Logger::log(std::format("Renderer: Set render draw color failed! Exception: {}",
-                                        SDL_GetError()), Logger::WARN);
+                                        SDL_GetError()), Logger::Warn);
             }
             int err_cnt = 0;
             if (SIZE == 1) {
@@ -302,7 +303,7 @@ namespace MyEngine {
                 err_cnt += SDL_RenderLine(renderer, p1.x, p1.y, p3.x, p3.y);
                 if (err_cnt < 3) {
                     Logger::log(std::format("Renderer: Set render triangle failed! Exception: {}",
-                                            SDL_GetError()), Logger::ERROR);
+                                            SDL_GetError()), Logger::Error);
                 }
             } else {
                 err_cnt += SDL_RenderGeometry(renderer, nullptr, triangle.borderVertices1(), triangle.borderVerticesCount(),
@@ -313,7 +314,7 @@ namespace MyEngine {
                                    triangle.borderIndices3(), triangle.borderIndicesCount());
                 if (err_cnt < 3) {
                     Logger::log(std::format("Renderer: Set render triangle failed! Exception: {}",
-                                            SDL_GetError()), Logger::ERROR);
+                                            SDL_GetError()), Logger::Error);
                 }
             }
         }
@@ -328,7 +329,7 @@ namespace MyEngine {
                                ellipse.indices(), ellipse.indicesCount());
             if (!_ret) {
                 Logger::log(std::format("Renderer: Set render geometry failed! Exception: {}",
-                                        SDL_GetError()), Logger::ERROR);
+                                        SDL_GetError()), Logger::Error);
             }
         }
         if (bordered) {
@@ -336,7 +337,7 @@ namespace MyEngine {
                                ellipse.borderIndices(), ellipse.borderIndicesCount());
             if (!_ret) {
                 Logger::log(std::format("Renderer: Set render geometry failed! Exception: {}",
-                                        SDL_GetError()), Logger::ERROR);
+                                        SDL_GetError()), Logger::Error);
             }
         }
     }
@@ -344,24 +345,24 @@ namespace MyEngine {
     void Renderer::TextureCMD::exec() {
         if (!_texture || !_property) {
             Logger::log(std::format("Renderer: The texture or texture property is not valid!"),
-                        Logger::ERROR);
+                        Logger::Error);
             return;
         }
         auto color = _property->color_alpha;
         bool _ret = SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
         if (!_ret) {
             Logger::log(std::format("Renderer: Set render draw color failed! Exception: {}",
-                                    SDL_GetError()), Logger::WARN);
+                                    SDL_GetError()), Logger::Warn);
         }
         _ret = SDL_SetTextureColorMod(_texture, color.r, color.g, color.b);
         if (!_ret) {
             Logger::log(std::format("Renderer: Set texture color failed! Exception: {}",
-                                    SDL_GetError()), Logger::WARN);
+                                    SDL_GetError()), Logger::Warn);
         }
         _ret = SDL_SetTextureAlphaMod(_texture, color.a);
         if (!_ret) {
             Logger::log(std::format("Renderer: Set texture alpha failed! Exception: {}",
-                                    SDL_GetError()), Logger::WARN);
+                                    SDL_GetError()), Logger::Warn);
         }
         auto scaled = _property->scaledGeometry();
         auto scaled_pos = scaled.pos;
@@ -373,7 +374,7 @@ namespace MyEngine {
                          &rect_dest, _property->rotate_angle, nullptr, _property->flip_mode);
         if (!_ret) {
             Logger::log(std::format("Renderer: Set render texture failed! Exception: {}",
-                                    SDL_GetError()), Logger::ERROR);
+                                    SDL_GetError()), Logger::Error);
             return;
         }
     }
@@ -382,7 +383,7 @@ namespace MyEngine {
         bool _ret = TTF_DrawRendererText(text, position.x, position.y);
         if (!_ret) {
             Logger::log(std::format("Renderer: Set render text failed! Exception: {}",
-                                    SDL_GetError()), Logger::ERROR);
+                                    SDL_GetError()), Logger::Error);
         }
     }
 
@@ -390,22 +391,22 @@ namespace MyEngine {
         bool _ret = SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, SDL_ALPHA_OPAQUE);
         if (!_ret) {
             Logger::log(std::format("Renderer: Set render draw color failed! Exception: {}",
-                                    SDL_GetError()), Logger::WARN);
+                                    SDL_GetError()), Logger::Warn);
         }
         _ret = SDL_SetRenderScale(renderer, scaled.x, scaled.y);
         if (!_ret) {
             Logger::log(std::format("Renderer: Set render scale failed! Exception: {}",
-                                    SDL_GetError()), Logger::WARN);
+                                    SDL_GetError()), Logger::Warn);
         }
         _ret = SDL_RenderDebugText(renderer, pos.x, pos.y, text.c_str());
         if (!_ret) {
             Logger::log(std::format("Renderer: Set render debug text failed! Exception: {}",
-                                    SDL_GetError()), Logger::WARN);
+                                    SDL_GetError()), Logger::Warn);
         }
         _ret = SDL_SetRenderScale(renderer, 1.0f, 1.0f);
         if (!_ret) {
             Logger::log(std::format("Renderer: Set render scale failed! Exception: {}",
-                                    SDL_GetError()), Logger::WARN);
+                                    SDL_GetError()), Logger::Warn);
         }
     }
 
@@ -421,11 +422,11 @@ namespace MyEngine {
         _renderer = std::make_shared<Renderer>(this);
         _winID = SDL_GetWindowID(_window);
         SDL_GetWindowPosition(_window, &_window_geometry.x, &_window_geometry.y);
-        Logger::log(std::format("Window: created with ID {}", _winID), Logger::DEBUG);
+        Logger::log(std::format("Window: created with ID {}", _winID), Logger::Debug);
         if (object) {
             object->newWindow(this);
         } else {
-            Logger::log("Window: Can't find engine object!", Logger::FATAL);
+            Logger::log("Window: Can't find engine object!", Logger::Fatal);
             Engine::throwFatalError();
         }
     }
@@ -436,14 +437,14 @@ namespace MyEngine {
         }
         if (_window) {
             SDL_DestroyWindow(_window);
-            Logger::log(std::format("Window: ID {} destroyed",  _winID), Logger::DEBUG);
+            Logger::log(std::format("Window: ID {} destroyed",  _winID), Logger::Debug);
         }
     }
 
     bool Window::move(int x, int y) {
         bool _ret = SDL_SetWindowPosition(_window, x, y);
         if (!_ret) {
-            Logger::log(std::format("Window: Can't move window! Exception: {}", SDL_GetError()), Logger::ERROR);
+            Logger::log(std::format("Window: Can't move window! Exception: {}", SDL_GetError()), Logger::Error);
             return false;
         }
         _window_geometry.x = x;
@@ -454,7 +455,7 @@ namespace MyEngine {
     bool Window::resize(int width, int height) {
         bool _ret = SDL_SetWindowSize(_window, width, height);
         if (!_ret) {
-            Logger::log(std::format("Window: Can't resize window! Exception: {}", SDL_GetError()), Logger::ERROR);
+            Logger::log(std::format("Window: Can't resize window! Exception: {}", SDL_GetError()), Logger::Error);
             return false;
         }
         _window_geometry.width = width;
@@ -477,7 +478,7 @@ namespace MyEngine {
     bool Window::show() {
         auto _ret = SDL_ShowWindow(_window);
         if (!_ret) {
-            Logger::log(std::format("Window: Can't show window! Exception: {}", SDL_GetError()), Logger::ERROR);
+            Logger::log(std::format("Window: Can't show window! Exception: {}", SDL_GetError()), Logger::Error);
             return false;
         }
         _visible = true;
@@ -487,7 +488,7 @@ namespace MyEngine {
     bool Window::hide() {
         bool _ret = SDL_HideWindow(_window);
         if (!_ret) {
-            Logger::log(std::format("Window: Can't hide window! Exception: {}", SDL_GetError()), Logger::ERROR);
+            Logger::log(std::format("Window: Can't hide window! Exception: {}", SDL_GetError()), Logger::Error);
             return false;
         }
         _visible = false;
@@ -505,7 +506,7 @@ namespace MyEngine {
     bool Window::setResizable(bool enabled) {
         auto _ret = SDL_SetWindowResizable(_window, enabled);
         if (!_ret) {
-            Logger::log(std::format("Window: Can't set window resizable mode! Exception: {}", SDL_GetError()), Logger::ERROR);
+            Logger::log(std::format("Window: Can't set window resizable mode! Exception: {}", SDL_GetError()), Logger::Error);
             return false;
         }
         _resizable = enabled;
@@ -518,7 +519,7 @@ namespace MyEngine {
 
     void Window::setRenderer(Renderer* renderer) {
         if (!renderer) {
-            Logger::log("Window: The specified renderer is not valid!", Logger::ERROR);
+            Logger::log("Window: The specified renderer is not valid!", Logger::Error);
             return;
         }
         _renderer = std::shared_ptr<Renderer>(renderer);
@@ -532,7 +533,7 @@ namespace MyEngine {
         bool _ok = SDL_SetWindowBordered(_window, !enabled);
         if (_ok) _borderless = enabled;
         else Logger::log(std::format("Window (ID {}): Can't set borderless for this window!", _winID),
-                         Logger::ERROR);
+                         Logger::Error);
     }
 
     bool Window::borderless() const {
@@ -546,7 +547,7 @@ namespace MyEngine {
         bool _ok = SDL_SetWindowFullscreen(_window, enabled);
         if (!_ok) {
             Logger::log(std::format("Window (ID {}): Can't set fullscreen for this window!", _winID),
-                        Logger::ERROR);
+                        Logger::Error);
         } else _fullscreen = enabled;
         if (move_to_center) {
             Cursor::global()->moveToCenter(_fullscreen ? this : nullptr);
@@ -570,7 +571,7 @@ namespace MyEngine {
 
     SDL_Window* Window::self() const {
         if (!_window) {
-            Logger::log("The window is not created!", Logger::ERROR);
+            Logger::log("The window is not created!", Logger::Error);
         }
         return _window;
     }
@@ -592,14 +593,14 @@ namespace MyEngine {
     void Window::resizeEvent() {
         auto _ret = SDL_GetWindowSize(_window, &_window_geometry.width, &_window_geometry.height);
         if (!_ret) {
-            Logger::log(std::format("Window: Failed to get window size for ID {}!", _winID), Logger::WARN);
+            Logger::log(std::format("Window: Failed to get window size for ID {}!", _winID), Logger::Warn);
         }
     }
 
     void Window::moveEvent() {
         auto _ret = SDL_GetWindowPosition(_window, &_window_geometry.x, &_window_geometry.y);
         if (!_ret) {
-            Logger::log(std::format("Window: Failed to get window position for ID {}!", _winID), Logger::WARN);
+            Logger::log(std::format("Window: Failed to get window position for ID {}!", _winID), Logger::Warn);
         }
     }
 
@@ -632,7 +633,7 @@ namespace MyEngine {
     void EventSystem::appendEvent(uint64_t id, const std::function<void(SDL_Event)>& event) {
         if (_event_list.contains(id)) {
             Logger::log(std::format("EventSystem: The event with ID {} is already exists! "
-                                    "It will overwrite it!", id), Logger::WARN);
+                                    "It will overwrite it!", id), Logger::Warn);
             _event_list[id] = event;
             return;
         }
@@ -645,7 +646,7 @@ namespace MyEngine {
             _event_list.erase(id);
             Logger::log(std::format("EventSystem: Removed the event with ID {}", id));
         } else {
-            Logger::log(std::format("EventSystem: The event with ID {} is not found!", id), Logger::WARN);
+            Logger::log(std::format("EventSystem: The event with ID {} is not found!", id), Logger::Warn);
         }
     }
 
@@ -657,7 +658,7 @@ namespace MyEngine {
     void EventSystem::appendGlobalEvent(uint64_t g_id, const std::function<void()>& event) {
         if (_global_event_list.contains(g_id)) {
             Logger::log(std::format("EventSystem: The global event with ID {} is already exists! "
-                                    "It will overwrite it!", g_id), Logger::WARN);
+                                    "It will overwrite it!", g_id), Logger::Warn);
             _global_event_list[g_id] = event;
         } else {
             _global_event_list.emplace(g_id, event);
@@ -671,7 +672,7 @@ namespace MyEngine {
             Logger::log(std::format("EventSystem: Removed a global event with ID {}", g_id));
         } else {
             Logger::log(std::format("EventSystem: The global event with ID {} is not found!", g_id),
-                        Logger::WARN);
+                        Logger::Warn);
         }
     }
 
@@ -821,6 +822,12 @@ namespace MyEngine {
     const std::string& Engine::applicationName() const { return _app_name; }
     const std::string& Engine::applicationVersion() const { return _app_version; }
 
+    void Engine::setLimitMaxMemorySize(size_t memory_size) {
+        _max_mem_size = memory_size;
+        _warn_mem_size = static_cast<size_t>(static_cast<float>(_max_mem_size) * 0.85f);
+    }
+    size_t Engine::limitMaxMemorySize() const { return _max_mem_size; }
+
     bool Engine::isRunning() const {
         return _running;
     }
@@ -879,12 +886,12 @@ namespace MyEngine {
     void Engine::throwFatalError() {
         std::string get_err_info = Logger::lastError();
         if (get_err_info.empty()) {
-            Logger::log("No error found. It will not throw the fatal error!", Logger::INFO);
+            Logger::log("No error found. It will not throw the fatal error!", Logger::Info);
             return;
         }
         std::string err = std::format("An error has caused the entire program to crash.\nException: {}", get_err_info);
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "FATAL ERROR", err.c_str(), nullptr);
-        Logger::log(err, Logger::FATAL);
+        Logger::log(err, Logger::Fatal);
         throw std::runtime_error(err);
     }
 
@@ -910,8 +917,7 @@ namespace MyEngine {
         auto frames = 0ULL;
         auto start_ns = SDL_GetTicksNS();
         while (_running && !_quit_requested) {
-            //std::this_thread::sleep_for(std::chrono::milliseconds(1));
-            if (_window_list.empty()) break;
+            /// Event processing and rendering processing
             _running = EventSystem::global(this)->run();
             if (!_running) break;
             auto current_time = SDL_GetTicks();
@@ -924,9 +930,33 @@ namespace MyEngine {
                 frames += 1;
             }
             if (current_time - start_time >= 1000) {
+                /// Real time monitoring of memory usage, if set max memory size.
+                if (_max_mem_size) {
+                    bool ok;
+                    _used_mem_size = SysMemory::getCurProcUsedMemSize(&ok);
+                    if (ok) {
+                        if (_used_mem_size >= _max_mem_size) {
+                            Logger::log("Engine: The memory size currently used has exceeded "
+                                        "the maximum memory size set by this application. "
+                                        "The application will be closed!", Logger::Fatal);
+                            SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Memory overflow",
+                                                     "The memory size currently used has exceeded "
+                                                     "the maximum memory size set by this application. \n"
+                                                     "The application will be closed!", nullptr);
+                            exit(1);
+                        } else if (_used_mem_size >= _warn_mem_size) {
+                            Logger::log("Engine: The current memory usage is less than 15%! "
+                                        "After exceeding the set value, the application will be closed!",
+                                        Logger::Warn);
+                        }
+                    } else {
+                        Logger::log("Engine: Can't get current process memory size!", Logger::Warn);
+                    }
+                }
+                /// Update the render frame
                 _real_fps = frames;
                 if (_fps > 14 && _real_fps <= 14) {
-                    Logger::log(std::format("Low FPS detected: {} FPS", _real_fps), Logger::WARN);
+                    Logger::log(std::format("Low FPS detected: {} FPS", _real_fps), Logger::Warn);
                 }
                 frames = 0;
                 start_time = SDL_GetTicks();
@@ -936,7 +966,7 @@ namespace MyEngine {
 
     TextSystem::TextSystem() {
         if (!TTF_Init()) {
-            Logger::log(std::format("TextSystem: Can't load Text System! Exception: {}", SDL_GetError()), Logger::FATAL);
+            Logger::log(std::format("TextSystem: Can't load Text System! Exception: {}", SDL_GetError()), Logger::Fatal);
             return;
         }
         Logger::log("TextSystem: Loaded text system");
@@ -971,11 +1001,11 @@ namespace MyEngine {
 
     bool TextSystem::addFont(const std::string& font_name, const std::string& font_path, Renderer* renderer) {
         if (_font_map.contains(font_name)) {
-            Logger::log(std::format("Font '{}' is already added!", font_name), Logger::ERROR);
+            Logger::log(std::format("Font '{}' is already added!", font_name), Logger::Error);
             return false;
         }
         if (!renderer) {
-            Logger::log("Can't add font! The specified renderer is not valid!", Logger::ERROR);
+            Logger::log("Can't add font! The specified renderer is not valid!", Logger::Error);
             return false;
         }
         _font_map.emplace(font_name, 
@@ -986,7 +1016,7 @@ namespace MyEngine {
             TTF_DestroyRendererTextEngine(new_font.engine);
             TTF_DestroySurfaceTextEngine(new_font.surface_engine);
             _font_map.erase(font_name);
-            Logger::log(std::format("Can't load font '{}'! Exception: {}", font_name, SDL_GetError()), Logger::ERROR);
+            Logger::log(std::format("Can't load font '{}'! Exception: {}", font_name, SDL_GetError()), Logger::Error);
             return false;
         }
         return true;
@@ -994,7 +1024,7 @@ namespace MyEngine {
 
     bool TextSystem::removeFont(const std::string& font_name) {
         if (!_font_map.contains(font_name)) {
-            Logger::log(std::format("Font '{}' is not in the font list!", font_name), Logger::ERROR);
+            Logger::log(std::format("Font '{}' is not in the font list!", font_name), Logger::Error);
             return false;
         }
         TTF_DestroyRendererTextEngine(_font_map[font_name].engine);
@@ -1005,7 +1035,7 @@ namespace MyEngine {
 
     Font* TextSystem::font(const std::string& font_name) {
         if (!_font_map.contains(font_name)) {
-            Logger::log(std::format("Font '{}' is not in the font list!", font_name), Logger::ERROR);
+            Logger::log(std::format("Font '{}' is not in the font list!", font_name), Logger::Error);
             return nullptr;
         }
         return _font_map.at(font_name).font.get();
@@ -1021,14 +1051,14 @@ namespace MyEngine {
 
     bool TextSystem::addText(uint64_t text_id, const std::string& font_name, const std::string& text) {
         if (_text_map.contains(text_id)) {
-            Logger::log(std::format("Text ID {} is already added to text list!", text_id), Logger::ERROR);
+            Logger::log(std::format("Text ID {} is already added to text list!", text_id), Logger::Error);
             return false;
         }
         
         _text_map.emplace(text_id, Text(nullptr, text, font_name));
         _text_map[text_id].self = TTF_CreateText(_font_map[font_name].engine, _font_map[font_name].font->self(), text.c_str(), text.size());
         if (!_text_map[text_id].self) {
-            Logger::log(std::format("Can't create text!\nException: {}", SDL_GetError()), Logger::ERROR);
+            Logger::log(std::format("Can't create text!\nException: {}", SDL_GetError()), Logger::Error);
             _text_map.erase(text_id);
             return false;
         }
@@ -1037,7 +1067,7 @@ namespace MyEngine {
 
     bool TextSystem::removeText(uint64_t text_id) {
         if (!_text_map.contains(text_id)) {
-            Logger::log(std::format("Text ID {} is not in the text list!", text_id), Logger::ERROR);
+            Logger::log(std::format("Text ID {} is not in the text list!", text_id), Logger::Error);
             return false;
         }
         _text_map.erase(text_id);
@@ -1046,13 +1076,13 @@ namespace MyEngine {
 
     bool TextSystem::setText(uint64_t text_id, const std::string& text) {
         if (!_text_map.contains(text_id)) {
-            Logger::log(std::format("Text ID {} is not in the text list!", text_id), Logger::ERROR);
+            Logger::log(std::format("Text ID {} is not in the text list!", text_id), Logger::Error);
             return false;
         }
         auto& m_text = _text_map[text_id];
         auto _ret = TTF_SetTextString(m_text.self, text.c_str(), text.size());
         if (!_ret) {
-            Logger::log(std::format("Can't set text to text ID {}!\nException: {}", text_id, SDL_GetError()), Logger::ERROR);
+            Logger::log(std::format("Can't set text to text ID {}!\nException: {}", text_id, SDL_GetError()), Logger::Error);
             return false;
         }
         m_text.text = text;
@@ -1061,13 +1091,13 @@ namespace MyEngine {
 
     bool TextSystem::appendText(uint64_t text_id, const std::string& text) {
         if (!_text_map.contains(text_id)) {
-            Logger::log(std::format("Text ID {} is not in the text list!", text_id), Logger::ERROR);
+            Logger::log(std::format("Text ID {} is not in the text list!", text_id), Logger::Error);
             return false;
         }
         auto& m_text = _text_map[text_id];
         auto _ret = TTF_AppendTextString(m_text.self, text.c_str(), text.size());
         if (!_ret) {
-            Logger::log(std::format("Can't set text to text ID {}!\nException: {}", text_id, SDL_GetError()), Logger::ERROR);
+            Logger::log(std::format("Can't set text to text ID {}!\nException: {}", text_id, SDL_GetError()), Logger::Error);
             return false;
         }
         m_text.text += text;
@@ -1076,18 +1106,18 @@ namespace MyEngine {
 
     bool TextSystem::setTextFont(uint64_t text_id, const std::string& font_name) {
         if (!_text_map.contains(text_id)) {
-            Logger::log(std::format("Text ID {} is not in the text list!", text_id), Logger::ERROR);
+            Logger::log(std::format("Text ID {} is not in the text list!", text_id), Logger::Error);
             return false;
         }
         if (!_font_map.contains(font_name)) {
-            Logger::log(std::format("Font '{}' is not in the font list!", font_name), Logger::ERROR);
+            Logger::log(std::format("Font '{}' is not in the font list!", font_name), Logger::Error);
             return false;
         }
         auto& m_text = _text_map[text_id];
         auto _ret = TTF_SetTextFont(m_text.self, _font_map[font_name].font->self());
         if (!_ret) {
             Logger::log(std::format("Can't set font '{}' to text ID {}!\nException: {}", 
-                    font_name, text_id, SDL_GetError()), Logger::ERROR);
+                    font_name, text_id, SDL_GetError()), Logger::Error);
             return false;
         }
         m_text.font_name = font_name;
@@ -1096,14 +1126,14 @@ namespace MyEngine {
 
     bool TextSystem::setTextColor(uint64_t text_id, const SDL_Color& color) {
         if (!_text_map.contains(text_id)) {
-            Logger::log(std::format("Text ID {} is not in the text list!", text_id), Logger::ERROR);
+            Logger::log(std::format("Text ID {} is not in the text list!", text_id), Logger::Error);
             return false;
         }
         auto& m_text = _text_map[text_id];
         auto _ret = TTF_SetTextColor(m_text.self, color.r, color.g, color.b, color.a);
         if (!_ret) {
             Logger::log(std::format("Can't set font color to text ID {}!\nException: {}", 
-                    text_id, SDL_GetError()), Logger::ERROR);
+                    text_id, SDL_GetError()), Logger::Error);
             return false;
         }
         m_text.font_color = color;
@@ -1112,7 +1142,7 @@ namespace MyEngine {
 
     TextSystem::Text* TextSystem::indexOfText(uint64_t text_id) {
         if (!_text_map.contains(text_id)) {
-            Logger::log(std::format("Text ID {} is not in the text list!", text_id), Logger::ERROR);
+            Logger::log(std::format("Text ID {} is not in the text list!", text_id), Logger::Error);
             return nullptr;
         }
         return &_text_map.at(text_id);
@@ -1128,11 +1158,11 @@ namespace MyEngine {
 
     bool TextSystem::drawText(uint64_t text_id, const Vector2& pos, Renderer* renderer) {
         if (!renderer) {
-            Logger::log("The specified renderer is not valid!", Logger::ERROR);
+            Logger::log("The specified renderer is not valid!", Logger::Error);
             return false;
         }
         if (!_text_map.contains(text_id)) {
-            Logger::log(std::format("Text ID {} is not in the text list!", text_id), Logger::ERROR);
+            Logger::log(std::format("Text ID {} is not in the text list!", text_id), Logger::Error);
             return false;
         }
 
@@ -1142,11 +1172,11 @@ namespace MyEngine {
 
     SDL_Surface* TextSystem::toImage(uint64_t text_id) {
         if (!_text_map.contains(text_id)) {
-            Logger::log(std::format("Text ID {} is not in the text list!", text_id), Logger::ERROR);
+            Logger::log(std::format("Text ID {} is not in the text list!", text_id), Logger::Error);
             return nullptr;
         }
         if (!_font_map.contains(_text_map[text_id].font_name)) {
-            Logger::log(std::format("Text ID {} has not set the font! Try to use `setTextFont()` at first!", text_id), Logger::ERROR);
+            Logger::log(std::format("Text ID {} has not set the font! Try to use `setTextFont()` at first!", text_id), Logger::Error);
             return nullptr;
         }
         auto& font_engine = _font_map[_text_map[text_id].font_name];
@@ -1157,7 +1187,7 @@ namespace MyEngine {
         SDL_DestroySurface(t_surface);
         auto _ret = TTF_DrawSurfaceText(temp_text, 0, 0, surface);
         if (!_ret) {
-            Logger::log(std::format("Text to image failed! Exception: {}", SDL_GetError()), Logger::ERROR);
+            Logger::log(std::format("Text to image failed! Exception: {}", SDL_GetError()), Logger::Error);
             TTF_DestroyText(temp_text);
             return nullptr;
         }
@@ -1183,7 +1213,7 @@ namespace MyEngine {
     bool AudioSystem::load() {
         if (!MIX_Init()) {
             Logger::log(std::format("AudioSystem: Can't initilized audio system! Exception: {}", 
-                SDL_GetError()), Logger::ERROR);
+                SDL_GetError()), Logger::Error);
             return false;
         }
 
@@ -1191,7 +1221,7 @@ namespace MyEngine {
         auto new_mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &_audio_spec);
         if (!new_mixer) {
             Logger::log(std::format("AudioSystem: Can't initilized audio system! Exception: {}", 
-                SDL_GetError()), Logger::ERROR);
+                SDL_GetError()), Logger::Error);
             return false;
         }
         _mixer_list.push_back(new_mixer);
@@ -1219,7 +1249,7 @@ namespace MyEngine {
             auto new_mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &_audio_spec);
             if (!new_mixer) {
                 Logger::log(std::format("AudioSystem: Can't create the new mixer device! Exception: {}",
-                                        SDL_GetError()), Logger::ERROR);
+                                        SDL_GetError()), Logger::Error);
             } else {
                 _mixer_list.push_back(new_mixer);
             }
@@ -1230,7 +1260,7 @@ namespace MyEngine {
         if (_mixer_list.size() <= index) {
             Logger::log(std::format("AudioSystem: Can't get index '{}' of mixer!"
                                     " Did you forget to call `AudioSystem::addNewMixer()` function?", index),
-                        Logger::ERROR);
+                        Logger::Error);
             return nullptr;
         }
         return _mixer_list.at(index);

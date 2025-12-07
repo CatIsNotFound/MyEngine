@@ -105,7 +105,7 @@ namespace MyEngine {
             Size size = BASE.geometry().size;
             base.setGeometry((float)(x + pos.x), (float)(y + pos.y), (float)w, (float)h);
         } else {
-            Logger::log("ClickArea::setViewportArea: Failed to set viewport area! The graphic is not valid!", Logger::WARN);
+            Logger::log("ClickArea::setViewportArea: Failed to set viewport area! The graphic is not valid!", Logger::Warn);
         }
     }
 
