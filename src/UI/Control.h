@@ -1,10 +1,10 @@
-#ifndef S3GF_CONTROL_H
-#define S3GF_CONTROL_H
+#ifndef MYENGINE_CONTROL_H
+#define MYENGINE_CONTROL_H
 #include "../Core.h"
 #include "../Utils/Cursor.h"
 #include "../Algorithm/Collider.h"
 
-namespace S3GF {
+namespace MyEngine {
     using GT = std::variant<std::monostate, Graphics::Point, Graphics::Rectangle>;
     inline uint64_t _next_id = 0;
 
@@ -176,6 +176,6 @@ namespace S3GF {
              _checkable{false};
     };
 
-} // S3GF
+} // MyEngine
 
-#endif //S3GF_CONTROL_H
+#endif //MYENGINE_CONTROL_H

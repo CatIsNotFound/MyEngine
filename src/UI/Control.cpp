@@ -1,7 +1,7 @@
 
 #include "Control.h"
 
-namespace S3GF {
+namespace MyEngine {
     ClickArea::ClickArea(uint64_t window_id, GT graphic)
         : _base(std::move(graphic)), _real_base(std::monostate()), _winID(window_id) {
         EventSystem::global()->appendEvent(_next_id++, [this](SDL_Event ev) {

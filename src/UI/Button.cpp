@@ -1,7 +1,7 @@
 
 #include "Button.h"
 #include "Utils/RGBAColor.h"
-namespace S3GF {
+namespace MyEngine {
 
     Button::Button(const std::string &name, Renderer *renderer, AbstractControl *parent)
         : AbstractControl(name, renderer, parent, Graphics::Rectangle()),
@@ -391,4 +391,4 @@ namespace S3GF {
             r->setViewport({});
         }
     }
-} // S3GF
+} // MyEngine

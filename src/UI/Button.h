@@ -1,9 +1,9 @@
 
-#ifndef S3GF_BUTTON_H
-#define S3GF_BUTTON_H
+#ifndef MYENGINE_BUTTON_H
+#define MYENGINE_BUTTON_H
 #include "../Basic.h"
 #include "Control.h"
-namespace S3GF {
+namespace MyEngine {
 
     class Button : public AbstractControl {
     public:
@@ -109,6 +109,6 @@ namespace S3GF {
         std::function<void()> _event;
         Texture* _cur_texture{nullptr};
     };
-} // S3GF
+} // MyEngine
 
-#endif //S3GF_BUTTON_H
+#endif //MYENGINE_BUTTON_H
