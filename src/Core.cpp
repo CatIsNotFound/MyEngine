@@ -4,7 +4,6 @@
 #include <memory>
 #include "Basic.h"
 #include "Utils/All"
-#include "MultiThread/All"
 
 namespace MyEngine {
     std::unique_ptr<EventSystem> EventSystem::_instance{};
@@ -39,6 +38,28 @@ namespace MyEngine {
         return _window;
     }
 
+    void Renderer::setMaxCommandCount(size_t count) {
+        _max_cmd_cnt = count;
+        /// To avoid memory growth issues caused by excessive rendering frame commands.
+        if (_max_frame_cmd_cnt > _max_cmd_cnt) _max_frame_cmd_cnt = _max_cmd_cnt;
+        while (_cmd_pool.size() > _max_cmd_cnt) {
+            _cmd_pool.pop_back();
+        }
+    }
+
+    void Renderer::setMaxFrameCommandCount(size_t count) {
+        _max_frame_cmd_cnt = count;
+        if (_max_frame_cmd_cnt > _max_cmd_cnt) {
+            Logger::log("Engine: The maximum number of frame commands currently set has exceeded the limit "
+                        "for the maximum number of commands. Once exceeded, "
+                        "it will continuously increase the memory usage.", Logger::Warn);
+        }
+    }
+
+    void Renderer::setDiscardCommandStrategy(MyEngine::Renderer::DiscardStrategy strategy) {
+        _dis_st = strategy;
+    }
+
     void Renderer::_update() {
         SDL_SetRenderDrawBlendMode(_renderer, SDL_BLENDMODE_NONE);
         SDL_SetRenderDrawColor(_renderer, _background_color.r, _background_color.g,
@@ -46,93 +67,112 @@ namespace MyEngine {
         SDL_RenderClear(_renderer);
         for (auto& cmd : _cmd_list) {
             cmd->exec();
+            releaseCmd(std::move(cmd));
         }
         SDL_RenderPresent(_renderer);
         _cmd_list.clear();
-        _cmd_list.shrink_to_fit();
         _window->paintEvent();
     }
 
     void Renderer::fillBackground(const SDL_Color& color, bool covered) {
-        _cmd_list.push_back(std::make_unique<FillCMD>(_renderer, color, covered));
+        auto ptr = getCmdFromPool<FillCMD>(_renderer, color, covered);
+        if (ptr) _cmd_list.push_back(std::unique_ptr<FillCMD>(ptr));
     }
 
     void Renderer::drawPoint(const Graphics::Point &point) {
-        _cmd_list.push_back(std::make_unique<PointCMD>(_renderer, point));
+        auto ptr = getCmdFromPool<PointCMD>(_renderer, point);
+        if (ptr) _cmd_list.push_back(std::unique_ptr<PointCMD>(ptr));
     }
 
     void Renderer::drawPoint(Graphics::Point &&point) {
-        _cmd_list.push_back(std::make_unique<PointCMD>(_renderer, point));
+        auto ptr = getCmdFromPool<PointCMD>(_renderer, point);
+        if (ptr) _cmd_list.push_back(std::unique_ptr<PointCMD>(ptr));
     }
 
     void Renderer::drawLine(const Graphics::Line &line) {
-        _cmd_list.push_back(std::make_unique<LineCMD>(_renderer, line));
+        auto ptr = getCmdFromPool<LineCMD>(_renderer, line);
+        if (ptr) _cmd_list.push_back(std::unique_ptr<LineCMD>(ptr));
     }
 
     void Renderer::drawLine(Graphics::Line &&line) {
-        _cmd_list.push_back(std::make_unique<LineCMD>(_renderer, line));
+        auto ptr = getCmdFromPool<LineCMD>(_renderer, line);
+        if (ptr) _cmd_list.push_back(std::unique_ptr<LineCMD>(ptr));
     }
 
     void Renderer::drawRectangle(const Graphics::Rectangle &rectangle) {
-        _cmd_list.push_back(std::make_unique<RectCMD>(_renderer, rectangle));
+        auto ptr = getCmdFromPool<RectCMD>(_renderer, rectangle);
+        if (ptr) _cmd_list.push_back(std::unique_ptr<RectCMD>(ptr));
     }
 
     void Renderer::drawRectangle(Graphics::Rectangle &&rectangle) {
-        _cmd_list.push_back(std::make_unique<RectCMD>(_renderer, rectangle));
+        auto ptr = getCmdFromPool<RectCMD>(_renderer, rectangle);
+        if (ptr) _cmd_list.push_back(std::unique_ptr<RectCMD>(ptr));
     }
 
     void Renderer::drawTriangle(const Graphics::Triangle &triangle) {
-        _cmd_list.push_back(std::make_unique<TriangleCMD>(_renderer, triangle));
+        auto ptr = getCmdFromPool<TriangleCMD>(_renderer, triangle);
+        if (ptr) _cmd_list.push_back(std::unique_ptr<TriangleCMD>(ptr));
     }
 
     void Renderer::drawTriangle(Graphics::Triangle &&triangle) {
-        _cmd_list.push_back(std::make_unique<TriangleCMD>(_renderer, triangle));
+        auto ptr = getCmdFromPool<TriangleCMD>(_renderer, triangle);
+        if (ptr) _cmd_list.push_back(std::unique_ptr<TriangleCMD>(ptr));
     }
 
     void Renderer::drawEllipse(const Graphics::Ellipse &ellipse) {
-        _cmd_list.push_back(std::make_unique<EllipseCMD>(_renderer, ellipse));
+        auto ptr = getCmdFromPool<EllipseCMD>(_renderer, ellipse);
+        if (ptr) _cmd_list.push_back(std::unique_ptr<EllipseCMD>(ptr));
     }
 
     void Renderer::drawEllipse(Graphics::Ellipse &&ellipse) {
-        _cmd_list.push_back(std::make_unique<EllipseCMD>(_renderer, ellipse));
+        auto ptr = getCmdFromPool<EllipseCMD>(_renderer, ellipse);
+        if (ptr) _cmd_list.push_back(std::unique_ptr<EllipseCMD>(ptr));
     }
 
     void Renderer::drawTexture(SDL_Texture* texture, TextureProperty* property) {
         if (!texture || !property) return;
-        _cmd_list.push_back(std::make_unique<TextureCMD>(_renderer, texture, property));
+        auto ptr = getCmdFromPool<TextureCMD>(_renderer, texture, property);
+        if (ptr) _cmd_list.push_back(std::unique_ptr<TextureCMD>(ptr));
     }
 
     void Renderer::drawText(TTF_Text* text, const Vector2& position) {
         if (!text) return;
-        _cmd_list.push_back(std::make_unique<TextCMD>(_renderer, text, position));
+        auto ptr = getCmdFromPool<TextCMD>(_renderer, text, position);
+        if (ptr) _cmd_list.push_back(std::unique_ptr<TextCMD>(ptr));
     }
 
     void Renderer::drawPixelText(const std::string &text, const MyEngine::Vector2 &position,
                                  const MyEngine::Vector2 &scaled, const SDL_Color& color) {
         if (text.empty() || scaled.x == 0 || scaled.y == 0) return;
-        _cmd_list.push_back(std::make_unique<PixelTextCMD>(_renderer, text, position, scaled, color));
+        auto ptr = getCmdFromPool<PixelTextCMD>(_renderer, text, position, scaled, color);
+        if (ptr) _cmd_list.push_back(std::unique_ptr<PixelTextCMD>(ptr));
     }
 
     void Renderer::setViewport(const Geometry& geometry) {
         if (geometry.width == 0 || geometry.height == 0) {
-            _cmd_list.push_back(std::make_unique<ViewportCMD>(_renderer, true));
+            auto ptr = getCmdFromPool<ViewportCMD>(_renderer, true);
+            if (ptr) _cmd_list.push_back(std::unique_ptr<ViewportCMD>(ptr));
         } else {
-            _cmd_list.push_back(std::make_unique<ViewportCMD>(_renderer, false,
-                      SDL_Rect(geometry.x, geometry.y, geometry.width,geometry.height)));
+            auto ptr = getCmdFromPool<ViewportCMD>(_renderer, false,
+            SDL_Rect(geometry.x, geometry.y, geometry.width,geometry.height));
+            if (ptr) _cmd_list.push_back(std::unique_ptr<ViewportCMD>(ptr));
         }
     }
 
     void Renderer::setClipView(const Geometry& geometry) {
         if (geometry.width == 0 || geometry.height == 0) {
-            _cmd_list.push_back(std::make_unique<ClipCMD>(_renderer, true));
+            auto ptr = getCmdFromPool<ClipCMD>(_renderer, true);
+            if (ptr) _cmd_list.push_back(std::unique_ptr<ClipCMD>(ptr));
         } else {
-            _cmd_list.push_back(std::make_unique<ClipCMD>(_renderer, false,
-                                                              SDL_Rect(geometry.x, geometry.y, geometry.width,geometry.height)));
+            auto ptr = getCmdFromPool<ClipCMD>(_renderer, false,
+                       SDL_Rect(geometry.x, geometry.y, geometry.width,geometry.height));
+            if (ptr) _cmd_list.push_back(std::unique_ptr<ClipCMD>(ptr));
         }
     }
 
     void Renderer::setBlendMode(const SDL_BlendMode &blend_mode) {
-        _cmd_list.push_back(std::make_unique<BlendModeCMD>(_renderer, blend_mode));
+        auto ptr = getCmdFromPool<BlendModeCMD>(_renderer, blend_mode);
+        if (ptr) _cmd_list.push_back(std::unique_ptr<BlendModeCMD>(ptr));
     }
 
     void Renderer::FillCMD::exec() {
@@ -153,12 +193,24 @@ namespace MyEngine {
         }
     }
 
+    void Renderer::FillCMD::reset(SDL_Renderer *renderer, SDL_Color color, bool covered) {
+        this->renderer = renderer;
+        this->bg_color = color;
+        this->_covered = covered;
+    }
+
     void Renderer::ClipCMD::exec() {
         bool _ret = SDL_SetRenderClipRect(renderer, (_reset ? nullptr : &_clip_area));
         if (!_ret) {
             Logger::log(std::format("Renderer: Set renderer clip area failed! Exception: {}",
                                     SDL_GetError()), Logger::Warn);
         }
+    }
+
+    void Renderer::ClipCMD::reset(SDL_Renderer *renderer, bool reset, SDL_Rect rect) {
+        this->renderer = renderer;
+        this->_reset = reset;
+        this->_clip_area = rect;
     }
 
     void Renderer::ViewportCMD::exec() {
@@ -169,12 +221,23 @@ namespace MyEngine {
         }
     }
 
+    void Renderer::ViewportCMD::reset(SDL_Renderer *renderer, bool reset, SDL_Rect rect) {
+        this->renderer = renderer;
+        this->_reset = reset;
+        this->_viewport_area = rect;
+    }
+
     void Renderer::BlendModeCMD::exec() {
         bool _ret = SDL_SetRenderDrawBlendMode(renderer, _blend_mode);
         if (!_ret) {
             Logger::log(std::format("Renderer: Set render draw blend mode failed! Exception: {}",
                                     SDL_GetError()), Logger::Warn);
         }
+    }
+
+    void Renderer::BlendModeCMD::reset(SDL_Renderer *renderer, SDL_BlendMode blend_mode) {
+        this->renderer = renderer;
+        this->_blend_mode = blend_mode;
     }
 
     void Renderer::PointCMD::exec() {
@@ -200,6 +263,11 @@ namespace MyEngine {
                                         SDL_GetError()), Logger::Error);
             }
         }
+    }
+
+    void Renderer::PointCMD::reset(SDL_Renderer *renderer, const Graphics::Point &point) {
+        this->renderer = renderer;
+        this->point = point;
     }
 
     void Renderer::LineCMD::exec() {
@@ -228,6 +296,11 @@ namespace MyEngine {
                                         SDL_GetError()), Logger::Error);
             }
         }
+    }
+
+    void Renderer::LineCMD::reset(SDL_Renderer *renderer, const Graphics::Line &line) {
+        this->renderer = renderer;
+        this->line = line;
     }
 
     void Renderer::RectCMD::exec() {
@@ -271,6 +344,11 @@ namespace MyEngine {
                 }
             }
         }
+    }
+
+    void Renderer::RectCMD::reset(SDL_Renderer *renderer, const Graphics::Rectangle &rect) {
+        this->renderer = renderer;
+        this->rectangle = rect;
     }
 
     void Renderer::TriangleCMD::exec() {
@@ -320,6 +398,11 @@ namespace MyEngine {
         }
     }
 
+    void Renderer::TriangleCMD::reset(SDL_Renderer *renderer, const Graphics::Triangle &tri) {
+        this->renderer = renderer;
+        this->triangle = tri;
+    }
+
     void Renderer::EllipseCMD::exec() {
         bool filled = (ellipse.backgroundColor().a >= 0);
         bool bordered = (ellipse.borderSize() > 0);
@@ -340,6 +423,11 @@ namespace MyEngine {
                                         SDL_GetError()), Logger::Error);
             }
         }
+    }
+
+    void Renderer::EllipseCMD::reset(SDL_Renderer *renderer, const Graphics::Ellipse &elli) {
+        this->renderer = renderer;
+        this->ellipse = elli;
     }
 
     void Renderer::TextureCMD::exec() {
@@ -379,12 +467,24 @@ namespace MyEngine {
         }
     }
 
+    void Renderer::TextureCMD::reset(SDL_Renderer *renderer, SDL_Texture *texture, TextureProperty *property) {
+        this->renderer = renderer;
+        this->_texture = texture;
+        this->_property = property;
+    }
+
     void Renderer::TextCMD::exec() {
         bool _ret = TTF_DrawRendererText(text, position.x, position.y);
         if (!_ret) {
             Logger::log(std::format("Renderer: Set render text failed! Exception: {}",
                                     SDL_GetError()), Logger::Error);
         }
+    }
+
+    void Renderer::TextCMD::reset(SDL_Renderer *renderer, TTF_Text *text, const Vector2 &position) {
+        this->renderer = renderer;
+        this->text = text;
+        this->position = position;
     }
 
     void Renderer::PixelTextCMD::exec() {
@@ -407,6 +507,72 @@ namespace MyEngine {
         if (!_ret) {
             Logger::log(std::format("Renderer: Set render scale failed! Exception: {}",
                                     SDL_GetError()), Logger::Warn);
+        }
+    }
+
+    void Renderer::PixelTextCMD::reset(SDL_Renderer *renderer, const std::string &text, const Vector2 &pos,
+                                       const Vector2 &scaled, const SDL_Color &color) {
+        this->renderer = renderer;
+        this->text = text;
+        this->pos = pos;
+        this->scaled = scaled;
+        this->color = color;
+    }
+
+    template<typename CMD, typename... Args>
+    CMD* Renderer::getCmdFromPool(Args... args) {
+        if (_cmd_list.size() >= _max_frame_cmd_cnt) {
+            if (_dis_st == DiscardStrategy::Newest) {
+                // Logger::log("[Renderer] Reached max frame commands, discarding newest", Logger::Debug);
+                return nullptr;
+            }
+            if (_dis_st == DiscardStrategy::Oldest) {
+                // Logger::log("[Renderer] Reached max frame commands, discarding oldest", Logger::Debug);
+                auto& front_cmd = _cmd_list.front();
+                CMD* typed_cmd = dynamic_cast<CMD*>(front_cmd.get());
+                if (typed_cmd) {
+                    auto cmd = std::unique_ptr<CMD>(typed_cmd);
+                    front_cmd.release();
+                    _cmd_list.erase(_cmd_list.begin());
+                    cmd->reset(args...);
+                    return cmd.release();
+                } else {
+                    _cmd_list.erase(_cmd_list.begin());
+                }
+            }
+        }
+        
+        if (_cmd_pool.empty()) {
+            // Logger::log("[Renderer] Creating new command (pool empty)", Logger::Debug);
+            return new CMD(args...);
+        }
+
+        CMD* ptr = nullptr;
+        for (auto it = _cmd_pool.begin(); it != _cmd_pool.end(); ++it) {
+            CMD* typed_cmd = dynamic_cast<CMD*>(it->get());
+            if (typed_cmd) {
+                ptr = typed_cmd;
+                it->release();
+                _cmd_pool.erase(it);
+                break;
+            }
+        }
+        
+        if (!ptr) {
+            // Logger::log("[Renderer] Creating new command (no matching type in pool)", Logger::Debug);
+            return new CMD(args...);
+        }
+        ptr->reset(args...);
+        // Logger::log(std::format("[Renderer] Reused command from pool, remaining: {}", _cmd_pool.size()), Logger::Debug);
+        return ptr;
+    }
+
+    void Renderer::releaseCmd(std::unique_ptr<Command> command) {
+        if (_cmd_pool.size() < _max_cmd_cnt) {  // 修复：使用 < 而不是 <=
+            _cmd_pool.push_back(std::move(command));
+            // Logger::log(std::format("[Renderer] Released command to pool, total: {}", _cmd_pool.size()), Logger::Debug);
+        } else {
+            // Logger::log("[Renderer] Command pool full, discarding command", Logger::Debug);
         }
     }
 
@@ -822,11 +988,11 @@ namespace MyEngine {
     const std::string& Engine::applicationName() const { return _app_name; }
     const std::string& Engine::applicationVersion() const { return _app_version; }
 
-    void Engine::setLimitMaxMemorySize(size_t memory_size) {
-        _max_mem_size = memory_size;
-        _warn_mem_size = static_cast<size_t>(static_cast<float>(_max_mem_size) * 0.85f);
+    void Engine::setLimitMaxMemorySize(size_t mem_in_kb) {
+        _max_mem_kb = mem_in_kb;
+        _warn_mem_kb = static_cast<size_t>(static_cast<float>(_max_mem_kb) * 0.85f);
     }
-    size_t Engine::limitMaxMemorySize() const { return _max_mem_size; }
+    size_t Engine::limitMaxMemorySize() const { return _max_mem_kb; }
 
     bool Engine::isRunning() const {
         return _running;
@@ -931,11 +1097,11 @@ namespace MyEngine {
             }
             if (current_time - start_time >= 1000) {
                 /// Real time monitoring of memory usage, if set max memory size.
-                if (_max_mem_size) {
+                if (_max_mem_kb) {
                     bool ok;
-                    _used_mem_size = SysMemory::getCurProcUsedMemSize(&ok);
+                    _used_mem_kb = SysMemory::getCurProcUsedMemSize(&ok);
                     if (ok) {
-                        if (_used_mem_size >= _max_mem_size) {
+                        if (_used_mem_kb >= _max_mem_kb) {
                             Logger::log("Engine: The memory size currently used has exceeded "
                                         "the maximum memory size set by this application. "
                                         "The application will be closed!", Logger::Fatal);
@@ -944,13 +1110,25 @@ namespace MyEngine {
                                                      "the maximum memory size set by this application. \n"
                                                      "The application will be closed!", nullptr);
                             exit(1);
-                        } else if (_used_mem_size >= _warn_mem_size) {
+                        } else if (_used_mem_kb >= _warn_mem_kb) {
                             Logger::log("Engine: The current memory usage is less than 15%! "
                                         "After exceeding the set value, the application will be closed!",
                                         Logger::Warn);
                         }
                     } else {
                         Logger::log("Engine: Can't get current process memory size!", Logger::Warn);
+                    }
+                } else {
+                    bool ok;
+                    auto status = SysMemory::getSystemMemoryStatus(&ok);
+                    auto av_per = static_cast<float>(status.available_mem) / static_cast<float>(status.total_mem);
+                    if (av_per <= 0.05f) {
+                        Logger::log("Engine: The current system memory is less than 5%. "
+                                    "The engine has crashed.", Logger::Fatal);
+                        throw std::runtime_error("The current available system memory is less than 5%. The engine has crashed.");
+                    } else if (av_per <= 0.15f) {
+                        Logger::log("Engine: The available memory space of the system is less than 15%. "
+                                    "If it falls below 5%, the engine will be crashed!", Logger::Warn);
                     }
                 }
                 /// Update the render frame

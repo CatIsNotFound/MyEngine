@@ -14,10 +14,17 @@ namespace MyEngine {
 
     class Renderer {
     public:
+        enum class DiscardStrategy {
+            Oldest,
+            Newest
+        };
         explicit Renderer(Window* window = nullptr);
         ~Renderer();
         [[nodiscard]] SDL_Renderer* self() const;
         [[nodiscard]] Window* window() const;
+        void setMaxCommandCount(size_t count);
+        void setMaxFrameCommandCount(size_t count);
+        void setDiscardCommandStrategy(DiscardStrategy strategy);
         void _update();
         void fillBackground(const SDL_Color& color, bool covered = false);
         void drawPoint(const Graphics::Point& point);
@@ -53,57 +60,65 @@ namespace MyEngine {
             SDL_Color bg_color;
             bool _covered;
             void exec() override;
+            void reset(SDL_Renderer* renderer, SDL_Color color = StdColor::Black, bool covered = false);
         };
         struct ClipCMD : public Command {
-            explicit ClipCMD(SDL_Renderer* renderer, bool reset = true, SDL_Rect rect = {0, 0, 0, 0})
+            explicit ClipCMD(SDL_Renderer* renderer, bool reset = true, SDL_Rect rect = {})
                 : Command(renderer), _reset(reset), _clip_area(rect) {}
             SDL_Rect _clip_area;
             bool _reset;
             void exec() override;
+            void reset(SDL_Renderer* renderer, bool reset = true, SDL_Rect rect = {});
         };
         struct ViewportCMD : public Command {
-            explicit ViewportCMD(SDL_Renderer* renderer, bool reset = true, SDL_Rect rect = {0, 0, 0, 0})
+            explicit ViewportCMD(SDL_Renderer* renderer, bool reset = true, SDL_Rect rect = {})
                 : Command(renderer), _reset(reset), _viewport_area(rect) {}
             SDL_Rect _viewport_area;
             bool _reset;
             void exec() override;
+            void reset(SDL_Renderer* renderer, bool reset = true, SDL_Rect rect = {});
         };
         struct BlendModeCMD : public Command {
             explicit BlendModeCMD(SDL_Renderer* renderer, SDL_BlendMode blend_mode = SDL_BLENDMODE_NONE)
                 : Command(renderer), _blend_mode(blend_mode) {}
             SDL_BlendMode _blend_mode;
             void exec() override;
+            void reset(SDL_Renderer* renderer, SDL_BlendMode blend_mode = SDL_BLENDMODE_NONE);
         };
         struct PointCMD : public Command {
             explicit PointCMD(SDL_Renderer* renderer, const Graphics::Point& point)
                 : Command(renderer), point(point) {}
             Graphics::Point point;
             void exec() override;
+            void reset(SDL_Renderer* renderer, const Graphics::Point& point);
         };
         struct LineCMD : public Command {
             explicit LineCMD(SDL_Renderer* renderer, const Graphics::Line& line)
                 : Command(renderer), line(line) {}
             Graphics::Line line;
             void exec() override;
+            void reset(SDL_Renderer* renderer, const Graphics::Line& line);
         };
         struct RectCMD : public Command {
-
             explicit RectCMD(SDL_Renderer* renderer, const Graphics::Rectangle& rect)
                 : Command(renderer), rectangle(rect) {}
             Graphics::Rectangle rectangle;
             void exec() override;
+            void reset(SDL_Renderer* renderer, const Graphics::Rectangle& rect);
         };
         struct TriangleCMD : public Command {
             explicit TriangleCMD(SDL_Renderer* renderer, const Graphics::Triangle& tri)
                     : Command(renderer), triangle(tri) {}
             Graphics::Triangle triangle;
             void exec() override;
+            void reset(SDL_Renderer* renderer, const Graphics::Triangle& tri);
         };
         struct EllipseCMD : public Command {
             explicit EllipseCMD(SDL_Renderer* renderer, const Graphics::Ellipse& elli)
                     : Command(renderer), ellipse(elli) {}
             Graphics::Ellipse ellipse;
             void exec() override;
+            void reset(SDL_Renderer* renderer, const Graphics::Ellipse& elli);
         };
         struct TextureCMD : public Command {
             explicit TextureCMD(SDL_Renderer* renderer, SDL_Texture* texture, TextureProperty* property)
@@ -111,6 +126,7 @@ namespace MyEngine {
             SDL_Texture* _texture;
             TextureProperty* _property;
             void exec() override;
+            void reset(SDL_Renderer* renderer, SDL_Texture* texture, TextureProperty* property);
         };
         struct TextCMD : public Command {
             explicit TextCMD(SDL_Renderer* renderer, TTF_Text* text, const Vector2& position)
@@ -118,6 +134,7 @@ namespace MyEngine {
             TTF_Text* text;
             Vector2 position;
             void exec() override;
+            void reset(SDL_Renderer* renderer, TTF_Text* text, const Vector2& position);
         };
         struct PixelTextCMD : public Command {
             explicit PixelTextCMD(SDL_Renderer* renderer, const std::string& text,
@@ -127,11 +144,23 @@ namespace MyEngine {
             Vector2 pos, scaled;
             SDL_Color color;
             void exec() override;
+            void reset(SDL_Renderer* renderer, const std::string& text,
+                       const Vector2& pos, const Vector2& scaled, const SDL_Color& color);
         };
+
+        std::deque<std::unique_ptr<Command>> _cmd_pool;
+
+        template<typename CMD, typename... Args>
+        CMD* getCmdFromPool(Args... args);
+
+        void releaseCmd(std::unique_ptr<Command> command);
+
+        std::deque<std::unique_ptr<Command>> _cmd_list;
+        DiscardStrategy _dis_st{DiscardStrategy::Oldest};
         SDL_Renderer* _renderer{nullptr};
         Window* _window{nullptr};
         static SDL_Color _background_color;
-        std::vector<std::unique_ptr<Command>> _cmd_list;
+        size_t _max_cmd_cnt{2048}, _max_frame_cmd_cnt{2048};
     };
 
     class Window {
@@ -268,7 +297,7 @@ namespace MyEngine {
         [[nodiscard]] const std::string& applicationName() const;
         [[nodiscard]] const std::string& applicationVersion() const;
 
-        void setLimitMaxMemorySize(size_t memory_size);
+        void setLimitMaxMemorySize(size_t mem_in_kb);
         [[nodiscard]] size_t limitMaxMemorySize() const;
 
         bool isRunning() const;
@@ -305,7 +334,7 @@ namespace MyEngine {
         std::unordered_map<SDL_WindowID, std::unique_ptr<Window>> _window_list;
         std::function<void()> _clean_up_event;
         std::string _app_name, _app_id, _app_version;
-        size_t _used_mem_size{0}, _max_mem_size{0}, _warn_mem_size{0};
+        size_t _used_mem_kb{0}, _max_mem_kb{0}, _warn_mem_kb{0};
     };
 
     class TextSystem {

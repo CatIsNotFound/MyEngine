@@ -14,6 +14,7 @@
 #include <vector>
 #include <array>
 #include <deque>
+#include <list>
 #include <queue>
 #include <memory>
 #include <functional>

@@ -27,7 +27,7 @@ namespace MyEngine {
         ~Logger() = delete;
 
         static void log(const std::string &message, LogLevel level = Debug) {
-            _running_time = std::chrono::system_clock::now().time_since_epoch().count();
+            _running_time = std::chrono::high_resolution_clock::now().time_since_epoch().count();
             if (level < _base_level) return;
             auto _real_time = (float) (_running_time - _started_time) / 1e9;
             if (level >= Warn) {
@@ -74,7 +74,7 @@ namespace MyEngine {
 
     inline Logger::LogLevel Logger::_base_level = Logger::Info;
     inline Logger::LogLevel Logger::_last_log_level = Logger::Debug;
-    inline uint64_t Logger::_started_time = std::chrono::system_clock::now().time_since_epoch().count();
+    inline uint64_t Logger::_started_time = std::chrono::high_resolution_clock::now().time_since_epoch().count();
     inline uint64_t Logger::_running_time = 0;
     inline std::string Logger::_last_log_info;
 }
