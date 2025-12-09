@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MYENGINE_RGBACOLOR_H
-#define MYENGINE_RGBACOLOR_H
+#ifndef MYENGINE_UTILS_RGBACOLOR_H
+#define MYENGINE_UTILS_RGBACOLOR_H
 #include "../Libs.h"
 
 namespace MyEngine {
@@ -160,4 +160,4 @@ namespace MyEngine {
     }
 }
 
-#endif //MYENGINE_RGBACOLOR_H
+#endif //MYENGINE_UTILS_RGBACOLOR_H

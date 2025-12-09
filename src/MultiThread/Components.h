@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MYENGINE_COMPONENTS_H
-#define MYENGINE_COMPONENTS_H
+#ifndef MYENGINE_MULTITHREAD_COMPONENTS_H
+#define MYENGINE_MULTITHREAD_COMPONENTS_H
 #include "../Libs.h"
 namespace MyEngine {
     class Timer {
@@ -66,4 +66,4 @@ namespace MyEngine {
     };
 }
 
-#endif //MYENGINE_COMPONENTS_H
+#endif //MYENGINE_MULTITHREAD_COMPONENTS_H

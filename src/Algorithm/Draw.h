@@ -1,7 +1,7 @@
 
 #pragma once
-#ifndef MYENGINE_DRAW_H
-#define MYENGINE_DRAW_H
+#ifndef MYENGINE_ALGORITHM_DRAW_H
+#define MYENGINE_ALGORITHM_DRAW_H
 #ifndef M_PI
 #define M_PI		3.14159265358979323846
 #endif
@@ -165,4 +165,4 @@ namespace MyEngine {
     }
 }
 
-#endif //MYENGINE_DRAW_H
+#endif //MYENGINE_ALGORITHM_DRAW_H

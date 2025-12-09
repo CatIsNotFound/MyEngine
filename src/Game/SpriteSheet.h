@@ -1,6 +1,6 @@
 
-#ifndef MYENGINE_SPRITESHEET_H
-#define MYENGINE_SPRITESHEET_H
+#ifndef MYENGINE_GAME_SPRITESHEET_H
+#define MYENGINE_GAME_SPRITESHEET_H
 #include "Sprite.h"
 
 namespace MyEngine {
@@ -64,4 +64,4 @@ namespace MyEngine {
     };
 }
 
-#endif //MYENGINE_SPRITESHEET_H
+#endif //MYENGINE_GAME_SPRITESHEET_H

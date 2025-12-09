@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MYENGINE_DATETIME_H
-#define MYENGINE_DATETIME_H
+#ifndef MYENGINE_UTILS_DATETIME_H
+#define MYENGINE_UTILS_DATETIME_H
 #include "Logger.h"
 
 namespace MyEngine {
@@ -313,4 +313,4 @@ namespace MyEngine {
     inline std::string DateTime::timezone{std::chrono::current_zone()->name()};
 }
 
-#endif //MYENGINE_DATETIME_H
+#endif //MYENGINE_UTILS_DATETIME_H

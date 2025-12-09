@@ -1,6 +1,6 @@
 
-#ifndef MYENGINE_BUTTON_H
-#define MYENGINE_BUTTON_H
+#ifndef MYENGINE_UI_BUTTON_H
+#define MYENGINE_UI_BUTTON_H
 #include "../Basic.h"
 #include "Control.h"
 namespace MyEngine {
@@ -111,4 +111,4 @@ namespace MyEngine {
     };
 } // MyEngine
 
-#endif //MYENGINE_BUTTON_H
+#endif //MYENGINE_UI_BUTTON_H

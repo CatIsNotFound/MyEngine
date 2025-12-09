@@ -1,5 +1,5 @@
-#ifndef MYENGINE_SYSMEMORY_H
-#define MYENGINE_SYSMEMORY_H
+#ifndef MYENGINE_UTILS_SYSMEMORY_H
+#define MYENGINE_UTILS_SYSMEMORY_H
 #include <cstdint>
 #include <cstring>
 #include <cstdio>
@@ -90,4 +90,4 @@ namespace MyEngine {
 }
 
 
-#endif //MYENGINE_SYSMEMORY_H
+#endif //MYENGINE_UTILS_SYSMEMORY_H

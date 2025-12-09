@@ -687,6 +687,10 @@ namespace MyEngine {
         return true;
     }
 
+    bool BGM::setSpeedAndPitch(float value) {
+        return MIX_SetTrackFrequencyRatio(_track, value);
+    }
+
     float BGM::volume() const {
         return _volume;
     }
@@ -845,6 +849,10 @@ namespace MyEngine {
         return true;
     }
 
+    bool SFX::setSpeedAndPitch(float value) {
+        return MIX_SetTrackFrequencyRatio(_track, value);
+    }
+
     float SFX::volume() const {
         return _volume;
     }
@@ -859,6 +867,10 @@ namespace MyEngine {
 
     const MIX_Point3D& SFX::get3DPosition() const {
         return _mix_3d;
+    }
+
+    float SFX::speedAndPitch() const {
+        return MIX_GetTrackFrequencyRatio(_track);
     }
 
     void SFX::load() {
@@ -896,6 +908,4 @@ namespace MyEngine {
         SDL_DestroyProperties(_prop_id);
         _is_load = false;
     }
-
-
 }

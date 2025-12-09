@@ -57,12 +57,12 @@ if (BUILD_SHARED_LIBS_ONLY)
             src/Core.h
             src/Components.cpp
             src/Components.h
-            src/MultiThread/All
+            src/MultiThread/All.h
             src/MultiThread/Components.cpp
             src/MultiThread/Components.h
-            src/Utils/All
+            src/Utils/All.h
             src/Utils/Random.h
-            src/Algorithm/All
+            src/Algorithm/All.h
             src/Algorithm/Draw.h
             src/Utils/DateTime.h
             src/Utils/Cursor.h
@@ -76,11 +76,14 @@ if (BUILD_SHARED_LIBS_ONLY)
             src/Utils/FileSystem.cpp
             src/Utils/FileSystem.h
             src/Utils/RGBAColor.h
-            src/Sprite/Sprite.cpp
-            src/Sprite/Sprite.h
-            src/Sprite/SpriteSheet.cpp
-            src/Sprite/SpriteSheet.h
+            src/Game/Sprite.cpp
+            src/Game/Sprite.h
+            src/Game/SpriteSheet.cpp
+            src/Game/SpriteSheet.h
             src/Utils/SysMemory.h
+            src/UI/All.h
+            src/Game/Object.cpp
+            src/Game/Object.h
     )
 else ()
     add_library(${PROJECT_NAME} STATIC
@@ -91,12 +94,12 @@ else ()
             src/Core.h
             src/Components.cpp
             src/Components.h
-            src/MultiThread/All
+            src/MultiThread/All.h
             src/MultiThread/Components.cpp
             src/MultiThread/Components.h
-            src/Utils/All
+            src/Utils/All.h
             src/Utils/Random.h
-            src/Algorithm/All
+            src/Algorithm/All.h
             src/Algorithm/Draw.h
             src/Utils/DateTime.h
             src/Utils/Cursor.h
@@ -110,11 +113,14 @@ else ()
             src/Utils/FileSystem.cpp
             src/Utils/FileSystem.h
             src/Utils/RGBAColor.h
-            src/Sprite/Sprite.cpp
-            src/Sprite/Sprite.h
-            src/Sprite/SpriteSheet.cpp
-            src/Sprite/SpriteSheet.h
+            src/Game/Sprite.cpp
+            src/Game/Sprite.h
+            src/Game/SpriteSheet.cpp
+            src/Game/SpriteSheet.h
             src/Utils/SysMemory.h
+            src/UI/All.h
+            src/Game/Object.cpp
+            src/Game/Object.h
     )
 endif ()
 
@@ -142,7 +148,6 @@ install(DIRECTORY src/
         DESTINATION include/MyEngine
         FILES_MATCHING
             PATTERN "*.h"
-            PATTERN "All"
 )
 
 install(FILES src/MyEngine

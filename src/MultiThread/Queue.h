@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MYENGINE_QUEUE_H
-#define MYENGINE_QUEUE_H
+#ifndef MYENGINE_MULTITHREAD_QUEUE_H
+#define MYENGINE_MULTITHREAD_QUEUE_H
 #include "../Libs.h"
 
 namespace MyEngine {
@@ -106,4 +106,4 @@ namespace MyEngine {
     };
 }
 
-#endif // !QUEUE_H
+#endif // MYENGINE_MULTITHREAD_QUEUE_H

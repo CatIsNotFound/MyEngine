@@ -3,8 +3,8 @@
 #define MYENGINE_MYENGINE
 
 #include "Core.h"
-#include "Algorithm/All"
-#include "MultiThread/All"
-#include "Utils/All"
+#include "Algorithm/All.h"
+#include "MultiThread/All.h"
+#include "Utils/All.h"
 
 #endif //MYENGINE_MYENGINE

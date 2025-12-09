@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MYENGINE_THREADPOOL_H
-#define MYENGINE_THREADPOOL_H
+#ifndef MYENGINE_MULTITHREAD_THREADPOOL_H
+#define MYENGINE_MULTITHREAD_THREADPOOL_H
 #include "../Libs.h"
 #include "../Utils/Logger.h"
 
@@ -203,4 +203,4 @@ namespace MyEngine {
     };
 }
 
-#endif //MYENGINE_THREADPOOL_H
+#endif //MYENGINE_MULTITHREAD_THREADPOOL_H

@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MYENGINE_RANDOM_H
-#define MYENGINE_RANDOM_H
+#ifndef MYENGINE_UTILS_RANDOM_H
+#define MYENGINE_UTILS_RANDOM_H
 #include "../Libs.h"
 
 namespace MyEngine {
@@ -87,4 +87,4 @@ namespace MyEngine {
 }
 
 
-#endif //MYENGINE_RANDOM_H
+#endif //MYENGINE_UTILS_RANDOM_H

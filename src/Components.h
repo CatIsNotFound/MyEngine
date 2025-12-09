@@ -123,10 +123,12 @@ namespace MyEngine {
         bool setMuted(bool enabled);
         bool setLRChannel(float left, float right);
         bool set3DPosition(float x, float y, float z);
+        bool setSpeedAndPitch(float value = 1.0f);
         [[nodiscard]] bool isMuted() const;
         [[nodiscard]] float volume() const;
         [[nodiscard]] const MIX_StereoGains& getLRChannel() const;
         [[nodiscard]] const MIX_Point3D& get3DPosition() const;
+        [[nodiscard]] float speedAndPitch() const;
         void load();
         void unload();
     private:
@@ -162,10 +164,12 @@ namespace MyEngine {
         bool setMuted(bool enabled);
         bool setLRChannel(float left, float right);
         bool set3DPosition(float x, float y, float z);
+        bool setSpeedAndPitch(float value = 1.0f);
         [[nodiscard]] bool isMuted() const;
         [[nodiscard]] float volume() const;
         [[nodiscard]] const MIX_StereoGains& getLRChannel() const;
         [[nodiscard]] const MIX_Point3D& get3DPosition() const;
+        [[nodiscard]] float speedAndPitch() const;
 
         void load();
         void unload();

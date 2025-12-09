@@ -1,8 +1,8 @@
 #pragma once
-#ifndef MYENGINE_FILESYSTEM_H
-#define MYENGINE_FILESYSTEM_H
+#ifndef MYENGINE_UTILS_FILESYSTEM_H
+#define MYENGINE_UTILS_FILESYSTEM_H
 
-#include "../Utils/Logger.h"
+#include "Logger.h"
 
 namespace MyEngine {
     /**
@@ -200,4 +200,4 @@ namespace MyEngine {
     };
 }
 
-#endif //MYENGINE_FILESYSTEM_H
+#endif //MYENGINE_UTILS_FILESYSTEM_H

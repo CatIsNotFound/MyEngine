@@ -1,6 +1,6 @@
 
-#ifndef MYENGINE_SPRITE_H
-#define MYENGINE_SPRITE_H
+#ifndef MYENGINE_GAME_SPRITE_H
+#define MYENGINE_GAME_SPRITE_H
 #include "../Components.h"
 
 namespace MyEngine {
@@ -50,4 +50,4 @@ namespace MyEngine {
     };
 }
 
-#endif //MYENGINE_SPRITE_H
+#endif //MYENGINE_GAME_SPRITE_H

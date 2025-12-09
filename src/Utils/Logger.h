@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MYENGINE_LOGGER_H
-#define MYENGINE_LOGGER_H
+#ifndef MYENGINE_UTILS_LOGGER_H
+#define MYENGINE_UTILS_LOGGER_H
 #include "../Libs.h"
 
 namespace MyEngine {
@@ -78,4 +78,4 @@ namespace MyEngine {
     inline uint64_t Logger::_running_time = 0;
     inline std::string Logger::_last_log_info;
 }
-#endif //MYENGINE_LOGGER_H
+#endif //MYENGINE_UTILS_LOGGER_H

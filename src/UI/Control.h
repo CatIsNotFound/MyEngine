@@ -1,5 +1,5 @@
-#ifndef MYENGINE_CONTROL_H
-#define MYENGINE_CONTROL_H
+#ifndef MYENGINE_UI_CONTROL_H
+#define MYENGINE_UI_CONTROL_H
 #include "../Core.h"
 #include "../Utils/Cursor.h"
 #include "../Algorithm/Collider.h"
@@ -178,4 +178,4 @@ namespace MyEngine {
 
 } // MyEngine
 
-#endif //MYENGINE_CONTROL_H
+#endif //MYENGINE_UI_CONTROL_H

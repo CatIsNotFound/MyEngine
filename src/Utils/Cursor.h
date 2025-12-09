@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MYENGINE_CURSOR_H
-#define MYENGINE_CURSOR_H
+#ifndef MYENGINE_UTILS_CURSOR_H
+#define MYENGINE_UTILS_CURSOR_H
 #include "Logger.h"
 #include "../Components.h"
 
@@ -348,4 +348,4 @@ namespace MyEngine {
 }
 
 
-#endif //MYENGINE_CURSOR_H
+#endif //MYENGINE_UTILS_CURSOR_H

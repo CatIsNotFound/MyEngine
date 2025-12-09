@@ -1,6 +1,6 @@
 
-#ifndef MYENGINE_COLLIDER_H
-#define MYENGINE_COLLIDER_H
+#ifndef MYENGINE_ALGORITHM_COLLIDER_H
+#define MYENGINE_ALGORITHM_COLLIDER_H
 #include "../Basic.h"
 
 namespace MyEngine {
@@ -64,4 +64,4 @@ namespace MyEngine {
     }
 }
 
-#endif //MYENGINE_COLLIDER_H
+#endif //MYENGINE_ALGORITHM_COLLIDER_H
