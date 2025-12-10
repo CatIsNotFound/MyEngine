@@ -1,0 +1,140 @@
+name: Cache Dependencies
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - '.github/workflows/dependencies.yml'
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Update cache weekly on Sundays at 2 AM UTC
+    - cron: '0 2 * * 0'
+  workflow_dispatch:
+
+jobs:
+  cache-sdl-dependencies:
+    name: Cache SDL3 Dependencies
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        build_type: [Release]
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Cache SDL3 and dependencies
+      id: cache-sdl
+      uses: actions/cache@v4
+      with:
+        path: |
+          ${{github.workspace}}/SDL_install
+          ${{github.workspace}}/SDL_image_install
+          ${{github.workspace}}/SDL_mixer_install
+          ${{github.workspace}}/SDL_ttf_install
+        key: ${{ runner.os }}-sdl3-${{ hashFiles('.github/workflows/dependencies.yml') }}
+        restore-keys: |
+          ${{ runner.os }}-sdl3-
+
+    - name: Setup Linux dependencies
+      if: matrix.os == 'ubuntu-latest' && steps.cache-sdl.outputs.cache-hit != 'true'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential \
+          cmake \
+          ninja-build \
+          pkg-config \
+          libasound2-dev \
+          libpulse-dev \
+          libaudio-dev \
+          libjack-dev \
+          libsndio-dev \
+          libsamplerate0-dev \
+          libudev-dev \
+          libwayland-dev \
+          libx11-dev \
+          libxext-dev \
+          libxrandr-dev \
+          libxcursor-dev \
+          libxinerama-dev \
+          libxi-dev \
+          libgl1-mesa-dev \
+          libglu1-mesa-dev \
+          libdbus-1-dev \
+          libibus-1.0-dev \
+          libfcitx-5-dev \
+          libgtk-3-dev
+
+    - name: Setup macOS dependencies
+      if: matrix.os == 'macos-latest' && steps.cache-sdl.outputs.cache-hit != 'true'
+      run: |
+        brew install cmake ninja pkg-config
+
+    - name: Build SDL3 from source (if not cached)
+      if: steps.cache-sdl.outputs.cache-hit != 'true'
+      run: |
+        # Build SDL3
+        git clone https://github.com/libsdl-org/SDL.git ${{github.workspace}}/SDL
+        cd ${{github.workspace}}/SDL
+        git checkout main
+        cmake -B build -G "Unix Makefiles" \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DCMAKE_INSTALL_PREFIX=${{github.workspace}}/SDL_install \
+          -DSDL_SHARED=ON \
+          -DSDL_STATIC=ON
+        cmake --build build --config ${{ matrix.build_type }}
+        cmake --install build --config ${{ matrix.build_type }}
+
+        # Build SDL3_image
+        git clone https://github.com/libsdl-org/SDL_image.git ${{github.workspace}}/SDL_image
+        cd ${{github.workspace}}/SDL_image
+        git checkout main
+        cmake -B build -G "Unix Makefiles" \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DCMAKE_INSTALL_PREFIX=${{github.workspace}}/SDL_image_install \
+          -DSDL3_DIR=${{github.workspace}}/SDL_install/lib/cmake/SDL3 \
+          -DSDL3IMAGE_VENDORED=ON \
+          -DSDL3IMAGE_DEPS_SHARED=ON \
+          -DSDL3IMAGE_SAMPLES=OFF
+        cmake --build build --config ${{ matrix.build_type }}
+        cmake --install build --config ${{ matrix.build_type }}
+
+        # Build SDL3_mixer
+        git clone https://github.com/libsdl-org/SDL_mixer.git ${{github.workspace}}/SDL_mixer
+        cd ${{github.workspace}}/SDL_mixer
+        git checkout main
+        cmake -B build -G "Unix Makefiles" \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DCMAKE_INSTALL_PREFIX=${{github.workspace}}/SDL_mixer_install \
+          -DSDL3_DIR=${{github.workspace}}/SDL_install/lib/cmake/SDL3 \
+          -DSDL3MIXER_VENDORED=ON \
+          -DSDL3MIXER_DEPS_SHARED=ON \
+          -DSDL3MIXER_SAMPLES=OFF
+        cmake --build build --config ${{ matrix.build_type }}
+        cmake --install build --config ${{ matrix.build_type }}
+
+        # Build SDL3_ttf
+        git clone https://github.com/libsdl-org/SDL_ttf.git ${{github.workspace}}/SDL_ttf
+        cd ${{github.workspace}}/SDL_ttf
+        git checkout main
+        cmake -B build -G "Unix Makefiles" \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DCMAKE_INSTALL_PREFIX=${{github.workspace}}/SDL_ttf_install \
+          -DSDL3_DIR=${{github.workspace}}/SDL_install/lib/cmake/SDL3 \
+          -DSDL3TTF_VENDORED=ON \
+          -DSDL3TTF_DEPS_SHARED=ON \
+          -DSDL3TTF_SAMPLES=OFF
+        cmake --build build --config ${{ matrix.build_type }}
+        cmake --install build --config ${{ matrix.build_type }}
+
+    - name: Upload dependency cache info
+      if: always()
+      run: |
+        echo "Cache updated for ${{ runner.os }}"
+        echo "SDL3 version: $(ls ${{github.workspace}}/SDL_install/lib/libSDL3* | head -1)"
+        echo "SDL3_image version: $(ls ${{github.workspace}}/SDL_image_install/lib/libSDL3_image* | head -1)"
+        echo "SDL3_mixer version: $(ls ${{github.workspace}}/SDL_mixer_install/lib/libSDL3_mixer* | head -1)"
+        echo "SDL3_ttf version: $(ls ${{github.workspace}}/SDL_ttf_install/lib/libSDL3_ttf* | head -1)"

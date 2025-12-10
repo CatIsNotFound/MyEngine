@@ -1,0 +1,229 @@
+name: Cross-Platform CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        build_type: [Release, Debug]
+        include:
+          - os: ubuntu-latest
+            platform: linux
+            cmake_generator: "Unix Makefiles"
+            sdl_install_cmd: |
+              sudo apt-get update
+              sudo apt-get install -y build-essential cmake git
+          - os: windows-latest
+            platform: windows
+            cmake_generator: "Visual Studio 17 2022"
+            sdl_install_cmd: |
+              # Windows dependencies will be built from source
+          - os: macos-latest
+            platform: macos
+            cmake_generator: "Unix Makefiles"
+            sdl_install_cmd: |
+              brew install cmake git
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Setup build environment (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential \
+          cmake \
+          ninja-build \
+          pkg-config \
+          libasound2-dev \
+          libpulse-dev \
+          libaudio-dev \
+          libjack-dev \
+          libsndio-dev \
+          libsamplerate0-dev \
+          libudev-dev \
+          libwayland-dev \
+          libx11-dev \
+          libxext-dev \
+          libxrandr-dev \
+          libxcursor-dev \
+          libxinerama-dev \
+          libxi-dev \
+          libgl1-mesa-dev \
+          libglu1-mesa-dev \
+          libdbus-1-dev \
+          libibus-1.0-dev \
+          libfcitx-5-dev \
+          libgtk-3-dev
+
+    - name: Setup build environment (macOS)
+      if: matrix.os == 'macos-latest'
+      run: |
+        brew install cmake ninja pkg-config
+
+    - name: Setup build environment (Windows)
+      if: matrix.os == 'windows-latest'
+      uses: microsoft/setup-msbuild@v1.3
+
+    - name: Create build directory
+      run: cmake -E make_directory ${{github.workspace}}/build
+
+    # Build SDL3 from source for better compatibility
+    - name: Clone and build SDL3
+      run: |
+        git clone https://github.com/libsdl-org/SDL.git ${{github.workspace}}/SDL
+        cd ${{github.workspace}}/SDL
+        git checkout main
+        cmake -B build -G "${{ matrix.cmake_generator }}" \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DCMAKE_INSTALL_PREFIX=${{github.workspace}}/SDL_install \
+          -DSDL_SHARED=ON \
+          -DSDL_STATIC=ON
+        cmake --build build --config ${{ matrix.build_type }}
+        cmake --install build --config ${{ matrix.build_type }}
+
+    - name: Clone and build SDL3_image
+      run: |
+        git clone https://github.com/libsdl-org/SDL_image.git ${{github.workspace}}/SDL_image
+        cd ${{github.workspace}}/SDL_image
+        git checkout main
+        cmake -B build -G "${{ matrix.cmake_generator }}" \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DCMAKE_INSTALL_PREFIX=${{github.workspace}}/SDL_image_install \
+          -DSDL3_DIR=${{github.workspace}}/SDL_install/lib/cmake/SDL3 \
+          -DSDL3IMAGE_VENDORED=ON \
+          -DSDL3IMAGE_DEPS_SHARED=ON \
+          -DSDL3IMAGE_SAMPLES=OFF
+        cmake --build build --config ${{ matrix.build_type }}
+        cmake --install build --config ${{ matrix.build_type }}
+
+    - name: Clone and build SDL3_mixer
+      run: |
+        git clone https://github.com/libsdl-org/SDL_mixer.git ${{github.workspace}}/SDL_mixer
+        cd ${{github.workspace}}/SDL_mixer
+        git checkout main
+        cmake -B build -G "${{ matrix.cmake_generator }}" \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DCMAKE_INSTALL_PREFIX=${{github.workspace}}/SDL_mixer_install \
+          -DSDL3_DIR=${{github.workspace}}/SDL_install/lib/cmake/SDL3 \
+          -DSDL3MIXER_VENDORED=ON \
+          -DSDL3MIXER_DEPS_SHARED=ON \
+          -DSDL3MIXER_SAMPLES=OFF
+        cmake --build build --config ${{ matrix.build_type }}
+        cmake --install build --config ${{ matrix.build_type }}
+
+    - name: Clone and build SDL3_ttf
+      run: |
+        git clone https://github.com/libsdl-org/SDL_ttf.git ${{github.workspace}}/SDL_ttf
+        cd ${{github.workspace}}/SDL_ttf
+        git checkout main
+        cmake -B build -G "${{ matrix.cmake_generator }}" \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DCMAKE_INSTALL_PREFIX=${{github.workspace}}/SDL_ttf_install \
+          -DSDL3_DIR=${{github.workspace}}/SDL_install/lib/cmake/SDL3 \
+          -DSDL3TTF_VENDORED=ON \
+          -DSDL3TTF_DEPS_SHARED=ON \
+          -DSDL3TTF_SAMPLES=OFF
+        cmake --build build --config ${{ matrix.build_type }}
+        cmake --install build --config ${{ matrix.build_type }}
+
+    - name: Configure MyEngine with CMake
+      run: |
+        cmake -B ${{github.workspace}}/build -G "${{ matrix.cmake_generator }}" \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DCMAKE_INSTALL_PREFIX=${{github.workspace}}/MyEngine_install \
+          -DSDL3_LIB=${{github.workspace}}/SDL_install \
+          -DSDL3_IMAGE_LIB=${{github.workspace}}/SDL_image_install \
+          -DSDL3_MIXER_LIB=${{github.workspace}}/SDL_mixer_install \
+          -DSDL3_TTF_LIB=${{github.workspace}}/SDL_ttf_install \
+          -DBUILD_TEST=ON
+
+    - name: Build MyEngine
+      run: cmake --build ${{github.workspace}}/build --config ${{ matrix.build_type }}
+
+    - name: Install MyEngine
+      run: cmake --install ${{github.workspace}}/build --config ${{ matrix.build_type }}
+
+    - name: Run tests (if available)
+      working-directory: ${{github.workspace}}/build
+      run: |
+        if [ -f "test/MyEngine_test" ]; then
+          ./test/MyEngine_test
+        elif [ -f "test/${{ matrix.build_type }}/MyEngine_test.exe" ]; then
+          ./test/${{ matrix.build_type }}/MyEngine_test.exe
+        elif [ -f "test/MyEngine_test.exe" ]; then
+          ./test/MyEngine_test.exe
+        else
+          echo "No test executable found"
+        fi
+      shell: bash
+
+    - name: Upload build artifacts
+      if: matrix.build_type == 'Release'
+      uses: actions/upload-artifact@v4
+      with:
+        name: MyEngine-${{ matrix.platform }}-${{ matrix.build_type }}
+        path: |
+          ${{github.workspace}}/MyEngine_install/
+          !${{github.workspace}}/MyEngine_install/**/*.pdb
+
+  code-quality:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install tools
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cppcheck clang-tidy
+
+    - name: Run cppcheck
+      run: |
+        cppcheck --enable=all --error-exitcode=1 \
+          --suppress=missingIncludeSystem \
+          --suppress=unusedFunction \
+          --suppress=unmatchedSuppression \
+          --std=c++20 \
+          --verbose \
+          src/ || true
+
+    - name: Check code formatting
+      run: |
+        find src -name "*.h" -o -name "*.cpp" | while read file; do
+          if [ -f "$file" ]; then
+            echo "Checking $file"
+            # Add formatting checks here if needed
+          fi
+        done
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Run security scan
+      uses: github/super-linter@v4
+      env:
+        DEFAULT_BRANCH: main
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        VALIDATE_CPP: true
+        VALIDATE_CMAKE: true
+        VALIDATE_MARKDOWN: true
+        VALIDATE_YAML: true

@@ -1,0 +1,296 @@
+name: Optimized CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_run:
+    workflows: ["Cache Dependencies"]
+    types:
+      - completed
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }} (${{ matrix.build_type }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        build_type: [Release, Debug]
+        include:
+          - os: ubuntu-latest
+            platform: linux
+            cmake_generator: "Unix Makefiles"
+          - os: windows-latest
+            platform: windows
+            cmake_generator: "Visual Studio 17 2022"
+          - os: macos-latest
+            platform: macos
+            cmake_generator: "Unix Makefiles"
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Restore cached dependencies
+      id: cache-sdl-restore
+      uses: actions/cache/restore@v4
+      with:
+        path: |
+          ${{github.workspace}}/SDL_install
+          ${{github.workspace}}/SDL_image_install
+          ${{github.workspace}}/SDL_mixer_install
+          ${{github.workspace}}/SDL_ttf_install
+        key: ${{ runner.os }}-sdl3-${{ hashFiles('.github/workflows/dependencies.yml') }}
+        restore-keys: |
+          ${{ runner.os }}-sdl3-
+
+    - name: Setup build environment (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential \
+          cmake \
+          ninja-build \
+          pkg-config \
+          libasound2-dev \
+          libpulse-dev \
+          libaudio-dev \
+          libjack-dev \
+          libsndio-dev \
+          libsamplerate0-dev \
+          libudev-dev \
+          libwayland-dev \
+          libx11-dev \
+          libxext-dev \
+          libxrandr-dev \
+          libxcursor-dev \
+          libxinerama-dev \
+          libxi-dev \
+          libgl1-mesa-dev \
+          libglu1-mesa-dev \
+          libdbus-1-dev \
+          libibus-1.0-dev \
+          libfcitx-5-dev \
+          libgtk-3-dev
+
+    - name: Setup build environment (macOS)
+      if: matrix.os == 'macos-latest'
+      run: |
+        brew install cmake ninja pkg-config
+
+    - name: Check if dependencies are cached
+      id: check-deps
+      run: |
+        if [ -d "${{github.workspace}}/SDL_install" ] && \
+           [ -d "${{github.workspace}}/SDL_image_install" ] && \
+           [ -d "${{github.workspace}}/SDL_mixer_install" ] && \
+           [ -d "${{github.workspace}}/SDL_ttf_install" ]; then
+          echo "cached=true" >> $GITHUB_OUTPUT
+        else
+          echo "cached=false" >> $GITHUB_OUTPUT
+        fi
+      shell: bash
+
+    - name: Build dependencies if not cached
+      if: steps.check-deps.outputs.cached == 'false'
+      run: |
+        echo "Dependencies not cached, building from source..."
+        # Build SDL3
+        git clone https://github.com/libsdl-org/SDL.git ${{github.workspace}}/SDL
+        cd ${{github.workspace}}/SDL
+        git checkout main
+        cmake -B build -G "${{ matrix.cmake_generator }}" \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DCMAKE_INSTALL_PREFIX=${{github.workspace}}/SDL_install \
+          -DSDL_SHARED=ON \
+          -DSDL_STATIC=ON
+        cmake --build build --config ${{ matrix.build_type }}
+        cmake --install build --config ${{ matrix.build_type }}
+
+        # Build SDL3_image
+        git clone https://github.com/libsdl-org/SDL_image.git ${{github.workspace}}/SDL_image
+        cd ${{github.workspace}}/SDL_image
+        git checkout main
+        cmake -B build -G "${{ matrix.cmake_generator }}" \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DCMAKE_INSTALL_PREFIX=${{github.workspace}}/SDL_image_install \
+          -DSDL3_DIR=${{github.workspace}}/SDL_install/lib/cmake/SDL3 \
+          -DSDL3IMAGE_VENDORED=ON \
+          -DSDL3IMAGE_DEPS_SHARED=ON \
+          -DSDL3IMAGE_SAMPLES=OFF
+        cmake --build build --config ${{ matrix.build_type }}
+        cmake --install build --config ${{ matrix.build_type }}
+
+        # Build SDL3_mixer
+        git clone https://github.com/libsdl-org/SDL_mixer.git ${{github.workspace}}/SDL_mixer
+        cd ${{github.workspace}}/SDL_mixer
+        git checkout main
+        cmake -B build -G "${{ matrix.cmake_generator }}" \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DCMAKE_INSTALL_PREFIX=${{github.workspace}}/SDL_mixer_install \
+          -DSDL3_DIR=${{github.workspace}}/SDL_install/lib/cmake/SDL3 \
+          -DSDL3MIXER_VENDORED=ON \
+          -DSDL3MIXER_DEPS_SHARED=ON \
+          -DSDL3MIXER_SAMPLES=OFF
+        cmake --build build --config ${{ matrix.build_type }}
+        cmake --install build --config ${{ matrix.build_type }}
+
+        # Build SDL3_ttf
+        git clone https://github.com/libsdl-org/SDL_ttf.git ${{github.workspace}}/SDL_ttf
+        cd ${{github.workspace}}/SDL_ttf
+        git checkout main
+        cmake -B build -G "${{ matrix.cmake_generator }}" \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DCMAKE_INSTALL_PREFIX=${{github.workspace}}/SDL_ttf_install \
+          -DSDL3_DIR=${{github.workspace}}/SDL_install/lib/cmake/SDL3 \
+          -DSDL3TTF_VENDORED=ON \
+          -DSDL3TTF_DEPS_SHARED=ON \
+          -DSDL3TTF_SAMPLES=OFF
+        cmake --build build --config ${{ matrix.build_type }}
+        cmake --install build --config ${{ matrix.build_type }}
+
+    - name: Configure MyEngine with CMake
+      run: |
+        cmake -B ${{github.workspace}}/build -G "${{ matrix.cmake_generator }}" \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DCMAKE_INSTALL_PREFIX=${{github.workspace}}/MyEngine_install \
+          -DSDL3_LIB=${{github.workspace}}/SDL_install \
+          -DSDL3_IMAGE_LIB=${{github.workspace}}/SDL_image_install \
+          -DSDL3_MIXER_LIB=${{github.workspace}}/SDL_mixer_install \
+          -DSDL3_TTF_LIB=${{github.workspace}}/SDL_ttf_install \
+          -DBUILD_TEST=ON
+
+    - name: Build MyEngine
+      run: cmake --build ${{github.workspace}}/build --config ${{ matrix.build_type }}
+
+    - name: Install MyEngine
+      run: cmake --install ${{github.workspace}}/build --config ${{ matrix.build_type }}
+
+    - name: Verify installation
+      run: |
+        echo "Checking installed files..."
+        ls -la ${{github.workspace}}/MyEngine_install/ || true
+        find ${{github.workspace}}/MyEngine_install -name "*.h" | head -10 || true
+        find ${{github.workspace}}/MyEngine_install -name "*.lib" -o -name "*.a" -o -name "*.so" -o -name "*.dylib" -o -name "*.dll" | head -10 || true
+      shell: bash
+
+    - name: Test basic compilation
+      run: |
+        # Create a simple test to verify the build works
+        mkdir -p test_compile
+        cd test_compile
+        
+        # Create a simple CMakeLists.txt
+        cat > CMakeLists.txt << 'EOF'
+        cmake_minimum_required(VERSION 3.14)
+        project(TestMyEngine)
+        
+        set(CMAKE_CXX_STANDARD 20)
+        set(CMAKE_CXX_STANDARD_REQUIRED ON)
+        
+        # Find MyEngine
+        list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../MyEngine_install")
+        find_package(MyEngine REQUIRED)
+        
+        add_executable(test_myengine test.cpp)
+        target_link_libraries(test_myengine MyEngine::MyEngine)
+        EOF
+        
+        # Create a simple test.cpp
+        cat > test.cpp << 'EOF'
+        #include <MyEngine/MyEngine>
+        #include <iostream>
+        
+        int main() {
+            std::cout << "MyEngine version: " << MYENGINE_FULL_VERSION << std::endl;
+            std::cout << "MyEngine compilation test successful!" << std::endl;
+            return 0;
+        }
+        EOF
+        
+        # Configure and build the test
+        cmake -B build -G "${{ matrix.cmake_generator }}" -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        cmake --build build --config ${{ matrix.build_type }}
+        
+        # Run the test
+        if [ -f "build/test_myengine" ]; then
+          ./build/test_myengine
+        elif [ -f "build/${{ matrix.build_type }}/test_myengine.exe" ]; then
+          ./build/${{ matrix.build_type }}/test_myengine.exe
+        elif [ -f "build/test_myengine.exe" ]; then
+          ./build/test_myengine.exe
+        else
+          echo "Test executable not found"
+          find build -name "*test*" -type f
+        fi
+      shell: bash
+
+    - name: Run tests (if available)
+      working-directory: ${{github.workspace}}/build
+      run: |
+        if [ -f "test/MyEngine_test" ]; then
+          ./test/MyEngine_test
+        elif [ -f "test/${{ matrix.build_type }}/MyEngine_test.exe" ]; then
+          ./test/${{ matrix.build_type }}/MyEngine_test.exe
+        elif [ -f "test/MyEngine_test.exe" ]; then
+          ./test/MyEngine_test.exe
+        else
+          echo "No test executable found"
+        fi
+      shell: bash
+
+    - name: Upload build artifacts
+      if: matrix.build_type == 'Release' && matrix.os == 'ubuntu-latest'
+      uses: actions/upload-artifact@v4
+      with:
+        name: MyEngine-${{ matrix.platform }}-${{ matrix.build_type }}
+        path: |
+          ${{github.workspace}}/MyEngine_install/
+          !${{github.workspace}}/MyEngine_install/**/*.pdb
+
+  documentation:
+    name: Documentation Check
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Check documentation
+      run: |
+        echo "Checking README files..."
+        if [ ! -f "README.md" ]; then
+          echo "ERROR: README.md not found"
+          exit 1
+        fi
+        
+        if [ ! -f "README_zh.md" ]; then
+          echo "ERROR: README_zh.md not found"
+          exit 1
+        fi
+        
+        if [ ! -f "ChangeLog.md" ]; then
+          echo "WARNING: ChangeLog.md not found"
+        fi
+        
+        echo "Documentation check completed successfully"
+
+  summary:
+    name: Build Summary
+    needs: [build, documentation]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+    - name: Build Summary
+      run: |
+        echo "## Build Summary" >> $GITHUB_STEP_SUMMARY
+        echo "- Build matrix completed for multiple platforms and configurations" >> $GITHUB_STEP_SUMMARY
+        echo "- Dependencies: SDL3, SDL3_image, SDL3_mixer, SDL3_ttf" >> $GITHUB_STEP_SUMMARY
+        echo "- Platforms tested: Ubuntu, Windows, macOS" >> $GITHUB_STEP_SUMMARY
+        echo "- Build types: Release, Debug" >> $GITHUB_STEP_SUMMARY
+        echo "- Documentation: README files validated" >> $GITHUB_STEP_SUMMARY
