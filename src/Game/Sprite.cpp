@@ -44,7 +44,7 @@ void MyEngine::Sprite::move(float x, float y) {
 }
 
 void MyEngine::Sprite::move(const Vector2 &position) {
-    _property->move(position);
+    _property->move(position - _anchors);
 }
 
 const MyEngine::Vector2 &MyEngine::Sprite::position() const {
@@ -120,6 +120,14 @@ SDL_FlipMode MyEngine::Sprite::flipMode() const {
     return _property->flip_mode;
 }
 
+void MyEngine::Sprite::setAnchors(const MyEngine::Vector2 &pos) {
+    _anchors.reset(pos);
+}
+
+const MyEngine::Vector2 &MyEngine::Sprite::anchors() const {
+    return _anchors;
+}
+
 void MyEngine::Sprite::draw() const {
     if (!_visible) return;
     if (!_texture) {
@@ -129,4 +137,5 @@ void MyEngine::Sprite::draw() const {
     }
     _texture->render()->drawTexture(_texture->self(), _property.get());
 }
+
 

@@ -142,9 +142,9 @@ namespace MyEngine {
     }
 
     void Renderer::drawPixelText(const std::string &text, const MyEngine::Vector2 &position,
-                                 const MyEngine::Vector2 &scaled, const SDL_Color& color) {
-        if (text.empty() || scaled.x == 0 || scaled.y == 0) return;
-        auto ptr = getCmdFromPool<PixelTextCMD>(_renderer, text, position, scaled, color);
+                                 const SDL_Color& color) {
+        if (text.empty()) return;
+        auto ptr = getCmdFromPool<PixelTextCMD>(_renderer, text, position, color);
         if (ptr) _cmd_list.push_back(std::unique_ptr<PixelTextCMD>(ptr));
     }
 
@@ -457,9 +457,11 @@ namespace MyEngine {
         auto scaled_size = scaled.size;
         SDL_FRect rect_dest = {scaled_pos.x, scaled_pos.y,
                         scaled_size.width, scaled_size.height};
-        _ret = SDL_RenderTextureRotated(renderer, _texture, 
+        auto anchor = _property->anchor();
+        SDL_FPoint center = { anchor.x, anchor.y };
+        _ret = SDL_RenderTextureRotated(renderer, _texture,
                          _property->clip_mode ? &_property->clip_area : nullptr,
-                         &rect_dest, _property->rotate_angle, nullptr, _property->flip_mode);
+                         &rect_dest, _property->rotate_angle, &center, _property->flip_mode);
         if (!_ret) {
             Logger::log(std::format("Renderer: Set render texture failed! Exception: {}",
                                     SDL_GetError()), Logger::Error);
@@ -493,29 +495,18 @@ namespace MyEngine {
             Logger::log(std::format("Renderer: Set render draw color failed! Exception: {}",
                                     SDL_GetError()), Logger::Warn);
         }
-        _ret = SDL_SetRenderScale(renderer, scaled.x, scaled.y);
-        if (!_ret) {
-            Logger::log(std::format("Renderer: Set render scale failed! Exception: {}",
-                                    SDL_GetError()), Logger::Warn);
-        }
         _ret = SDL_RenderDebugText(renderer, pos.x, pos.y, text.c_str());
         if (!_ret) {
             Logger::log(std::format("Renderer: Set render debug text failed! Exception: {}",
                                     SDL_GetError()), Logger::Warn);
         }
-        _ret = SDL_SetRenderScale(renderer, 1.0f, 1.0f);
-        if (!_ret) {
-            Logger::log(std::format("Renderer: Set render scale failed! Exception: {}",
-                                    SDL_GetError()), Logger::Warn);
-        }
     }
 
     void Renderer::PixelTextCMD::reset(SDL_Renderer *renderer, const std::string &text, const Vector2 &pos,
-                                       const Vector2 &scaled, const SDL_Color &color) {
+                                       const SDL_Color &color) {
         this->renderer = renderer;
         this->text = text;
         this->pos = pos;
-        this->scaled = scaled;
         this->color = color;
     }
 

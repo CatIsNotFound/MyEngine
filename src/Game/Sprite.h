@@ -41,10 +41,14 @@ namespace MyEngine {
         void setFlipMode(SDL_FlipMode flip_mode);
         [[nodiscard]] SDL_FlipMode flipMode() const;
 
+        void setAnchors(const Vector2& pos);
+        [[nodiscard]] const Vector2& anchors() const;
+
         void draw() const;
     private:
         Texture* _texture;
         std::unique_ptr<TextureProperty> _property;
+        Vector2 _anchors{};
         bool _visible{true};
         bool _delete_later{false};
     };

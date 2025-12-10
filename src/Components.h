@@ -287,11 +287,16 @@ namespace MyEngine {
         }
         void setScale(float scale = 1.0f) {
             _scale = scale;
-            Vector2 global_center_pos = {
-                _position.x + _size.width / 2, _position.y + _size.height / 2
-            };
-            _scaled_position.reset((_position.x - global_center_pos.x) * _scale + global_center_pos.x, 
-                                    (_position.y - global_center_pos.y) * _scale + global_center_pos.y);
+//            Vector2 global_center_pos = {
+//                _position.x + _size.width / 2, _position.y + _size.height / 2
+//            };
+//            _scaled_position.reset((_position.x - global_center_pos.x) * _scale + global_center_pos.x,
+//                                    (_position.y - global_center_pos.y) * _scale + global_center_pos.y);
+
+            auto scaled_pos = _position + _anchor;
+            _scaled_position.reset((_position.x - scaled_pos.x) * _scale + scaled_pos.x,
+                                   (_position.y - scaled_pos.y) * _scale + scaled_pos.y);
+
             _scaled_size.reset(_size.width * _scale, _size.height * _scale);
         }
         [[nodiscard]] float scale() const {
@@ -300,12 +305,22 @@ namespace MyEngine {
         [[nodiscard]] GeometryF scaledGeometry() const {
             return GeometryF{_scaled_position, _scaled_size};
         }
+        void setAnchor(const Vector2& pos) {
+            _anchor.reset(pos);
+        }
+        void setAnchor(float x, float y) {
+            _anchor.reset(x, y);
+        }
+        [[nodiscard]] const Vector2& anchor() const {
+            return _anchor;
+        }
     private:
         Vector2 _position;
         Size _size;
         float _scale;
         Vector2 _scaled_position;
         Size _scaled_size;
+        Vector2 _anchor;
     };
 
     class Texture {
@@ -371,6 +386,46 @@ namespace MyEngine {
     private:
         std::unordered_map<std::string, std::shared_ptr<TextureProperty>> _tiles_map;
         std::string _current_tiles;
+    };
+
+    class TextureAnimation {
+    public:
+        struct Frame {
+            SDL_Surface *surface;
+            SDL_Texture *texture;
+            uint32_t duration;
+        };
+        TextureAnimation(const TextureAnimation &) = delete;
+        TextureAnimation(TextureAnimation &&) = delete;
+        TextureAnimation &operator=(const TextureAnimation &) = delete;
+        TextureAnimation &operator=(TextureAnimation &&) = delete;
+        explicit TextureAnimation(const std::string& file_path, Renderer* renderer);
+        ~TextureAnimation();
+
+        void setDurationInFrame(size_t index, size_t duration);
+        void setDurationPerFrame(size_t duration);
+        [[nodiscard]] size_t durationInFrame(size_t index) const;
+        [[nodiscard]] size_t currentFrame() const;
+        [[nodiscard]] size_t framesCount() const;
+
+        [[nodiscard]] const Frame* indexOfFrame(size_t index) const;
+        [[nodiscard]] bool isNull() const;
+        [[nodiscard]] TextureProperty* property();
+
+        bool loadAnimation(const std::string& path);
+        void draw();
+        void play(size_t frame = 0);
+        void stop();
+    private:
+        Renderer* _renderer;
+        IMG_Animation* _img_ani;
+        std::vector<std::unique_ptr<Frame>> _textures;
+        std::unique_ptr<TextureProperty> _property;
+        GeometryF _geometry{};
+        std::string _file_path{};
+        size_t _cur_frame{0};
+        uint64_t _start_time{};
+        bool _null{true}, _playing{false};
     };
 }
 #include "Core.h"

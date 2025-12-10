@@ -57,6 +57,7 @@ namespace MyEngine {
         void draw();
         void setAnimateEnabled(bool animate);
         [[nodiscard]] bool animateEnabled() const;
+        void setAnimationFinishedEvent(const std::function<void()>& event);
 
     private:
         TextureAtlas* _atlas{nullptr};
@@ -67,6 +68,7 @@ namespace MyEngine {
         std::shared_ptr<TextureProperty> _global_prop;
         bool _delete_later{false};
         bool _animate{false}, _visible{true};
+        std::function<void()> _ani_finished_event{};
     };
 }
 

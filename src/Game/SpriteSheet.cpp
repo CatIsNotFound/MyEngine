@@ -22,6 +22,9 @@ MyEngine::SpriteSheet::SpriteSheet(MyEngine::TextureAtlas *textureAtlas) : _atla
             _start_time = SDL_GetTicks();
             if (_cur_frame >= ani.sequence_list.size()) {
                 _cur_frame = 0;
+                if (_ani_finished_event) {
+                    _ani_finished_event();
+                }
             }
         }
     });
@@ -259,6 +262,7 @@ bool MyEngine::SpriteSheet::setCurrentAnimation(const std::string &name) {
         return false;
     }
     _cur_ani_name = name;
+    _cur_frame = 0;
     return true;
 }
 
@@ -287,9 +291,14 @@ void MyEngine::SpriteSheet::draw() {
 
 void MyEngine::SpriteSheet::setAnimateEnabled(bool animate) {
     _animate = animate;
+    _cur_frame = 0;
 }
 
 bool MyEngine::SpriteSheet::animateEnabled() const {
     return _animate;
+}
+
+void MyEngine::SpriteSheet::setAnimationFinishedEvent(const std::function<void()> &event) {
+    _ani_finished_event = event;
 }
 

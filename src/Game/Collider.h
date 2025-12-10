@@ -16,6 +16,9 @@ namespace MyEngine {
 
         void setEnabled(bool enabled);
         [[nodiscard]] bool enabled() const;
+        void move(float x, float y);
+        void move(const Vector2& position);
+        [[nodiscard]] Vector2 position() const;
         void draw(Renderer* r);
 
         template<typename T>

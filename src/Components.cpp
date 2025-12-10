@@ -254,7 +254,7 @@ namespace MyEngine {
     Texture::Texture(const std::string &path, Renderer *renderer) : _renderer(renderer), _texture(nullptr), _path(path) {
         _surface = IMG_Load(path.c_str());
         if (!_surface) {
-            Logger::log(std::format("The image path '{}' is not found!", path), Logger::Error);
+            Logger::log(std::format("Texture: The image path '{}' is not found!", path), Logger::Error);
             _property = std::make_unique<TextureProperty>();
             return;
         }
@@ -264,13 +264,13 @@ namespace MyEngine {
         _property->clip_mode = false;
         _property->color_alpha = RGBAColor::White;
         _property->setScale(1.0f);
-        Logger::log(std::format("Texture created from image path '{}'", path), Logger::Debug);
-        Logger::log(std::format("Texture size set to {}x{}", _surface->w, _surface->h), Logger::Debug);
+        Logger::log(std::format("Texture: Created from image path '{}'", path), Logger::Debug);
+        Logger::log(std::format("Texture: Size set to {}x{}", _surface->w, _surface->h), Logger::Debug);
     }
 
     Texture::Texture(SDL_Surface* surface, Renderer *renderer, bool deep_copy) : _renderer(renderer), _texture(nullptr) {
         if (!surface) {
-            Logger::log(std::format("The surface is not valid!\nException: {}", SDL_GetError()), Logger::Error);
+            Logger::log(std::format("Texture: The surface is not valid!\nException: {}", SDL_GetError()), Logger::Error);
             _property = std::make_unique<TextureProperty>();
             return;
         }
@@ -281,15 +281,15 @@ namespace MyEngine {
         _property->clip_mode = false;
         _property->color_alpha = RGBAColor::White;
         _property->setScale(1.0f);
-        Logger::log(std::format("Texture created from surface"), Logger::Debug);
-        Logger::log(std::format("Texture size set to {}x{}", _surface->w, _surface->h), Logger::Debug);
+        Logger::log(std::format("Texture: Created from surface"), Logger::Debug);
+        Logger::log(std::format("Texture: Size set to {}x{}", _surface->w, _surface->h), Logger::Debug);
     }
 
     Texture::Texture(Renderer* renderer, SDL_PixelFormat format, int width, int height, SDL_TextureAccess access)
         : _renderer(renderer), _surface(nullptr), _texture(nullptr) {
         _texture = SDL_CreateTexture(renderer->self(), format, access, width, height);
         if (!_texture) {
-            Logger::log(std::format("Created texture failed!\nException: {}", SDL_GetError()), Logger::Error);
+            Logger::log(std::format("Texture: Created texture failed!\nException: {}", SDL_GetError()), Logger::Error);
             _property = std::make_unique<TextureProperty>();
             return;
         }
@@ -298,8 +298,8 @@ namespace MyEngine {
         _property->setScale(1.0f);
         _property->clip_mode = false;
         _property->color_alpha = RGBAColor::White;
-        Logger::log(std::format("Texture created from custom"), Logger::Debug);
-        Logger::log(std::format("Texture size set to {}x{}", width, height), Logger::Debug);
+        Logger::log(std::format("Texture: Created from custom"), Logger::Debug);
+        Logger::log(std::format("Texture: Size set to {}x{}", width, height), Logger::Debug);
     }
 
     Texture::~Texture() {
@@ -471,6 +471,120 @@ namespace MyEngine {
             Logger::log(std::format("TextureAtlas: Tiles '{}' is not in tiles map! "
                          "Did you forget to use `TextureAtlas::setTiles()`?", tiles_name), Logger::Error);
         }
+    }
+
+
+    TextureAnimation::TextureAnimation(const std::string &file_path, Renderer* renderer)
+                        : _file_path(file_path), _renderer(renderer), _null(true) {
+        _property = std::make_unique<TextureProperty>();
+        loadAnimation(file_path);
+        EventSystem::global()->appendGlobalEvent(IDGenerator::getNewGlobalEventID(), [this] {
+            if (!_playing) return;
+            auto now = SDL_GetTicks();
+            if (now - _start_time >= _textures[_cur_frame]->duration) {
+                // _cur_frame = (_cur_frame + 1 >= _textures.size() ? 0 : _cur_frame + 1);
+                if (_cur_frame + 1 >= _textures.size()) _cur_frame = 0; else _cur_frame++;
+                _start_time = SDL_GetTicks();
+            }
+        });
+    }
+
+    TextureAnimation::~TextureAnimation() {
+        if (!_null) {
+            for (int i = 0; i < _img_ani->count; ++i) {
+                SDL_DestroyTexture(_textures[i]->texture);
+            }
+            IMG_FreeAnimation(_img_ani);
+        }
+    }
+
+    void TextureAnimation::setDurationPerFrame(size_t duration) {
+        for (const auto & texture : _textures) {
+            texture->duration = duration;
+        }
+    }
+
+    void TextureAnimation::setDurationInFrame(size_t index, size_t duration) {
+        if (index >= _textures.size()) {
+            Logger::log("TextureAnimation: The specified index is out of range!", Logger::Error);
+            return;
+        }
+        _textures[index]->duration = duration;
+    }
+
+    size_t TextureAnimation::durationInFrame(size_t index) const {
+        if (index >= _textures.size()) {
+            Logger::log("TextureAnimation: The specified index is out of range!", Logger::Error);
+            return 0;
+        }
+        return _textures[index]->duration;
+    }
+
+    size_t TextureAnimation::currentFrame() const {
+        return _cur_frame;
+    }
+
+    size_t TextureAnimation::framesCount() const {
+        return _textures.size();
+    }
+
+    const TextureAnimation::Frame *TextureAnimation::indexOfFrame(size_t index) const {
+        if (!_null) {
+            Logger::log("TextureAnimation: Current textures are null! "
+                        "Use `TextureAnimation::loadAnimation()` at first.", Logger::Error);
+            return nullptr;
+        }
+        if (index >= _textures.size()) {
+            Logger::log("TextureAnimation: The specified index is out of range!", Logger::Error);
+            return nullptr;
+        }
+        return _textures.at(index).get();
+    }
+
+    bool TextureAnimation::isNull() const {
+        return _null;
+    }
+
+    TextureProperty* TextureAnimation::property() {
+        return _property.get();
+    }
+
+    bool TextureAnimation::loadAnimation(const std::string &path) {
+        if (_playing) _playing = false;
+        if (!_textures.empty()) _textures.clear();
+        _img_ani = IMG_LoadAnimation(path.c_str());
+        if (!_img_ani) {
+            Logger::log(std::format("TextureAnimation: The image file '{}' is not the animation image file "
+                                    "(*.gif, *.webp) or it is not valid!", path), Logger::Error);
+            _null = false;
+            return false;
+        }
+        for (int i = 0; i < _img_ani->count; ++i) {
+            _textures.emplace_back(new Frame(_img_ani->frames[i],
+                     SDL_CreateTextureFromSurface(_renderer->self(), _img_ani->frames[i]),
+                     _img_ani->delays[i]));
+        }
+        _property->setAnchor(1, 1);
+        _property->resize(static_cast<float>(_img_ani->w), static_cast<float>(_img_ani->h));
+        _null = true;
+        Logger::log(std::format("TextureAnimation: Loaded image file '{}', "
+                                "get image size: {}x{}.", path, _img_ani->w, _img_ani->h));
+        return true;
+    }
+
+    void TextureAnimation::draw() {
+        _renderer->drawTexture(_textures.at(_cur_frame)->texture, _property.get());
+    }
+
+    void TextureAnimation::play(size_t frame) {
+        _cur_frame = frame;
+        _start_time = SDL_GetTicks();
+        _playing = true;
+    }
+
+    void TextureAnimation::stop() {
+        _playing = false;
+        _start_time = 0;
     }
 
     BGM::BGM(MIX_Mixer *mixer, const std::string &path) : _mixer(mixer), _path(path) {

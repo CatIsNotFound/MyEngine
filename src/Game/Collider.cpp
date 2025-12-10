@@ -65,6 +65,37 @@ bool MyEngine::Collider::enabled() const {
     return _enabled;
 }
 
+void MyEngine::Collider::move(float x, float y) {
+    if (isNull()) return;
+    size_t idx = _base.index();
+    if (idx == 1) {
+        std::get<Graphics::Point*>(_base)->move(x, y);
+    } else if (idx == 2) {
+        std::get<Graphics::Rectangle*>(_base)->move(x, y);
+    }
+}
+
+void MyEngine::Collider::move(const MyEngine::Vector2 &position) {
+    if (isNull()) return;
+    size_t idx = _base.index();
+    if (idx == 1) {
+        std::get<Graphics::Point*>(_base)->move(position);
+    } else if (idx == 2) {
+        std::get<Graphics::Rectangle*>(_base)->move(position);
+    }
+}
+
+MyEngine::Vector2 MyEngine::Collider::position() const {
+    if (isNull()) return Vector2();
+    size_t idx = _base.index();
+    if (idx == 1) {
+        return std::get<Graphics::Point*>(_base)->position();
+    } else if (idx == 2) {
+        return std::get<Graphics::Rectangle*>(_base)->geometry().pos;
+    }
+    return Vector2();
+}
+
 void MyEngine::Collider::draw(Renderer* r) {
     if (!r || isNull()) return;
     size_t idx = _base.index();

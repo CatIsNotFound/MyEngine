@@ -14,6 +14,9 @@ MyEngine::GObject::~GObject() {
         if (isTypeOf<Sprite*>()) delete std::get<Sprite*>(_object);
         if (isTypeOf<SpriteSheet*>()) delete std::get<SpriteSheet*>(_object);
     }
+    if (_del_later && !_collider) {
+        delete _collider;
+    }
 }
 
 void MyEngine::GObject::setObjectName(const std::string &name) {
@@ -60,9 +63,13 @@ void MyEngine::GObject::move(float x, float y) {
 void MyEngine::GObject::move(const MyEngine::Vector2 &pos) {
     if (isNull()) return;
     if (isTypeOf<Sprite*>()) {
-        sprite()->move(pos);
+        auto sp = sprite();
+        sp->move(pos);
+        if (_collider) _collider->move(sp->position());
     } else if (isTypeOf<SpriteSheet*>()) {
-        spriteSheet()->move(pos);
+        auto sp = spriteSheet();
+        sp->move(pos);
+        if (_collider) _collider->move(sp->position());
     }
 }
 
@@ -103,10 +110,12 @@ void MyEngine::GObject::setGeometry(const MyEngine::GeometryF &geometry) {
         auto s = sprite();
         s->move(geometry.pos);
         s->resize(geometry.size);
+        collider()->move(s->position());
     } else if (isTypeOf<SpriteSheet*>()) {
         auto s = spriteSheet();
         s->move(geometry.pos);
         s->resize(geometry.size);
+        collider()->move(s->position());
     }
 }
 

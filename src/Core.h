@@ -40,7 +40,8 @@ namespace MyEngine {
         void drawTexture(SDL_Texture* texture, TextureProperty* property);
         void drawText(TTF_Text* text, const Vector2& position);
         void drawPixelText(const std::string& text, const Vector2& position,
-                           const Vector2& scaled = {1.f, 1.f}, const SDL_Color& color = StdColor::White);
+                           const SDL_Color& color = StdColor::White);
+
         void setViewport(const Geometry& geometry);
         void setClipView(const Geometry& geometry);
         void setBlendMode(const SDL_BlendMode& blend_mode);
@@ -138,14 +139,14 @@ namespace MyEngine {
         };
         struct PixelTextCMD : public Command {
             explicit PixelTextCMD(SDL_Renderer* renderer, const std::string& text,
-                                  const Vector2& pos, const Vector2& scaled, const SDL_Color& color)
-                : Command(renderer), text(text), pos(pos), scaled(scaled), color(color) {}
+                                  const Vector2& pos, const SDL_Color& color)
+                : Command(renderer), text(text), pos(pos), color(color) {}
             std::string text;
-            Vector2 pos, scaled;
+            Vector2 pos;
             SDL_Color color;
             void exec() override;
             void reset(SDL_Renderer* renderer, const std::string& text,
-                       const Vector2& pos, const Vector2& scaled, const SDL_Color& color);
+                       const Vector2& pos, const SDL_Color& color);
         };
 
         std::deque<std::unique_ptr<Command>> _cmd_pool;
