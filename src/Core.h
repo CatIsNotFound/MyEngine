@@ -4,7 +4,7 @@
 #include "Basic.h"
 #ifndef MYENGINE_CORE_H
 #define MYENGINE_CORE_H
-#define MYENGINE_FULL_VERSION "v0.1.1-beta"
+#define MYENGINE_FULL_VERSION "v0.1.2-beta"
 #include "Components.h"
 
 namespace MyEngine {
@@ -40,6 +40,8 @@ namespace MyEngine {
         void drawEllipse(const Graphics::Ellipse& ellipse);
         void drawEllipse(Graphics::Ellipse&& ellipse);
         void drawTexture(SDL_Texture* texture, TextureProperty* property);
+        void drawTextureTile(TextureAtlas* texture_atlas);
+        void drawTextureTile(TextureAtlas* texture_atlas, const std::string& tiles_name);
         void drawText(TTF_Text* text, const Vector2& position);
         void drawPixelText(const std::string& text, const Vector2& position,
                            const SDL_Color& color = StdColor::White);
@@ -89,8 +91,8 @@ namespace MyEngine {
             void reset(SDL_Renderer* renderer, SDL_BlendMode blend_mode = SDL_BLENDMODE_NONE);
         };
         struct PointCMD : public Command {
-            explicit PointCMD(SDL_Renderer* renderer, const Graphics::Point& point)
-                : Command(renderer), point(point) {}
+            explicit PointCMD(SDL_Renderer* renderer, Graphics::Point  point)
+                : Command(renderer), point(std::move(point)) {}
             Graphics::Point point;
             void exec() override;
             void reset(SDL_Renderer* renderer, const Graphics::Point& point);
@@ -117,8 +119,8 @@ namespace MyEngine {
             void reset(SDL_Renderer* renderer, const Graphics::Triangle& tri);
         };
         struct EllipseCMD : public Command {
-            explicit EllipseCMD(SDL_Renderer* renderer, const Graphics::Ellipse& elli)
-                    : Command(renderer), ellipse(elli) {}
+            explicit EllipseCMD(SDL_Renderer* renderer, Graphics::Ellipse  elli)
+                    : Command(renderer), ellipse(std::move(elli)) {}
             Graphics::Ellipse ellipse;
             void exec() override;
             void reset(SDL_Renderer* renderer, const Graphics::Ellipse& elli);
@@ -133,16 +135,16 @@ namespace MyEngine {
         };
         struct TextureAtlasCMD : public Command {
             explicit TextureAtlasCMD(SDL_Renderer* renderer, SDL_Texture* texture, TextureProperty* property,
-                                     std::vector<GeometryF> clip_area, std::vector<Vector2> pos_list)
-                 : Command(renderer), _texture(texture), _property(property), _clip_area(std::move(clip_area)),
-                    _pos_list(std::move(pos_list)) {}
+                                     std::vector<SDL_Vertex> vertices, std::vector<int> indices)
+                 : Command(renderer), _texture(texture), _property(property), _vertices(std::move(vertices)),
+                    _indices(std::move(indices)) {}
             SDL_Texture* _texture;
             TextureProperty* _property;
-            std::vector<GeometryF> _clip_area;
-            std::vector<Vector2> _pos_list;
+            std::vector<SDL_Vertex> _vertices;
+            std::vector<int> _indices;
             void exec() override;
             void reset(SDL_Renderer* renderer, SDL_Texture* texture, TextureProperty* property,
-                       std::vector<GeometryF> clip_area, std::vector<Vector2> pos_list);
+                       std::vector<SDL_Vertex> vertices, std::vector<int> indices);
         };
         struct TextCMD : public Command {
             explicit TextCMD(SDL_Renderer* renderer, TTF_Text* text, const Vector2& position)
@@ -153,9 +155,9 @@ namespace MyEngine {
             void reset(SDL_Renderer* renderer, TTF_Text* text, const Vector2& position);
         };
         struct PixelTextCMD : public Command {
-            explicit PixelTextCMD(SDL_Renderer* renderer, const std::string& text,
+            explicit PixelTextCMD(SDL_Renderer* renderer, std::string  text,
                                   const Vector2& pos, const SDL_Color& color)
-                : Command(renderer), text(text), pos(pos), color(color) {}
+                : Command(renderer), text(std::move(text)), pos(pos), color(color) {}
             std::string text;
             Vector2 pos;
             SDL_Color color;
@@ -198,31 +200,31 @@ namespace MyEngine {
         bool resize(int width, int height);
         bool setGeometry(int x, int y, int width, int height);
         
-        const Geometry geometry() const;
-        uint32_t windowID() const;
+        [[nodiscard]] const Geometry& geometry() const;
+        [[nodiscard]] uint32_t windowID() const;
 
         bool show();
         bool hide();
-        bool visible() const;
+        [[nodiscard]] bool visible() const;
         void close();
 
         bool setResizable(bool enabled);
-        bool resizable() const;
+        [[nodiscard]] bool resizable() const;
 
         void setRenderer(Renderer* renderer);
-        Renderer* renderer() const;
+        [[nodiscard]] Renderer* renderer() const;
 
         void setBorderless(bool enabled);
-        bool borderless() const;
+        [[nodiscard]] bool borderless() const;
 
         void setFullScreen(bool enabled, bool move_to_center = false);
-        bool fullScreen() const;
+        [[nodiscard]] bool fullScreen() const;
 
         void setWindowTitle(const std::string& title);
-        const std::string& windowTitle() const; 
+        [[nodiscard]] const std::string& windowTitle() const;
 
-        SDL_Window* self() const;
-        Engine* engine() const;
+        [[nodiscard]] SDL_Window* self() const;
+        [[nodiscard]] Engine* engine() const;
         void installPaintEvent(const std::function<void(Renderer* renderer)>& paint_event);
     protected:
         virtual void paintEvent();

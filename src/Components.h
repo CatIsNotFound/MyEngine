@@ -42,7 +42,7 @@ namespace MyEngine {
         void setOutline(uint32_t value = 0);
         uint32_t outline() const;
         void setOutlineColor(const SDL_Color& color);
-        const SDL_Color outlineColor() const;
+        SDL_Color outlineColor() const;
         void setFontDirection(Direction direction);
         Direction fontDirection() const;
         void setFontHinting(uint32_t flags);
@@ -200,6 +200,7 @@ namespace MyEngine {
             _scaled_position = {0, 0};
             _scaled_size = {0, 0};
             _scale = {1.f};
+            _scaled_clip_geometry = GeometryF{0, 0, 0, 0};
         }
         explicit TextureProperty(TextureProperty* textureProperty) {
             _position = textureProperty->_position;
@@ -212,6 +213,7 @@ namespace MyEngine {
             color_alpha = textureProperty->color_alpha;
             rotate_angle = textureProperty->rotate_angle;
             flip_mode = textureProperty->flip_mode;
+            _scaled_clip_geometry = textureProperty->_scaled_clip_geometry;
         }
         TextureProperty(const TextureProperty& textureProperty) {
             _position = textureProperty._position;
@@ -224,6 +226,7 @@ namespace MyEngine {
             color_alpha = textureProperty.color_alpha;
             rotate_angle = textureProperty.rotate_angle;
             flip_mode = textureProperty.flip_mode;
+            _scaled_clip_geometry = textureProperty._scaled_clip_geometry;
         }
         void reset(const TextureProperty& property) {
             _position = property._position;
@@ -236,6 +239,7 @@ namespace MyEngine {
             color_alpha = property.color_alpha;
             rotate_angle = property.rotate_angle;
             flip_mode = property.flip_mode;
+            _scaled_clip_geometry = property._scaled_clip_geometry;
         }
         void reset(TextureProperty&& property) {
             _position = property._position;
@@ -248,6 +252,7 @@ namespace MyEngine {
             color_alpha = property.color_alpha;
             rotate_angle = property.rotate_angle;
             flip_mode = property.flip_mode;
+            _scaled_clip_geometry = property._scaled_clip_geometry;
         }
 
         void move(const Vector2& pos) {
@@ -298,12 +303,21 @@ namespace MyEngine {
                                    (_position.y - scaled_pos.y) * _scale + scaled_pos.y);
 
             _scaled_size.reset(_size.width * _scale, _size.height * _scale);
+            if (clip_mode) {
+                auto scaled_clip_pos = Vector2{clip_area.x + _anchor.x, clip_area.y + _anchor.y};
+                _scaled_clip_geometry.reset((clip_area.x - scaled_clip_pos.x) * _scale + scaled_clip_pos.x,
+                                               (clip_area.y - scaled_clip_pos.y) * _scale + scaled_clip_pos.y,
+                                               clip_area.w * _scale, clip_area.h * _scale);
+            }
         }
         [[nodiscard]] float scale() const {
             return _scale;
         }
         [[nodiscard]] GeometryF scaledGeometry() const {
             return GeometryF{_scaled_position, _scaled_size};
+        }
+        [[nodiscard]] GeometryF scaledClipAreaGeometry() const {
+            return _scaled_clip_geometry;
         }
         void setAnchor(const Vector2& pos) {
             _anchor.reset(pos);
@@ -330,6 +344,7 @@ namespace MyEngine {
         float _scale;
         Vector2 _scaled_position;
         Size _scaled_size;
+        GeometryF _scaled_clip_geometry;
         Vector2 _anchor;
     };
 
@@ -354,7 +369,7 @@ namespace MyEngine {
         [[nodiscard]] bool isValid() const;
         TextureProperty* property();
 
-        virtual void draw() const;
+        virtual void draw();
     private:
         SDL_Surface* _surface;
         SDL_Texture* _texture;
@@ -365,8 +380,13 @@ namespace MyEngine {
 
     class TextureAtlas : public Texture {
     public:
-        using constIter = std::unordered_map<std::string, std::shared_ptr<TextureProperty>>::const_iterator;
-        using iter = std::unordered_map<std::string, std::shared_ptr<TextureProperty>>::iterator;
+        struct Tile {
+            std::vector<SDL_Vertex> vertex;
+            std::vector<int> indices;
+            std::unique_ptr<TextureProperty> property;
+        };
+        using constIter = std::unordered_map<std::string, Tile>::const_iterator;
+        using iter = std::unordered_map<std::string, Tile>::iterator;
         TextureAtlas(const TextureAtlas &) = delete;
         TextureAtlas(TextureAtlas &&) = delete;
         TextureAtlas &operator=(const TextureAtlas &) = delete;
@@ -376,25 +396,28 @@ namespace MyEngine {
         explicit TextureAtlas(SDL_Surface* surface, Renderer *renderer, bool deep_copy = false);
         ~TextureAtlas();
 
+        std::vector<SDL_Vertex> vertices(const std::string& tiles_name) const;
+        std::vector<int> indices(const std::string& tiles_name) const;
+
         iter begin() { return _tiles_map.begin(); }
         constIter begin() const { return _tiles_map.cbegin(); }
         iter end() { return _tiles_map.end(); }
         constIter end() const { return _tiles_map.cend(); }
         size_t count() { return _tiles_map.size(); }
 
-        void setTiles(const std::string& tiles_name, const GeometryF& clip_geometry);
-        void setTiles(const std::string& tiles_name, TextureProperty&& tiles_property);
+        void setTiles(const std::string& tiles_name, const GeometryF& clip_geometry, TextureProperty* property);
         bool eraseTiles(const std::string& tiles_name);
+        void setClipGeometryOfTiles(const std::string& tiles_name, const GeometryF& clip_geometry);
         TextureProperty* tilesProperty(const std::string& tiles_name);
         void setCurrentTiles(const std::string& tiles_name);
         [[nodiscard]] const std::string& currentTiles() const;
         StringList tilesNameList() const;
         [[nodiscard]] bool isTilesNameExist(const std::string& tiles_name) const;
 
-        void draw() const override;
-        void draw(const std::string& tiles_name) const;
+        void draw() override;
+        void draw(const std::string& tiles_name);
     private:
-        std::unordered_map<std::string, std::shared_ptr<TextureProperty>> _tiles_map;
+        std::unordered_map<std::string, Tile> _tiles_map;
         std::string _current_tiles;
     };
 

@@ -66,6 +66,15 @@ namespace MyEngine {
             Dec = 11
         };
 
+        enum TimeBase {
+            Nanoseconds,
+            Microseconds,
+            Milliseconds,
+            Seconds,
+            Minutes,
+            Hours
+        };
+
         static const char* weekdayStr(Weekday weekday, bool short_name = false) {
             switch (weekday) {
                 case Mon:
@@ -138,6 +147,24 @@ namespace MyEngine {
             return now.time_since_epoch().count();
         }
 
+        static uint64_t getTicks(TimeBase timebase) {
+            using namespace std::chrono;
+            if (timebase == Nanoseconds) {
+                return duration_cast<nanoseconds>(system_clock::now().time_since_epoch()).count();
+            } else if (timebase == Microseconds) {
+                return duration_cast<microseconds>(system_clock::now().time_since_epoch()).count();
+            } else if (timebase == Milliseconds) {
+                return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+            } else if (timebase == Seconds) {
+                return duration_cast<seconds>(system_clock::now().time_since_epoch()).count();
+            } else if (timebase == Minutes) {
+                return duration_cast<minutes>(system_clock::now().time_since_epoch()).count();
+            } else if (timebase == Hours) {
+                return duration_cast<hours>(system_clock::now().time_since_epoch()).count();
+            }
+            return 0llu;
+        }
+
         static std::string now() {
             auto now = std::chrono::system_clock::now();
             auto zoned = std::chrono::zoned_time(timezone, now);
@@ -178,9 +205,30 @@ namespace MyEngine {
             return time_point.time_since_epoch().count();
         }
 
-        static DT parseFromTimestamp(uint64_t timestamp) {
+        static DT parseFromTimestamp(uint64_t timestamp, TimeBase timebase = Milliseconds) {
             using namespace std::chrono;
-            auto now = system_clock::time_point(seconds(timestamp));
+            uint64_t nanoseconds_count = 0;
+            switch (timebase) {
+                case Nanoseconds:
+                    nanoseconds_count = timestamp;
+                    break;
+                case Microseconds:
+                    nanoseconds_count = timestamp * 1000;
+                    break;
+                case Milliseconds:
+                    nanoseconds_count = timestamp * 1000000;
+                    break;
+                case Seconds:
+                    nanoseconds_count = timestamp * 1000000000;
+                    break;
+                case Minutes:
+                    nanoseconds_count = timestamp * 60000000000;
+                    break;
+                case Hours:
+                    nanoseconds_count = timestamp * 3600000000000;
+                    break;
+            }
+            auto now = system_clock::time_point(nanoseconds(nanoseconds_count));
 
             auto day_time = floor<days>(now);
             year_month_day ymy{day_time};

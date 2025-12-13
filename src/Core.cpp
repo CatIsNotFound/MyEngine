@@ -135,6 +135,27 @@ namespace MyEngine {
         if (ptr) _cmd_list.push_back(std::unique_ptr<TextureCMD>(ptr));
     }
 
+    void Renderer::drawTextureTile(TextureAtlas* texture_atlas) {
+        auto vertices = texture_atlas->vertices(texture_atlas->currentTiles());
+        auto indices = texture_atlas->indices(texture_atlas->currentTiles());
+        auto ptr = getCmdFromPool<TextureAtlasCMD>(_renderer, texture_atlas->self(),
+                                                   texture_atlas->property(), vertices, indices);
+        if (ptr) _cmd_list.push_back(std::unique_ptr<TextureAtlasCMD>(ptr));
+    }
+
+    void Renderer::drawTextureTile(TextureAtlas* texture_atlas, const std::string& tiles_name) {
+        if (!texture_atlas->isTilesNameExist(tiles_name)) {
+            Logger::log(std::format("Renderer: The specified tiles '{}' of the textureAtlas is not exist!",
+                                    tiles_name), Logger::Error);
+            return;
+        }
+        auto vertices = texture_atlas->vertices(tiles_name);
+        auto indices = texture_atlas->indices(tiles_name);
+        auto ptr = getCmdFromPool<TextureAtlasCMD>(_renderer, texture_atlas->self(),
+                                                   texture_atlas->property(), vertices, indices);
+        if (ptr) _cmd_list.push_back(std::unique_ptr<TextureAtlasCMD>(ptr));
+    }
+
     void Renderer::drawText(TTF_Text* text, const Vector2& position) {
         if (!text) return;
         auto ptr = getCmdFromPool<TextCMD>(_renderer, text, position);
@@ -408,16 +429,18 @@ namespace MyEngine {
         bool bordered = (ellipse.borderSize() > 0);
         bool _ret = false;
         if (filled) {
-            _ret = SDL_RenderGeometry(renderer, nullptr, ellipse.vertices(), ellipse.vertexCount(),
-                               ellipse.indices(), ellipse.indicesCount());
+            _ret = SDL_RenderGeometry(renderer, nullptr, ellipse.vertices(),
+                                      ellipse.vertexCount(),ellipse.indices(),
+                                      ellipse.indicesCount());
             if (!_ret) {
                 Logger::log(std::format("Renderer: Set render geometry failed! Exception: {}",
                                         SDL_GetError()), Logger::Error);
             }
         }
         if (bordered) {
-            _ret = SDL_RenderGeometry(renderer, nullptr, ellipse.borderVertices(), ellipse.borderVerticesCount(),
-                               ellipse.borderIndices(), ellipse.borderIndicesCount());
+            _ret = SDL_RenderGeometry(renderer, nullptr, ellipse.borderVertices(),
+                                      ellipse.borderVerticesCount(),ellipse.borderIndices(),
+                                      ellipse.borderIndicesCount());
             if (!_ret) {
                 Logger::log(std::format("Renderer: Set render geometry failed! Exception: {}",
                                         SDL_GetError()), Logger::Error);
@@ -437,12 +460,7 @@ namespace MyEngine {
             return;
         }
         auto color = _property->color_alpha;
-        bool _ret = SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-        if (!_ret) {
-            Logger::log(std::format("Renderer: Set render draw color failed! Exception: {}",
-                                    SDL_GetError()), Logger::Warn);
-        }
-        _ret = SDL_SetTextureColorMod(_texture, color.r, color.g, color.b);
+        auto _ret = SDL_SetTextureColorMod(_texture, color.r, color.g, color.b);
         if (!_ret) {
             Logger::log(std::format("Renderer: Set texture color failed! Exception: {}",
                                     SDL_GetError()), Logger::Warn);
@@ -481,41 +499,22 @@ namespace MyEngine {
                         Logger::Error);
             return;
         }
-        auto color = _property->color_alpha;
-        bool _ret = SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-        if (!_ret) {
-            Logger::log(std::format("Renderer: Set render draw color failed! Exception: {}",
-                                    SDL_GetError()), Logger::Warn);
-        }
-        _ret = SDL_SetTextureColorMod(_texture, color.r, color.g, color.b);
-        if (!_ret) {
-            Logger::log(std::format("Renderer: Set texture color failed! Exception: {}",
-                                    SDL_GetError()), Logger::Warn);
-        }
-        _ret = SDL_SetTextureAlphaMod(_texture, color.a);
-        if (!_ret) {
-            Logger::log(std::format("Renderer: Set texture alpha failed! Exception: {}",
-                                    SDL_GetError()), Logger::Warn);
-        }
-        for (size_t i = 0; i < _clip_area.size(); ++i) {
-            /// TODO: Use `SDL_RenderGeometry()` function to render.
-
-
-        }
+        auto _ret = SDL_RenderGeometry(renderer, _texture,
+                       reinterpret_cast<const SDL_Vertex *>(_vertices.data()), _vertices.size(),
+                       reinterpret_cast<const int *>(_indices.data()), _indices.size());
         if (!_ret) {
             Logger::log(std::format("Renderer: Set render texture failed! Exception: {}",
                                     SDL_GetError()), Logger::Error);
-            return;
         }
     }
 
     void Renderer::TextureAtlasCMD::reset(SDL_Renderer* renderer, SDL_Texture* texture, TextureProperty* property,
-               std::vector<GeometryF> clip_area, std::vector<Vector2> pos_list) {
+               std::vector<SDL_Vertex> vertices, std::vector<int> indices) {
         this->renderer = renderer;
         this->_texture = texture;
         this->_property = property;
-        this->_clip_area = std::move(clip_area);
-        this->_pos_list = std::move(pos_list);
+        this->_vertices = std::move(vertices);
+        this->_indices = std::move(indices);
     }
 
     void Renderer::TextCMD::exec() {
@@ -667,7 +666,7 @@ namespace MyEngine {
         return (!move(x, y) || !resize(width, height)); 
     }
 
-    const Window::Geometry Window::geometry() const {
+    const Window::Geometry& Window::geometry() const {
         return _window_geometry;
     }
 
