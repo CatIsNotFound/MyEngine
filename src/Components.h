@@ -303,6 +303,7 @@ namespace MyEngine {
                                    (_position.y - scaled_pos.y) * _scale + scaled_pos.y);
 
             _scaled_size.reset(_size.width * _scale, _size.height * _scale);
+            _scaled_anchor.reset(_anchor * _scale);
             if (clip_mode) {
                 auto scaled_clip_pos = Vector2{clip_area.x + _anchor.x, clip_area.y + _anchor.y};
                 _scaled_clip_geometry.reset((clip_area.x - scaled_clip_pos.x) * _scale + scaled_clip_pos.x,
@@ -326,6 +327,7 @@ namespace MyEngine {
                                    (_position.y - scaled_pos.y) * _scale + scaled_pos.y);
 
             _scaled_size.reset(_size.width * _scale, _size.height * _scale);
+            _scaled_anchor.reset(_anchor * _scale);
         }
         void setAnchor(float x, float y) {
             _anchor.reset(x, y);
@@ -334,9 +336,17 @@ namespace MyEngine {
                                    (_position.y - scaled_pos.y) * _scale + scaled_pos.y);
 
             _scaled_size.reset(_size.width * _scale, _size.height * _scale);
+            _scaled_anchor.reset(_anchor * _scale);
+        }
+
+        void setAnchorToCenter() {
+            setAnchor(_size.width / 2, _size.height / 2);
         }
         [[nodiscard]] const Vector2& anchor() const {
             return _anchor;
+        }
+        [[nodiscard]] const Vector2& scaledAnchor() const {
+            return _scaled_anchor;
         }
     private:
         Vector2 _position;
@@ -345,7 +355,7 @@ namespace MyEngine {
         Vector2 _scaled_position;
         Size _scaled_size;
         GeometryF _scaled_clip_geometry;
-        Vector2 _anchor;
+        Vector2 _anchor, _scaled_anchor;
     };
 
     class Texture {

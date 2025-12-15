@@ -1,14 +1,13 @@
 
 #include "Core.h"
-
-#include <utility>
 #include "Basic.h"
 #include "Utils/All.h"
+#include "Renderer/BaseCommand.h"
+#include "Renderer/CommandFactory.h"
 
 namespace MyEngine {
     std::unique_ptr<EventSystem> EventSystem::_instance{};
     SDL_Color Renderer::_background_color{RGBAColor::White};
-    RenderCommand::CommandFactory Renderer::_factory{};
     SDL_WindowID Engine::_main_window_id{0};
     bool Engine::_quit_requested{false};
     int Engine::_return_code{0};
@@ -39,28 +38,6 @@ namespace MyEngine {
         return _window;
     }
 
-    void Renderer::setMaxCommandCount(size_t count) {
-        _max_cmd_cnt = count;
-        /// To avoid memory growth issues caused by excessive rendering frame commands.
-        if (_max_frame_cmd_cnt > _max_cmd_cnt) _max_frame_cmd_cnt = _max_cmd_cnt;
-        while (_cmd_pool.size() > _max_cmd_cnt) {
-            _cmd_pool.pop_back();
-        }
-    }
-
-    void Renderer::setMaxFrameCommandCount(size_t count) {
-        _max_frame_cmd_cnt = count;
-        if (_max_frame_cmd_cnt > _max_cmd_cnt) {
-            Logger::log("Engine: The maximum number of frame commands currently set has exceeded the limit "
-                        "for the maximum number of commands. Once exceeded, "
-                        "it will continuously increase the memory usage.", Logger::Warn);
-        }
-    }
-
-    void Renderer::setDiscardCommandStrategy(MyEngine::Renderer::DiscardStrategy strategy) {
-        _dis_st = strategy;
-    }
-
     void Renderer::_update() {
         SDL_SetRenderDrawBlendMode(_renderer, SDL_BLENDMODE_NONE);
         SDL_SetRenderDrawColor(_renderer, _background_color.r, _background_color.g,
@@ -68,133 +45,135 @@ namespace MyEngine {
         SDL_RenderClear(_renderer);
         for (auto& cmd : _cmd_list) {
             cmd->exec();
-            releaseCmd(std::move(cmd));
+            RenderCommand::CommandFactory::release(std::move(cmd));
         }
         SDL_RenderPresent(_renderer);
         _cmd_list.clear();
         _window->paintEvent();
     }
 
-    void Renderer::fillBackground(const SDL_Color& color, bool covered) {
-        auto ptr = getCmdFromPool<FillCMD>(_renderer, color, covered);
-        if (ptr) _cmd_list.push_back(std::unique_ptr<FillCMD>(ptr));
+    void Renderer::fillBackground(const SDL_Color &color) {
+        addCommand<RenderCommand::FillCMD>(_renderer, color);
     }
 
-    void Renderer::drawPoint(const Graphics::Point &point) {
-        auto ptr = getCmdFromPool<PointCMD>(_renderer, point);
-        if (ptr) _cmd_list.push_back(std::unique_ptr<PointCMD>(ptr));
+    void Renderer::fillBackground(SDL_Color &&color) {
+        addCommand<RenderCommand::FillCMD>(_renderer, std::move(color));
     }
 
-    void Renderer::drawPoint(Graphics::Point &&point) {
-        auto ptr = getCmdFromPool<PointCMD>(_renderer, point);
-        if (ptr) _cmd_list.push_back(std::unique_ptr<PointCMD>(ptr));
+    void Renderer::fillBackground(uint64_t rgb_hex) {
+        addCommand<RenderCommand::FillCMD>(_renderer, RGBAColor::RGBAValue2Color(rgb_hex));
     }
 
-    void Renderer::drawLine(const Graphics::Line &line) {
-        auto ptr = getCmdFromPool<LineCMD>(_renderer, line);
-        if (ptr) _cmd_list.push_back(std::unique_ptr<LineCMD>(ptr));
+    void Renderer::drawPoint(Graphics::Point *point) {
+        addCommand<RenderCommand::PointCMD>(_renderer, point);
     }
 
-    void Renderer::drawLine(Graphics::Line &&line) {
-        auto ptr = getCmdFromPool<LineCMD>(_renderer, line);
-        if (ptr) _cmd_list.push_back(std::unique_ptr<LineCMD>(ptr));
+    void Renderer::drawPoints(const std::vector<Graphics::Point*>& point_list) {
+        addCommand<RenderCommand::PointCMD>(_renderer, nullptr,
+                        RenderCommand::BaseCommand::Mode::Multiple, point_list.size(), point_list);
     }
 
-    void Renderer::drawRectangle(const Graphics::Rectangle &rectangle) {
-        auto ptr = getCmdFromPool<RectCMD>(_renderer, rectangle);
-        if (ptr) _cmd_list.push_back(std::unique_ptr<RectCMD>(ptr));
+    void Renderer::drawLine(Graphics::Line *line) {
+        addCommand<RenderCommand::LineCMD>(_renderer, line);
     }
 
-    void Renderer::drawRectangle(Graphics::Rectangle &&rectangle) {
-        auto ptr = getCmdFromPool<RectCMD>(_renderer, rectangle);
-        if (ptr) _cmd_list.push_back(std::unique_ptr<RectCMD>(ptr));
+    void Renderer::drawLines(const std::vector<Graphics::Line*>& line_list) {
+        addCommand<RenderCommand::LineCMD>(_renderer, nullptr,
+                       RenderCommand::BaseCommand::Mode::Multiple, line_list.size(), line_list);
     }
 
-    void Renderer::drawTriangle(const Graphics::Triangle &triangle) {
-        auto ptr = getCmdFromPool<TriangleCMD>(_renderer, triangle);
-        if (ptr) _cmd_list.push_back(std::unique_ptr<TriangleCMD>(ptr));
+    void Renderer::drawRectangle(Graphics::Rectangle* rectangle) {
+        addCommand<RenderCommand::RectangleCMD>(_renderer, rectangle);
     }
 
-    void Renderer::drawTriangle(Graphics::Triangle &&triangle) {
-        auto ptr = getCmdFromPool<TriangleCMD>(_renderer, triangle);
-        if (ptr) _cmd_list.push_back(std::unique_ptr<TriangleCMD>(ptr));
+    void Renderer::drawRectangles(const std::vector<Graphics::Rectangle*> &rectangle_list) {
+        addCommand<RenderCommand::RectangleCMD>(_renderer, nullptr,
+                        RenderCommand::BaseCommand::Mode::Multiple, rectangle_list.size(), rectangle_list);
     }
 
-    void Renderer::drawEllipse(const Graphics::Ellipse &ellipse) {
-        auto ptr = getCmdFromPool<EllipseCMD>(_renderer, ellipse);
-        if (ptr) _cmd_list.push_back(std::unique_ptr<EllipseCMD>(ptr));
+    void Renderer::drawTriangle(Graphics::Triangle* triangle) {
+        addCommand<RenderCommand::TriangleCMD>(_renderer, triangle);
     }
 
-    void Renderer::drawEllipse(Graphics::Ellipse &&ellipse) {
-        auto ptr = getCmdFromPool<EllipseCMD>(_renderer, ellipse);
-        if (ptr) _cmd_list.push_back(std::unique_ptr<EllipseCMD>(ptr));
+    void Renderer::drawTriangles(const std::vector<Graphics::Triangle*> &triangle_list) {
+        addCommand<RenderCommand::TriangleCMD>(_renderer, nullptr,
+                       RenderCommand::BaseCommand::Mode::Multiple, triangle_list.size(), triangle_list);
+    }
+
+    void Renderer::drawEllipse(Graphics::Ellipse *ellipse) {
+        addCommand<RenderCommand::EllipseCMD>(_renderer, ellipse);
+    }
+
+    void Renderer::drawEllipses(const std::vector<Graphics::Ellipse*> &ellipse_list) {
+        addCommand<RenderCommand::EllipseCMD>(_renderer, nullptr,
+                      RenderCommand::BaseCommand::Mode::Multiple, ellipse_list.size(), ellipse_list);
     }
 
     void Renderer::drawTexture(SDL_Texture* texture, TextureProperty* property) {
         if (!texture || !property) return;
-        auto ptr = getCmdFromPool<TextureCMD>(_renderer, texture, property);
-        if (ptr) _cmd_list.push_back(std::unique_ptr<TextureCMD>(ptr));
+        addCommand<RenderCommand::TextureCMD>(_renderer, texture, property);
     }
 
-    void Renderer::drawTextureTile(TextureAtlas* texture_atlas) {
-        auto vertices = texture_atlas->vertices(texture_atlas->currentTiles());
-        auto indices = texture_atlas->indices(texture_atlas->currentTiles());
-        auto ptr = getCmdFromPool<TextureAtlasCMD>(_renderer, texture_atlas->self(),
-                                                   texture_atlas->property(), vertices, indices);
-        if (ptr) _cmd_list.push_back(std::unique_ptr<TextureAtlasCMD>(ptr));
+    void Renderer::drawTexture(SDL_Texture* texture, const std::vector<TextureProperty*>& properties) {
+        if (!texture) return;
+        addCommand<RenderCommand::TextureCMD>(_renderer, texture, nullptr, RenderCommand::BaseCommand::Mode::Multiple,
+                                  properties.size(), properties);
     }
 
-    void Renderer::drawTextureTile(TextureAtlas* texture_atlas, const std::string& tiles_name) {
-        if (!texture_atlas->isTilesNameExist(tiles_name)) {
-            Logger::log(std::format("Renderer: The specified tiles '{}' of the textureAtlas is not exist!",
-                                    tiles_name), Logger::Error);
-            return;
-        }
-        auto vertices = texture_atlas->vertices(tiles_name);
-        auto indices = texture_atlas->indices(tiles_name);
-        auto ptr = getCmdFromPool<TextureAtlasCMD>(_renderer, texture_atlas->self(),
-                                                   texture_atlas->property(), vertices, indices);
-        if (ptr) _cmd_list.push_back(std::unique_ptr<TextureAtlasCMD>(ptr));
+    void Renderer::drawTextures(const std::vector<SDL_Texture*>& textures,
+                                const std::vector<TextureProperty*>& properties) {
+        addCommand<RenderCommand::TextureCMD>(_renderer, nullptr, nullptr, RenderCommand::BaseCommand::Mode::Custom,
+                                  properties.size(), properties, textures);
     }
 
-    void Renderer::drawText(TTF_Text* text, const Vector2& position) {
+    void Renderer::drawText(TTF_Text* text, Vector2& position) {
         if (!text) return;
-        auto ptr = getCmdFromPool<TextCMD>(_renderer, text, position);
-        if (ptr) _cmd_list.push_back(std::unique_ptr<TextCMD>(ptr));
+        addCommand<RenderCommand::TextCMD>(_renderer, text, position);
     }
 
-    void Renderer::drawPixelText(const std::string &text, const MyEngine::Vector2 &position,
+    void Renderer::drawTexts(TTF_Text* text, const std::vector<Vector2*>& position_list) {
+        if (!text) return;
+        addCommand<RenderCommand::TextCMD>(_renderer, text, Vector2(), RenderCommand::BaseCommand::Mode::Multiple,
+                                           position_list.size(), position_list);
+    }
+
+    void Renderer::drawTexts(const std::vector<TTF_Text*>& text_list, const std::vector<Vector2*>& position_list) {
+        addCommand<RenderCommand::TextCMD>(_renderer, nullptr, Vector2(), RenderCommand::BaseCommand::Mode::Multiple,
+                                           position_list.size(), position_list, text_list);
+    }
+
+    void Renderer::drawDebugText(const std::string &text, const MyEngine::Vector2 &position,
                                  const SDL_Color& color) {
         if (text.empty()) return;
-        auto ptr = getCmdFromPool<PixelTextCMD>(_renderer, text, position, color);
-        if (ptr) _cmd_list.push_back(std::unique_ptr<PixelTextCMD>(ptr));
+        addCommand<RenderCommand::DebugTextCMD>(_renderer, text, position, color);
+    }
+
+    void Renderer::drawDebugTexts(const StringList& text_list, const std::vector<Vector2*>& position_list,
+                                  const SDL_Color& color) {
+        if (text_list.empty()) return;
+        addCommand<RenderCommand::DebugTextCMD>(_renderer, std::string(), Vector2(), color,
+                            RenderCommand::BaseCommand::Mode::Multiple, position_list.size(),
+                            text_list, position_list);
     }
 
     void Renderer::setViewport(const Geometry& geometry) {
         if (geometry.width == 0 || geometry.height == 0) {
-            auto ptr = getCmdFromPool<ViewportCMD>(_renderer, true);
-            if (ptr) _cmd_list.push_back(std::unique_ptr<ViewportCMD>(ptr));
+            addCommand<RenderCommand::ViewPortCMD>(_renderer, true, geometry);
         } else {
-            auto ptr = getCmdFromPool<ViewportCMD>(_renderer, false,
-            SDL_Rect(geometry.x, geometry.y, geometry.width,geometry.height));
-            if (ptr) _cmd_list.push_back(std::unique_ptr<ViewportCMD>(ptr));
+            addCommand<RenderCommand::ViewPortCMD>(_renderer, false, geometry);
         }
     }
 
     void Renderer::setClipView(const Geometry& geometry) {
         if (geometry.width == 0 || geometry.height == 0) {
-            auto ptr = getCmdFromPool<ClipCMD>(_renderer, true);
-            if (ptr) _cmd_list.push_back(std::unique_ptr<ClipCMD>(ptr));
+            addCommand<RenderCommand::ClipViewCMD>(_renderer, true, geometry);
         } else {
-            auto ptr = getCmdFromPool<ClipCMD>(_renderer, false,
-                       SDL_Rect(geometry.x, geometry.y, geometry.width,geometry.height));
-            if (ptr) _cmd_list.push_back(std::unique_ptr<ClipCMD>(ptr));
+            addCommand<RenderCommand::ClipViewCMD>(_renderer, false, geometry);
         }
     }
 
     void Renderer::setBlendMode(const SDL_BlendMode &blend_mode) {
-        auto ptr = getCmdFromPool<BlendModeCMD>(_renderer, blend_mode);
-        if (ptr) _cmd_list.push_back(std::unique_ptr<BlendModeCMD>(ptr));
+        addCommand<RenderCommand::BlendModeCMD>(_renderer, blend_mode);
     }
 
     Window::Window(Engine* object, const std::string& title, int width, int height,  GraphicEngine engine)
@@ -964,8 +943,8 @@ namespace MyEngine {
             Logger::log(std::format("Text ID {} is not in the text list!", text_id), Logger::Error);
             return false;
         }
-
-        renderer->drawText(_text_map[text_id].self, pos);
+        auto temp_pos = pos;
+        renderer->drawText(_text_map[text_id].self, temp_pos);
         return true;
     }
 

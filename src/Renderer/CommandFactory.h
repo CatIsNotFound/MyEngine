@@ -4,16 +4,22 @@
 
 namespace MyEngine {
     namespace RenderCommand {
+        template<typename T> class CommandPool;
         class CommandFactory {
         public:
             template<typename T, typename ...Args>
-            T* acquire(Args... args) {
+            static T* acquire(Args... args) {
                 return getPool<T>().acquire(args...);
             }
 
             template<typename T>
-            void release(std::unique_ptr<T> command) {
+            static void release(std::unique_ptr<T> command) {
                 getPool<T>().release(std::move(command));
+            }
+
+            template<typename T>
+            static void registerCommand() {
+                getPool<T>();
             }
 
         private:

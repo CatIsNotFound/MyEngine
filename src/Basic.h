@@ -1371,23 +1371,23 @@ namespace MyEngine {
             std::array<SDL_Vertex, 4> _vertices;
         };
 
-        class RectangleEX {
+        class Rectangle {
         public:
-            explicit RectangleEX() : _geometry(), _border_size(0),
-                _border_color(StdColor::Black), _background_color(StdColor::Transparent), _degree(0) {}
-            explicit RectangleEX(const GeometryF& geometry, uint16_t border = 1,
-                                 const SDL_Color& border_color = StdColor::Black,
-                                 const SDL_Color& background_color = StdColor::White, float degree = 0)
+            explicit Rectangle() : _geometry(), _border_size(0),
+                                   _border_color(StdColor::Black), _background_color(StdColor::Transparent), _rotate(0) {}
+            explicit Rectangle(const GeometryF& geometry, uint16_t border = 1,
+                               const SDL_Color& border_color = StdColor::Black,
+                               const SDL_Color& background_color = StdColor::White, float degree = 0)
                 : _geometry(geometry), _border_size(border), _border_color(border_color),
-                  _background_color(background_color), _degree(degree) {
+                  _background_color(background_color), _rotate(degree) {
                 updateGeometry();
                 updateBorderGeometry();
             }
-            explicit RectangleEX(float x, float y, float w, float h, uint16_t border = 1,
-                                 const SDL_Color& border_color = StdColor::Black,
-                                 const SDL_Color& background_color = StdColor::White, float degree = 0)
+            explicit Rectangle(float x, float y, float w, float h, uint16_t border = 1,
+                               const SDL_Color& border_color = StdColor::Black,
+                               const SDL_Color& background_color = StdColor::White, float degree = 0)
                     : _geometry(x, y, w, h), _border_size(border), _border_color(border_color),
-                      _background_color(background_color), _degree(degree) {
+                      _background_color(background_color), _rotate(degree) {
                 updateGeometry();
                 updateBorderGeometry();
             }
@@ -1399,7 +1399,7 @@ namespace MyEngine {
                 _border_size = border;
                 _border_color = border_color;
                 _background_color = background_color;
-                _degree = degree;
+                _rotate = degree;
                 updateGeometry();
                 updateBorderGeometry();
             }
@@ -1411,7 +1411,31 @@ namespace MyEngine {
                 _border_size = border;
                 _border_color = border_color;
                 _background_color = background_color;
-                _degree = degree;
+                _rotate = degree;
+                updateGeometry();
+                updateBorderGeometry();
+            }
+
+            void move(float x, float y) {
+                _geometry.pos.reset(x, y);
+                updateGeometry();
+                updateBorderGeometry();
+            }
+
+            void move(const Vector2& position) {
+                _geometry.pos.reset(position);
+                updateGeometry();
+                updateBorderGeometry();
+            }
+
+            void resize(float w, float h) {
+                _geometry.size.reset(w, h);
+                updateGeometry();
+                updateBorderGeometry();
+            }
+
+            void resize(const Size& size) {
+                _geometry.size.reset(size);
                 updateGeometry();
                 updateBorderGeometry();
             }
@@ -1446,13 +1470,13 @@ namespace MyEngine {
                 return _background_color;
             }
 
-            void setDegree(float degree) {
-                _degree = degree;
+            void setRotate(float degree) {
+                _rotate = degree;
                 updateGeometry();
                 updateBorderGeometry();
             }
 
-            [[nodiscard]] float degree() const { return _degree; }
+            [[nodiscard]] float rotate() const { return _rotate; }
 
             void setGeometry(float x, float y, float w, float h) {
                 _geometry.reset(x, y, w, h);
@@ -1479,14 +1503,14 @@ namespace MyEngine {
         private:
             void updateGeometry() {
                 if (_background_color.a > 0 ) {
-                    Algorithm::calcFilledRectangleRotated(_geometry, _background_color, _degree,
+                    Algorithm::calcFilledRectangleRotated(_geometry, _background_color, _rotate,
                                                           _vertices, _indices);
                 }
             }
 
             void updateBorderGeometry() {
                 if (_border_size > 0 && _border_color.a > 0) {
-                    Algorithm::calcRectangleRotated(_geometry, _border_color, _border_size, _degree,
+                    Algorithm::calcRectangleRotated(_geometry, _border_color, _border_size, _rotate,
                                                     _border_vertices, _border_indices);
                 }
             }
@@ -1495,99 +1519,11 @@ namespace MyEngine {
             uint16_t _border_size;
             SDL_Color _border_color;
             SDL_Color _background_color;
-            float _degree;
+            float _rotate;
             std::array<SDL_Vertex, 4> _vertices{};
             std::array<SDL_Vertex, 8> _border_vertices{};
             std::array<int, 6> _indices{};
             std::array<int, 24> _border_indices{};
-        };
-
-        class Rectangle {
-        private:
-            GeometryF _geometry;
-            uint16_t _border_size;
-            SDL_Color _border_color;
-            SDL_Color _background_color;
-            std::array<SDL_FRect, 4> _borders;
-
-        public:
-            explicit Rectangle() : _geometry(0, 0, 0, 0), _border_size(0),
-                                   _border_color(StdColor::Black), _background_color(StdColor::Transparent) {}
-            explicit Rectangle(float x, float y, float w, float h,
-                               uint16_t border = 1, const SDL_Color& border_color = StdColor::Black,
-                               const SDL_Color& background_color = StdColor::Black)
-                               : _geometry(x, y, w, h), _border_size(border),
-                                 _border_color(border_color), _background_color(background_color) {
-                Algorithm::calcRectangleBorder(_geometry, _border_size, _borders);
-            }
-            void reset(const GeometryF& geometry, uint16_t border,
-                       const SDL_Color& border_color, const SDL_Color& background_color) {
-                _geometry.reset(geometry);
-                _border_size = border;
-                _border_color = border_color;
-                _background_color = background_color;
-                Algorithm::calcRectangleBorder(_geometry, _border_size, _borders);
-            }
-            void reset(const Vector2& pos, const Size& size, uint16_t border,
-                       const SDL_Color& border_color, const SDL_Color& background_color) {
-                _geometry.reset(pos, size);
-                _border_size = border;
-                _border_color = border_color;
-                _background_color = background_color;
-                Algorithm::calcRectangleBorder(_geometry, _border_size, _borders);
-            }
-            void reset(float x, float y, float w, float h, uint16_t border,
-                       const SDL_Color& border_color, const SDL_Color& background_color) {
-                _geometry.reset(x, y, w, h);
-                _border_size = border;
-                _border_color = border_color;
-                _background_color = background_color;
-                Algorithm::calcRectangleBorder(_geometry, _border_size, _borders);
-            }
-            void setGeometry(float x, float y, float w, float h) {
-                _geometry.reset(x, y, w, h);
-                Algorithm::calcRectangleBorder(_geometry, _border_size, _borders);
-            }
-            void setGeometry(const Vector2& pos, const Size& size) {
-                _geometry.reset(pos, size);
-                Algorithm::calcRectangleBorder(_geometry, _border_size, _borders);
-            }
-            void setGeometry(const GeometryF& geometry) {
-                _geometry = geometry;
-                Algorithm::calcRectangleBorder(_geometry, _border_size, _borders);
-            }
-            void move(const Vector2& pos) {
-                _geometry.pos.reset(pos);
-                Algorithm::calcRectangleBorder(_geometry, _border_size, _borders);
-            }
-            void move(float x, float y) {
-                _geometry.pos.reset(x, y);
-                Algorithm::calcRectangleBorder(_geometry, _border_size, _borders);
-            }
-            void resize(const Size& size) {
-                _geometry.size.reset(size);
-                Algorithm::calcRectangleBorder(_geometry, _border_size, _borders);
-            }
-            void resize(float w, float h) {
-                _geometry.size.reset(w, h);
-                Algorithm::calcRectangleBorder(_geometry, _border_size, _borders);
-            }
-
-            void setBorder(uint16_t border_size) {
-                _border_size = border_size;
-                Algorithm::calcRectangleBorder(_geometry, _border_size, _borders);
-            }
-            void setBorderColor(const SDL_Color& color) {
-                _border_color = color;
-            }
-            void setBackgroundColor(const SDL_Color& color) {
-                _background_color = color;
-            }
-            const GeometryF& geometry() const { return _geometry; }
-            uint16_t borderSize() const { return _border_size; }
-            const SDL_Color& borderColor() const { return _border_color; }
-            const SDL_Color& backgroundColor() const { return _background_color; }
-            const SDL_FRect* bordersRect() const { return _borders.data(); }
         };
 
         class Triangle {

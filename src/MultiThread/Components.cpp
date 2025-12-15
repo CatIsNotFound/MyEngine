@@ -64,7 +64,7 @@ namespace MyEngine {
     void Timer::running() {
         while (_enabled) {
             _lock.lock();
-            SLEEP_MS(1);
+            delayMS(1);
             _current_time = SDL_GetTicks();
             auto current_delay = _current_time - _start_time;
             if (current_delay >= _delay) {
@@ -140,7 +140,7 @@ namespace MyEngine {
     void Trigger::running() {
         while (_enabled) {
             _mutex.lock();
-            SLEEP_MS(1);
+            delayMS(1);
             bool c_switch = false;
             if (_condition_function) {
                 c_switch = _condition_function();

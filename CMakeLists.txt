@@ -91,6 +91,7 @@ if (BUILD_SHARED_LIBS_ONLY)
             src/Renderer/CommandPool.cpp
             src/Renderer/CommandPool.h
             src/Renderer/CommandFactory.h
+            src/RCommand.h
     )
 else ()
     add_library(${PROJECT_NAME} STATIC
@@ -135,6 +136,7 @@ else ()
             src/Renderer/CommandPool.cpp
             src/Renderer/CommandPool.h
             src/Renderer/CommandFactory.h
+            src/RCommand.h
     )
 endif ()
 

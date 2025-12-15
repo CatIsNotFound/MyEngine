@@ -3,14 +3,32 @@
 
 namespace MyEngine {
     namespace RenderCommand {
+        BlendModeCMD::BlendModeCMD(SDL_Renderer *renderer, SDL_BlendMode blend_mode)
+            : BaseCommand(renderer, "BlendMode") {
+            _blend_mode = blend_mode;
+        }
+
+        void BlendModeCMD::reset(SDL_Renderer *renderer, SDL_BlendMode blend_mode) {
+            _renderer = renderer;
+            _blend_mode = blend_mode;
+        }
+
+        void BlendModeCMD::exec() {
+            auto _ret = SDL_SetRenderDrawBlendMode(_renderer, _blend_mode);
+            if (!_ret) {
+                Logger::log(std::format("Renderer: Set render draw blend mode failed! Exception: {}",
+                                        SDL_GetError()), Logger::Warn);
+            }
+        }
+
         FillCMD::FillCMD(SDL_Renderer *renderer, const SDL_Color &color)
             : BaseCommand(renderer, "Fill") {
-            _color = color;
+            _render_color = color;
         }
 
         FillCMD::FillCMD(SDL_Renderer *renderer, SDL_Color &&color)
             : BaseCommand(renderer, "Fill") {
-            setRenderColor(std::move(color));
+            _render_color = std::move(color);
         }
 
         void FillCMD::reset(SDL_Renderer *render, const SDL_Color &color) {
@@ -96,29 +114,37 @@ namespace MyEngine {
 
 
         TextureCMD::TextureCMD(SDL_Renderer *renderer, SDL_Texture *texture, TextureProperty *property,
-                               BaseCommand::Mode mode, uint32_t count, std::vector<TextureProperty *> properties)
+                               BaseCommand::Mode mode, uint32_t count,
+                               const std::vector<TextureProperty*>& properties,
+                               const std::vector<SDL_Texture*>& textures)
                            : BaseCommand(renderer, "Texture"), _texture(texture), _property(property),
-                                _mode(mode), _count(count), _properties(properties) {
+                                _mode(mode), _count(count), _properties(properties), _textures(textures) {
             if (_mode == Mode::Single) {
                 assert(_texture != nullptr && _property != nullptr);
             } else if (_mode == Mode::Multiple) {
                 assert(_texture != nullptr && _count > 0 && _properties.size() == _count);
+            } else if (_mode == Mode::Custom) {
+                assert(_count > 0 && _properties.size() == _count && _textures.size() == _count);
             }
         }
 
         void TextureCMD::reset(SDL_Renderer *renderer, SDL_Texture *texture, TextureProperty *textureProperty,
-                               BaseCommand::Mode mode, uint32_t count, std::vector<TextureProperty *> properties) {
-            if (_mode == Mode::Single) {
-                assert(_texture != nullptr && _property != nullptr);
-            } else if (_mode == Mode::Multiple) {
-                assert(_texture != nullptr && _count > 0 && _properties.size() == _count);
-            }
+                       BaseCommand::Mode mode, uint32_t count, const std::vector<TextureProperty*>& properties,
+                       const std::vector<SDL_Texture*>& textures) {
             _renderer = renderer;
             _texture = texture;
             _property = textureProperty;
             _mode = mode;
             _count = count;
             _properties = properties;
+            _textures = textures;
+            if (_mode == Mode::Single) {
+                assert(_texture != nullptr && _property != nullptr);
+            } else if (_mode == Mode::Multiple) {
+                assert(_texture != nullptr && _count > 0 && _properties.size() == _count);
+            } else if (_mode == Mode::Custom) {
+                assert(_count > 0 && _properties.size() == _count && _textures.size() == _count);
+            }
         }
 
         void TextureCMD::exec() {
@@ -127,6 +153,10 @@ namespace MyEngine {
             } else if (_mode == Mode::Multiple) {
                 for (int i = 0; i < _count; ++i) {
                     render(_texture, _properties[i]);
+                }
+            } else if (_mode == Mode::Custom) {
+                for (int i = 0; i < _count; ++i) {
+                    render(_textures[i], _properties[i]);
                 }
             }
         }
@@ -148,7 +178,7 @@ namespace MyEngine {
             auto scaled_size = scaled.size;
             SDL_FRect rect_dest = {scaled_pos.x, scaled_pos.y,
                                    scaled_size.width, scaled_size.height};
-            auto anchor = prop->anchor();
+            auto anchor = prop->scaledAnchor();
             SDL_FPoint center = {anchor.x, anchor.y};
             _ret = SDL_RenderTextureRotated(_renderer, texture,
                                             prop->clip_mode ? &prop->clip_area : nullptr,
@@ -162,7 +192,7 @@ namespace MyEngine {
 
 
         PointCMD::PointCMD(SDL_Renderer *renderer, Graphics::Point *point, BaseCommand::Mode mode, uint32_t count,
-                           std::vector<Graphics::Point *> point_list)
+                           const std::vector<Graphics::Point*>& point_list)
                : BaseCommand(renderer, "Point"), _point(point),
                  _mode(mode), _count(count), _points(point_list) {
             if (_mode == Mode::Single) {
@@ -173,7 +203,7 @@ namespace MyEngine {
         }
 
         void PointCMD::reset(SDL_Renderer *renderer, Graphics::Point *point, BaseCommand::Mode mode, uint32_t count,
-                             std::vector<Graphics::Point*> point_list) {
+                             const std::vector<Graphics::Point*>& point_list) {
             _renderer = renderer;
             _point = point;
             _mode = mode;
@@ -221,8 +251,71 @@ namespace MyEngine {
             }
         }
 
-        RectangleCMD::RectangleCMD(SDL_Renderer *renderer, Graphics::RectangleEX *rect, BaseCommand::Mode mode,
-                                   uint32_t count, std::vector<Graphics::RectangleEX *> rect_list)
+        LineCMD::LineCMD(SDL_Renderer *renderer, Graphics::Line *line, BaseCommand::Mode mode, size_t count,
+                         const std::vector<Graphics::Line*>& line_list)
+                 : BaseCommand(renderer, "Line"), _line(line), _mode(mode),
+                    _count(count), _lines(line_list) {
+            if (_mode == Mode::Single) {
+                assert(_line != nullptr);
+            } else if (_mode == Mode::Multiple) {
+                assert(_count > 0 && _lines.size() == _count);
+            }
+        }
+
+        void LineCMD::reset(SDL_Renderer *renderer, Graphics::Line *line, BaseCommand::Mode mode, size_t count,
+                            const std::vector<Graphics::Line*>& line_list) {
+            _renderer = renderer;
+            _line = line;
+            _mode = mode;
+            _count = count;
+            _lines = line_list;
+            if (_mode == Mode::Single) {
+                assert(_line != nullptr);
+            } else if (_mode == Mode::Multiple) {
+                assert(_count > 0 && _lines.size() == _count);
+            }
+        }
+
+        void LineCMD::exec() {
+            if (_mode == Mode::Single) {
+                render(_line);
+            } else if (_mode == Mode::Multiple) {
+                for (int i = 0; i < _count; ++i) {
+                    render(_lines[i]);
+                }
+            }
+        }
+
+        void LineCMD::render(Graphics::Line *line) {
+            const auto SIZE = line->size();
+            const auto START = line->startPosition();
+            const auto END = line->endPosition();
+            if (!SIZE) return;
+            const auto color = line->color();
+            auto _ret = SDL_SetRenderDrawColor(_renderer, color.r, color.g, color.b, color.a);
+            if (!_ret) {
+                Logger::log(std::format("Renderer: Set render draw color failed! Exception: {}",
+                                        SDL_GetError()), Logger::Warn);
+            }
+            if (SIZE == 1) {
+                _ret = SDL_RenderLine(_renderer, START.x, START.y,
+                                      END.x, END.y);
+                if (!_ret) {
+                    Logger::log(std::format("Renderer: Set render line failed! Exception: {}",
+                                            SDL_GetError()), Logger::Error);
+                }
+            } else {
+                _ret = SDL_RenderGeometry(_renderer, nullptr, line->vertices(),
+                                          line->vertexCount(), line->indices(), line->indicesCount());
+                if (!_ret) {
+                    Logger::log(std::format("Renderer: Set render geometry failed! Exception: {}",
+                                            SDL_GetError()), Logger::Error);
+                }
+            }
+        }
+
+        RectangleCMD::RectangleCMD(SDL_Renderer *renderer, Graphics::Rectangle *rect, BaseCommand::Mode mode,
+                                   uint32_t count, const std::vector<Graphics::Rectangle*>& rect_list)
                                    : BaseCommand(renderer, "Rectangle"), _rect(rect),
                                      _mode(mode), _count(count), _rects(rect_list) {
             if (_mode == Mode::Single) {
@@ -232,9 +325,8 @@ namespace MyEngine {
             }
         }
 
-        void
-        RectangleCMD::reset(SDL_Renderer *renderer, Graphics::RectangleEX *rect, BaseCommand::Mode mode, uint32_t count,
-                            std::vector<Graphics::RectangleEX *> rect_list) {
+        void RectangleCMD::reset(SDL_Renderer *renderer, Graphics::Rectangle *rect, BaseCommand::Mode mode,
+                                 uint32_t count, const std::vector<Graphics::Rectangle*>& rect_list) {
             _renderer = renderer;
             _rect = rect;
             _mode = mode;
@@ -257,7 +349,7 @@ namespace MyEngine {
             }
         }
 
-        void RectangleCMD::render(Graphics::RectangleEX *rect) {
+        void RectangleCMD::render(Graphics::Rectangle *rect) {
             auto back_color = rect->backgroundColor();
             bool border = (rect->borderSize() > 0) && (rect->borderColor().a > 0);
             if (back_color.a > 0) {
@@ -291,7 +383,7 @@ namespace MyEngine {
         }
 
         TriangleCMD::TriangleCMD(SDL_Renderer *renderer, Graphics::Triangle *triangle, BaseCommand::Mode mode,
-                                 uint32_t count, std::vector<Graphics::Triangle *> triangle_list)
+                                 uint32_t count, const std::vector<Graphics::Triangle*>& triangle_list)
              : BaseCommand(renderer, "Triangle"), _triangle(triangle), _mode(mode), _count(count), 
                _triangles(triangle_list) {
             if (_mode == Mode::Single) {
@@ -303,7 +395,7 @@ namespace MyEngine {
 
         void TriangleCMD::reset(SDL_Renderer *renderer, Graphics::Triangle *triangle,
                                 MyEngine::RenderCommand::BaseCommand::Mode mode, uint32_t count,
-                                std::vector<Graphics::Triangle *> triangle_list) {
+                                const std::vector<Graphics::Triangle*>& triangle_list) {
             _renderer = renderer;
             _triangle = triangle;
             _mode = mode;
@@ -374,7 +466,7 @@ namespace MyEngine {
         }
 
         EllipseCMD::EllipseCMD(SDL_Renderer *renderer, Graphics::Ellipse *ellipse, BaseCommand::Mode mode,
-                               uint32_t count, std::vector<Graphics::Ellipse *> ellipse_list)
+                               uint32_t count, const std::vector<Graphics::Ellipse*>& ellipse_list)
                : BaseCommand(renderer, "Ellipse"), _ellipse(ellipse), 
                  _mode(mode), _count(count), _ellipses(ellipse_list){
             if (_mode == Mode::Single) {
@@ -386,7 +478,7 @@ namespace MyEngine {
 
         void
         EllipseCMD::reset(SDL_Renderer *renderer, Graphics::Ellipse *ellipse, BaseCommand::Mode mode, uint32_t count,
-                          std::vector<Graphics::Ellipse *> ellipse_list) {
+                          const std::vector<Graphics::Ellipse*>& ellipse_list) {
             _renderer = renderer;
             _ellipse = ellipse;
             _mode = mode;
@@ -430,6 +522,120 @@ namespace MyEngine {
                     Logger::log(std::format("Renderer: Set render geometry failed! Exception: {}",
                                             SDL_GetError()), Logger::Error);
                 }
+            }
+        }
+
+        TextCMD::TextCMD(SDL_Renderer *renderer, TTF_Text *text, const Vector2& position, BaseCommand::Mode mode,
+                         uint32_t count, const std::vector<Vector2 *> &position_list,
+                         const std::vector<TTF_Text *>& text_list)
+             : BaseCommand(renderer, "Text"), _text(text), _pos(position), _mode(mode),
+               _count(count) {
+            if (_mode == Mode::Single) {
+                assert(_text != nullptr);
+            } else if (_mode == Mode::Multiple) {
+                assert(_text != nullptr && _count > 0 && position_list.size() == _count);
+                _positions = position_list;
+            } else if (_mode == Mode::Custom) {
+                assert(_count > 0 && position_list.size() == _count && text_list.size() == _count);
+                for (int i = 0; i < _count; ++i) {
+                    _texts.emplace_back(text_list[i], position_list[i]);
+                }
+            }
+        }
+
+        void TextCMD::reset(SDL_Renderer *renderer, TTF_Text *text, const Vector2& position, BaseCommand::Mode mode,
+                            uint32_t count, const std::vector<Vector2 *> &position_list,
+                            std::vector<TTF_Text *> text_list) {
+            _renderer = renderer;
+            _text = text;
+            _pos = position;
+            _mode = mode;
+            _count = count;
+            if (_mode == Mode::Single) {
+                assert(_text != nullptr);
+            } else if (_mode == Mode::Multiple) {
+                assert(_text != nullptr && _count > 0 && position_list.size() == _count);
+                _positions = position_list;
+            } else if (_mode == Mode::Custom) {
+                assert(_count > 0 && position_list.size() == _count && text_list.size() == _count);
+                for (int i = 0; i < _count; ++i) {
+                    _texts.emplace_back(text_list[i], position_list[i]);
+                }
+            }
+        }
+
+        void TextCMD::exec() {
+            if (_mode == Mode::Single) {
+                render(_text, &_pos);
+            } else if (_mode == Mode::Multiple) {
+                for (int i = 0; i < _count; ++i) {
+                    render(_text, _positions[i]);
+                }
+            } else if (_mode == Mode::Custom) {
+                for (int i = 0; i < _count; ++i) {
+                    auto& text = _texts[i];
+                    render(text.text, text.position);
+                }
+            }
+        }
+
+        void TextCMD::render(TTF_Text *text, Vector2 *position) {
+            bool _ret = TTF_DrawRendererText(text, position->x, position->y);
+            if (!_ret) {
+                Logger::log(std::format("Renderer: Set render text failed! Exception: {}",
+                                        SDL_GetError()), Logger::Error);
+            }
+        }
+
+
+        DebugTextCMD::DebugTextCMD(SDL_Renderer *renderer, const std::string &text, const Vector2 &position,
+                                   const SDL_Color& color, BaseCommand::Mode mode, uint32_t count,
+                                   const StringList &text_list, const std::vector<Vector2 *> &position_list)
+               : BaseCommand(renderer, "Debug"), _text(text), _position(position),
+                 _mode(mode), _count(count), _text_list(text_list), _pos_list(position_list) {
+            _render_color = color;
+            if (_mode == Mode::Multiple) {
+                assert(_count > 0 && (_text_list.size() == _count) && (_pos_list.size() == _count));
+            }
+        }
+
+        void DebugTextCMD::reset(SDL_Renderer *renderer, const std::string &text, const Vector2 &position,
+                                 const SDL_Color& color, BaseCommand::Mode mode, uint32_t count,
+                                 const StringList &text_list, const std::vector<Vector2 *> &position_list) {
+            _renderer = renderer;
+            _render_color = color;
+            _text = text;
+            _position = position;
+            _mode = mode;
+            _count = count;
+            _text_list = text_list;
+            _pos_list = position_list;
+            if (_mode == Mode::Multiple) {
+                assert(_count > 0 && (_text_list.size() == _count) && (_pos_list.size() == _count));
+            }
+        }
+
+        void DebugTextCMD::exec() {
+            if (_mode == Mode::Single) {
+                render(_text, &_position);
+            } else if (_mode == Mode::Multiple) {
+                for (int i = 0; i < _count; ++i) {
+                    render(_text_list[i], _pos_list[i]);
+                }
+            }
+        }
+
+        void DebugTextCMD::render(const std::string &text, Vector2 *position) {
+            auto _ret = SDL_SetRenderDrawColor(_renderer, _render_color.r, _render_color.g,
+                                               _render_color.b, _render_color.a);
+            if (!_ret) {
+                Logger::log(std::format("Renderer: Set render draw color failed! Exception: {}",
+                                        SDL_GetError()), Logger::Warn);
+            }
+            _ret = SDL_RenderDebugText(_renderer, position->x, position->y, text.c_str());
+            if (!_ret) {
+                Logger::log(std::format("Renderer: Set render debug text failed! Exception: {}",
+                                        SDL_GetError()), Logger::Warn);
             }
         }
     }

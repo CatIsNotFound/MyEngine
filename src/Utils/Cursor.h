@@ -280,7 +280,7 @@ namespace MyEngine {
             }
             auto new_cursor = IMG_Load(path.c_str());
             if (!new_cursor) {
-                Logger::log(std::format("[ERROR] Can't set custom cursor, "
+                Logger::log(std::format("[ERROR] Can't set addCustomCommand cursor, "
                                         "because the current path \"{}\" is not valid!", path), Logger::Error);
                 return;
             }

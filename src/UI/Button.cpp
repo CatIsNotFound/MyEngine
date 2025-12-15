@@ -162,7 +162,7 @@ namespace MyEngine {
 
     void Button::paintEvent(Renderer *r) {
         AbstractControl::paintEvent(r);
-        r->drawRectangle(_rect);
+        r->drawRectangle(&_rect);
         if (_is_valid) {
             r->setViewport(toGeometryInt(geometry()));
             auto size = AbstractControl::_geometry.size;

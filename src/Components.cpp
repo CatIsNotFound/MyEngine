@@ -298,7 +298,7 @@ namespace MyEngine {
         _property->setScale(1.0f);
         _property->clip_mode = false;
         _property->color_alpha = RGBAColor::White;
-        Logger::log(std::format("Texture: Created from custom"), Logger::Debug);
+        Logger::log(std::format("Texture: Created from addCustomCommand"), Logger::Debug);
         Logger::log(std::format("Texture: Size set to {}x{}", width, height), Logger::Debug);
     }
 
@@ -453,7 +453,7 @@ namespace MyEngine {
     }
 
     void TextureAtlas::setClipGeometryOfTiles(const std::string& tiles_name, const GeometryF& clip_geometry) {
-        auto prop = _tiles_map[tiles_name].property.get();
+        auto* prop = _tiles_map[tiles_name].property.get();
         auto scaled = prop->size();
         auto pos = prop->position();
         std::array<float, 4> real_tex = {clip_geometry.pos.x / scaled.width,                                  //   0% L
@@ -513,7 +513,7 @@ namespace MyEngine {
 
     void TextureAtlas::draw() {
         if (_tiles_map.contains(_current_tiles)) {
-            render()->drawTextureTile(this);
+
         } else {
             Logger::log(std::format("TextureAtlas: Tiles '{}' is not in tiles map! "
                          "Did you forget to use `TextureAtlas::setTiles()`?", _current_tiles), Logger::Error);
@@ -522,7 +522,7 @@ namespace MyEngine {
 
     void TextureAtlas::draw(const std::string &tiles_name) {
         if (_tiles_map.contains(tiles_name)) {
-            render()->drawTextureTile(this, tiles_name);
+//            render()->drawTextureTile(this, tiles_name);
         } else {
             Logger::log(std::format("TextureAtlas: Tiles '{}' is not in tiles map! "
                          "Did you forget to use `TextureAtlas::setTiles()`?", tiles_name), Logger::Error);
@@ -538,8 +538,8 @@ namespace MyEngine {
             if (!_playing) return;
             auto now = SDL_GetTicks();
             if (now - _start_time >= _textures[_cur_frame]->duration) {
-                // _cur_frame = (_cur_frame + 1 >= _textures.size() ? 0 : _cur_frame + 1);
-                if (_cur_frame + 1 >= _textures.size()) _cur_frame = 0; else _cur_frame++;
+                _cur_frame = (_cur_frame + 1 >= _textures.size() ? 0 : _cur_frame + 1);
+                // if (_cur_frame + 1 >= _textures.size()) _cur_frame = 0; else _cur_frame++;
                 _start_time = SDL_GetTicks();
             }
         });

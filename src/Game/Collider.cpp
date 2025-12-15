@@ -100,9 +100,9 @@ void MyEngine::Collider::draw(Renderer* r) {
     if (!r || isNull()) return;
     size_t idx = _base.index();
     if (idx == 1) {
-        r->drawPoint(*std::get<Graphics::Point*>(_base));
+        r->drawPoint(std::get<Graphics::Point*>(_base));
     } else if (idx == 2) {
-        r->drawRectangle(*std::get<Graphics::Rectangle*>(_base));
+        r->drawRectangle(std::get<Graphics::Rectangle*>(_base));
     }
 }
 

@@ -1,12 +1,9 @@
 #pragma once
-#include <utility>
-
-#include "Basic.h"
 #ifndef MYENGINE_CORE_H
 #define MYENGINE_CORE_H
 #define MYENGINE_FULL_VERSION "v0.1.2-beta"
+#include "Basic.h"
 #include "Components.h"
-#include "Renderer/CommandFactory.h"
 
 namespace MyEngine {
     class Engine;
@@ -14,177 +11,57 @@ namespace MyEngine {
     struct TextureProperty;
     class Texture;
     class EventSystem;
+    
+    namespace RenderCommand {
+        class BaseCommand;
+        class CommandFactory;
+    }
 
     class Renderer {
+    private:
+        std::deque<std::unique_ptr<RenderCommand::BaseCommand>> _cmd_list;
+        SDL_Renderer* _renderer{nullptr};
+        Window* _window{nullptr};
+        static SDL_Color _background_color;
+
+        template<typename T, typename ...Args>
+        void addCommand(Args... args);
     public:
-        enum class DiscardStrategy {
-            Oldest,
-            Newest
-        };
         explicit Renderer(Window* window = nullptr);
         ~Renderer();
         [[nodiscard]] SDL_Renderer* self() const;
         [[nodiscard]] Window* window() const;
-        void setMaxCommandCount(size_t count);
-        void setMaxFrameCommandCount(size_t count);
-        void setDiscardCommandStrategy(DiscardStrategy strategy);
         void _update();
-        void fillBackground(const SDL_Color& color, bool covered = false);
-        void drawPoint(const Graphics::Point& point);
-        void drawPoint(Graphics::Point&& point);
-        void drawLine(const Graphics::Line& line);
-        void drawLine(Graphics::Line&& line);
-        void drawRectangle(const Graphics::Rectangle& rectangle);
-        void drawRectangle(Graphics::Rectangle&& rectangle);
-        void drawTriangle(const Graphics::Triangle& triangle);
-        void drawTriangle(Graphics::Triangle&& triangle);
-        void drawEllipse(const Graphics::Ellipse& ellipse);
-        void drawEllipse(Graphics::Ellipse&& ellipse);
+        void fillBackground(const SDL_Color& color);
+        void fillBackground(SDL_Color&& color);
+        void fillBackground(uint64_t rgb_hex = 0);
+        void drawPoint(Graphics::Point* point);
+        void drawPoints(const std::vector<Graphics::Point*>& point_list);
+        void drawLine(Graphics::Line* line);
+        void drawLines(const std::vector<Graphics::Line*>& line_list);
+        void drawRectangle(Graphics::Rectangle* rectangle);
+        void drawRectangles(const std::vector<Graphics::Rectangle*>& rectangle_list);
+        void drawTriangle(Graphics::Triangle* triangle);
+        void drawTriangles(const std::vector<Graphics::Triangle*>& triangle);
+        void drawEllipse(Graphics::Ellipse* ellipse);
+        void drawEllipses(const std::vector<Graphics::Ellipse*>& ellipse);
         void drawTexture(SDL_Texture* texture, TextureProperty* property);
-        void drawTextureTile(TextureAtlas* texture_atlas);
-        void drawTextureTile(TextureAtlas* texture_atlas, const std::string& tiles_name);
-        void drawText(TTF_Text* text, const Vector2& position);
-        void drawPixelText(const std::string& text, const Vector2& position,
-                           const SDL_Color& color = StdColor::White);
+        void drawTexture(SDL_Texture* texture, const std::vector<TextureProperty*>& property);
+        void drawTextures(const std::vector<SDL_Texture*>& textures, const std::vector<TextureProperty*>& properties);
 
+        void drawText(TTF_Text* text, Vector2& position);
+        void drawTexts(TTF_Text* text, const std::vector<Vector2*>& position_list);
+        void drawTexts(const std::vector<TTF_Text*>& text_list, const std::vector<Vector2*>& position_list);
+        void drawDebugText(const std::string& text, const Vector2& position,
+                           const SDL_Color& color = StdColor::White);
+        void drawDebugTexts(const StringList& text_list, const std::vector<Vector2*>& position_list,
+                           const SDL_Color& color = StdColor::White);
         void setViewport(const Geometry& geometry);
         void setClipView(const Geometry& geometry);
         void setBlendMode(const SDL_BlendMode& blend_mode);
-    private:
-        static void updateBackground(const SDL_Color& color) {
-            _background_color = color;
-        }
-        /// Command Mode for Renderer
-        struct Command {
-            explicit Command(SDL_Renderer* renderer) : renderer(renderer) {}
-            virtual void exec() = 0;
-            SDL_Renderer* renderer;
-        };
-        struct FillCMD : public Command {
-            explicit FillCMD(SDL_Renderer* renderer, SDL_Color color = StdColor::Black, bool covered = false)
-                : Command(renderer), bg_color(color), _covered(covered) {}
-            SDL_Color bg_color;
-            bool _covered;
-            void exec() override;
-            void reset(SDL_Renderer* renderer, SDL_Color color = StdColor::Black, bool covered = false);
-        };
-        struct ClipCMD : public Command {
-            explicit ClipCMD(SDL_Renderer* renderer, bool reset = true, SDL_Rect rect = {})
-                : Command(renderer), _reset(reset), _clip_area(rect) {}
-            SDL_Rect _clip_area;
-            bool _reset;
-            void exec() override;
-            void reset(SDL_Renderer* renderer, bool reset = true, SDL_Rect rect = {});
-        };
-        struct ViewportCMD : public Command {
-            explicit ViewportCMD(SDL_Renderer* renderer, bool reset = true, SDL_Rect rect = {})
-                : Command(renderer), _reset(reset), _viewport_area(rect) {}
-            SDL_Rect _viewport_area;
-            bool _reset;
-            void exec() override;
-            void reset(SDL_Renderer* renderer, bool reset = true, SDL_Rect rect = {});
-        };
-        struct BlendModeCMD : public Command {
-            explicit BlendModeCMD(SDL_Renderer* renderer, SDL_BlendMode blend_mode = SDL_BLENDMODE_NONE)
-                : Command(renderer), _blend_mode(blend_mode) {}
-            SDL_BlendMode _blend_mode;
-            void exec() override;
-            void reset(SDL_Renderer* renderer, SDL_BlendMode blend_mode = SDL_BLENDMODE_NONE);
-        };
-        struct PointCMD : public Command {
-            explicit PointCMD(SDL_Renderer* renderer, Graphics::Point  point)
-                : Command(renderer), point(std::move(point)) {}
-            Graphics::Point point;
-            void exec() override;
-            void reset(SDL_Renderer* renderer, const Graphics::Point& point);
-        };
-        struct LineCMD : public Command {
-            explicit LineCMD(SDL_Renderer* renderer, const Graphics::Line& line)
-                : Command(renderer), line(line) {}
-            Graphics::Line line;
-            void exec() override;
-            void reset(SDL_Renderer* renderer, const Graphics::Line& line);
-        };
-        struct RectCMD : public Command {
-            explicit RectCMD(SDL_Renderer* renderer, const Graphics::Rectangle& rect)
-                : Command(renderer), rectangle(rect) {}
-            Graphics::Rectangle rectangle;
-            void exec() override;
-            void reset(SDL_Renderer* renderer, const Graphics::Rectangle& rect);
-        };
-        struct TriangleCMD : public Command {
-            explicit TriangleCMD(SDL_Renderer* renderer, const Graphics::Triangle& tri)
-                    : Command(renderer), triangle(tri) {}
-            Graphics::Triangle triangle;
-            void exec() override;
-            void reset(SDL_Renderer* renderer, const Graphics::Triangle& tri);
-        };
-        struct EllipseCMD : public Command {
-            explicit EllipseCMD(SDL_Renderer* renderer, Graphics::Ellipse  elli)
-                    : Command(renderer), ellipse(std::move(elli)) {}
-            Graphics::Ellipse ellipse;
-            void exec() override;
-            void reset(SDL_Renderer* renderer, const Graphics::Ellipse& elli);
-        };
-        struct TextureCMD : public Command {
-            explicit TextureCMD(SDL_Renderer* renderer, SDL_Texture* texture, TextureProperty* property)
-                : Command(renderer), _texture(texture), _property(property) {}
-            SDL_Texture* _texture;
-            TextureProperty* _property;
-            void exec() override;
-            void reset(SDL_Renderer* renderer, SDL_Texture* texture, TextureProperty* property);
-        };
-        struct TextureAtlasCMD : public Command {
-            explicit TextureAtlasCMD(SDL_Renderer* renderer, SDL_Texture* texture, TextureProperty* property,
-                                     std::vector<SDL_Vertex> vertices, std::vector<int> indices)
-                 : Command(renderer), _texture(texture), _property(property), _vertices(std::move(vertices)),
-                    _indices(std::move(indices)) {}
-            SDL_Texture* _texture;
-            TextureProperty* _property;
-            std::vector<SDL_Vertex> _vertices;
-            std::vector<int> _indices;
-            void exec() override;
-            void reset(SDL_Renderer* renderer, SDL_Texture* texture, TextureProperty* property,
-                       std::vector<SDL_Vertex> vertices, std::vector<int> indices);
-        };
-        struct TextCMD : public Command {
-            explicit TextCMD(SDL_Renderer* renderer, TTF_Text* text, const Vector2& position)
-                : Command(renderer), text(text), position(position) {}
-            TTF_Text* text;
-            Vector2 position;
-            void exec() override;
-            void reset(SDL_Renderer* renderer, TTF_Text* text, const Vector2& position);
-        };
-        struct PixelTextCMD : public Command {
-            explicit PixelTextCMD(SDL_Renderer* renderer, std::string  text,
-                                  const Vector2& pos, const SDL_Color& color)
-                : Command(renderer), text(std::move(text)), pos(pos), color(color) {}
-            std::string text;
-            Vector2 pos;
-            SDL_Color color;
-            void exec() override;
-            void reset(SDL_Renderer* renderer, const std::string& text,
-                       const Vector2& pos, const SDL_Color& color);
-        };
 
-        std::deque<std::unique_ptr<Command>> _cmd_pool;
-
-        template<typename CMD, typename... Args>
-        CMD* getCmdFromPool(Args... args);
-
-        void releaseCmd(std::unique_ptr<Command> command);
-
-        RenderCommand::CommandFactory& factory() {
-            return _factory;
-        }
-
-        std::deque<std::unique_ptr<Command>> _cmd_list;
-        DiscardStrategy _dis_st{DiscardStrategy::Oldest};
-        static RenderCommand::CommandFactory _factory;
-        SDL_Renderer* _renderer{nullptr};
-        Window* _window{nullptr};
-        static SDL_Color _background_color;
-        size_t _max_cmd_cnt{2048}, _max_frame_cmd_cnt{2048};
+        template<typename T, typename ...Args>
+        void addCustomCommand(Args... args);
     };
 
     class Window {
@@ -439,5 +316,7 @@ namespace MyEngine {
         std::unordered_map<std::string, std::unique_ptr<Audio>> _audio_map;
     };
 }
+
+#include "RCommand.h"
 
 #endif
