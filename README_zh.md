@@ -6,9 +6,13 @@
 
 MyEngine 是一个轻量级但功能强大的 2D 图形框架，构建于 SDL3 及其扩展之上。它以简洁和灵活为设计理念，提供直观的面向对象 API，使游戏和应用程序开发变得快速而愉悦。利用现代 C++20 特性，MyEngine 提供了模块化架构，允许开发人员以最少的样板代码轻松创建交互式图形应用程序。
 
+## 版本日志更新
+
+当前项目正在开发，具体更新内容，详见 [Changelog](ChangeLog_zh.md) 文件以了解最新版本特性。
+
 ## 环境依赖
 
-使用此第三方库需要安装如下依赖：
+使用此第三方库需要安装如下依赖，或者可直接通过 [Github Release](https://github.com/CatIsNotFound/MyEngine/releases/tag/requirements) 或 [Gitee Release](https://gitee.com/CatIsNotFound/MyEngine/releases/tag/requirements) 一次性安装依赖库：
 
 - [SDL](https://github.com/libsdl-org/SDL)
 - [SDL_image](https://github.com/libsdl-org/SDL_image)
@@ -133,7 +137,7 @@ MyEngine 是一个轻量级但功能强大的 2D 图形框架，构建于 SDL3 �
       auto win = new Window(&engine, "Hello world!");
       win->installPaintEvent([](Renderer* r) {
          r->fillBackground(StdColor::DarkBlue);
-         r->drawPixelText("Hello world!", {20, 20});		    
+         r->drawDebugText("Hello world!", {20, 20});		    
       });
       return engine.exec();
    }
@@ -158,5 +162,5 @@ MyEngine 是一个轻量级但功能强大的 2D 图形框架，构建于 SDL3 �
 
 ## 获取帮助
 
-1. 通过 [Wiki](https://gitee.com/CatIsNotFound/wiki) 进行查看文档说明。（内容未更新）
+1. 通过 [Wiki](https://gitee.com/CatIsNotFound/wikis) 进行查看文档说明。（内容未更新）
 2. 通过 [Github Issue](https://github.com/CatIsNotFound/MyEngine/issues) 或 [Gitee Issues](https://gitee.com/CatIsNotFound/MyEngine) 提交遇到的问题

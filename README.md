@@ -8,9 +8,13 @@
 
 MyEngine is a lightweight yet powerful 2D graphics framework built on top of SDL3 and its extensions. Designed for simplicity and flexibility, it provides an intuitive object-oriented API that makes game and application development fast and enjoyable. Leveraging modern C++20 features, MyEngine offers a modular architecture that allows developers to easily create interactive graphics applications with minimal boilerplate code.
 
+## Version Log Updates
+
+The project is currently under development. For detailed update content, please refer to the [Changelog](ChangeLog.md) file to learn about the latest version features.
+
 ## Environment Dependencies
 
-To use this third-party library, you need to install the following dependencies:
+To use this third-party library, you need to install the following dependencies, or you can install all dependency libraries at once through [Github Release](https://github.com/CatIsNotFound/MyEngine/releases/tag/requirements) or [Gitee Release](https://gitee.com/CatIsNotFound/MyEngine/releases/tag/requirements):
 
 - [SDL](https://github.com/libsdl-org/SDL)
 - [SDL_image](https://github.com/libsdl-org/SDL_image)
@@ -135,7 +139,7 @@ Currently, no official version has been released yet. It is expected to be relea
        auto win = new Window(&engine, "Hello world!");
        win->installPaintEvent([](Renderer* r) {
            r->fillBackground(StdColor::DarkBlue);
-           r->drawPixelText("Hello world!", {20, 20});		    
+           r->drawDebugText("Hello world!", {20, 20});		    
        });
        return engine.exec();
    }
