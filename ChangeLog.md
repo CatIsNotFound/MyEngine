@@ -1,39 +1,22 @@
 # MyEngine ChangeLog
 
-## v0.1.1-beta (2025/12/10)
+## v0.1.2-beta (2025/12/17)
 
-### 🎉 新功能
-- **核心引擎**: 基于SDL3的MyEngine 2D图形框架初始版本
-- **渲染系统**: 基于命令的渲染器，支持批量渲染
-- **窗口管理**: 多窗口支持，提供OpenGL和Vulkan后端选项
-- **事件系统**: 全面的输入处理，支持键盘、鼠标和窗口事件
-- **图形基元**: 支持点、线、矩形、三角形和椭圆的绘制
-- **纹理系统**: 纹理加载、渲染和属性管理
-- **文本渲染**: TTF字体支持，提供像素级完美的文本渲染
-- **音频系统**: 支持背景音乐和音效，具备3D定位和混音功能
-- **动画系统**: GIF动画支持，基于帧的播放控制
-- **UI框架**: 基础UI控件，支持点击/按住区域检测
-- **游戏组件**: 精灵和精灵表管理，专为2D游戏设计
-- **碰撞系统**: 2D碰撞检测，支持触发器功能
-- **多线程**: 多线程支持，提供线程池实现
-- **工具类**: 文件系统、日志记录、随机数生成和系统内存监控
+### 🔧 Performance Optimization
+- **Render Command Pool**: Refactored command pool system to improve render command reuse efficiency
+- **Sub-pool Mechanism**: Implemented dynamic sub-pool allocation based on CPU core count to reduce lock contention
+- **Memory Allocation**: Integrated `std::pmr::synchronized_pool_resource` for optimized memory allocation
+- **Data Structure**: Replaced `std::deque` with `std::vector` to improve memory locality
+- **Atomic Operations**: Adopted lock-free atomic variable polling for sub-pool selection, balancing multi-thread load
 
-### 🔧 技术特性
-- **现代C++20**: 利用最新C++特性，代码简洁高效
-- **模块化架构**: 组织良好的模块系统，易于扩展
-- **内存管理**: 智能指针使用和内存使用监控
-- **跨平台**: 支持Windows和Linux，使用CMake构建系统
-- **CMake集成**: 易于与现有CMake项目集成
+### 🐛 Fixes
+- **Window Closure Crash**: Fixed CommandPool destructor to resolve crash when closing window
+- **Thread Safety**: Enhanced thread safety mechanisms to avoid data races during concurrent access
 
-### 📦 依赖项
-- SDL3及其扩展（SDL_image、SDL_ttf、SDL_mixer）
-- CMake 3.14+ 用于构建
-- C++20兼容的编译器
-
-### 📝 注意事项
-- 这是用于测试和反馈的测试版本
-- API可能在未来的版本中发生变化
-- 文档正在开发中
+### 💡 Technical Improvements
+- **Command Reuse**: Implemented command object `reset()` method supporting parameterized reset
+- **Batch Processing**: Optimized command batch execution mode to improve rendering efficiency
+- **Resource Management**: Enhanced resource release mechanism to prevent memory leaks
 
 -----
 
