@@ -231,7 +231,7 @@ namespace MyEngine {
     bool Window::resize(int width, int height) {
         bool _ret = SDL_SetWindowSize(_window, width, height);
         if (!_ret) {
-            Logger::log(std::format("Window: Can't resize window! Exception: {}", SDL_GetError()), Logger::Error);
+            Logger::log(std::format("Window: Can't reshape window! Exception: {}", SDL_GetError()), Logger::Error);
             return false;
         }
         _window_geometry.width = width;
@@ -242,7 +242,7 @@ namespace MyEngine {
     bool Window::setMinimumSize(int width, int height) {
         bool _ret = SDL_SetWindowMinimumSize(_window, width, height);
         if (!_ret) {
-            Logger::log(std::format("Window: Can't resize window! "
+            Logger::log(std::format("Window: Can't reshape window! "
                                     "Exception: {}", SDL_GetError()), Logger::Error);
             return false;
         }
@@ -252,7 +252,7 @@ namespace MyEngine {
     bool Window::setMaximumSize(int width, int height) {
         bool _ret = SDL_SetWindowMaximumSize(_window, width, height);
         if (!_ret) {
-            Logger::log(std::format("Window: Can't resize window! "
+            Logger::log(std::format("Window: Can't reshape window! "
                                     "Exception: {}", SDL_GetError()), Logger::Error);
             return false;
         }

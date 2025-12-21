@@ -168,7 +168,7 @@ namespace MyEngine {
          * @brief Use the specified ID Generator to get the new ID.
          * 
          * @param index The index of the ID generator.
-         * @note If the index is not exist, the function will log an error message and throw `OutOfRangeException` error.
+         * @note If the index is not exist, the function will log an error message and throw `MyEngine::OutOfRangeException` error.
          * @note About the index, this library provides three ID generator indexes, which correspond to the following:
          * @note - `0`: EventID
          * @note - `1`: GlobalEventID
@@ -214,7 +214,7 @@ namespace MyEngine {
          * @param width The new width.
          * @param height The new height.
          * @see move
-         * @see resize
+         * @see reshape
          * \endif
          */
         void setGeometry(int x, int y, int width, int height) {
@@ -231,7 +231,7 @@ namespace MyEngine {
          * @param x The new x position.
          * @param y The new y position.
          * @see setGeometry
-         * @see resize
+         * @see reshape
          * \endif
          */
         void move(int x, int y) {
@@ -604,8 +604,6 @@ namespace MyEngine {
 
             Position(uint32_t row, uint32_t col) : row(row), col(col) {}
 
-            [[nodiscard]] bool isValid() const { return row && col; }
-
             bool operator==(const Position &p) const { return (row == p.row && col == p.col); }
 
             bool operator!=(const Position &p) const { return (row != p.row || col != p.col); }
@@ -620,92 +618,121 @@ namespace MyEngine {
         };
 
         /**
-         * @brief 创建一个空白的二维矩阵（没有任何数据）
+         * \if EN
+         * @brief Create an empty 2D matrix (with no data)
+         * \endif
+         * @see reshape
          */
         explicit Matrix2D() : _row(0), _col(0), _datas() {}
 
         /**
-         * @brief 创建指定行列的二维矩阵
-         * @param row 行
-         * @param col  列
-         * @param deleter 删除器（若需要删除指针等情况时指定）
+         * \if EN
+         * @brief Create a 2D matrix with specified rows and columns
+         * @param row Rows
+         * @param col Columns
+         * @param deleter Deleter (specify if you need to delete pointers, etc.)
+         * \endif
+         * @see reshape
+         * @see setDeleter
          */
         Matrix2D(uint32_t row, uint32_t col, const std::function<void(T &)> &deleter = {});
 
         /**
-         * @brief 创建指定行列与默认值的二维矩阵
-         * @param row  行
-         * @param col   列
-         * @param value 默认值（用于填充所有数据）
-         * @param deleter 删除器（若需要删除指针等情况时指定）
+         * \if EN
+         * @brief Create a 2D matrix with specified rows and columns and a default value
+         * @param row  Rows
+         * @param col   Columns
+         * @param value Default value (used to populate all data)
+         * @param deleter Deleter (specify if you need to delete pointers, etc.)
+         * \endif
+         * @see reshape
+         * @see fill
+         * @see setDeleter
          */
         Matrix2D(uint32_t row, uint32_t col, const T &value, const std::function<void(T &)> &deleter = {});
 
-        /**
-         * @brief 复制原有的二维矩阵
-         * @param matrix    指定二维矩阵
-         */
         Matrix2D(const Matrix2D<T> &matrix);
 
         ~Matrix2D();
 
         /**
-         * @brief 设置删除器
-         * @param function  指定函数
+         * \if EN
+         * @brief Set deleter
+         * @param function  Specified function for handling pointer data
          *
-         * 当此类析构时，将调用删除器以删除指针！
+         * @details When such a destructor is called, the deleter will be invoked to delete the pointer!
+         * \endif
          */
         void setDeleter(const std::function<void(T &)> &function);
 
         /**
-         * @brief 填充所有值
-         * @param value 指定值
+         * \if EN
+         * @brief Fill all data with the specified value
+         * @param value Specified value
+         * \endif
+         * @see fillN
          */
         void fill(const T &value);
 
         /**
-         * @brief 填充范围内的值
-         * @param start 指定开始位置（行列）
-         * @param end   指定结束位置（行列）
-         * @param value 指定填充的值
+         * \if EN
+         * @brief Fill in the values within the range
+         * @param start Specify the starting position (row and column)
+         * @param end   Specify the end position (row and column)
+         * @param value Specify the value for filling
+         * \endif
+         * @see fill
          */
         bool fillN(const Matrix2D::Position &start, const Matrix2D::Position &end, const T &value);
 
         /**
-         * @brief 重新调整新的大小
-         * @param line 行
-         * @param col  列
+         * \if EN
+         * @brief readjust the size of the matrix
+         * @param line The new lines
+         * @param col  The new columns
+         * @note If the matrix is reduced, the excess data will be discarded (if the deleter has been previously specified for the matrix, the deletion operation will be automatically performed).
+         * \endif
+         * @see setDeleter
+         * @see rows
+         * @see cols
          */
-        void resize(uint32_t line, uint32_t col);
+        void reshape(uint32_t line, uint32_t col);
 
         /**
-         * @brief 获取矩阵中指定行列的数据
-         * @param row 行
-         * @param col  列
-         * @return 返回对应行列下的数据
+         * \if EN
+         * @brief Get data from the specified position in the matrix
+         * @param row  Specified line (starting from 0)
+         * @param col  Specified column (starting from 0)
+         * @return Return the data under the corresponding row and column
+         * @note You can directly use this function to modify the data.
          * @see get
+         * \endif
          */
         T &at(uint32_t row, uint32_t col);
 
         /**
-         * @brief 获取矩阵中指定行列的数据
-         * @param row 行
-         * @param col  列
-         * @return 返回对应行列下的数据
-         * @note 区别于 `at`，此函数为常量版本，无法修改里面的数据！
+         * @brief Get data from the specified position in the matrix
+         * @param row  Specified line (starting from 0)
+         * @param col  Specified column (starting from 0)
+         * @return Return the data under the corresponding row and column
+         * @note Different from 'at()' function, this function cannot modify the corresponding data!
          * @see at
          */
         const T &get(uint32_t row, uint32_t col);
 
         /**
-         * @brief 获取当前矩阵的总行数
-         * @return 返回对应的行数
+         * \if EN
+         * @brief Get the total number of rows in the current matrix
+         * @return Return the corresponding row number
+         * @see cols
+         * \endif
          */
         [[nodiscard]] uint32_t rows() const;
 
         /**
-         * @brief 获取当前矩阵的总列数
-         * @return 返回对应的列数
+         * @brief Get the total number of columns in the current matrix
+         * @return Return the corresponding column number
+         * @see rows
          */
         [[nodiscard]] uint32_t cols() const;
 
@@ -714,12 +741,14 @@ namespace MyEngine {
         Matrix2D operator-(const Matrix2D<T> &other) const;
 
         /**
-         * @brief 矩阵乘法
-         * @param other     指定矩阵，其指定的行数必需与现有的列数相等
+         * \if EN
+         * @brief Matrix Multiplication
+         * @param other The specified matrix, whose number of rows must equal the current matrix's number of columns
          *
-         * 将矩阵里的所有值进行乘法操作
-         * @note 当前仅支持整数、浮点数运算，不支持其它数据类型的运算！
-         * @note 两个矩阵必需分别为 m * n, n * p 的大小才可用！
+         * @details Performs multiplication on all values within the matrices
+         * @note Currently only supports integer and floating-point operations; other data types are not supported!
+         * @note Both matrices must be of sizes m * n and n * p, respectively, to be usable!
+         * \endif
          */
         Matrix2D operator*(const Matrix2D<T> &other) const;
 
@@ -727,8 +756,31 @@ namespace MyEngine {
 
         bool operator!=(const Matrix2D<T> &other) const;
 
+        /**
+         * \if EN
+         * @brief Get the data at the specified index
+         * @param index The specified index
+         * @return Returns the data at the corresponding index
+         * @note An `MyEngine::OutOfRangeException` will be thrown if the index value is out of range
+         * \endif
+         * @throw OutOfRangeException
+         * @see at
+         * @see get
+         */
         T &operator[](uint32_t index);
 
+        /**
+         * \if EN
+         * @brief Get the data at the specified position
+         * @param row The specified row number (starting from 0)
+         * @param col The specified column number (starting from 0)
+         * @return Returns the data at the corresponding position
+         * @note If the specified position is out of range, a `MyEngine::OutOfRangeException` will be thrown
+         * \endif
+         * @throw OutOfRangeException
+         * @see get
+         * @see at
+         */
         T &operator()(uint32_t row, uint32_t col);
 
         iterator begin() { return _datas.begin(); }
@@ -738,6 +790,8 @@ namespace MyEngine {
         constIterator begin() const { return _datas.begin(); }
 
         constIterator end() const { return _datas.end(); }
+
+        [[nodiscard]] size_t size() const { return _datas.size(); }
 
         /**
          * @brief 全局相加
@@ -938,8 +992,17 @@ namespace MyEngine {
     }
 
     template<typename T>
-    void Matrix2D<T>::resize(uint32_t line, uint32_t col) {
-        if (_row * _col != line * col) _datas.resize(line * col);
+    void Matrix2D<T>::reshape(uint32_t line, uint32_t col) {
+        auto new_size = line * col, origin_size = _row * _col;
+        if (_row * _col != new_size) _datas.resize(new_size);
+        if (_row * _col > new_size) {
+            Logger::log("Matrix2D: You have reduced the original matrix size, some datas will be discarded.",
+                        Logger::Warn);
+            if (_deleter) {
+                for (size_t i = new_size; i < origin_size; ++i) _deleter(_datas[i]);
+            }
+            _datas.shrink_to_fit();
+        }
         _row = line;
         _col = col;
     }
