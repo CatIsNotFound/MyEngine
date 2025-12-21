@@ -54,9 +54,11 @@ MyEngine::SpriteSheet *MyEngine::GObject::spriteSheet() {
 void MyEngine::GObject::move(float x, float y) {
     if (isNull()) return;
     if (isTypeOf<Sprite*>()) {
-        sprite()->move(x, y);
+        auto sp = sprite();
+        sp->move(x, y);
     } else if (isTypeOf<SpriteSheet*>()) {
-        spriteSheet()->move(x, y);
+        auto sp = spriteSheet();
+        sp->move(x, y);
     }
 }
 
@@ -65,20 +67,20 @@ void MyEngine::GObject::move(const MyEngine::Vector2 &pos) {
     if (isTypeOf<Sprite*>()) {
         auto sp = sprite();
         sp->move(pos);
-        if (_collider) _collider->move(sp->position());
     } else if (isTypeOf<SpriteSheet*>()) {
         auto sp = spriteSheet();
         sp->move(pos);
-        if (_collider) _collider->move(sp->position());
     }
 }
 
 void MyEngine::GObject::resize(float w, float h) {
     if (isNull()) return;
     if (isTypeOf<Sprite*>()) {
-        sprite()->resize(w, h);
+        auto sp = sprite();
+        sp->resize(w, h);
     } else if (isTypeOf<SpriteSheet*>()) {
-        spriteSheet()->resize(w, h);
+        auto sp = spriteSheet();
+        sp->resize(w, h);
     }
 }
 

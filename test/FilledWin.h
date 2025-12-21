@@ -29,7 +29,7 @@ protected:
     void paintEvent() override {
         MyEngine::Window::paintEvent();
         renderer()->drawTexture(_texture->self(), _props);
-        renderer()->drawDebugFPS({20, 30}, MyEngine::RGBAColor::RedBegonia);
+        renderer()->drawDebugFPS({20, 30});
     }
 
     void generate() {
@@ -38,13 +38,19 @@ protected:
         auto cols = w / block_size.width + 1;
         auto rows = h / block_size.height + 1;
         int count = static_cast<int>(rows * cols);
-        if (count <= _props.size()) return;
+        // if (count <= _props.size()) return;
         for (int i = 0; i < count; ++i) {
             int r = i / (int)cols;
             int c = i % (int)cols;
             if (i >= _props.size()) {
                 _props.push_back(new MyEngine::TextureProperty(_texture->property()));
             }
+            _props[i]->color_alpha = {
+                    (uint8_t)MyEngine::RandomGenerator::randUInt(0, 255),
+                    (uint8_t)MyEngine::RandomGenerator::randUInt(0, 255),
+                    (uint8_t)MyEngine::RandomGenerator::randUInt(0, 255),
+                    255
+            };
             _props[i]->setGeomentry((float)c * block_size.width, (float)r * block_size.height, block_size.width, block_size.height);
         }
         MyEngine::Logger::log(std::format("Generated: {} blocks, {:.0f}x{:.0f}",

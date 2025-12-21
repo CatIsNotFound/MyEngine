@@ -6,12 +6,8 @@
 #define M_PI		3.14159265358979323846
 #endif
 #include "Libs.h"
-/// Use `MyEngine::delay()` is better.
-#define SLEEP(sec) std::this_thread::sleep_for(std::chrono::seconds(sec))
-/// Use `MyEngine::delayMS()` is better.
-#define SLEEP_MS(millisec) std::this_thread::sleep_for(std::chrono::milliseconds(millisec))
-/// Use `MyEngine::delayNS()` is better.
-#define SLEEP_NS(nanosec) std::this_thread::sleep_for(std::chrono::nanoseconds(nanosec))
+#include "Exception.h"
+#include "Utils/Logger.h"
 
 using SRenderer     = SDL_Renderer;
 using SSurface      = SDL_Surface;
@@ -23,27 +19,24 @@ using SWindowID     = SDL_WindowID;
 using SColor        = SDL_Color;
 using SCursor       = SDL_Cursor;
 using SStdCursor    = SDL_SystemCursor;
-using SAudioSpec    = SDL_AudioSpec;
 
 using StringList    = std::vector<std::string>;
 
-
-
-#include "Utils/Logger.h"
-
 /**
+ * \if EN
  * @namespace MyEngine
- * @brief MyEngine Namespace
- * 
- * All libraries will be stored in this namespace.
+ * @brief The project namespace.
+ * \endif
  */
 namespace MyEngine {
     /**
+     * \if EN
      * @namespace StdColor
-     * @brief Predefined Standard Color (40 colors)
+     * @brief Predefined standard RGB colors (40 colors)
+     * @ref related/ColorMap.md
+     * \endif
      */
     namespace StdColor {
-        constexpr SColor Transparent = {0, 0, 0, 0};
         constexpr SColor Black = {0, 0, 0, 255};
         constexpr SColor White = {255, 255, 255, 255};
         constexpr SColor Red = {255, 0, 0, 255};
@@ -93,21 +86,31 @@ namespace MyEngine {
         constexpr SColor DarkGray = {64, 64, 64, 255};
     }
 
-    /// Set how many seconds to delay on this process.
+    /// \if EN
+    /// @brief Set how many seconds to delay on this process.
+    /// \endif
     inline void delay(uint64_t sec) { std::this_thread::sleep_for(std::chrono::seconds(sec)); }
-    /// Set how many milliseconds to delay on this process.
+    /// \if EN
+    /// @brief Set how many milliseconds to delay on this process.
+    /// \endif
     inline void delayMS(uint64_t ms) { std::this_thread::sleep_for(std::chrono::milliseconds(ms)); }
-    /// Set how many microseconds to delay on this process.
+    /// \if EN
+    /// @brief Set how many microseconds to delay on this process.
+    /// \endif
     inline void delayUS(uint64_t us) { std::this_thread::sleep_for(std::chrono::microseconds(us)); }
-    /// Set how many nanoseconds to delay on this process.
+    /// \if EN
+    /// @brief Set how many nanoseconds to delay on this process.
+    /// \endif
     inline void delayNS(uint64_t ns) { std::this_thread::sleep_for(std::chrono::nanoseconds(ns)); }
 
-    /// For EventSystem while using IDGenerator.
-    constexpr size_t NewEventID = 1;
-    /// For EventSystem while using IDGenerator.
-    constexpr size_t NewGlobalEventID = 2;
-
-    /// ID Generator
+    /**
+     * \if EN
+     * @class IDGenerator
+     * @brief Generate unique ID.
+     * 
+     * @details Multiple ID generators can be created and generate unique ID values.
+     * \endif
+     */
     class IDGenerator {
     public:
         IDGenerator() = delete;
@@ -116,32 +119,83 @@ namespace MyEngine {
         IDGenerator(IDGenerator&&) = delete;
         IDGenerator& operator=(const IDGenerator&) = delete;
         IDGenerator& operator=(IDGenerator&&) = delete;
+
+        /**
+         * \if EN
+         * @brief Create a new ID generator.
+         *
+         * @details You can use the `getID()` function to generate this ID from the specified generator.
+         * @return The index of the new ID generator.
+         * \endif
+         * @see getID
+         */
         static size_t newIDGenerator() {
             _id_list.emplace_back(0);
             return _id_list.size() - 1;
         }
+
+        /**
+         * \if EN
+         * @brief Use ID Generator to get the new EventID.
+         * @return The new EventID (Only used for EventSystem class).
+         * \endif
+         */
         static uint64_t getNewEventID() {
-            return ++_id_list[NewEventID];
+            return ++_id_list[0];
         }
+        /**
+         * \if EN
+         * @brief Use ID Generator to get the new GlobalEventID.
+         * @return The new GlobalEventID (Only used for EventSystem class)
+         * \endif
+         */
         static uint64_t getNewGlobalEventID() {
-            return ++_id_list[NewGlobalEventID];
+            return ++_id_list[1];
         }
+
+        /**
+         * \if EN
+         * @brief Use ID Generator to get the new TextID.
+         * @return The new TextID (Only used for TextSystem class)
+         * \endif
+         */
+        static uint64_t getNewTextID() {
+            return ++_id_list[2];
+        }
+
+        /**
+         * \if EN
+         * @brief Use the specified ID Generator to get the new ID.
+         * 
+         * @param index The index of the ID generator.
+         * @note If the index is not exist, the function will log an error message and throw `OutOfRangeException` error.
+         * @note About the index, this library provides three ID generator indexes, which correspond to the following:
+         * @note - `0`: EventID
+         * @note - `1`: GlobalEventID
+         * @note - `2`: TextID
+         * @return The new ID.
+         * \endif
+         * @throw OutOfRangeException
+         */
         static uint64_t getID(size_t index = 0) {
             if (index >= _id_list.size()) {
-                Logger::log(std::format("IDGenerator: The index of {} is not exist!", index));
-                return 0;
+                auto err = std::format("IDGenerator: The index of {} is not exist!", index);
+                Logger::log(err, Logger::Fatal);
+                throw OutOfRangeException(err);
             }
             return ++_id_list[index];
         }
     private:
         static std::vector<uint64_t> _id_list;
     };
-    inline std::vector<uint64_t> IDGenerator::_id_list(3, 0);
+    inline std::vector<uint64_t> IDGenerator::_id_list(4, 0);
 
     struct GeometryF;
     /**
+     * \if EN
      * @struct Geometry
-     * @brief Including position and size.
+     * @brief Including position and size. 
+     * \endif
      */
     struct Geometry {
         int x, y, width, height;
@@ -151,6 +205,18 @@ namespace MyEngine {
         Geometry(int x, int y, int width, int height)
                 : x(x), y(y), width(width), height(height) {}
 
+        /**
+         * \if EN
+         * @brief Update the geometry.
+         * @details Set the new position and size of the geometry.
+         * @param x The new x position.
+         * @param y The new y position.
+         * @param width The new width.
+         * @param height The new height.
+         * @see move
+         * @see resize
+         * \endif
+         */
         void setGeometry(int x, int y, int width, int height) {
             this->x = x;
             this->y = y;
@@ -158,11 +224,31 @@ namespace MyEngine {
             this->height = height;
         }
 
-        void setPosition(int x, int y) {
+        /**
+         * \if EN
+         * @brief Change the position of the geometry.
+         * @details Set the new position of the geometry.
+         * @param x The new x position.
+         * @param y The new y position.
+         * @see setGeometry
+         * @see resize
+         * \endif
+         */
+        void move(int x, int y) {
             this->x = x;
             this->y = y;
         }
 
+        /**
+         * \if EN
+         * @brief Change the size of the geometry.
+         * @details Set the new size of the geometry.
+         * @param width The new width.
+         * @param height The new height.
+         * @see setGeometry
+         * @see move
+         * \endif
+         */
         void resize(int width, int height) {
             this->width = width;
             this->height = height;
@@ -170,10 +256,10 @@ namespace MyEngine {
     };
 
     /**
+     * \if EN
      * @struct Vector2
-     * @brief 向量坐标
-     *
-     * 用于指定某对象的位置
+     * @brief Including two float values. Used to represent 2D vector.
+     * \endif
      */
     struct Vector2 {
         float x, y;
@@ -182,11 +268,26 @@ namespace MyEngine {
 
         Vector2(float x, float y) : x(x), y(y) {}
 
+        /**
+         * \if EN
+         * @brief Reset the vector to the new values.
+         * 
+         * @param x The new x value.
+         * @param y The new y value.
+         * \endif
+         */
         void reset(float x, float y) {
             this->x = x;
             this->y = y;
         }
 
+        /**
+         * \if EN
+         * @brief Reset the vector to the values of the other vector.
+         * 
+         * @param vector2 The other vector.
+         * \endif
+         */
         void reset(const Vector2 &vector2) {
             this->x = vector2.x;
             this->y = vector2.y;
@@ -260,11 +361,12 @@ namespace MyEngine {
         }
 
         /**
-         * @brief 判断两个坐标位置是否大致相等
-         * @param v         指定另一个坐标
-         * @param EPISON    允许的误差数 （默认 0.000001f 误差）
-         * @retval true  表示相等
-         * @retval false 表示不相等
+         * \if EN
+         * @brief judge whether the vector is equal to the other vector.
+         * @param v         The other vector.
+         * @param EPISON    The allowable error number (default 0.000001f error).
+         * @return  Return true if the vector is equal to the other vector, otherwise return `false`.
+         * \endif
          */
         [[nodiscard]] bool isEqual(const Vector2 &v, const float EPISON = 1e-6f) const {
             return ((this->x >= v.x - EPISON && this->x <= v.x + EPISON) &&
@@ -273,10 +375,10 @@ namespace MyEngine {
     };
 
     /**
+     * \if EN
      * @struct Size
-     * @brief 尺寸、大小
-     *
-     * 用于调整对象的尺寸、大小
+     * @brief Including two float values. Used to represent 2D size.
+     * \endif
      */
     struct Size {
         float width, height;
@@ -286,15 +388,23 @@ namespace MyEngine {
         Size(float width, float height) : width(width), height(height) {}
 
         /**
-         * @brief 重新设置新的尺寸
-         * @param width
-         * @param height
+         * \if EN
+         * @brief reset the new size
+         * @param width     new width
+         * @param height    new height
+         * \endif
          */
         void reset(float width, float height) {
             this->width = width;
             this->height = height;
         }
 
+        /**
+         * \if EN
+         * @brief reset the new size
+         * @param size  The new size.
+         * \endif
+         */
         void reset(const Size &size) {
             this->width = size.width;
             this->height = size.height;
@@ -369,10 +479,12 @@ namespace MyEngine {
     };
 
     /**
+     * \if EN
      * @struct GeometryF
-     * @brief 位置、大小
+     * @brief Includes the position and size using floating-point numbers
      *
-     * 针对于 Vector2 和 Size 组成，用于调整位置、大小
+     * @details Includes `Vector2` and `Size`, used to adjust the position and size.
+     * \endif
      */
     struct GeometryF {
         Vector2 pos;
@@ -421,20 +533,35 @@ namespace MyEngine {
         }
     };
 
+    /**
+     * \if EN
+     * @brief Convert a `GeometryF` to a `Geometry` with integer values.
+     * @param geo The `GeometryF` to convert.
+     * @return The converted `Geometry` with integer values.
+     * \endif
+     */
     inline Geometry toGeometryInt(const GeometryF& geo) {
         return {(int)geo.pos.x, (int)geo.pos.y, (int)geo.size.width, (int)geo.size.height};
     }
-
+    
+    /**
+     * \if EN
+     * @brief Convert a `Geometry` to a `GeometryF` with floating-point values.
+     * @param geo The `Geometry` to convert.
+     * @return The converted `GeometryF` with floating-point values.
+     * \endif
+     */
     inline GeometryF toGeometryFloat(const Geometry& geo) {
         return GeometryF((float)geo.x, (float)geo.y, (float)geo.width, (float)geo.height);
     }
 
     /**
+     * \if EN
      * @class Matrix2D
-     * @brief 二维矩阵
-     * @since v1.1.0-alpha
-     *
-     * 支持使用基本数据类型及简单的结构体进行存储。
+     * @brief 2D Matrix
+     * 
+     * @details Supports basic data types and simple structs for storage.
+     * \endif
      */
     template<typename T>
     class Matrix2D {
@@ -451,15 +578,33 @@ namespace MyEngine {
         using iterator = typename std::vector<T>::iterator;
         using constIterator = typename std::vector<T>::const_iterator;
 
+        /**
+         * \if EN
+         * @struct Position
+         * @brief 2D Matrix Position
+         * 
+         * @details Represents the position in a 2D matrix with row and column indices.
+         * \endif
+         */
         struct Position {
+            /**
+             * \if EN
+             * @brief Row index of the position in the matrix.
+             * \endif
+             */
             uint32_t row;
+            /**
+             * \if EN
+             * @brief Column index of the position in the matrix.
+             * \endif
+             */
             uint32_t col;
 
             Position() : row(0), col(0) {}
 
             Position(uint32_t row, uint32_t col) : row(row), col(col) {}
 
-            bool isValid() const { return row && col; }
+            [[nodiscard]] bool isValid() const { return row && col; }
 
             bool operator==(const Position &p) const { return (row == p.row && col == p.col); }
 
@@ -785,7 +930,7 @@ namespace MyEngine {
     bool Matrix2D<T>::fillN(const Matrix2D::Position &start, const Matrix2D::Position &end, const T &value) {
         auto st = start.row * _col + start.col, ed = end.row * _col + end.col;
         if (ed >= _datas.size()) {
-            SDL_Log("[ERROR] One of the specified position is not valid!");
+            Logger::log("Matrix2D::fillN(): One of the specified position is not valid!", Logger::Error);
             return false;
         }
         std::fill(_datas.begin() + st, _datas.begin() + ed, value);
@@ -832,8 +977,9 @@ namespace MyEngine {
             }
             return _ret;
         } else {
-            SDL_Log("[ERROR] Matrix dimensions mismatch!\nOriginal: (%d, %d), Specified: (%d, %d)",
-                    _row, _col, other._row, other._col);
+            Logger::log(std::format("Matrix2D::operator+(): Matrix dimensions mismatch! "
+                                    "Original: ({}, {}), Specified: ({}, {})",
+                                    _row, _col, other._row, other._col), Logger::Error);
             return Matrix2D<T>();
         }
     }
@@ -847,8 +993,9 @@ namespace MyEngine {
             }
             return _ret;
         } else {
-            SDL_Log("[ERROR] Matrix dimensions mismatch!\nOriginal: (%d, %d), Specified: (%d, %d)",
-                    _row, _col, other._row, other._col);
+            Logger::log(std::format("Matrix2D::operator-(): Matrix dimensions mismatch! "
+                                    "Original: ({}, {}), Specified: ({}, {})",
+                                    _row, _col, other._row, other._col), Logger::Error);
             return Matrix2D<T>();
         }
     }
@@ -856,14 +1003,14 @@ namespace MyEngine {
     template<typename T>
     Matrix2D<T> Matrix2D<T>::operator*(const Matrix2D<T> &other) const {
         if (_col != other._row) {
-            SDL_Log("[ERROR] Matrix dimensions incompatible for multiplication!");
+            Logger::log("Matrix2D::operator*(): Matrix dimensions incompatible for multiplication!", Logger::Error);
             return Matrix2D<T>();
         }
         if constexpr (!std::is_integral_v<std::decay_t<T>> &&
                       !std::is_floating_point_v<std::decay_t<T>>) {
             static_assert(!std::is_integral_v<std::decay_t<T>> &&
                           !std::is_floating_point_v<std::decay_t<T>>,
-                          "[FATAL] Can't support the current data type!");
+                          "Matrix2D::operator*(): Can't support the current data type!");
         }
         Matrix2D<T> result(_row, other._col, other._deleter);
         for (size_t i = 0; i < _row; ++i) {
@@ -897,13 +1044,22 @@ namespace MyEngine {
 
     template<typename T>
     T &Matrix2D<T>::operator[](uint32_t index) {
+        if (index >= _datas.size()) {
+            throw std::out_of_range(std::format("Matrix2D::operator[](): "
+                                                "The index of {} is out of range!", index));
+        }
         return _datas[index];
     }
 
     template<typename T>
     T &Matrix2D<T>::operator()(uint32_t row, uint32_t col) {
         auto idx = row * _col + col;
-        if (idx >= _datas.size()) throw std::out_of_range("[FATAL] The specified position is out of range!");
+        if (idx >= _datas.size()) {
+            std::string err = std::format("Matrix2D::operator()(): "
+                                          "The specified position ({}, {}) is out of range!", row, col);
+            Logger::log(err,Logger::Fatal);
+            throw OutOfRangeException(err);
+        }
         return _datas[idx];
     }
 
@@ -916,7 +1072,9 @@ namespace MyEngine {
                                  std::is_floating_point_v<std::decay_t<T>>) {
                 v += value;
             } else {
-                SDL_Log("[ERROR] Unsupported data type!\np.s: Did you forget to specify how to add values?");
+                std::string err = "Matrix2D::add(): Unsupported data type! Did you forget to specify function?";
+                Logger::log(err,Logger::Fatal);
+                throw InvalidArgumentException(err);
             }
         });
     }
@@ -930,8 +1088,9 @@ namespace MyEngine {
                                  std::is_floating_point_v<std::decay_t<T>>) {
                 v += value;
             } else {
-                SDL_Log("[ERROR] Unsupported data type!\n"
-                        "p.s: Did you forget to specify how to add values?");
+                std::string err = "Matrix2D::add(): Unsupported data type! Did you forget to specify function?";
+                Logger::log(err,Logger::Fatal);
+                throw InvalidArgumentException(err);
             }
         });
     }
@@ -945,8 +1104,9 @@ namespace MyEngine {
                                  std::is_floating_point_v<std::decay_t<T>>) {
                 v -= value;
             } else {
-                SDL_Log("[ERROR] Unsupported data type!\n"
-                        "p.s: Did you forget to specify how to minus values?");
+                std::string err = "Matrix2D::minus(): Unsupported data type! Did you forget to specify function?";
+                Logger::log(err,Logger::Fatal);
+                throw InvalidArgumentException(err);
             }
         });
     }
@@ -960,8 +1120,9 @@ namespace MyEngine {
                                  std::is_floating_point_v<std::decay_t<T>>) {
                 v -= value;
             } else {
-                SDL_Log("[ERROR] Unsupported data type!\n"
-                        "p.s: Did you forget to specify how to minus values?");
+                std::string err = "Matrix2D::minus(): Unsupported data type! Did you forget to specify function?";
+                Logger::log(err,Logger::Fatal);
+                throw InvalidArgumentException(err);
             }
         });
     }
@@ -975,8 +1136,9 @@ namespace MyEngine {
                                  std::is_floating_point_v<std::decay_t<T>>) {
                 v *= value;
             } else {
-                SDL_Log("[ERROR] Unsupported data type!\n"
-                        "p.s: Did you forget to specify how to times values?");
+                std::string err = "Matrix2D::times(): Unsupported data type! Did you forget to specify function?";
+                Logger::log(err,Logger::Fatal);
+                throw InvalidArgumentException(err);
             }
         });
     }
@@ -990,8 +1152,9 @@ namespace MyEngine {
                                  std::is_floating_point_v<std::decay_t<T>>) {
                 v *= value;
             } else {
-                SDL_Log("[ERROR] Unsupported data type!\n"
-                        "p.s: Did you forget to specify how to times values?");
+                std::string err = "Matrix2D::times(): Unsupported data type! Did you forget to specify function?";
+                Logger::log(err,Logger::Fatal);
+                throw InvalidArgumentException(err);
             }
         });
     }
@@ -1009,20 +1172,25 @@ namespace MyEngine {
                     _datas[i] *= other._datas[i];
                 }
             } else {
-                SDL_Log("[ERROR] Unsupported data type!\n"
-                        "p.s: Did you forget to specify how to times values?");
+                std::string err = "Matrix2D::times(): Unsupported data type! Did you forget to specify function?";
+                Logger::log(err,Logger::Fatal);
+                throw InvalidArgumentException(err);
             }
         } else {
-            SDL_Log("[ERROR] Matrix dimensions mismatch!\nOriginal: (%u, %u), Specified: (%u, %u)",
-                    _row, _col, other._row, other._col);
+            std::string err = std::format("Matrix2D::times(): Matrix dimensions mismatch! "
+                                          "Original: ({}, {}), Specified: ({}, {})",
+                                          _row, _col, other._row, other._col);
+            Logger::log(err,Logger::Fatal);
+            throw BadValueException(err);
         }
     }
 
     template<typename T>
     void Matrix2D<T>::multiply(const Matrix2D<T> &other) {
         if (_col != other._row) {
-            SDL_Log("[ERROR] Matrix dimensions incompatible for multiplication!");
-            return;
+            std::string err = "Matrix2D::multiply(): Matrix dimensions incompatible for multiplication!";
+            Logger::log(err,Logger::Fatal);
+            throw BadValueException(err);
         }
         std::vector<T> result(_row * other._col);
         for (size_t i = 0; i < _row; ++i) {
@@ -1109,13 +1277,11 @@ namespace MyEngine {
     template<typename T>
     Matrix2D<T> Matrix2D<T>::splitRows(uint32_t start_row, uint32_t end_row) {
         if (start_row == end_row) {
-            SDL_Log("[ERROR] The specified start row and end row cannot be the same!");
+            Logger::log("Matrix2D::splitRows(): The specified start row and end row cannot be the same!",
+                        Logger::Error);
             return Matrix2D<T>();
         }
-        if (end_row > _row) {
-            SDL_Log("[ERROR] The specified end row exceeds the total rows of the original matrix!");
-            return Matrix2D<T>();
-        }
+        end_row = std::min(end_row, _row);
         if (start_row > end_row) std::swap(start_row, end_row);
         auto new_rows = end_row - start_row;
         Matrix2D<T> _ret(new_rows, _col);
@@ -1130,13 +1296,11 @@ namespace MyEngine {
     template<typename T>
     Matrix2D<T> Matrix2D<T>::splitCols(uint32_t start_col, uint32_t end_col) {
         if (start_col == end_col) {
-            SDL_Log("[ERROR] The specified start col and end col cannot be the same!");
+            Logger::log("Matrix2D::splitCols(): The specified start row and end row cannot be the same!",
+                        Logger::Error);
             return Matrix2D<T>();
         }
-        if (end_col > _col) {
-            SDL_Log("[ERROR] The specified end col exceeds the total cols of the original matrix!");
-            return Matrix2D<T>();
-        }
+        end_col = std::min(end_col, _col);
         if (start_col > end_col) std::swap(start_col, end_col);
         auto new_cols = end_col - start_col;
         Matrix2D<T> _ret(_row, new_cols);
@@ -1151,7 +1315,7 @@ namespace MyEngine {
     template<typename T>
     Matrix2D<T> Matrix2D<T>::split(uint32_t rows, uint32_t cols, const Matrix2D::Position &start_pos) {
         if (start_pos.row >= _row || start_pos.col >= _col) {
-            SDL_Log("[ERROR] The specified start position is not valid!");
+            Logger::log("Matrix2D::split(): The specified start position is not valid!", Logger::Error);
             return Matrix2D();
         }
         Matrix2D<T> _ret(rows, cols);
@@ -1202,52 +1366,51 @@ namespace MyEngine {
     template<typename T>
     Matrix2D<T> Matrix2D<T>::inverse() {
         if (_row != _col) {
-            SDL_Log("[ERROR] The specified matrix size is not matched!");
+            Logger::log("Matrix2D::inverse(): The specified matrix size is not matched!", Logger::Error);
             return Matrix2D<T>();
         }
         if constexpr (!std::is_integral_v<std::decay_t<T>> &&
                       !std::is_floating_point_v<std::decay_t<T>>) {
             static_assert(!std::is_integral_v<std::decay_t<T>> &&
                           !std::is_floating_point_v<std::decay_t<T>>,
-                          "[FATAL] Can't support the current data type!");
+                          "Matrix2d::inverse(): Can't support the current data type!");
         }
         const uint32_t n = _row;
         Matrix2D<T> _ret(n, n);
-        // 创建增广矩阵 [A|I]
+
         Matrix2D<T> augmented(n, 2 * n);
-        // 填充增广矩阵：左侧为原矩阵，右侧为单位矩阵
+
         for (uint32_t i = 0; i < n; ++i) {
             for (uint32_t j = 0; j < n; ++j) {
-                augmented(i, j) = _datas[i * _col + j];  // 原矩阵
-                augmented(i, j + n) = (i == j) ? static_cast<T>(1) : static_cast<T>(0);  // 单位矩阵
+                augmented(i, j) = _datas[i * _col + j];
+                augmented(i, j + n) = (i == j) ? static_cast<T>(1) : static_cast<T>(0);
             }
         }
-        // 使用高斯-约旦消元法
+
         for (uint32_t i = 0; i < n; ++i) {
-            // 寻找主元（部分主元选择）
             uint32_t max_row = i;
             for (uint32_t k = i + 1; k < n; ++k) {
                 if (std::abs(augmented(k, i)) > std::abs(augmented(max_row, i))) {
                     max_row = k;
                 }
             }
-            // 如果主元为0，矩阵不可逆
+
             if (std::abs(augmented(max_row, i)) < static_cast<T>(1e-10)) {
-                SDL_Log("[ERROR] Matrix is singular and cannot be inverted!");
+                Logger::log("Matrix2D::inverse(): Matrix is singular and cannot be inverted!", Logger::Error);
                 return Matrix2D<T>();
             }
-            // 交换行
+
             if (max_row != i) {
                 for (uint32_t j = 0; j < 2 * n; ++j) {
                     std::swap(augmented(i, j), augmented(max_row, j));
                 }
             }
-            // 将主元行标准化
+
             T pivot = augmented(i, i);
             for (uint32_t j = 0; j < 2 * n; ++j) {
                 augmented(i, j) /= pivot;
             }
-            // 消去其他行的当前列
+
             for (uint32_t k = 0; k < n; ++k) {
                 if (k != i && std::abs(augmented(k, i)) > static_cast<T>(1e-10)) {
                     T factor = augmented(k, i);
@@ -1257,7 +1420,7 @@ namespace MyEngine {
                 }
             }
         }
-        // 提取逆矩阵（增广矩阵的右侧部分）
+
         for (uint32_t i = 0; i < n; ++i) {
             for (uint32_t j = 0; j < n; ++j) {
                 _ret(i, j) = augmented(i, j + n);
@@ -1274,14 +1437,14 @@ namespace MyEngine {
      * @namespace Graphics
      * @brief Basic Graphic
      *
-     * Includes all basic shapes, such as points, line segments, rectangles, ellipses, and other basic shapes.
+     * Includes all basic shapes, such as Point, Line, Rectangle, Ellipse, and other basic shapes.
      */
     namespace Graphics {
         class Point {
         private:
             void update() {
-                _count = std::min(64, std::max(4, int(M_PI * _size / 2)));
-                Algorithm::calcPoint(_position, _size / 2.f,
+                _count = std::min(64, std::max(4, static_cast<int>(M_PI * _size / 2)));
+                Algorithm::calcPoint(_position, static_cast<float>(_size) / 2.f,
                                            _color, _vertices, _indices, _count);
             }
             Vector2 _position;
@@ -1369,14 +1532,14 @@ namespace MyEngine {
             Vector2 _end_position;
             uint8_t _size;
             SDL_Color _color;
-            std::array<int, 6> _indices;
-            std::array<SDL_Vertex, 4> _vertices;
+            std::array<int, 6> _indices{};
+            std::array<SDL_Vertex, 4> _vertices{};
         };
 
         class Rectangle {
         public:
             explicit Rectangle() : _geometry(), _border_size(0),
-                                   _border_color(StdColor::Black), _background_color(StdColor::Transparent), _rotate(0) {}
+                                   _border_color(StdColor::Black), _background_color(StdColor::White), _rotate(0) {}
             explicit Rectangle(const GeometryF& geometry, uint16_t border = 1,
                                const SDL_Color& border_color = StdColor::Black,
                                const SDL_Color& background_color = StdColor::White, float degree = 0)
@@ -1504,17 +1667,17 @@ namespace MyEngine {
             [[nodiscard]] size_t borderIndicesCount() const { return _border_indices.size(); }
         private:
             void updateGeometry() {
-                if (_background_color.a > 0 ) {
+                // if (_background_color.a > 0 ) {
                     Algorithm::calcFilledRectangleRotated(_geometry, _background_color, _rotate,
                                                           _vertices, _indices);
-                }
+                // }
             }
 
             void updateBorderGeometry() {
-                if (_border_size > 0 && _border_color.a > 0) {
+                // if (_border_size > 0 && _border_color.a > 0) {
                     Algorithm::calcRectangleRotated(_geometry, _border_color, _border_size, _rotate,
                                                     _border_vertices, _border_indices);
-                }
+                // }
             }
 
             GeometryF _geometry;
@@ -1531,7 +1694,7 @@ namespace MyEngine {
         class Triangle {
         public:
             explicit Triangle() : _p1(0, 0), _p2(0, 0), _p3(0, 0),
-                                  _border_size(0), _border_color(StdColor::Black), _background_color(StdColor::Transparent) {}
+                                  _border_size(0), _border_color(StdColor::Black), _background_color(StdColor::White) {}
             explicit Triangle(float x1, float y1, float x2, float y2, float x3, float y3,
                               uint16_t border_size = 0, const SDL_Color& border_color = StdColor::Black,
                               const SDL_Color& back_color = StdColor::Black)
@@ -1619,16 +1782,16 @@ namespace MyEngine {
             [[nodiscard]] size_t vertexCount() const { return _vertices.size(); }
         private:
             void updateTri() {
-                if (_background_color.a > 0) {
+                // if (_background_color.a > 0) {
                     Algorithm::calcTriangle(_p1, _p2, _p3, _background_color, _vertices, _indices);
-                }
+                // }
             }
             void updateBorder() {
-                if (_border_size > 0 && _border_color.a > 0) {
+                // if (_border_size > 0 && _border_color.a > 0) {
                     Algorithm::calcLine(_p1.x, _p1.y, _p2.x, _p2.y, _border_size, _border_color, _bd1, _bdi1);
                     Algorithm::calcLine(_p2.x, _p2.y, _p3.x, _p3.y, _border_size, _border_color, _bd2, _bdi2);
                     Algorithm::calcLine(_p1.x, _p1.y, _p3.x, _p3.y, _border_size, _border_color, _bd3, _bdi3);
-                }
+                // }
             }
             Vector2 _p1;
             Vector2 _p2;
@@ -1636,20 +1799,20 @@ namespace MyEngine {
             uint16_t _border_size;
             SDL_Color _border_color;
             SDL_Color _background_color;
-            std::array<SDL_Vertex, 3> _vertices;
-            std::array<int, 3> _indices;
-            std::array<SDL_Vertex, 4> _bd1;
-            std::array<SDL_Vertex, 4> _bd2;
-            std::array<SDL_Vertex, 4> _bd3;
-            std::array<int, 6> _bdi1;
-            std::array<int, 6> _bdi2;
-            std::array<int, 6> _bdi3;
+            std::array<SDL_Vertex, 3> _vertices{};
+            std::array<int, 3> _indices{};
+            std::array<SDL_Vertex, 4> _bd1{};
+            std::array<SDL_Vertex, 4> _bd2{};
+            std::array<SDL_Vertex, 4> _bd3{};
+            std::array<int, 6> _bdi1{};
+            std::array<int, 6> _bdi2{};
+            std::array<int, 6> _bdi3{};
         };
 
         class Ellipse {
         public:
             explicit Ellipse() : _center_point(0, 0), _radius(0, 0),
-                                 _border_size(0), _border_color(StdColor::Black), _background_color(StdColor::Transparent),
+                                 _border_size(0), _border_color(StdColor::Black), _background_color(StdColor::White),
                                  _degree(0.f), _count(0) {}
 
             Ellipse(float cx, float cy, float rw, float rh, uint16_t border_size = 1,
@@ -1748,18 +1911,18 @@ namespace MyEngine {
 
         private:
             void updateFilledEllipse() {
-                if (_background_color.a > 0) {
+                // if (_background_color.a > 0) {
                     Algorithm::calcEllipse(_center_point, _radius,
                                                      _background_color, _degree, _count,
                                                      _vertices, _indices);
-                }
+                // }
             }
             void updateEllipse() {
-                if (_border_size > 0 && _border_color.a > 0) {
+                // if (_border_size > 0 && _border_color.a > 0) {
                     Algorithm::calcEllipseRing(_center_point, _radius, _border_size,
                                                          _border_color, _degree, _count,
                                                          _border_vertices, _border_indices);
-                }
+                // }
             }
             Vector2 _center_point;
             Size _radius;

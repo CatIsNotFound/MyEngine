@@ -1,22 +1,12 @@
 #pragma once
 #ifndef MYENGINE_CORE_H
 #define MYENGINE_CORE_H
-#define MYENGINE_FULL_VERSION "v0.1.2-beta"
-
+#define MYENGINE_FULL_VERSION "v0.1.3-beta"
+#include "Exception.h"
 #include "Basic.h"
 #include "Components.h"
 
 namespace MyEngine {
-    class EngineException : public std::exception {
-    public:
-        explicit EngineException(std::string message) : _msg(std::move(message)) {}
-        [[nodiscard]] const char * what() const noexcept override {
-            return _msg.data();
-        }
-    private:
-        std::string _msg;
-    };
-
     class Engine;
     class Window;
     struct TextureProperty;

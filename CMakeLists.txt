@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
-project(MyEngine LANGUAGES C CXX VERSION 0.1.2)
+project(MyEngine LANGUAGES C CXX VERSION 0.1.3)
 
 include(CMakePackageConfigHelpers)
 include(CMakeFindDependencyMacro)
@@ -81,6 +81,7 @@ if (BUILD_SHARED_LIBS_ONLY)
             src/Game/SpriteSheet.cpp
             src/Game/SpriteSheet.h
             src/Utils/SysMemory.h
+            src/Utils/SysMemory.cpp
             src/UI/All.h
             src/Game/GObject.cpp
             src/Game/GObject.h
@@ -91,6 +92,8 @@ if (BUILD_SHARED_LIBS_ONLY)
             src/Renderer/CommandPool.h
             src/Renderer/CommandFactory.h
             src/RCommand.h
+            src/Template/Singleton.h
+            src/Exception.h
     )
 else ()
     add_library(${PROJECT_NAME} STATIC
@@ -125,6 +128,7 @@ else ()
             src/Game/SpriteSheet.cpp
             src/Game/SpriteSheet.h
             src/Utils/SysMemory.h
+            src/Utils/SysMemory.cpp
             src/UI/All.h
             src/Game/GObject.cpp
             src/Game/GObject.h
@@ -135,6 +139,8 @@ else ()
             src/Renderer/CommandPool.h
             src/Renderer/CommandFactory.h
             src/RCommand.h
+            src/Template/Singleton.h
+            src/Exception.h
     )
 endif ()
 

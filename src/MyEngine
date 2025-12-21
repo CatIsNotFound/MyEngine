@@ -6,6 +6,6 @@
 #include "Algorithm/All.h"
 #include "MultiThread/All.h"
 #include "Utils/All.h"
-
+#include "UI/All.h"
 
 #endif //MYENGINE_MYENGINE

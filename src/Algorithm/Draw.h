@@ -127,20 +127,22 @@ namespace MyEngine {
 
         inline void calcRectangleRotated(const GeometryF& geometry, const SDL_Color& color, uint16_t size, float degree,
                                          std::array<SDL_Vertex, 8>& vertices, std::array<int, 24>& indices) {
+            // if (size == 0) return;
+            if (size % 2) size += 1;
             float cx = geometry.pos.x + geometry.size.width  * 0.5f;
             float cy = geometry.pos.y + geometry.size.height * 0.5f;
             float hw = geometry.size.width  * 0.5f;
             float hh = geometry.size.height * 0.5f;
-            float halfW = size * 0.5f;
+            float halfW = static_cast<float>(size) * 0.5f;
 
-            struct { float x, y; } outer[4] = {
-                    { -hw        , -hh         },
-                    {  hw        , -hh         },
-                    {  hw        ,  hh         },
-                    { -hw        ,  hh         }
+            Vector2 outer[4] = {
+                    { -hw, -hh },
+                    {  hw, -hh },
+                    {  hw,  hh },
+                    { -hw,  hh }
             };
 
-            struct { float x, y; } inner[4] = {
+            Vector2 inner[4] = {
                     { -hw + halfW, -hh + halfW },
                     {  hw - halfW, -hh + halfW },
                     {  hw - halfW,  hh - halfW },
@@ -158,7 +160,7 @@ namespace MyEngine {
                 float ix = cx + (inner[i].x * c - inner[i].y * s);
                 float iy = cy + (inner[i].x * s + inner[i].y * c);
 
-                vertices[i]     = { {ox, oy}, fcolor, {0, 0} };
+                vertices[i] = { {ox, oy}, fcolor, {0, 0} };
                 vertices[i + 4] = { {ix, iy}, fcolor, {0, 0} };
             }
 
@@ -166,9 +168,9 @@ namespace MyEngine {
             for (int i = 0; i < 4; ++i) {
                 int n = i * 6;
                 int o0 = i;
-                int o1 = (i + 1) & 3;
+                int o1 = (i + 1) % 4;
                 int i0 = i + 4;
-                int i1 = ((i + 1) & 3) + 4;
+                int i1 = ((i + 1) % 4) + 4;
 
                 // Triangle 1
                 idx[n + 0] = o0;
