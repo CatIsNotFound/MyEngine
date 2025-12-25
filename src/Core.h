@@ -5,6 +5,7 @@
 #include "Exception.h"
 #include "Basic.h"
 #include "Components.h"
+#include "Utils/Cursor.h"
 
 namespace MyEngine {
     class Engine;
@@ -130,6 +131,10 @@ namespace MyEngine {
         [[nodiscard]] const std::string& windowTitle() const;
 
         void setWindowIcon(const std::string& icon_path);
+        [[nodiscard]] SDL_Surface* windowIcon() const;
+
+        void setCursor(Cursor::StdCursor cursor_style);
+        [[nodiscard]] Cursor::StdCursor cursor() const;
 
         [[nodiscard]] SDL_Window* self() const;
         [[nodiscard]] Engine* engine() const;
@@ -149,6 +154,12 @@ namespace MyEngine {
         virtual void leaveFullscreenEvent();
         virtual void mouseEnteredEvent();
         virtual void mouseLeftEvent();
+        virtual void mouseUpEvent();
+        virtual void mouseDownEvent(int);
+        virtual void mouseClickedEvent(int);
+        virtual void keyUpEvent();
+        virtual void keyDownEvent(int);
+        virtual void keyPressedEvent(int);
 
     private:
         Geometry _window_geometry;
@@ -163,6 +174,7 @@ namespace MyEngine {
         bool _borderless{false};
         bool _fullscreen{false};
         Vector2 _mouse_pos{0, 0};
+        Cursor::StdCursor _cursor{};
         std::vector<std::function<void(Renderer*)>> _paint_event_list;
         Engine* _engine;
     };

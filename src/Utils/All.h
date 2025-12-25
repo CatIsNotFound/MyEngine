@@ -8,5 +8,6 @@
 #include "FileSystem.h"
 #include "RGBAColor.h"
 #include "SysMemory.h"
+#include "Variant.h"
 
 #endif //MYENGINE_UTILS_H

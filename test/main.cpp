@@ -6,15 +6,16 @@ using namespace MyEngine;
 int main() {
     Logger::setBaseLogLevel(MyEngine::Logger::Debug);
     Engine engine;
-    engine.setFPS(60);
+    engine.setFPS(120);
     auto window = new Window(&engine, engine.applicationName(), 1024, 800);
     auto win2 = new Window(&engine, "2nd window");
+    win2->setCursor(MyEngine::Cursor::Hand);
     window->setResizable(true);
     Widget::AbstractWidget wid(window);
-    wid.setFocusEnabled(true);
+
     wid.setGeometry(100, 200, 100, 200);
+    wid.setCursor(MyEngine::Cursor::Hand);
     wid.setHotKey(SDL_SCANCODE_LCTRL, SDL_SCANCODE_LALT, SDL_SCANCODE_SPACE);
-    wid.printHotKeys();
     Graphics::Rectangle rect(300, 300, 100, 200, 8, RGBAColor::GreenDark, RGBAColor::MixOrangeYellow);
     Graphics::Rectangle rect2(200, 100, 200, 100, 8, RGBAColor::RedDark, RGBAColor::RedLightPink);
     Graphics::Rectangle rect3(100, 200, 100, 200);
@@ -64,12 +65,12 @@ int main() {
             }
         } else {
             if (trigger) {
+                if (drag_1 || drag_2) Cursor::global()->setCursor(window->cursor());
                 trigger = false;
                 drag_1 = false;
                 drag_2 = false;
                 if (rect.geometry().pos < Vector2(0, 0)) rect.move(200, 200);
                 if (rect2.geometry().pos < Vector2(0, 0)) rect2.move(400, 200);
-                Cursor::global()->setCursor(Cursor::Normal);
             }
         }
 

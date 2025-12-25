@@ -440,6 +440,18 @@ namespace MyEngine {
         }
     }
 
+    SDL_Surface* Window::windowIcon() const {
+        return _win_icon;
+    }
+
+    void Window::setCursor(Cursor::StdCursor cursor_style) {
+        _cursor = cursor_style;
+    }
+
+    Cursor::StdCursor Window::cursor() const {
+        return _cursor;
+    }
+
     SDL_Window* Window::self() const {
         if (!_window) {
             Logger::log("The window is not created!", Logger::Error);
@@ -500,9 +512,16 @@ namespace MyEngine {
 
     void Window::leaveFullscreenEvent() {}
 
-    void Window::mouseEnteredEvent() {}
-
+    void Window::mouseEnteredEvent() { Cursor::global()->setCursor(_cursor); }
     void Window::mouseLeftEvent() {}
+
+    void Window::mouseUpEvent() {}
+    void Window::mouseDownEvent(int) {}
+    void Window::mouseClickedEvent(int) {}
+
+    void Window::keyUpEvent() {}
+    void Window::keyDownEvent(int v) { Logger::log(std::format("W Key down: {}", v)); }
+    void Window::keyPressedEvent(int v) { Logger::log(std::format("W Key pressed: {}", v)); }
 
     EventSystem::~EventSystem() = default;
 
@@ -595,6 +614,7 @@ namespace MyEngine {
             }
             if (!_engine->windowCount()) return false; // Exit engine when no windows loaded.
             auto win_id_list = _engine->windowIDList();
+            static bool mouse_down = false, key_down = false;
             std::for_each(win_id_list.begin(), win_id_list.end(), [this, &ev](uint32_t id) {
                 auto win = _engine->window(id);
                 if (!win || ev.window.windowID != id) return;
@@ -636,6 +656,56 @@ namespace MyEngine {
                 }
                 if (ev.window.type == SDL_EVENT_WINDOW_MOUSE_LEAVE) {
                     win->mouseLeftEvent();
+                }
+
+                // Key and mouse captured
+                static int mouse_button = 0;
+                static std::vector<int> last_keys_status{};
+                if (!key_down) {
+                    if (!_keys_status.empty()) {
+                        key_down = true;
+                        // Saved keys when any keys down
+                        last_keys_status.emplace_back(ev.key.scancode);
+                        win->keyDownEvent(ev.key.scancode);
+                    }
+                } else {
+                    if (_keys_status.empty()) {
+                        key_down = false;
+                        win->keyUpEvent();
+                        // All keys up
+                        for (auto& k : last_keys_status) {
+                            win->keyPressedEvent(k);
+                        }
+                        last_keys_status.clear();
+                    } else if (!ev.key.repeat) {
+                        // Saved keys when any keys down
+                        auto scancode = ev.key.scancode;
+                        if (scancode) {
+                            if (std::find(last_keys_status.begin(), last_keys_status.end(),
+                                          ev.key.scancode) == last_keys_status.end()) {
+                                last_keys_status.emplace_back(ev.key.scancode);
+                                win->keyDownEvent(ev.key.scancode);
+                            }
+                        }
+                        // Check which key is up
+                        int key_code = 0;
+                        int idx = 0;
+                        for (auto& k : last_keys_status) {
+                            if (std::find(_keys_status.begin(), _keys_status.end(), k) == _keys_status.end()) {
+                                key_code = k;
+                                break;
+                            }
+                            idx++;
+                        }
+                        if (key_code > 0) {
+                            last_keys_status.erase(last_keys_status.cbegin() + idx);
+                            win->keyUpEvent();
+                            win->keyPressedEvent(key_code);
+                        }
+                    }
+                }
+                if (!mouse_down) {
+                    if (_mouse_events > 0) win->mouseDownEvent(mouse_button);
                 }
             });
 

@@ -1,6 +1,7 @@
 
 #include "AbstractWidget.h"
 #include "Algorithm/Collider.h"
+
 namespace MyEngine::Widget {
     AbstractWidget::AbstractWidget(Window *window) : _window(window), _renderer(nullptr),
                 _ev_id(IDGenerator::getNewEventID()), _g_ev_id(IDGenerator::getNewGlobalEventID()) {
@@ -41,34 +42,43 @@ namespace MyEngine::Widget {
                     if (!cur_cap_keys.empty()) {
                         key_down = true;
                         key_pressed_num = cur_cap_keys.size();
-                        keyDownEvent(cur_cap_keys);
-                        pressed_stack.assign(cur_cap_keys.begin(), cur_cap_keys.end());
+                        // keyDownEvent(cur_cap_keys);
+                        // pressed_stack.assign(cur_cap_keys.begin(), cur_cap_keys.end());
                     }
                 } else {
                     if (cur_cap_keys.empty()) {
                         key_down = false;
-                        keyUpEvent(cur_cap_keys);
+                        // keyUpEvent(cur_cap_keys);
                         keyPressedEvent(cur_cap_keys);
                     } else if (key_pressed_num < cur_cap_keys.size()) {
-                        keyDownEvent(cur_cap_keys);
+                        // keyDownEvent(cur_cap_keys);
                         key_pressed_num = cur_cap_keys.size();
                     } else if (key_pressed_num > cur_cap_keys.size()) {
 
                     }
                 }
             }
+            if (Cursor::global()->focusOn() != _window->windowID()) return;
             // Mouse Event
             auto cur_pos = EventSystem::global()->captureMousePosition();
             auto cur_abs_dis = EventSystem::global()->captureMouseAbsDistance();
             static bool mouse_in = false, mouse_down = false;
             auto trigger = (Algorithm::comparePosInRect(cur_pos, _trigger_area) > 0);
             if (!mouse_in) {
-                if (trigger && EventSystem::global()->captureMouse(EventSystem::None)) {
-                    mouse_in = true;
-                    mouseEnteredEvent();
+                if (EventSystem::global()->captureMouse(EventSystem::None)) {
+                    if (trigger) {
+                        mouse_in = true;
+                        mouseEnteredEvent();
+                        Cursor::global()->setCursor(_cur_style);
+                    } else if (mouse_down) {
+                        mouse_down = false;
+                        mouseUpEvent();
+                        Cursor::global()->setCursor(_window->cursor());
+                    }
                 }
             } else {
                 auto left_btn = EventSystem::global()->captureMouse(EventSystem::Left);
+                auto right_btn = EventSystem::global()->captureMouse(EventSystem::Right);
                 if (trigger) {
                     if (left_btn && !mouse_down) {
                         mouseDownEvent();
@@ -77,11 +87,17 @@ namespace MyEngine::Widget {
                         mouse_down = false;
                         mouseUpEvent();
                         mouseClickedEvent();
+                        if (ev.button.clicks > 1) mouseDblClickedEvent();
+                    }
+                    if (right_btn && mouse_down) {
+                        customContextMenuRequestEvent();
                     }
                 } else {
                     mouse_in = false;
-                    mouse_down = false;
                     mouseLeftEvent();
+                    if (!mouse_down) {
+                        Cursor::global()->setCursor(_window->cursor());
+                    }
                 }
             }
         });
@@ -190,6 +206,13 @@ namespace MyEngine::Widget {
         return _focus;
     }
 
+    void AbstractWidget::setCursor(Cursor::StdCursor cursor_style) {
+        _cur_style = cursor_style;
+    }
+
+    Cursor::StdCursor AbstractWidget::cursor() const {
+        return _cur_style;
+    }
 
 
     void AbstractWidget::loadEvent() {}
@@ -228,6 +251,8 @@ namespace MyEngine::Widget {
 
     void AbstractWidget::mouseClickedEvent() { Logger::log("Mouse clicked", Logger::Info); }
 
+    void AbstractWidget::mouseDblClickedEvent() { Logger::log("Mouse double clicked", Logger::Info); }
+
     void AbstractWidget::mouseDownEvent() { Logger::log("Mouse down", Logger::Info); }
 
     void AbstractWidget::mouseUpEvent() { Logger::log("Mouse Up", Logger::Info); }
@@ -255,5 +280,6 @@ namespace MyEngine::Widget {
     void AbstractWidget::startedInputEvent() {}
 
     void AbstractWidget::endedInputEvent() {}
+
 
 }

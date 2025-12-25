@@ -142,7 +142,8 @@ namespace MyEngine {
         return false;
     }
 
-    bool FileSystem::writeFile(const std::string &context, const std::string &path, bool append_mode, bool ignore_error) {
+    bool FileSystem::writeFile(const std::string &context, const std::string &path,
+                               bool append_mode, bool ignore_error) {
         std::filesystem::path temp = getAbsolutePath(path);
         std::ofstream file(temp.string(),((append_mode ? (std::ios::in | std::ios::app) : std::ios::in)));
         if (!file.is_open()) {

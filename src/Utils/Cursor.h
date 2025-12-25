@@ -2,9 +2,11 @@
 #ifndef MYENGINE_UTILS_CURSOR_H
 #define MYENGINE_UTILS_CURSOR_H
 #include "Logger.h"
-#include "../Components.h"
+#include "../Template/Singleton.h"
+#include "../Basic.h"
 
 namespace MyEngine {
+    class Window;
     /**
      * @class Cursor
      * @brief 鼠标光标
@@ -12,7 +14,8 @@ namespace MyEngine {
      * 用于全局控制鼠标光标的位置、样式
      * @note 需要使用 `global()` 获取全局
      */
-    class Cursor {
+    class Cursor : public Singleton<Cursor> {
+        friend class Singleton<Cursor>;
     public:
         /**
          * @enum StdCursor
@@ -79,56 +82,27 @@ namespace MyEngine {
         explicit Cursor(Cursor&&) = delete;
         Cursor& operator=(const Cursor&) = delete;
         Cursor& operator=(Cursor&&) = delete;
-        ~Cursor() {
-            unload();
-        }
-        /**
-         * @brief 获取鼠标光标全局
-         */
-        static Cursor* global() {
-            if (!_instance) {
-                _instance = std::unique_ptr<Cursor>(new Cursor());
-            }
-            return _instance.get();
-        }
+        ~Cursor() { unload(); }
+
         /**
          * @brief 获取鼠标光标在显示器中所在的位置
          * @return 返回全局坐标
          * @see position
          * @see move
          */
-        Vector2 globalPosition() const {
-            if (!SDL_HasMouse()) {
-                Logger::log("Cursor: No mouse device!", Logger::Warn);
-            }
-            Vector2 _pos;
-            SDL_GetGlobalMouseState(&_pos.x, &_pos.y);
-            return _pos;
-        }
+        Vector2 globalPosition() const;
         /**
          * @brief 获取鼠标光标在获得焦点的窗口下的位置
          * @return 返回鼠标光标相对获得焦点窗口下的位置
          * @see globalPosition
          * @see move
          */
-        Vector2 position() const {
-            if (!SDL_HasMouse()) {
-                Logger::log("Cursor: No mouse device!", Logger::Warn);
-            }
-            Vector2 _pos;
-            SDL_GetMouseState(&_pos.x, &_pos.y);
-            return _pos;
-        }
+        Vector2 position() const;
         /**
          * @brief 获取鼠标当前聚焦于哪个窗口
          * @return 返回鼠标所在的窗口 ID
          */
-        uint64_t focusOn() const {
-            if (!SDL_HasMouse()) {
-                Logger::log("Cursor: No mouse device!", Logger::Warn);
-            }
-            return SDL_GetWindowID(SDL_GetMouseFocus());
-        }
+        uint64_t focusOn() const;
         /**
          * @brief 移动鼠标光标至指定位置
          * @param pos 指定位置
@@ -137,16 +111,7 @@ namespace MyEngine {
          * @see position
          * @see globalPosition
          */
-        void move(const Vector2& pos, const Window* window = nullptr) {
-            if (!SDL_HasMouse()) {
-                Logger::log("Cursor: No mouse device!", Logger::Warn);
-            }
-            if (window) {
-                SDL_WarpMouseInWindow(window->self(), pos.x, pos.y);
-            } else {
-                SDL_WarpMouseGlobal(pos.x, pos.y);
-            }
-        }
+        void move(const Vector2& pos, const Window* window = nullptr);
         /**
          * @brief 移动光标至指定位置
          * @param x 指定横坐标
@@ -156,38 +121,13 @@ namespace MyEngine {
          * @see position
          * @see globalPosition
          */
-        void move(float x, float y, const Window* window = nullptr) {
-            if (!SDL_HasMouse()) {
-                Logger::log("Cursor: No mouse device!", Logger::Warn);
-            }
-            if (window) {
-                SDL_WarpMouseInWindow(window->self(), x, y);
-            } else {
-                SDL_WarpMouseGlobal(x, y);
-            }
-        }
+        void move(float x, float y, const Window* window = nullptr);
         /**
          * @brief 将鼠标光标移动至画面中心点
          * @param window 指定窗口
          * @note 若不设置 window 参数，将默认以全局显示器屏幕为主
          */
-        void moveToCenter(const Window* window = nullptr) {
-            if (!SDL_HasMouse()) {
-                Logger::log("Cursor: No mouse device!", Logger::Warn);
-            }
-            Vector2 pos;
-            if (window) {
-                int w, h;
-                SDL_GetWindowSize(window->self(), &w, &h);
-                pos.reset((float)w / 2, (float)h / 2);
-                SDL_WarpMouseInWindow(window->self(), pos.x, pos.y);
-            } else {
-                SDL_Rect rect;
-                SDL_GetDisplayBounds(SDL_GetPrimaryDisplay(), &rect);
-                pos.reset((float)rect.w / 2, (float)rect.h / 2);
-                SDL_WarpMouseGlobal(pos.x, pos.y);
-            }
-        }
+        void moveToCenter(const Window* window = nullptr);
         /**
          * @brief 设置鼠标光标
          * @param cursor 指定光标类型
@@ -200,31 +140,7 @@ namespace MyEngine {
          * @see userCustomEnabled
          * @see StdCursor
          */
-        void setCursor(const StdCursor& cursor) {
-            if (!SDL_HasMouse()) {
-                Logger::log("Cursor: No mouse device!", Logger::Warn);
-            }
-            if (this->cursor() == cursor) return;
-            if (_custom_cursor && _user_custom.contains(cursor)) {
-                auto user_cursor = _user_custom.at(cursor);
-                if (user_cursor.cursor) {
-                    SDL_DestroyCursor(_cursor);
-                }
-                _cursor = SDL_CreateColorCursor(user_cursor.cursor.get(),
-                                                user_cursor.hot_point.x, user_cursor.hot_point.y);
-                SDL_SetCursor(_cursor);
-                _std_cursor = cursor;
-                return;
-            }
-            _std_cursor = cursor;
-            SDL_DestroyCursor(_cursor);
-            if (_surface) {
-                SDL_DestroySurface(_surface);
-                _surface = nullptr;
-            }
-            _cursor = SDL_CreateSystemCursor(SStdCursor(_std_cursor));
-            SDL_SetCursor(_cursor);
-        }
+        void setCursor(const StdCursor& cursor);
         /**
          * @brief 设置自定义鼠标光标
          * @param path 指定路径下加载鼠标光标
@@ -234,38 +150,17 @@ namespace MyEngine {
          *
          * 从指定路径加载图像作为自定义鼠标光标，并设置热点坐标。
          */
-        void setCursor(const std::string &path, int hot_x, int hot_y) {
-            if (!SDL_HasMouse()) {
-                Logger::log("Cursor: No mouse device!", Logger::Warn);
-            }
-            SDL_Surface *temp = IMG_Load(path.data());
-            if (!temp) {
-                Logger::log(std::format("[ERROR] Can't load image while setting cursor: {}", path), Logger::Error);
-                return;
-            }
-            SDL_DestroyCursor(_cursor);
-            if (_surface) {
-                SDL_DestroySurface(_surface);
-            }
-            _surface = temp;
-            _std_cursor = Custom;
-            _cursor = SDL_CreateColorCursor(_surface, hot_x, hot_y);
-            SDL_SetCursor(_cursor);
-        }
+        void setCursor(const std::string &path, int hot_x, int hot_y);
         /**
          * @brief 是否允许使用自定义鼠标光标
          * @param enabled 启用/禁用
          */
-        void setUserCustomEnabled(bool enabled) {
-            _custom_cursor = enabled;
-        }
+        void setUserCustomEnabled(bool enabled);
         /**
          * @brief 当前是否使用自定义鼠标光标
          *
          */
-        bool userCustomEnabled() const {
-            return _custom_cursor;
-        }
+        bool userCustomEnabled() const;
         /**
          * @brief 设置自定义鼠标光标
          * @param stdCursor 指定标准鼠标类型
@@ -274,78 +169,37 @@ namespace MyEngine {
          * @see setUserCustomEnabled
          * @see userCustomEnabled
          */
-        void setCustomCursor(const StdCursor& stdCursor, const std::string& path, const UserCustom::HotPoint& hot_point) {
-            if (!SDL_HasMouse()) {
-                Logger::log("Cursor: No mouse device!", Logger::Warn);
-            }
-            auto new_cursor = IMG_Load(path.c_str());
-            if (!new_cursor) {
-                Logger::log(std::format("[ERROR] Can't set addCustomCommand cursor, "
-                                        "because the current path \"{}\" is not valid!", path), Logger::Error);
-                return;
-            }
-            if (_user_custom.contains(stdCursor)) {
-                if (_user_custom.at(stdCursor).cursor)
-                    SDL_DestroySurface(_user_custom.at(stdCursor).cursor.get());
-                _user_custom.at(stdCursor).cursor = std::unique_ptr<SDL_Surface>(new_cursor);
-                _user_custom.at(stdCursor).hot_point = hot_point;
-            } else {
-                _user_custom.emplace(stdCursor, UserCustom(hot_point, new_cursor));
-            }
-        }
+        void setCustomCursor(const StdCursor& stdCursor, const std::string& path,
+                             const UserCustom::HotPoint& hot_point);
         /**
          * @brief 获取当前鼠标光标样式
          *
          */
-        StdCursor cursor() const {
-            return _std_cursor;
-        }
+        StdCursor cursor() const;
         /**
          * @brief 显示/隐藏鼠标光标
          * @param visible 决定是否显示鼠标光标
          * @see visible
          */
-        void setVisible(bool visible) {
-            if (!SDL_HasMouse()) {
-                Logger::log("Cursor: No mouse device!", Logger::Warn);
-            }
-            if (visible) {
-                SDL_ShowCursor();
-            } else {
-                SDL_HideCursor();
-            }
-            _visible = visible;
-        }
+        void setVisible(bool visible);
         /**
          * @brief 获取当前鼠标光标是否显示
          * @see setVisible
          */
-        bool visible() const {
-            return _visible;
-        }
-        void unload() {
-            if (_cursor) SDL_DestroyCursor(_cursor);
-            if (_surface) SDL_DestroySurface(_surface);
-        }
+        bool visible() const;
+        void unload();
 
     private:
-        explicit Cursor() {
-            if (!SDL_HasMouse()) {
-                Logger::log("Cursor: No mouse device!", Logger::Warn);
-            }
-            _cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_DEFAULT);
-        }
+        explicit Cursor();
         StdCursor _std_cursor{Default};
         SCursor* _cursor{nullptr};
         SSurface* _surface{nullptr};
         bool _custom_cursor{false};
         std::map<StdCursor, UserCustom> _user_custom;
         bool _visible{true};
-        static std::unique_ptr<Cursor> _instance;
     };
-
-    inline std::unique_ptr<Cursor> Cursor::_instance{nullptr};
 }
 
+#include "../Core.h"
 
 #endif //MYENGINE_UTILS_CURSOR_H

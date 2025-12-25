@@ -66,6 +66,7 @@ if (BUILD_SHARED_LIBS_ONLY)
             src/Algorithm/Draw.h
             src/Utils/DateTime.h
             src/Utils/Cursor.h
+            src/Utils/Cursor.cpp
             src/Algorithm/Collider.h
             src/MultiThread/ThreadPool.h
             src/Utils/Logger.h
@@ -96,6 +97,8 @@ if (BUILD_SHARED_LIBS_ONLY)
             src/Exception.h
             src/Widgets/AbstractWidget.cpp
             src/Widgets/AbstractWidget.h
+            src/Utils/Variant.cpp
+            src/Utils/Variant.h
     )
 else ()
     add_library(${PROJECT_NAME} STATIC
@@ -115,6 +118,7 @@ else ()
             src/Algorithm/Draw.h
             src/Utils/DateTime.h
             src/Utils/Cursor.h
+            src/Utils/Cursor.cpp
             src/Algorithm/Collider.h
             src/MultiThread/ThreadPool.h
             src/Utils/Logger.h
@@ -145,6 +149,8 @@ else ()
             src/Exception.h
             src/Widgets/AbstractWidget.cpp
             src/Widgets/AbstractWidget.h
+            src/Utils/Variant.cpp
+            src/Utils/Variant.h
     )
 endif ()
 

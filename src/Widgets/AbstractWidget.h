@@ -2,10 +2,10 @@
 #ifndef MYENGINE_ABSTRACTWIDGET_H
 #define MYENGINE_ABSTRACTWIDGET_H
 #include "../Components.h"
+#include "../Utils/Cursor.h"
 
 namespace MyEngine {
     namespace Widget {
-        using KeyComponents = uint64_t;
         class AbstractWidget {
         public:
             explicit AbstractWidget(Window* window);
@@ -36,21 +36,14 @@ namespace MyEngine {
             void setFocusEnabled(bool enabled);
             [[nodiscard]] bool focusEnabled() const;
 
+            void setCursor(Cursor::StdCursor cursor_style);
+            [[nodiscard]] Cursor::StdCursor cursor() const;
+
             template<typename ScanKeyCode, typename... Args>
             void setHotKey(ScanKeyCode key, Args... args) {
                 addKey(key);
                 if constexpr (sizeof...(args)) setHotKey(args...);
                 else std::sort(_hot_key.begin(), _hot_key.end());
-            }
-
-            void printHotKeys() {
-                if (_hot_key.empty()) {
-                    Logger::log("No keys found!", Logger::Info);
-                    return;
-                }
-                for (auto& i : _hot_key) {
-                    Logger::log(std::format("Get key: {}", i), Logger::Info);
-                }
             }
 
         protected:
@@ -72,6 +65,7 @@ namespace MyEngine {
             virtual void dragMovedEvent();
             virtual void dropEvent();
             virtual void mouseClickedEvent();
+            virtual void mouseDblClickedEvent();
             virtual void mouseDownEvent();
             virtual void mouseUpEvent();
             virtual void mouseEnteredEvent();
@@ -90,7 +84,8 @@ namespace MyEngine {
             void unload();
             template<typename T>
             void addKey(T key) {
-                static_assert(std::is_same_v<T, SDL_Scancode>, "AbstractWidget: Some of the hotkeys is not valid! Used SDL_Scancode.");
+                static_assert(std::is_same_v<T, SDL_Scancode>,
+                        "AbstractWidget: Some of the hotkeys is not valid! Used SDL_Scancode.");
                 _hot_key.emplace_back(key);
             }
             Window* _window;
@@ -100,6 +95,7 @@ namespace MyEngine {
             std::vector<int> _hot_key;
             bool _visible{true}, _enabled{true}, _focus{false};
             Graphics::Rectangle _trigger_area;
+            Cursor::StdCursor _cur_style{Cursor::Default};
         };
     }
 }
