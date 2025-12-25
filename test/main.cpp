@@ -1,77 +1,79 @@
 #include "FilledWin.h"
 #include "MyEngine"
+#include "Widgets/AbstractWidget.h"
 using namespace MyEngine;
 
 int main() {
+    Logger::setBaseLogLevel(MyEngine::Logger::Debug);
     Engine engine;
     engine.setFPS(60);
-    auto window = new FilledWin("./tiny_block.png", &engine, engine.applicationName(), 1024, 800);
+    auto window = new Window(&engine, engine.applicationName(), 1024, 800);
+    auto win2 = new Window(&engine, "2nd window");
     window->setResizable(true);
-    Graphics::Rectangle back((float)window->geometry().width - 300, 0, 300, 200, 0, {}, {0, 0, 0, 160});
-    Graphics::Rectangle fps_rect(back.geometry().pos.x + 20, 20, 260, 20, 1, StdColor::Green, {});
-    std::array<Vector2, 128> pos_list;
-    std::array<Graphics::Line, 127> line_list;
-    auto startX = back.geometry().pos.x + 20.f;
-    auto endX = (float)window->geometry().width - 20.f;
-    auto startY = 60;
-    auto endY = back.geometry().size.height - 20.f;
-    auto offset = (endX - startX) / 127.f;
-    for (int i = 0; i < 128; ++i) {
-        pos_list[i].reset({startX + offset * i, RandomGenerator::randFloat(startY, endY)});
-    }
-    for (int i = 0; i < 127; ++i) {
-        line_list[i].reset(pos_list[i], pos_list[i + 1], 1, RGBAColor::BlueSea);
-    }
-
-    Timer timer(100, [&line_list, &pos_list, &back, &window, &startX, &endX, &startY, &endY, &offset] {
-        startX = back.geometry().pos.x + 20.f;
-        endX = (float)window->geometry().width - 20.f;
-        startY = 60.f;
-        endY = back.geometry().size.height - 20.f;
-        offset = (endX - startX) / 127.f;
-        for (int i = 0; i < 128; ++i) {
-            pos_list[i].reset({startX + offset * i, RandomGenerator::randFloat(startY, endY)});
-        }
-        for (int i = 0; i < 127; ++i) {
-            line_list[i].reset(pos_list[i], pos_list[i + 1], 1, RGBAColor::BlueSea);
-        }
+    Widget::AbstractWidget wid(window);
+    wid.setFocusEnabled(true);
+    wid.setGeometry(100, 200, 100, 200);
+    wid.setHotKey(SDL_SCANCODE_LCTRL, SDL_SCANCODE_LALT, SDL_SCANCODE_SPACE);
+    wid.printHotKeys();
+    Graphics::Rectangle rect(300, 300, 100, 200, 8, RGBAColor::GreenDark, RGBAColor::MixOrangeYellow);
+    Graphics::Rectangle rect2(200, 100, 200, 100, 8, RGBAColor::RedDark, RGBAColor::RedLightPink);
+    Graphics::Rectangle rect3(100, 200, 100, 200);
+    window->installPaintEvent([&rect, &rect2, &rect3](Renderer* r) {
+        auto ro = rect.rotate();
+        if (ro + 1.f >= 360.f) ro = 0; else ro += 1.f;
+        rect.setRotate(ro);
+        rect2.setRotate(360.f - ro);
+        r->drawRectangle(&rect3);
+        r->drawRectangle(&rect);
+        r->drawRectangle(&rect2);
+        r->drawDebugFPS();
+        auto mouse_pos = EventSystem::global()->captureMousePosition();
+        r->drawDebugText(std::format("Mouse pos: ({}, {})", mouse_pos.x, mouse_pos.y), {20, 30});
+    });
+    win2->installPaintEvent([](Renderer* r) {
+        r->fillBackground(RGBAColor::BlueLake);
+        r->drawDebugFPS();
     });
 
-    window->installPaintEvent([&back, &fps_rect, &window, &line_list](Renderer* r) {
-        r->drawDebugText(std::format("RCount: {}", r->renderCountInSec()), {20, 50});
-        r->drawDebugText(std::format("Memory: {:.2f}GB", (float)SysMemory::getCurProcUsedMemSize() / 1024.f / 1024.f), {20, 60});
-        r->setBlendMode(SDL_BLENDMODE_BLEND);
-        r->drawRectangle(&back);
-        back.setGeometry((float)window->geometry().width - 300, 0, 300, 200);
-        fps_rect.setGeometry(back.geometry().pos.x + 20, 20, 260.f * ((float)window->engine()->fps() / 60.f), 20);
-        r->drawRectangle(&fps_rect);
-        for (auto& l : line_list) {
-            r->drawLine(&l);
-        }
-    });
-    auto aud_sys = AudioSystem::global();
-    aud_sys->appendBGM("See", "./bgm.mp3");
-    aud_sys->appendBGM("See2", "./bgm.mp3");
-    auto bgm = aud_sys->getBGM("See");
-    bgm->play(5000, true);
-    auto bgm2 = aud_sys->getBGM("See2");
-    bgm2->play(10000, true, 5000);
-    EventSystem::global()->appendEvent(IDGenerator::getNewEventID(), [&aud_sys](SDL_Event e) {
-        static float volume = aud_sys->mixerVolume();
-        auto vol = aud_sys->mixerVolume();
-        if (e.key.key == SDLK_M && e.key.down) {
-            if (vol > 0.f) {
-                volume = vol;
-                aud_sys->setMixerVolume(0);
-            } else {
-                aud_sys->setMixerVolume(volume);
+    EventSystem::global()->appendEvent(IDGenerator::getNewEventID(), [&window, &rect, &rect2](SDL_Event e) {
+        if (Cursor::global()->focusOn() != window->windowID()) return;
+        auto mouse_pos = Cursor::global()->position();
+        static bool trigger = false;
+        static bool drag_1 = false, drag_2 = false;
+        static Vector2 old_pos_1, old_pos_2;
+        if (EventSystem::global()->captureMouse(EventSystem::Left)) {
+            if (!trigger) {
+                trigger = true;
+                if (Algorithm::comparePosInRotatedRect(mouse_pos, rect) > 0) {
+                    drag_1 = true;
+                    old_pos_1 = rect.geometry().pos;
+                    Cursor::global()->setCursor(Cursor::Move);
+                    return;
+                } else if (Algorithm::comparePosInRotatedRect(mouse_pos, rect2) > 0) {
+                    drag_2 = true;
+                    old_pos_2 = rect2.geometry().pos;
+                    Cursor::global()->setCursor(Cursor::Move);
+                    return;
+                }
+            }
+            auto moved_distance = EventSystem::global()->captureMouseAbsDistance();
+            if (drag_1) {
+                rect.move(old_pos_1 + moved_distance);
+            } else if (drag_2) {
+                rect2.move(old_pos_2 + moved_distance);
+            }
+        } else {
+            if (trigger) {
+                trigger = false;
+                drag_1 = false;
+                drag_2 = false;
+                if (rect.geometry().pos < Vector2(0, 0)) rect.move(200, 200);
+                if (rect2.geometry().pos < Vector2(0, 0)) rect2.move(400, 200);
+                Cursor::global()->setCursor(Cursor::Normal);
             }
         }
-        if (e.key.key == SDLK_ESCAPE && e.key.down) {
-            aud_sys->stopAll();
-        }
 
     });
-    timer.start(0);
+
     return engine.exec();
 }

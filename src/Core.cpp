@@ -19,7 +19,7 @@ namespace MyEngine {
     std::unique_ptr<AudioSystem> AudioSystem::_instance{};
 
     Renderer::Renderer(Window* window) : _window(window) {
-        _renderer = SDL_CreateRenderer(_window->self(), nullptr);
+         _renderer = SDL_CreateRenderer(_window->self(), nullptr);
         if (!_renderer) {
             Logger::log("The renderer is not created!", Logger::Fatal);
             Engine::throwFatalError();
@@ -33,6 +33,16 @@ namespace MyEngine {
             }
         }
         if (_renderer) SDL_DestroyRenderer(_renderer);
+    }
+
+    void Renderer::setVSyncMode(Renderer::VSyncMode mode) {
+        SDL_SetRenderVSync(_renderer, static_cast<int>(mode));
+    }
+
+    Renderer::VSyncMode Renderer::currentVSyncMode() const {
+        int ret;
+        SDL_GetRenderVSync(_renderer, &ret);
+        return static_cast<Renderer::VSyncMode>(ret);
     }
 
     SDL_Renderer* Renderer::self() const {
@@ -478,6 +488,22 @@ namespace MyEngine {
         }
     }
 
+    void Window::showEvent() {}
+
+    void Window::hideEvent() {}
+
+    void Window::windowMinimizedEvent() {}
+
+    void Window::windowMaximizedEvent() {}
+
+    void Window::enteredFullscreenEvent() {}
+
+    void Window::leaveFullscreenEvent() {}
+
+    void Window::mouseEnteredEvent() {}
+
+    void Window::mouseLeftEvent() {}
+
     EventSystem::~EventSystem() = default;
 
     EventSystem* EventSystem::global(Engine* engine) {
@@ -542,16 +568,19 @@ namespace MyEngine {
         Logger::log("EventSystem: Cleared all global events!");
     }
 
-
     size_t EventSystem::eventCount() const { return _event_list.size(); }
 
     bool EventSystem::run() {
         SDL_Event ev;
         if (SDL_PollEvent(&ev)) {
-            _kb_events = const_cast<bool*>(SDL_GetKeyboardState(nullptr));
+            _kb_events = const_cast<bool*>(SDL_GetKeyboardState(&_nums_keys));
+            _keys_status.clear();
+            for (int i = 0; i < _nums_keys; ++i) {
+                if (_kb_events[i]) _keys_status.emplace_back(i);
+            }
             _mouse_events = SDL_GetMouseState(&_mouse_pos.x, &_mouse_pos.y);
             if (!_mouse_down_changed) {
-                /// When any of mouse buttons is pressed down, triggered...
+                // When any of mouse buttons is pressed down, triggered...
                 if (_mouse_events > 0) {
                     _mouse_down_changed = true;
                     _before_mouse_down_pos.reset(_mouse_pos);
@@ -564,7 +593,7 @@ namespace MyEngine {
                     _mouse_down_dis.reset(0, 0);
                 }
             }
-            if (!_engine->windowCount()) return false;
+            if (!_engine->windowCount()) return false; // Exit engine when no windows loaded.
             auto win_id_list = _engine->windowIDList();
             std::for_each(win_id_list.begin(), win_id_list.end(), [this, &ev](uint32_t id) {
                 auto win = _engine->window(id);
@@ -583,6 +612,30 @@ namespace MyEngine {
                 }
                 if (ev.window.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED) {
                     win->unloadEvent();
+                }
+                if (ev.window.type == SDL_EVENT_WINDOW_HIDDEN) {
+                    win->hideEvent();
+                }
+                if (ev.window.type == SDL_EVENT_WINDOW_SHOWN) {
+                    win->showEvent();
+                }
+                if (ev.window.type == SDL_EVENT_WINDOW_MINIMIZED) {
+                    win->windowMinimizedEvent();
+                }
+                if (ev.window.type == SDL_EVENT_WINDOW_MAXIMIZED) {
+                    win->windowMaximizedEvent();
+                }
+                if (ev.window.type == SDL_EVENT_WINDOW_ENTER_FULLSCREEN) {
+                    win->enteredFullscreenEvent();
+                }
+                if (ev.window.type == SDL_EVENT_WINDOW_LEAVE_FULLSCREEN) {
+                    win->leaveFullscreenEvent();
+                }
+                if (ev.window.type == SDL_EVENT_WINDOW_MOUSE_ENTER) {
+                    win->mouseEnteredEvent();
+                }
+                if (ev.window.type == SDL_EVENT_WINDOW_MOUSE_LEAVE) {
+                    win->mouseLeftEvent();
                 }
             });
 
@@ -605,6 +658,13 @@ namespace MyEngine {
     }
 
     bool EventSystem::captureMouse(EventSystem::MouseStatus mouse_status) const {
+        if (mouse_status == Left) {
+            return _mouse_events % 2;
+        } else if (mouse_status == Right) {
+            return _mouse_events >= Right;
+        } else if (mouse_status == Middle) {
+            return !(_mouse_events % 3) || (_mouse_events == LeftMiddleRight);
+        }
         return _mouse_events == mouse_status;
     }
 
@@ -616,8 +676,8 @@ namespace MyEngine {
         return _mouse_pos;
     }
 
-    const bool *EventSystem::captureKeyboardStatus() const {
-        return _kb_events;
+    const std::vector<int>& EventSystem::captureKeyboardStatus() const {
+        return _keys_status;
     }
 
     bool EventSystem::captureKeyboard(SDL_Scancode code) const {

@@ -30,8 +30,18 @@ namespace MyEngine {
         template<typename T, typename ...Args>
         void addCommand(Args... args);
     public:
+        enum VSyncMode {
+            Disable,
+            Enabled,
+            HalfRate,
+            ThirdRate,
+            QuarterRate,
+            Adaptive = -1
+        };
         explicit Renderer(Window* window = nullptr);
         ~Renderer();
+        void setVSyncMode(Renderer::VSyncMode mode);
+        [[nodiscard]] VSyncMode currentVSyncMode() const;
         [[nodiscard]] SDL_Renderer* self() const;
         [[nodiscard]] Window* window() const;
         [[nodiscard]] size_t renderCountInSec() const;
@@ -57,10 +67,10 @@ namespace MyEngine {
         void drawTexts(TTF_Text* text, const std::vector<Vector2*>& position_list);
         void drawTexts(const std::vector<TTF_Text*>& text_list, const std::vector<Vector2*>& position_list);
         void drawDebugText(const std::string& text, const Vector2& position,
-                           const SDL_Color& color = StdColor::White);
+                           const SDL_Color& color = StdColor::Black);
         void drawDebugTexts(const StringList& text_list, const std::vector<Vector2*>& position_list,
-                           const SDL_Color& color = StdColor::White);
-        void drawDebugFPS(const Vector2& position = {20, 20}, const SDL_Color& color = StdColor::White);
+                           const SDL_Color& color = StdColor::Black);
+        void drawDebugFPS(const Vector2& position = {20, 20}, const SDL_Color& color = StdColor::Black);
         void setViewport(const Geometry& geometry);
         void setClipView(const Geometry& geometry);
         void setBlendMode(const SDL_BlendMode& blend_mode);
@@ -131,6 +141,15 @@ namespace MyEngine {
         virtual void getFocusEvent();
         virtual void lostFocusEvent();
         virtual void unloadEvent();
+        virtual void showEvent();
+        virtual void hideEvent();
+        virtual void windowMinimizedEvent();
+        virtual void windowMaximizedEvent();
+        virtual void enteredFullscreenEvent();
+        virtual void leaveFullscreenEvent();
+        virtual void mouseEnteredEvent();
+        virtual void mouseLeftEvent();
+
     private:
         Geometry _window_geometry;
 
@@ -176,7 +195,7 @@ namespace MyEngine {
         void clearGlobalEvent();
         [[nodiscard]] size_t eventCount() const;
         [[nodiscard]] size_t globalEventCount() const;
-        [[nodiscard]] const bool* captureKeyboardStatus() const;
+        [[nodiscard]] const std::vector<int>& captureKeyboardStatus() const;
         [[nodiscard]] bool captureKeyboard(SDL_Scancode code) const;
         [[nodiscard]] uint32_t captureMouseStatus() const;
         [[nodiscard]] bool captureMouse(MouseStatus mouse_status) const;
@@ -188,6 +207,8 @@ namespace MyEngine {
         static std::unique_ptr<EventSystem> _instance;
         Engine* _engine{nullptr};
         bool* _kb_events{nullptr};
+        int _nums_keys{0};
+        std::vector<int> _keys_status;
         uint32_t _mouse_events{0};
         Vector2 _mouse_pos{0, 0}, _mouse_down_dis{0, 0}, _before_mouse_down_pos{0, 0};
         bool _mouse_down_changed{false};
@@ -329,7 +350,6 @@ namespace MyEngine {
         void setMixerVolume(float volume, size_t mixer_index = 0);
         [[nodiscard]] float mixerVolume(size_t mixer_index = 0);
         void stopAll();
-
 
     private:
         explicit AudioSystem();

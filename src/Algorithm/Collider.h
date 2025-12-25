@@ -4,18 +4,75 @@
 
 namespace MyEngine {
     namespace Algorithm {
+        namespace Vector2EX {
+            inline void normalize(float &x, float &y) {
+                const float LENGTH = sqrtf(x * x + y * y);
+                if (LENGTH == 0.f) return;
+                x /= LENGTH;
+                y /= LENGTH;
+            }
+
+            inline void normalize(Vector2 &vec) {
+                const float LENGTH = sqrtf(vec.x * vec.x + vec.y * vec.y);
+                if (LENGTH == 0.f) return;
+                vec.x /= LENGTH;
+                vec.y /= LENGTH;
+            }
+
+            inline float dot(const Vector2& v1, const Vector2& v2) {
+                return v1.x * v2.x + v1.y * v2.y;
+            }
+
+            inline float dot(float x1, float y1, float x2, float y2) {
+                return x1 * x2 + y1 * y2;
+            }
+        }
+
         inline int8_t comparePosInRect(const Vector2& vec, const Graphics::Rectangle& rect) {
             float left = rect.geometry().pos.x;
             float right = left + rect.geometry().size.width;
             float top = rect.geometry().pos.y;
             float bottom = top + rect.geometry().size.height;
-            if ((vec.x > left) && (vec.x <= right) && (vec.y > top) && (vec.y < bottom)) return 1;
+            if ((vec.x > left) && (vec.x < right) && (vec.y > top) && (vec.y < bottom)) return 1;
 
             bool onX = (vec.x == left || vec.x == right);
             bool onY = (vec.y == top  || vec.y == bottom);
             if (onX && onY) return 0;
 
             return -1;
+        }
+
+        inline int8_t comparePosInRotatedRect(const Vector2& vec, const Graphics::Rectangle& rect) {
+            auto rotate_deg = static_cast<float>(rect.rotate());
+            if (fabsf(fmodf(rotate_deg, 180.f)) == 0.f) return comparePosInRect(vec, rect);
+
+            float left = rect.geometry().pos.x;
+            float right = left + rect.geometry().size.width;
+            float top = rect.geometry().pos.y;
+            float bottom = top + rect.geometry().size.height;
+            float cx = (left + right) * 0.5f, cy = (top + bottom) * 0.5f;
+            const float DX = vec.x - cx, DY = vec.y - cy;
+            const float RAD = rotate_deg * M_PI / 180.f;
+            const float COS = cosf(RAD);
+            const float SIN = sinf(RAD);
+            // Rotated position
+            const float LX = DX * COS + DY * SIN;
+            const float LY = -DX * SIN + DY * COS;
+
+            // Is point in rectangle?
+            const float HALF_W = rect.geometry().size.width * 0.5f;
+            const float HALF_H = rect.geometry().size.height * 0.5f;
+
+            // If the following conditions are met, the point is inside the rotated rectangle.
+            bool ret = LX >= -HALF_W && LX <= HALF_W &&
+                       LY >= -HALF_H && LY <= HALF_H;
+            if (!ret) return -1;
+            // Is point is in border?
+            if (fabsf(LX - HALF_W) < 0.f || fabsf(LX + HALF_W) < 0.f ||
+                fabsf(LY - HALF_H) < 0.f || fabsf(LY + HALF_H) < 0.f) {
+                return 0;
+            }
+            return 1;
         }
 
         inline int8_t comparePosInPoint(const Vector2& pos, const Graphics::Point& point) {
@@ -25,7 +82,7 @@ namespace MyEngine {
             }
             float dx = pos.x - pt.x;
             float dy = pos.y - pt.y;
-            float dd = dx * dx + dy * dy;          // 距离平方
+            float dd = dx * dx + dy * dy;
             float rr = (static_cast<float>(point.size()) / 2.f) * (static_cast<float>(point.size()) / 2.f);
 
             if (dd > rr + 1e-5f) return -1;
@@ -38,14 +95,14 @@ namespace MyEngine {
             if (point1.size() < 2 && point2.size() < 2) {
                 return (point1.position().isEqual(point2.position()) ? (int8_t)1 : (int8_t)-1);
             }
-            auto r1 = static_cast<float>(point1.size()) / 2.f, r2 = static_cast<float>(point2.size()) / 2.f;
+            auto r1 = static_cast<float>(point1.size()) * 0.5f, r2 = static_cast<float>(point2.size()) * 0.5f;
             float dx = p1.x - p2.x;
             float dy = p1.y - p2.y;
             float d  = std::hypot(dx, dy);          // 圆心距
-            float rSum = r1 + r2;
+            float r_sum = r1 + r2;
 
-            if (d > rSum + 1e-5f) return -1;                // 完全相离
-            if (std::fabs(d - rSum) < 1e-5f) return 0;   // 外切（只有一个交点）
+            if (d > r_sum + 1e-5f) return -1;                // 完全相离
+            if (std::fabs(d - r_sum) < 1e-5f) return 0;   // 外切（只有一个交点）
             return 1;
         }
 
@@ -59,6 +116,100 @@ namespace MyEngine {
             if (x3 <= x1 && y3 <= y1 && x4 >= x2 && y4 >= y2) return 2;
             if (x1 <= x3 && y1 <= y3 && x2 >= x4 && y2 >= y4) return 3;
             return 1;
+        }
+
+        inline int8_t compareRotatedRects(const Graphics::Rectangle& rect1, const Graphics::Rectangle& rect2) {
+            auto rotate_deg_1 = static_cast<float>(rect1.rotate());
+            auto rotate_deg_2 = static_cast<float>(rect2.rotate());
+            const bool NO_ROTATE_1 = (fabsf(fmodf(rotate_deg_1, 180.f)) == 0.f);
+            const bool NO_ROTATE_2 = (fabsf(fmodf(rotate_deg_2, 180.f)) == 0.f);
+            if (NO_ROTATE_1 && NO_ROTATE_2)
+                return compareRects(rect1, rect2);
+
+            // Rect 1
+            float left_1 = rect1.geometry().pos.x;
+            float right_1 = rect1.geometry().pos.x + rect1.geometry().size.width;
+            float top_1 = rect1.geometry().pos.y;
+            float bottom_1 = rect1.geometry().pos.y + rect1.geometry().size.height;
+            const float CX_1 = (left_1 + right_1) * 0.5f, CY_1 = (top_1 + bottom_1) * 0.5f;
+            const float HW_1 = rect1.geometry().size.width * 0.5f;
+            const float HH_1 = rect1.geometry().size.height * 0.5f;
+            const float RAD_1 = rotate_deg_1 * M_PI / 180.f;
+            const float COS_1 = cosf(RAD_1);
+            const float SIN_1 = sinf(RAD_1);
+            // Rect 2
+            float left_2 = rect2.geometry().pos.x;
+            float right_2 = rect2.geometry().pos.x + rect2.geometry().size.width;
+            float top_2 = rect2.geometry().pos.y;
+            float bottom_2 = rect2.geometry().pos.y + rect2.geometry().size.height;
+            const float CX_2 = (left_2 + right_2) * 0.5f, CY_2 = (top_2 + bottom_2) * 0.5f;
+            const float HW_2 = rect2.geometry().size.width * 0.5f;
+            const float HH_2 = rect2.geometry().size.height * 0.5f;
+            const float RAD_2 = rotate_deg_2 * M_PI / 180.f;
+            const float COS_2 = cosf(RAD_2);
+            const float SIN_2 = sinf(RAD_2);
+
+            // Axis (x, y) Unit normal vector
+            float axes[4][2] = {
+                    {COS_1, SIN_1},
+                    {-SIN_1, COS_1},
+                    {COS_2, SIN_2},
+                    {-SIN_2, COS_2}
+            };
+            // Normalize all axes (to avoid length affecting projection)
+            for (auto & axis : axes) {
+                Vector2EX::normalize(axis[0], axis[1]);
+            }
+
+            // Project and check the separating axis
+            bool on_border = false;
+            for (int i = 0; i < 4; ++i) {
+                const float ax = axes[i][0];
+                const float ay = axes[i][1];
+
+                const float p1x = CX_1 + (-HW_1 * COS_1 - HH_1 * (-SIN_1));
+                const float p1y = CY_1 + (-HW_1 * SIN_1 - HH_1 * COS_1);
+                const float p2x = CX_1 + (HW_1 * COS_1 - HH_1 * (-SIN_1));
+                const float p2y = CY_1 + (HW_1 * SIN_1 - HH_1 * COS_1);
+                const float p3x = CX_1 + (HW_1 * COS_1 + HH_1 * (-SIN_1));
+                const float p3y = CY_1 + (HW_1 * SIN_1 + HH_1 * COS_1);
+                const float p4x = CX_1 + (-HW_1 * COS_1 + HH_1 * (-SIN_1));
+                const float p4y = CY_1 + (-HW_1 * SIN_1 + HH_1 * COS_1);
+
+                const float proj1_1 = Vector2EX::dot(p1x, p1y, ax, ay);
+                const float proj1_2 = Vector2EX::dot(p2x, p2y, ax, ay);
+                const float proj1_3 = Vector2EX::dot(p3x, p3y, ax, ay);
+                const float proj1_4 = Vector2EX::dot(p4x, p4y, ax, ay);
+                const float min1 = std::min({proj1_1, proj1_2, proj1_3, proj1_4});
+                const float max1 = std::max({proj1_1, proj1_2, proj1_3, proj1_4});
+
+                const float q1x = CX_2 + (-HW_2 * COS_2 - HH_2 * (-SIN_2));
+                const float q1y = CY_2 + (-HW_2 * SIN_2 - HH_2 * COS_2);
+                const float q2x = CX_2 + (HW_2 * COS_2 - HH_2 * (-SIN_2));
+                const float q2y = CY_2 + (HW_2 * SIN_2 - HH_2 * COS_2);
+                const float q3x = CX_2 + (HW_2 * COS_2 + HH_2 * (-SIN_2));
+                const float q3y = CY_2 + (HW_2 * SIN_2 + HH_2 * COS_2);
+                const float q4x = CX_2 + (-HW_2 * COS_2 + HH_2 * (-SIN_2));
+                const float q4y = CY_2 + (-HW_2 * SIN_2 + HH_2 * COS_2);
+
+                const float proj2_1 = Vector2EX::dot(q1x, q1y, ax, ay);
+                const float proj2_2 = Vector2EX::dot(q2x, q2y, ax, ay);
+                const float proj2_3 = Vector2EX::dot(q3x, q3y, ax, ay);
+                const float proj2_4 = Vector2EX::dot(q4x, q4y, ax, ay);
+                const float min2 = std::min({proj2_1, proj2_2, proj2_3, proj2_4});
+                const float max2 = std::max({proj2_1, proj2_2, proj2_3, proj2_4});
+
+                // Check if the projection is separated
+                // if it is separated, return -1.
+                if (max1 < min2 || max2 < min1) {
+                    return -1;
+                }
+                // Check for boundary contact
+                if (fabsf(max1 - min2) < 0.f || fabsf(max2 - min1) < 0.f) {
+                    on_border = true;
+                }
+            }
+            return on_border ? 0 : 1;
         }
 
         inline int8_t compareCircleRect(const Graphics::Point& point,

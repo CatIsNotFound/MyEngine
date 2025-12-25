@@ -16,6 +16,7 @@
 #include <deque>
 #include <list>
 #include <queue>
+#include <stack>
 #include <memory>
 #include <memory_resource>
 #include <functional>

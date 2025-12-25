@@ -94,6 +94,8 @@ if (BUILD_SHARED_LIBS_ONLY)
             src/RCommand.h
             src/Template/Singleton.h
             src/Exception.h
+            src/Widgets/AbstractWidget.cpp
+            src/Widgets/AbstractWidget.h
     )
 else ()
     add_library(${PROJECT_NAME} STATIC
@@ -141,6 +143,8 @@ else ()
             src/RCommand.h
             src/Template/Singleton.h
             src/Exception.h
+            src/Widgets/AbstractWidget.cpp
+            src/Widgets/AbstractWidget.h
     )
 endif ()
 
