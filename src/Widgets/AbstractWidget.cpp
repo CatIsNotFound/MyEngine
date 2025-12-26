@@ -15,49 +15,79 @@ namespace MyEngine::Widget {
             if (!_visible) return;
             paintEvent(r);
         });
-        EventSystem::global()->appendEvent(_ev_id, [this](SDL_Event ev) {
-            static uint64_t win_id = _window->windowID();
-            if (!_engine->isWindowExist(win_id)) this->unload();
-            static bool is_loaded = false;
-            if (!is_loaded) {
+        uint64_t win_id = _window->windowID();
+        EventSystem::global()->appendEvent(_ev_id, [this, win_id](SDL_Event ev) {
+            if (!_engine->isWindowExist(win_id)) {
+                unload();
+                return;
+            }
+            if (!_status.is_loaded) {
                 this->loadEvent();
-                is_loaded = true;
+                _status.is_loaded = true;
             }
             if (!_enabled) return;
 
             // Hotkey Event
             auto cur_cap_keys = EventSystem::global()->captureKeyboardStatus();
-            if (!_hot_key.empty()) {
-                static bool is_hot_key_triggered = false;
-                if (!is_hot_key_triggered && (cur_cap_keys == _hot_key)) {
-                    is_hot_key_triggered = true;
-                    hotKeysPressedDownEvent();
-                } else if (cur_cap_keys.empty()) {
-                    is_hot_key_triggered = false;
+            if (!_hot_key.empty() && !ev.key.repeat) {
+                if (!_status.is_hot_key_triggered && (cur_cap_keys == _hot_key)) {
+                    _status.is_hot_key_triggered = true;
+                    hotKeysPressedEvent();
+                } else if (_status.is_hot_key_triggered) {
+                    if (cur_cap_keys == _hot_key) {
+                        hotKeysPressedEvent();
+                    } else {
+                        _status.is_hot_key_triggered = false;
+                    }
                 }
             }
             // Keyboard Event
             if (_focus) {
-                static bool key_down = false;
-                static size_t key_pressed_num = 0;
-                static std::vector<int> pressed_stack;
-                if (!key_down) {
+                if (_status.input_mode) {
+                    // Set the key group for exiting input mode
+                    static std::vector<int> finished_keys = { SDL_SCANCODE_ESCAPE,
+                                                              SDL_SCANCODE_RETURN,
+                                                              SDL_SCANCODE_RETURN2 };
+                    for (auto& k : finished_keys) {
+                        if (std::find(cur_cap_keys.begin(),
+                                      cur_cap_keys.end(), k) != cur_cap_keys.end()) {
+                            setInputModeEnabled(false);
+                            break;
+                        }
+                    }
+                    if (ev.text.type == SDL_EVENT_TEXT_INPUT) {
+                        Logger::log(std::format("Length: {}", strlen(ev.text.text)));
+                        char text[128] = {};
+                        strncpy(text, ev.text.text, strlen(ev.text.text));
+                        inputEvent(text);
+                    }
+                }
+                if (!_status.key_down) {
                     if (!cur_cap_keys.empty()) {
-                        key_down = true;
-                        key_pressed_num = cur_cap_keys.size();
-                        // keyDownEvent(cur_cap_keys);
-                        // pressed_stack.assign(cur_cap_keys.begin(), cur_cap_keys.end());
+                        _status.key_down = true;
+                        uint64_t scancode = ev.key.scancode;
+                        if (scancode) {
+                            keyDownEvent(static_cast<SDL_Scancode>(scancode));
+                        }
                     }
                 } else {
                     if (cur_cap_keys.empty()) {
-                        key_down = false;
-                        // keyUpEvent(cur_cap_keys);
-                        // keyPressedEvent(cur_cap_keys);
-                    } else if (key_pressed_num < cur_cap_keys.size()) {
-                        // keyDownEvent(cur_cap_keys);
-                        key_pressed_num = cur_cap_keys.size();
-                    } else if (key_pressed_num > cur_cap_keys.size()) {
-
+                        _status.key_down = false;
+                        uint64_t scancode = ev.key.scancode;
+                        if (scancode) {
+                            keyUpEvent(static_cast<SDL_Scancode>(scancode));
+                        }
+                        keyPressedEvent();
+                    } else if (!ev.key.repeat) {
+                        uint64_t scancode = ev.key.scancode;
+                        if (scancode) {
+                            if (std::find(cur_cap_keys.begin(), cur_cap_keys.end(),
+                                          scancode) != cur_cap_keys.end()) {
+                                keyDownEvent(static_cast<SDL_Scancode>(scancode));
+                            } else {
+                                keyUpEvent(static_cast<SDL_Scancode>(scancode));
+                            }
+                        }
                     }
                 }
             }
@@ -65,16 +95,15 @@ namespace MyEngine::Widget {
             // Mouse Event
             auto cur_pos = EventSystem::global()->captureMousePosition();
             auto cur_abs_dis = EventSystem::global()->captureMouseAbsDistance();
-            static bool mouse_in = false, mouse_down = false;
             auto trigger = (Algorithm::comparePosInRect(cur_pos, _trigger_area) > 0);
-            if (!mouse_in) {
+            if (!_status.mouse_in) {
                 if (EventSystem::global()->captureMouse(EventSystem::None)) {
                     if (trigger) {
-                        mouse_in = true;
+                        _status.mouse_in = true;
                         mouseEnteredEvent();
                         Cursor::global()->setCursor(_cur_style);
-                    } else if (mouse_down) {
-                        mouse_down = false;
+                    } else if (_status.mouse_down) {
+                        _status.mouse_down = false;
                         mouseUpEvent();
                         Cursor::global()->setCursor(_window->cursor());
                     }
@@ -83,26 +112,41 @@ namespace MyEngine::Widget {
                 auto left_btn = EventSystem::global()->captureMouse(EventSystem::Left);
                 auto right_btn = EventSystem::global()->captureMouse(EventSystem::Right);
                 if (trigger) {
-                    if (left_btn && !mouse_down) {
+                    if (left_btn && !_status.mouse_down) {
                         mouseDownEvent();
-                        mouse_down = true;
-                    } else if (!left_btn && mouse_down) {
-                        mouse_down = false;
+                        _status.mouse_down = true;
+                    } else if (!left_btn && _status.mouse_down) {
+                        _status.mouse_down = false;
                         mouseUpEvent();
                         mouseClickedEvent();
                         if (ev.button.clicks > 1) mouseDblClickedEvent();
                     }
-                    if (right_btn && mouse_down) {
-                        customContextMenuRequestEvent();
+                    if (right_btn && !_status.r_mouse_down) {
+                        _status.r_mouse_down = true;
+                    }
+                    if (!right_btn && _status.r_mouse_down) {
+                        customContextMenuRequestEvent(cur_pos);
+                        _status.r_mouse_down = false;
                     }
                 } else {
-                    mouse_in = false;
+                    _status.mouse_in = false;
                     mouseLeftEvent();
-                    if (!mouse_down) {
+                    if (!_status.mouse_down) {
                         Cursor::global()->setCursor(_window->cursor());
                     }
                 }
             }
+//            // Drag and drop Event
+//            if (ev.drop.type == SDL_EVENT_DROP_TEXT) {
+//                Logger::log(ev.drop.data);
+//            } else if (ev.drop.type == SDL_EVENT_DROP_FILE) {
+//                Logger::log(ev.drop.data);
+//            } else if (ev.drop.type == SDL_EVENT_DROP_COMPLETE) {
+//                Logger::log("Dropped");
+//            } else if (ev.drop.type == SDL_EVENT_DROP_BEGIN) {
+//                Logger::log("Begin drag");
+//            }
+
         });
     }
 
@@ -199,6 +243,28 @@ namespace MyEngine::Widget {
         return _focus;
     }
 
+    void AbstractWidget::setInputModeEnabled(bool enabled) {
+        if (enabled) {
+            if (SDL_StartTextInput(_window->self())) {
+                _status.input_mode = true;
+                startedInputEvent();
+            }
+        } else {
+            if (SDL_StopTextInput(_window->self())) {
+                _status.input_mode = false;
+                endedInputEvent();
+            }
+        }
+    }
+
+    bool AbstractWidget::inputModeEnabled() const {
+        return _status.input_mode;
+    }
+
+    const std::string& AbstractWidget::getInputChar() const {
+        return _cur_ch;
+    }
+
     void AbstractWidget::setCursor(Cursor::StdCursor cursor_style) {
         _cur_style = cursor_style;
     }
@@ -206,7 +272,6 @@ namespace MyEngine::Widget {
     Cursor::StdCursor AbstractWidget::cursor() const {
         return _cur_style;
     }
-
 
     void AbstractWidget::loadEvent() {}
 
@@ -242,27 +307,30 @@ namespace MyEngine::Widget {
 
     void AbstractWidget::dropEvent() {}
 
-    void AbstractWidget::mouseClickedEvent() { Logger::log("Mouse clicked", Logger::Info); }
+    void AbstractWidget::mouseClickedEvent() {}
 
-    void AbstractWidget::mouseDblClickedEvent() { Logger::log("Mouse double clicked", Logger::Info); }
+    void AbstractWidget::mouseDblClickedEvent() {}
 
-    void AbstractWidget::mouseDownEvent() { Logger::log("Mouse down", Logger::Info); }
+    void AbstractWidget::mouseDownEvent() {}
 
-    void AbstractWidget::mouseUpEvent() { Logger::log("Mouse Up", Logger::Info); }
+    void AbstractWidget::mouseUpEvent() {}
 
-    void AbstractWidget::mouseEnteredEvent() { Logger::log("Mouse entered", Logger::Info); }
+    void AbstractWidget::mouseEnteredEvent() {}
 
-    void AbstractWidget::mouseLeftEvent() { Logger::log("Mouse Left", Logger::Info); }
+    void AbstractWidget::mouseLeftEvent() {}
 
-    void AbstractWidget::customContextMenuRequestEvent() { Logger::log("Custom context menu.", Logger::Info); }
+    void AbstractWidget::customContextMenuRequestEvent(const Vector2 &position) {}
 
-    void AbstractWidget::keyDownEvent(const std::vector<int>& key_scancode) { Logger::log(std::format("Key down! Count: {}", key_scancode.size()), Logger::Info); }
+    void AbstractWidget::keyDownEvent(SDL_Scancode scancode) {}
 
-    void AbstractWidget::keyUpEvent(const std::vector<int>& key_scancode) { Logger::log(std::format("Key up! Size: {}", key_scancode.size()), Logger::Info); }
+    void AbstractWidget::keyUpEvent(SDL_Scancode scancode) {}
 
-    void AbstractWidget::keyPressedEvent(const std::vector<int>& key_scancode) { Logger::log("Key pressed", Logger::Info); }
+    void AbstractWidget::keyPressedEvent() {}
 
-    void AbstractWidget::hotKeysPressedDownEvent() { Logger::log("Hot key is triggered.", Logger::Info); }
+    void AbstractWidget::hotKeysPressedEvent() {
+        this->setInputModeEnabled(!this->inputModeEnabled());
+        Logger::log(std::format("{} input mode", (this->inputModeEnabled() ? "Enabled" : "Disabled")), Logger::Info);
+    }
 
     void AbstractWidget::FingerDownEvent() {}
 
@@ -274,5 +342,12 @@ namespace MyEngine::Widget {
 
     void AbstractWidget::endedInputEvent() {}
 
+    void AbstractWidget::inputEvent(const char *string) {
+        std::string chs, real;
+        for (size_t i = 0; i < strlen(string); ++i) {
+            real += string[i];
+        }
+        _cur_ch = real;
+    }
 
 }

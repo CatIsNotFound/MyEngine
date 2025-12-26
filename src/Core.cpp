@@ -208,7 +208,7 @@ namespace MyEngine {
 
     Window::Window(Engine* object, const std::string& title, int width, int height,  GraphicEngine engine)
         : _title(title), _window_geometry(0, 0, width, height), _visible(true), _resizable(false), _engine(object) {
-        if (engine == VULKAN)
+        if (engine == Vulkan)
             _window = SDL_CreateWindow(_title.c_str(), width, height, SDL_WINDOW_VULKAN);
         else
             _window = SDL_CreateWindow(_title.c_str(), width, height, SDL_WINDOW_OPENGL);
@@ -452,6 +452,22 @@ namespace MyEngine {
         return _cursor;
     }
 
+    void Window::setDragDropEnabled(bool enabled) {
+        _drag_mode = enabled;
+    }
+
+    bool Window::dragDropEnabled() const {
+        return _drag_mode;
+    }
+
+    bool Window::isDragging() const {
+        return _drag_mode && _dragging;
+    }
+
+    const Vector2& Window::draggingPosition() const {
+        return _dragging_pos;
+    }
+
     SDL_Window* Window::self() const {
         if (!_window) {
             Logger::log("The window is not created!", Logger::Error);
@@ -476,14 +492,16 @@ namespace MyEngine {
     void Window::resizeEvent() {
         auto _ret = SDL_GetWindowSize(_window, &_window_geometry.width, &_window_geometry.height);
         if (!_ret) {
-            Logger::log(std::format("Window: Failed to get window size for ID {}!", _winID), Logger::Warn);
+            Logger::log(std::format("Window: Failed to get window size for ID {}!", _winID),
+                        Logger::Warn);
         }
     }
 
     void Window::moveEvent() {
         auto _ret = SDL_GetWindowPosition(_window, &_window_geometry.x, &_window_geometry.y);
         if (!_ret) {
-            Logger::log(std::format("Window: Failed to get window position for ID {}!", _winID), Logger::Warn);
+            Logger::log(std::format("Window: Failed to get window position for ID {}!", _winID),
+                        Logger::Warn);
         }
     }
 
@@ -518,10 +536,16 @@ namespace MyEngine {
     void Window::mouseUpEvent() {}
     void Window::mouseDownEvent(int) {}
     void Window::mouseClickedEvent(int) {}
+    void Window::mouseMovedEvent(const MyEngine::Vector2 &) {}
 
-    void Window::keyUpEvent() {}
-    void Window::keyDownEvent(int v) { Logger::log(std::format("W Key down: {}", v)); }
-    void Window::keyPressedEvent(int v) { Logger::log(std::format("W Key pressed: {}", v)); }
+    void Window::keyUpEvent(int) {}
+    void Window::keyDownEvent(int) {}
+    void Window::keyPressedEvent(int) {}
+
+    void Window::dragInEvent() {}
+    void Window::dragOutEvent() {}
+    void Window::dragMovedEvent(const Vector2 &position, const char *url) {}
+    void Window::dropEvent(const char *url, const char *source) {}
 
     EventSystem::~EventSystem() = default;
 
@@ -549,16 +573,12 @@ namespace MyEngine {
 
     void EventSystem::removeEvent(uint64_t id) {
         if (_event_list.contains(id)) {
-            _event_list.erase(id);
+            // _event_list.erase(id);
+            _del_event_deque.push_back(id);
             Logger::log(std::format("EventSystem: Removed the event with ID {}", id));
         } else {
             Logger::log(std::format("EventSystem: The event with ID {} is not found!", id), Logger::Warn);
         }
-    }
-
-    void EventSystem::clearEvent() {
-        _event_list.clear();
-        Logger::log("EventSystem: Cleared all events.");
     }
 
     void EventSystem::appendGlobalEvent(uint64_t g_id, const std::function<void()>& event) {
@@ -574,17 +594,13 @@ namespace MyEngine {
 
     void EventSystem::removeGlobalEvent(uint64_t g_id) {
         if (_global_event_list.contains(g_id)) {
-            _global_event_list.erase(g_id);
+            // _global_event_list.erase(g_id);
+            _del_g_event_deque.push_back(g_id);
             Logger::log(std::format("EventSystem: Removed a global event with ID {}", g_id));
         } else {
             Logger::log(std::format("EventSystem: The global event with ID {} is not found!", g_id),
                         Logger::Warn);
         }
-    }
-
-    void EventSystem::clearGlobalEvent() {
-        _global_event_list.clear();
-        Logger::log("EventSystem: Cleared all global events!");
     }
 
     size_t EventSystem::eventCount() const { return _event_list.size(); }
@@ -659,63 +675,93 @@ namespace MyEngine {
                     win->mouseLeftEvent();
                 }
 
-                // Key and mouse captured
-                static int mouse_button = 0;
-                static std::vector<int> last_keys_status{};
+                // Keyboard event
                 if (!key_down) {
                     if (!_keys_status.empty()) {
                         key_down = true;
-                        // Saved keys when any keys down
-                        last_keys_status.emplace_back(ev.key.scancode);
                         win->keyDownEvent(ev.key.scancode);
                     }
                 } else {
                     if (_keys_status.empty()) {
                         key_down = false;
-                        win->keyUpEvent();
-                        // All keys up
-                        for (auto& k : last_keys_status) {
-                            win->keyPressedEvent(k);
-                        }
-                        last_keys_status.clear();
+                        win->keyUpEvent(ev.key.scancode);
+                        win->keyPressedEvent(ev.key.scancode);
                     } else if (!ev.key.repeat) {
-                        // Saved keys when any keys down
                         auto scancode = ev.key.scancode;
                         if (scancode) {
-                            if (std::find(last_keys_status.begin(), last_keys_status.end(),
-                                          ev.key.scancode) == last_keys_status.end()) {
-                                last_keys_status.emplace_back(ev.key.scancode);
+                            if (std::find(_keys_status.begin(), _keys_status.end(),
+                                          ev.key.scancode) != _keys_status.end()) {
                                 win->keyDownEvent(ev.key.scancode);
+                            } else {
+                                win->keyUpEvent(ev.key.scancode);
+                                win->keyPressedEvent(ev.key.scancode);
                             }
-                        }
-                        // Check which key is up
-                        int key_code = 0;
-                        int idx = 0;
-                        for (auto& k : last_keys_status) {
-                            if (std::find(_keys_status.begin(), _keys_status.end(), k) == _keys_status.end()) {
-                                key_code = k;
-                                break;
-                            }
-                            idx++;
-                        }
-                        if (key_code > 0) {
-                            last_keys_status.erase(last_keys_status.cbegin() + idx);
-                            win->keyUpEvent();
-                            win->keyPressedEvent(key_code);
                         }
                     }
                 }
+                // Mouse event
                 if (!mouse_down) {
-                    if (_mouse_events > 0) win->mouseDownEvent(mouse_button);
+                    if (_mouse_events > 0) {
+                        win->mouseDownEvent(static_cast<int>(_mouse_events));
+                        mouse_down = true;
+                    }
+                } else {
+                    if (_mouse_events > 0) {
+                        win->mouseMovedEvent(_mouse_down_dis);
+                    } else {
+                        win->mouseUpEvent();
+                    }
+                }
+
+                // Drag and drop event
+                // - Cope with dragging and dropped
+                // - Must set `Window::setDragDropEnabled()` function to enabled.
+                if (!win->_drag_mode) return;
+                if (!win->_dragging) {
+                    if (ev.drop.type == SDL_EVENT_DROP_BEGIN) {
+                        Logger::log("Drop begin");
+                        win->_dragging = true;
+                        win->_dragging_pos.reset(
+                            Cursor::global()->globalPosition() - toGeometryFloat(win->geometry()).pos);
+                        win->dragInEvent();
+                    }
+                } else {
+                    if (ev.drop.type == SDL_EVENT_DROP_COMPLETE) {
+                        Logger::log("Drop complete");
+                        win->dragOutEvent();
+                        win->_dragging_pos.reset(0, 0);
+                        win->_dragging = false;
+                    } else if (ev.drop.type == SDL_EVENT_DROP_FILE) {
+                        Logger::log(std::format("Drop file: {}", ev.drop.data));
+                        win->dropEvent(ev.drop.data, ev.drop.source);
+                        win->_dragging_pos.reset(0, 0);
+                        win->_dragging = false;
+                    } else if (ev.drop.type == SDL_EVENT_DROP_TEXT) {
+                        Logger::log(std::format("Drop text: {}", ev.drop.data));
+                        win->dropEvent(ev.drop.data, nullptr);
+                        win->_dragging_pos.reset(0, 0);
+                        win->_dragging = false;
+                    } else {
+                        auto real_pos = Cursor::global()->globalPosition() - toGeometryFloat(win->geometry()).pos;
+                        win->dragMovedEvent(real_pos, ev.drop.data);
+                        win->_dragging_pos.reset(real_pos);
+                        Logger::log(std::format("Dragging: ({}, {})", real_pos.x, real_pos.y));
+                    }
                 }
             });
 
             for (auto& event : _event_list) {
                 if (event.second) event.second(ev);
             }
+            for (auto& id : _del_event_deque) {
+                _event_list.erase(id);
+            }
         }
         for (auto& e : _global_event_list) {
             if (e.second) e.second();
+        }
+        for (auto& id : _del_g_event_deque) {
+            _global_event_list.erase(id);
         }
         return true;
     }
@@ -881,7 +927,8 @@ namespace MyEngine {
             Logger::log("No error found. It will not throw the fatal error!", Logger::Info);
             return;
         }
-        std::string err = std::format("An error has caused the entire program to crash.\nException: {}", get_err_info);
+        std::string err = std::format("An error has caused the entire program to crash.\nException: {}",
+                                      get_err_info);
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "FATAL ERROR", err.c_str(), nullptr);
         Logger::log(err, Logger::Fatal);
         throw EngineException(err);
@@ -973,7 +1020,8 @@ namespace MyEngine {
 
     TextSystem::TextSystem() {
         if (!TTF_Init()) {
-            Logger::log(std::format("TextSystem: Can't load Text System! Exception: {}", SDL_GetError()), Logger::Fatal);
+            Logger::log(std::format("TextSystem: Can't load Text System! "
+                                    "Exception: {}", SDL_GetError()), Logger::Fatal);
             return;
         }
         Logger::log("TextSystem: Loaded text system");
@@ -1008,22 +1056,26 @@ namespace MyEngine {
 
     bool TextSystem::addFont(const std::string& font_name, const std::string& font_path, Renderer* renderer) {
         if (_font_map.contains(font_name)) {
-            Logger::log(std::format("Font '{}' is already added!", font_name), Logger::Error);
+            Logger::log(std::format("TextSystem: Font '{}' is already added!",
+                                    font_name), Logger::Error);
             return false;
         }
         if (!renderer) {
-            Logger::log("Can't add font! The specified renderer is not valid!", Logger::Error);
+            Logger::log("TextSystem: Can't add font! "
+                        "The specified renderer is not valid!", Logger::Error);
             return false;
         }
         _font_map.emplace(font_name, 
-                FontEngine{TTF_CreateRendererTextEngine(renderer->self()), TTF_CreateSurfaceTextEngine(),
-                std::make_unique<Font>(font_path, 12.0f)});
+                FontEngine{TTF_CreateRendererTextEngine(renderer->self()),
+                           TTF_CreateSurfaceTextEngine(),
+                           std::make_unique<Font>(font_path, 12.0f)});
         auto& new_font = _font_map.at(font_name);
         if (!new_font.font->self()) {
             TTF_DestroyRendererTextEngine(new_font.engine);
             TTF_DestroySurfaceTextEngine(new_font.surface_engine);
             _font_map.erase(font_name);
-            Logger::log(std::format("Can't load font '{}'! Exception: {}", font_name, SDL_GetError()), Logger::Error);
+            Logger::log(std::format("TextSystem: Can't load font '{}'! "
+                                    "Exception: {}", font_name, SDL_GetError()), Logger::Error);
             return false;
         }
         return true;
@@ -1031,7 +1083,8 @@ namespace MyEngine {
 
     bool TextSystem::removeFont(const std::string& font_name) {
         if (!_font_map.contains(font_name)) {
-            Logger::log(std::format("Font '{}' is not in the font list!", font_name), Logger::Error);
+            Logger::log(std::format("TextSystem: Font '{}' is not in the font list!",
+                                    font_name), Logger::Error);
             return false;
         }
         TTF_DestroyRendererTextEngine(_font_map[font_name].engine);
@@ -1042,7 +1095,8 @@ namespace MyEngine {
 
     Font* TextSystem::font(const std::string& font_name) {
         if (!_font_map.contains(font_name)) {
-            Logger::log(std::format("Font '{}' is not in the font list!", font_name), Logger::Error);
+            Logger::log(std::format("TextSystem: Font '{}' is not in the font list!",
+                                    font_name), Logger::Error);
             return nullptr;
         }
         return _font_map.at(font_name).font.get();
@@ -1058,14 +1112,23 @@ namespace MyEngine {
 
     bool TextSystem::addText(uint64_t text_id, const std::string& font_name, const std::string& text) {
         if (_text_map.contains(text_id)) {
-            Logger::log(std::format("Text ID {} is already added to text list!", text_id), Logger::Error);
+            Logger::log(std::format("TextSystem: Text ID {} is already added to text list!",
+                                    text_id), Logger::Error);
             return false;
         }
-        
+        if (!_font_map.contains(font_name)) {
+            Logger::log(std::format("TextSystem: Text ID {} can not add the font '{}'!",
+                                    text_id, font_name), Logger::Error);
+            return false;
+        }
         _text_map.emplace(text_id, Text(nullptr, text, font_name));
-        _text_map[text_id].self = TTF_CreateText(_font_map[font_name].engine, _font_map[font_name].font->self(), text.c_str(), text.size());
+        _text_map[text_id].self = TTF_CreateText(_font_map[font_name].engine,
+                                                 _font_map[font_name].font->self(),
+                                                 text.c_str(),
+                                                 text.size());
         if (!_text_map[text_id].self) {
-            Logger::log(std::format("Can't create text!\nException: {}", SDL_GetError()), Logger::Error);
+            Logger::log(std::format("TextSystem: Can't create text! "
+                                    "Exception: {}", SDL_GetError()), Logger::Error);
             _text_map.erase(text_id);
             return false;
         }
@@ -1074,7 +1137,8 @@ namespace MyEngine {
 
     bool TextSystem::removeText(uint64_t text_id) {
         if (!_text_map.contains(text_id)) {
-            Logger::log(std::format("Text ID {} is not in the text list!", text_id), Logger::Error);
+            Logger::log(std::format("TextSystem: Text ID {} is not in the text list!",
+                                    text_id), Logger::Error);
             return false;
         }
         _text_map.erase(text_id);
@@ -1083,13 +1147,15 @@ namespace MyEngine {
 
     bool TextSystem::setText(uint64_t text_id, const std::string& text) {
         if (!_text_map.contains(text_id)) {
-            Logger::log(std::format("Text ID {} is not in the text list!", text_id), Logger::Error);
+            Logger::log(std::format("TextSystem: Text ID {} is not in the text list!",
+                                    text_id), Logger::Error);
             return false;
         }
         auto& m_text = _text_map[text_id];
         auto _ret = TTF_SetTextString(m_text.self, text.c_str(), text.size());
         if (!_ret) {
-            Logger::log(std::format("Can't set text to text ID {}!\nException: {}", text_id, SDL_GetError()), Logger::Error);
+            Logger::log(std::format("TextSystem: Can't set text to text ID {}! "
+                                    "Exception: {}", text_id, SDL_GetError()), Logger::Error);
             return false;
         }
         m_text.text = text;
@@ -1098,13 +1164,15 @@ namespace MyEngine {
 
     bool TextSystem::appendText(uint64_t text_id, const std::string& text) {
         if (!_text_map.contains(text_id)) {
-            Logger::log(std::format("Text ID {} is not in the text list!", text_id), Logger::Error);
+            Logger::log(std::format("TextSystem: Text ID {} is not in the text list!",
+                                    text_id), Logger::Error);
             return false;
         }
         auto& m_text = _text_map[text_id];
         auto _ret = TTF_AppendTextString(m_text.self, text.c_str(), text.size());
         if (!_ret) {
-            Logger::log(std::format("Can't set text to text ID {}!\nException: {}", text_id, SDL_GetError()), Logger::Error);
+            Logger::log(std::format("TextSystem: Can't set text to text ID {}! "
+                                    "Exception: {}", text_id, SDL_GetError()), Logger::Error);
             return false;
         }
         m_text.text += text;
@@ -1113,17 +1181,19 @@ namespace MyEngine {
 
     bool TextSystem::setTextFont(uint64_t text_id, const std::string& font_name) {
         if (!_text_map.contains(text_id)) {
-            Logger::log(std::format("Text ID {} is not in the text list!", text_id), Logger::Error);
+            Logger::log(std::format("TextSystem: Text ID {} is not in the text list!",
+                                    text_id), Logger::Error);
             return false;
         }
         if (!_font_map.contains(font_name)) {
-            Logger::log(std::format("Font '{}' is not in the font list!", font_name), Logger::Error);
+            Logger::log(std::format("TextSystem: Font '{}' is not in the font list!",
+                                    font_name), Logger::Error);
             return false;
         }
         auto& m_text = _text_map[text_id];
         auto _ret = TTF_SetTextFont(m_text.self, _font_map[font_name].font->self());
         if (!_ret) {
-            Logger::log(std::format("Can't set font '{}' to text ID {}!\nException: {}", 
+            Logger::log(std::format("TextSystem: Can't set font '{}' to text ID {}! Exception: {}",
                     font_name, text_id, SDL_GetError()), Logger::Error);
             return false;
         }
@@ -1133,13 +1203,14 @@ namespace MyEngine {
 
     bool TextSystem::setTextColor(uint64_t text_id, const SDL_Color& color) {
         if (!_text_map.contains(text_id)) {
-            Logger::log(std::format("Text ID {} is not in the text list!", text_id), Logger::Error);
+            Logger::log(std::format("TextSystem: Text ID {} is not in the text list!",
+                                    text_id), Logger::Error);
             return false;
         }
         auto& m_text = _text_map[text_id];
         auto _ret = TTF_SetTextColor(m_text.self, color.r, color.g, color.b, color.a);
         if (!_ret) {
-            Logger::log(std::format("Can't set font color to text ID {}!\nException: {}", 
+            Logger::log(std::format("TextSystem: Can't set font color to text ID {}! Exception: {}",
                     text_id, SDL_GetError()), Logger::Error);
             return false;
         }
@@ -1149,7 +1220,8 @@ namespace MyEngine {
 
     TextSystem::Text* TextSystem::indexOfText(uint64_t text_id) {
         if (!_text_map.contains(text_id)) {
-            Logger::log(std::format("Text ID {} is not in the text list!", text_id), Logger::Error);
+            Logger::log(std::format("TextSystem: Text ID {} is not in the text list!",
+                                    text_id), Logger::Error);
             return nullptr;
         }
         return &_text_map.at(text_id);
@@ -1165,11 +1237,12 @@ namespace MyEngine {
 
     bool TextSystem::drawText(uint64_t text_id, const Vector2& pos, Renderer* renderer) {
         if (!renderer) {
-            Logger::log("The specified renderer is not valid!", Logger::Error);
+            Logger::log("TextSystem: The specified renderer is not valid!", Logger::Error);
             return false;
         }
         if (!_text_map.contains(text_id)) {
-            Logger::log(std::format("Text ID {} is not in the text list!", text_id), Logger::Error);
+            Logger::log(std::format("TextSystem: Text ID {} is not in the text list!",
+                                    text_id), Logger::Error);
             return false;
         }
         auto temp_pos = pos;
@@ -1179,11 +1252,13 @@ namespace MyEngine {
 
     SDL_Surface* TextSystem::toImage(uint64_t text_id) {
         if (!_text_map.contains(text_id)) {
-            Logger::log(std::format("Text ID {} is not in the text list!", text_id), Logger::Error);
+            Logger::log(std::format("TextSystem: Text ID {} is not in the text list!",
+                                    text_id), Logger::Error);
             return nullptr;
         }
         if (!_font_map.contains(_text_map[text_id].font_name)) {
-            Logger::log(std::format("Text ID {} has not set the font! Try to use `setTextFont()` at first!", text_id), Logger::Error);
+            Logger::log(std::format("TextSystem: Text ID {} has not set the font! "
+                                    "Try to use `setTextFont()` at first!", text_id), Logger::Error);
             return nullptr;
         }
         auto& font_engine = _font_map[_text_map[text_id].font_name];
@@ -1194,7 +1269,8 @@ namespace MyEngine {
         SDL_DestroySurface(t_surface);
         auto _ret = TTF_DrawSurfaceText(temp_text, 0, 0, surface);
         if (!_ret) {
-            Logger::log(std::format("Text to image failed! Exception: {}", SDL_GetError()), Logger::Error);
+            Logger::log(std::format("TextSystem: Text to image failed! "
+                                    "Exception: {}", SDL_GetError()), Logger::Error);
             TTF_DestroyText(temp_text);
             return nullptr;
         }

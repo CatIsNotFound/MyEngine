@@ -6,19 +6,24 @@ using namespace MyEngine;
 int main() {
     Logger::setBaseLogLevel(MyEngine::Logger::Debug);
     Engine engine;
-    engine.setFPS(120);
+    engine.setFPS(60);
     auto window = new Window(&engine, engine.applicationName(), 1024, 800);
-    auto win2 = new Window(&engine, "2nd window");
-    win2->setCursor(MyEngine::Cursor::Hand);
     window->setResizable(true);
     Widget::AbstractWidget wid(window);
+    Widget::AbstractWidget wid2(window);
     wid.setGeometry(100, 200, 100, 200);
     wid.setCursor(MyEngine::Cursor::Hand);
     wid.setHotKey(SDL_SCANCODE_LCTRL, SDL_SCANCODE_LALT, SDL_SCANCODE_SPACE);
+    wid.setFocusEnabled(true);
     Graphics::Rectangle rect(300, 300, 100, 200, 32, RGBAColor::GreenDark, RGBAColor::MixOrangeYellow);
     Graphics::Rectangle rect2(200, 100, 200, 100, 32, RGBAColor::RedDark, RGBAColor::RedLightPink);
     Graphics::Rectangle rect3(100, 200, 100, 200);
-    window->installPaintEvent([&rect, &rect2, &rect3](Renderer* r) {
+    TextSystem::global()->addFont("simsun", R"(C:\Windows\Fonts\simsun.ttc)", window->renderer());
+//    TextSystem::global()->font("simsun")->setFontSize(64.f);
+    uint64_t id = IDGenerator::getNewTextID();
+    TextSystem::global()->addText(id, "simsun", "Use Ctrl+Alt+Space to enabled input mode!");
+    TextSystem::global()->setTextColor(id, StdColor::Blue);
+    window->installPaintEvent([&rect, &rect2, &rect3, &id, &wid](Renderer* r) {
         auto ro = rect.rotate();
         if (ro + 1.f >= 360.f) ro = 0; else ro += 1.f;
         rect.setRotate(ro);
@@ -27,16 +32,15 @@ int main() {
         r->drawRectangle(&rect);
         r->drawRectangle(&rect2);
         r->drawDebugFPS();
+        if (wid.inputModeEnabled()) {
+            TextSystem::global()->setText(id, wid.getInputChar());
+        } else {
+            TextSystem::global()->setText(id, "Press Ctrl+Alt+Space to enabled input mode!");
+        }
+        TextSystem::global()->drawText(id, {100, 100}, r);
         auto mouse_pos = EventSystem::global()->captureMousePosition();
         r->drawDebugText(std::format("Mouse pos: ({}, {})", mouse_pos.x, mouse_pos.y), {20, 30});
-    });
-    win2->installPaintEvent([](Renderer* r) {
-        r->fillBackground(RGBAColor::BlueLake);
-        r->drawDebugFPS();
-    });
-
-    EventSystem::global()->appendGlobalEvent(IDGenerator::getNewGlobalEventID(), [] {
-
+        r->drawDebugText(std::format("Button: {}", EventSystem::global()->captureMouseStatus()), {20, 40});
     });
 
     EventSystem::global()->appendEvent(IDGenerator::getNewEventID(), [&window, &rect, &rect2](SDL_Event e) {

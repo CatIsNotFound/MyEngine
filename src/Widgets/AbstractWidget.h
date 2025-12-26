@@ -36,6 +36,10 @@ namespace MyEngine {
             void setFocusEnabled(bool enabled);
             [[nodiscard]] bool focusEnabled() const;
 
+            void setInputModeEnabled(bool enabled);
+            [[nodiscard]] bool inputModeEnabled() const;
+            [[nodiscard]] const std::string& getInputChar() const;
+
             void setCursor(Cursor::StdCursor cursor_style);
             [[nodiscard]] Cursor::StdCursor cursor() const;
 
@@ -70,16 +74,17 @@ namespace MyEngine {
             virtual void mouseUpEvent();
             virtual void mouseEnteredEvent();
             virtual void mouseLeftEvent();
-            virtual void customContextMenuRequestEvent();
-            virtual void keyDownEvent(const std::vector<int>& key_scancode);
-            virtual void keyUpEvent(const std::vector<int>& key_scancode);
-            virtual void keyPressedEvent(const std::vector<int>& key_scancode);
-            virtual void hotKeysPressedDownEvent();
+            virtual void customContextMenuRequestEvent(const Vector2 &position);
+            virtual void keyDownEvent(SDL_Scancode scancode);
+            virtual void keyUpEvent(SDL_Scancode scancode);
+            virtual void keyPressedEvent();
+            virtual void hotKeysPressedEvent();
             virtual void FingerDownEvent();
             virtual void FingerUpEvent();
             virtual void FingerTappedEvent();
             virtual void startedInputEvent();
             virtual void endedInputEvent();
+            virtual void inputEvent(const char* string);
         private:
             void unload();
             template<typename T>
@@ -97,6 +102,17 @@ namespace MyEngine {
             bool _visible{true}, _enabled{true}, _focus{false};
             Graphics::Rectangle _trigger_area;
             Cursor::StdCursor _cur_style{Cursor::Default};
+            struct Status {
+                bool is_loaded{};
+                bool mouse_in{};
+                bool mouse_down{};
+                bool r_mouse_down{};
+                bool key_down{};
+                bool is_hot_key_triggered{};
+                bool input_mode{};
+            };
+            Status _status;
+            std::string _cur_ch;
         };
     }
 }

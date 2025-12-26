@@ -88,11 +88,11 @@ namespace MyEngine {
             int width, height;
         };
         enum GraphicEngine {
-            OPENGL,
-            VULKAN
+            OpenGL,
+            Vulkan
         };
         explicit Window(Engine* object, const std::string& title,
-                        int width = 800, int height = 600, GraphicEngine engine = OPENGL);
+                        int width = 800, int height = 600, GraphicEngine engine = OpenGL);
         ~Window();
 
         bool move(int x, int y);
@@ -136,6 +136,11 @@ namespace MyEngine {
         void setCursor(Cursor::StdCursor cursor_style);
         [[nodiscard]] Cursor::StdCursor cursor() const;
 
+        void setDragDropEnabled(bool enabled);
+        [[nodiscard]] bool dragDropEnabled() const;
+        [[nodiscard]] bool isDragging() const;
+        [[nodiscard]] const Vector2& draggingPosition() const;
+
         [[nodiscard]] SDL_Window* self() const;
         [[nodiscard]] Engine* engine() const;
         void installPaintEvent(const std::function<void(Renderer* renderer)>& paint_event);
@@ -157,9 +162,14 @@ namespace MyEngine {
         virtual void mouseUpEvent();
         virtual void mouseDownEvent(int);
         virtual void mouseClickedEvent(int);
-        virtual void keyUpEvent();
+        virtual void mouseMovedEvent(const Vector2&);
+        virtual void keyUpEvent(int);
         virtual void keyDownEvent(int);
         virtual void keyPressedEvent(int);
+        virtual void dragInEvent();
+        virtual void dragOutEvent();
+        virtual void dragMovedEvent(const Vector2 &position, const char *url);
+        virtual void dropEvent(const char *url, const char *source);
 
     private:
         Geometry _window_geometry;
@@ -167,13 +177,15 @@ namespace MyEngine {
         std::shared_ptr<Renderer> _renderer; 
         SDL_Window* _window{nullptr};
         SDL_Surface* _win_icon{nullptr};
-        SDL_WindowID _winID;
-        std::string _title;
+        SDL_WindowID _winID{};
+        std::string _title{};
         bool _visible{true};
         bool _resizable{false};
         bool _borderless{false};
         bool _fullscreen{false};
-        Vector2 _mouse_pos{0, 0};
+        bool _dragging{false};
+        bool _drag_mode{false};
+        Vector2 _mouse_pos{}, _dragging_pos{};
         Cursor::StdCursor _cursor{};
         std::vector<std::function<void(Renderer*)>> _paint_event_list;
         Engine* _engine;
@@ -201,10 +213,10 @@ namespace MyEngine {
         static EventSystem* global();
         void appendEvent(uint64_t id, const std::function<void(SDL_Event)>& event);
         void removeEvent(uint64_t id);
-        void clearEvent();
+
         void appendGlobalEvent(uint64_t g_id, const std::function<void()>& event);
         void removeGlobalEvent(uint64_t g_id);
-        void clearGlobalEvent();
+
         [[nodiscard]] size_t eventCount() const;
         [[nodiscard]] size_t globalEventCount() const;
         [[nodiscard]] const std::vector<int>& captureKeyboardStatus() const;
@@ -225,6 +237,7 @@ namespace MyEngine {
         Vector2 _mouse_pos{0, 0}, _mouse_down_dis{0, 0}, _before_mouse_down_pos{0, 0};
         bool _mouse_down_changed{false};
         std::unordered_map<uint64_t, std::function<void(SDL_Event)>> _event_list{};
+        std::deque<uint64_t> _del_event_deque, _del_g_event_deque;
         std::unordered_map<uint64_t, std::function<void()>> _global_event_list{};
     };
 
