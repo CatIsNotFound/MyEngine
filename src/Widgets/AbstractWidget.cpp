@@ -146,6 +146,7 @@ namespace MyEngine::Widget {
                         _status.finger_down = true;
                         _status.finger_down_pos.reset(pos);
                         _status.finger_id = ev.tfinger.fingerID;
+                        _status.finger_move_in = true;
                         fingerMoveInEvent();
                     }
                 }
@@ -155,7 +156,6 @@ namespace MyEngine::Widget {
                 Vector2 pos(ev.tfinger.x * w, ev.tfinger.y * h);
                 bool fin_tri = (Algorithm::comparePosInRect(pos, _trigger_area) > 0);
                 if (fin_tri && finger_type == SDL_EVENT_FINGER_DOWN) {
-                    Logger::log("F");
                     _status.finger_id = ev.tfinger.fingerID;
                     fingerUpEvent(pos);
                     fingerDownEvent(pos);
@@ -164,7 +164,8 @@ namespace MyEngine::Widget {
                     _status.finger_down = false;
                     _status.finger_move_out = false;
                     fingerUpEvent(pos);
-                    if (trigger) fingerTappedEvent();
+                    if (trigger && !_status.finger_move_in) fingerTappedEvent();
+                    _status.finger_move_in = false;
                 } else if ((_status.finger_id == ev.tfinger.fingerID) && (finger_type == SDL_EVENT_FINGER_MOTION)) {
                     fingerMovedEvent(pos, pos - _status.finger_down_pos);
                     if (!_status.finger_move_out && !fin_tri) {
@@ -519,11 +520,17 @@ namespace MyEngine::Widget {
 //                                "position: ({:.2f}, {:.2f})", _status.finger_id, distance.x, distance.y, position.x, position.y));
     }
 
-    void AbstractWidget::fingerMoveInEvent() { Logger::log("[Finger in]"); }
+    void AbstractWidget::fingerMoveInEvent() {
+        Logger::log("[Finger in]");
+    }
 
-    void AbstractWidget::fingerMoveOutEvent() { Logger::log("[Finger out]"); }
+    void AbstractWidget::fingerMoveOutEvent() {
+        Logger::log("[Finger out]");
+    }
 
-    void AbstractWidget::fingerTappedEvent() { Logger::log(std::format("Fingger tapped")); }
+    void AbstractWidget::fingerTappedEvent() {
+        Logger::log("[Finger tapped]");
+    }
 
     void AbstractWidget::startedInputEvent() {}
 

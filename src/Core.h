@@ -167,6 +167,11 @@ namespace MyEngine {
         virtual void keyUpEvent(int);
         virtual void keyDownEvent(int);
         virtual void keyPressedEvent(int);
+        virtual void fingerUpEvent(const Vector2& position, uint64_t finger_id);
+        virtual void fingerDownEvent(const Vector2& position, uint64_t finger_id);
+        virtual void fingerMovedEvent(const Vector2& position, const Vector2& distance,
+                                      float pressure, uint64_t finger_id);
+        virtual void fingerTappedEvent(uint64_t finger_id);
         virtual void dragInEvent();
         virtual void dragOutEvent();
         virtual void dragMovedEvent(const Vector2 &position, const char *url);
@@ -174,7 +179,6 @@ namespace MyEngine {
 
     private:
         Geometry _window_geometry;
-
         std::shared_ptr<Renderer> _renderer; 
         SDL_Window* _window{nullptr};
         SDL_Surface* _win_icon{nullptr};
@@ -184,6 +188,13 @@ namespace MyEngine {
         bool _resizable{false};
         bool _borderless{false};
         bool _fullscreen{false};
+        struct FingerEvent {
+            uint64_t finger_id{};
+            float pressure{};
+            Vector2 finger_down_pos{};
+        };
+        bool _finger_down{};
+        std::unordered_map<uint64_t, FingerEvent> _finger_event_list;
         bool _dragging{false};
         bool _drag_mode{false};
         std::string _drop_source{};

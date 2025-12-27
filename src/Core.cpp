@@ -207,7 +207,8 @@ namespace MyEngine {
     }
 
     Window::Window(Engine* object, const std::string& title, int width, int height,  GraphicEngine engine)
-        : _title(title), _window_geometry(0, 0, width, height), _visible(true), _resizable(false), _engine(object) {
+        : _title(title), _window_geometry(0, 0, width, height),
+          _visible(true), _resizable(false), _engine(object) {
         if (engine == Vulkan)
             _window = SDL_CreateWindow(_title.c_str(), width, height, SDL_WINDOW_VULKAN);
         else
@@ -241,7 +242,8 @@ namespace MyEngine {
     bool Window::move(int x, int y) {
         bool _ret = SDL_SetWindowPosition(_window, x, y);
         if (!_ret) {
-            Logger::log(std::format("Window: Can't move window! Exception: {}", SDL_GetError()), Logger::Error);
+            Logger::log(std::format("Window: Can't move window! Exception: {}", SDL_GetError()),
+                        Logger::Error);
             return false;
         }
         _window_geometry.x = x;
@@ -252,7 +254,8 @@ namespace MyEngine {
     bool Window::resize(int width, int height) {
         bool _ret = SDL_SetWindowSize(_window, width, height);
         if (!_ret) {
-            Logger::log(std::format("Window: Can't reshape window! Exception: {}", SDL_GetError()), Logger::Error);
+            Logger::log(std::format("Window: Can't reshape window! Exception: {}", SDL_GetError()),
+                        Logger::Error);
             return false;
         }
         _window_geometry.width = width;
@@ -548,6 +551,21 @@ namespace MyEngine {
     void Window::keyDownEvent(int) {}
     void Window::keyPressedEvent(int) {}
 
+    void Window::fingerUpEvent(const MyEngine::Vector2 &position, uint64_t finger_id) {
+//        Logger::log(std::format("[Finger up] pos: ({:.2f}, {:.2f}), id: {}", position.x, position.y, finger_id));
+    }
+    void Window::fingerDownEvent(const MyEngine::Vector2 &position, uint64_t finger_id) {
+//        Logger::log(std::format("[Finger down] pos: ({:.2f}, {:.2f}), id: {}", position.x, position.y, finger_id));
+    }
+    void Window::fingerMovedEvent(const MyEngine::Vector2 &position, const MyEngine::Vector2 &distance,
+                                  float pressure, uint64_t finger_id) {
+//        Logger::log(std::format("[Finger move] pos: ({:.2f}, {:.2f}), dis: ({:.2f}, {:.2f}), id: {}",
+//                                position.x, position.y, distance.x, distance.y, finger_id));
+    }
+    void Window::fingerTappedEvent(uint64_t finger_id) {
+//        Logger::log(std::format("[Finger tapped] id: {}", finger_id));
+    }
+
     void Window::dragInEvent() {}
     void Window::dragOutEvent() {}
     void Window::dragMovedEvent(const Vector2 &position, const char *url) {}
@@ -694,6 +712,7 @@ namespace MyEngine {
                         }
                     }
                 }
+
                 // Mouse event
                 if (!mouse_down) {
                     if (_mouse_events > 0) {
@@ -705,6 +724,58 @@ namespace MyEngine {
                         win->mouseMovedEvent(_mouse_down_dis);
                     } else {
                         win->mouseUpEvent();
+                    }
+                }
+
+                // Touch screen event
+                // - Cope with finger actions
+                if (!win->_finger_down) {
+                    auto f_id = ev.tfinger.fingerID;
+                    auto w = static_cast<float>(win->geometry().width),
+                         h = static_cast<float>(win->geometry().height);
+                    auto f_pos = Vector2(ev.tfinger.x * w, ev.tfinger.y * h);
+                    if (ev.tfinger.type == SDL_EVENT_FINGER_DOWN) {
+                        if (!win->_finger_event_list.contains(f_id)) {
+                            win->_finger_event_list.try_emplace(f_id, f_id, ev.tfinger.pressure, f_pos);
+                        } else {
+                            win->_finger_event_list.at(f_id).pressure = ev.tfinger.pressure;
+                        }
+                        win->fingerDownEvent(f_pos, f_id);
+                    }
+                } else {
+                    auto f_id = ev.tfinger.fingerID;
+                    auto w = static_cast<float>(win->geometry().width),
+                            h = static_cast<float>(win->geometry().height);
+                    auto f_pos = Vector2(ev.tfinger.x * w, ev.tfinger.y * h);
+                    if (ev.tfinger.type == SDL_EVENT_FINGER_DOWN) {
+                        if (!win->_finger_event_list.contains(f_id)) {
+                            win->_finger_event_list.try_emplace(f_id, f_id, ev.tfinger.pressure, f_pos);
+                        } else {
+                            win->_finger_event_list.at(f_id).pressure = ev.tfinger.pressure;
+                        }
+                        win->fingerDownEvent(f_pos, f_id);
+                    } else if (ev.tfinger.type == SDL_EVENT_FINGER_MOTION) {
+                        Vector2* pressed_down_pos = nullptr;
+                        float pressure = 0;
+                        if (win->_finger_event_list.contains(f_id)) {
+                            pressed_down_pos = &win->_finger_event_list.at(f_id).finger_down_pos;
+                            pressure = win->_finger_event_list.at(f_id).pressure;
+                        } else {
+                            pressure = ev.tfinger.pressure;
+                            win->_finger_event_list.try_emplace(f_id, f_id, pressure, f_pos);
+                        }
+                        if (pressed_down_pos) {
+                            win->fingerMovedEvent(f_pos, *pressed_down_pos - f_pos,
+                                                  pressure, f_id);
+                        } else {
+                            win->fingerMovedEvent(f_pos, Vector2(),
+                                                  pressure, f_id);
+                        }
+                    } else if (ev.tfinger.type == SDL_EVENT_FINGER_UP) {
+                        if (win->_finger_event_list.contains(f_id)) {
+                            win->_finger_event_list.erase(f_id);
+                        }
+                        win->fingerUpEvent(f_pos, f_id);
                     }
                 }
 
@@ -748,6 +819,7 @@ namespace MyEngine {
                     } else {
                         auto real_pos = Cursor::global()->globalPosition() - toGeometryFloat(win->geometry()).pos;
                         win->_dragging_pos.reset(real_pos);
+                        win->dragMovedEvent(real_pos, ev.drop.source);
                     }
                 }
             });

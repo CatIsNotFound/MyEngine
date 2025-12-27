@@ -132,6 +132,7 @@ namespace MyEngine {
                 bool input_mode{};
                 bool hot_keys{};
                 bool finger_down{};
+                bool finger_move_in{};
                 bool finger_move_out{};
                 uint64_t finger_id{};
                 Vector2 finger_down_pos{};
