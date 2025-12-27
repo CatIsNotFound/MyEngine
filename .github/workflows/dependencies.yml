@@ -256,6 +256,5 @@ jobs:
       shell: cmd
       run: |
         echo "Uploading Windows cache..."
-        mkdir %GITHUB_WORKSPACE%\SDL3_Windows_cache
-        xcopy %GITHUB_WORKSPACE%\SDL3_cache %GITHUB_WORKSPACE%\SDL3_Windows_cache /Y
+        copy %GITHUB_WORKSPACE%\SDL3_cache %GITHUB_WORKSPACE%\SDL3_Windows_cache /Y
         echo "Windows cache upload completed"
