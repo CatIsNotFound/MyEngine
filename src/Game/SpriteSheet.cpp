@@ -118,7 +118,7 @@ void MyEngine::SpriteSheet::setColorAlpha(uint8_t r, uint8_t g, uint8_t b, uint8
 }
 
 void MyEngine::SpriteSheet::setColorAlpha(uint64_t hex_code) {
-    auto [r, g, b, a] = RGBAColor::RGBAValue2Color(hex_code, true);
+    auto [r, g, b, a] = RGBAColor::hexCode2RGBA(hex_code, true);
     _global_prop->color_alpha = { .r = r, .g = g, .b = b, .a = a };
     for (auto& [name, prop] : *_atlas) {
         prop.properties.front()->color_alpha = { .r = r, .g = g, .b = b, .a = a };

@@ -1,6 +1,6 @@
 # 标准颜色命名空间定义
 
-以下是标准颜色命名空间 `StdColor` 定义的表格。
+以下是标准颜色命名空间 `MyEngine::StdColor` 定义的表格。
 
 若需要其他颜色，请参考 [RGBA 颜色命名空间定义](RGBAColorMap.md)。
 
@@ -10,16 +10,16 @@
 
 2. 十六进制转换至 RGBA 颜色
 
-   通过使用 `RGBAColor::Color2RGBAValue()` 函数将十六进制码转换为 RGBA 颜色。
+   通过使用 `RGBAColor::RGBA2HexCode()` 函数将十六进制码转换为 RGBA 颜色。
 
    ```cpp
-   SColor color = RGBAColor::Color2RGBAValue(0xff0000); // Red
+   SColor color = RGBAColor::RGBA2HexCode(0xff0000); // Red
    ```
 
-   而针对于含有 Alpha 通道的十六进制码，需要在调用 `RGBAColor::Color2RGBAValue()` 函数时，将第二个参数设为 `true` 即可转换。
+   而针对于含有 Alpha 通道的十六进制码，需要在调用 `RGBAColor::RGBA2HexCode()` 函数时，将第二个参数设为 `true` 即可转换。
 
    ```cpp
-   SColor color = RGBAColor::Color2RGBAValue(0xff0000C0, true); // RedTransport
+   SColor color = RGBAColor::RGBA2HexCode(0xff0000C0, true); // RedTransport
    ```
 
 ## 标准颜色

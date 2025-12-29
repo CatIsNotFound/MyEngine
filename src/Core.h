@@ -167,11 +167,6 @@ namespace MyEngine {
         virtual void keyUpEvent(int);
         virtual void keyDownEvent(int);
         virtual void keyPressedEvent(int);
-        virtual void fingerUpEvent(const Vector2& position, uint64_t finger_id);
-        virtual void fingerDownEvent(const Vector2& position, uint64_t finger_id);
-        virtual void fingerMovedEvent(const Vector2& position, const Vector2& distance,
-                                      float pressure, uint64_t finger_id);
-        virtual void fingerTappedEvent(uint64_t finger_id);
         virtual void dragInEvent();
         virtual void dragOutEvent();
         virtual void dragMovedEvent(const Vector2 &position, const char *url);

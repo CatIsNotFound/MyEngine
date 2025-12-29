@@ -5,8 +5,10 @@
 
 namespace MyEngine {
     /**
-     * @namespace RGBAColor
+     * \if EN
+     * @namespace MyEngine::RGBAColor
      * @brief Predefined colors, named in RGBA format.
+     * \endif
      * @ref related/RGBAColorMap.md
      */
     namespace RGBAColor {
@@ -148,12 +150,43 @@ namespace MyEngine {
         constexpr SColor MixKhakiTrans = {245, 245, 205, 192};
         constexpr SColor MixAmberTrans = {255, 215, 105, 192};
 
-        inline uint64_t Color2RGBAValue(const SDL_Color& color, bool alpha_enabled = false) {
+        /**
+         * \if EN
+         * @brief Convert RGBA color to hexadecimal code
+         * @param color             Specified RGBA color
+         * @param alpha_enabled     Whether to include a transparent channel (default is `false`)
+         * @return Return a converted hexadecimal code
+         * \endif
+         * @code
+         * SDL_Color color = {128, 128, 128, 255};
+         * uint64 hex_code = MyEngine::RGBAColor::RGBA2HexCode(color, false);
+         * uint64 hex_code_alpha = MyEngine::RGBAColor::RGBA2HexCode(color, true);
+         * //       hex_code = 0x808080   (hex)
+         * // hex_code_alpha = 0x808080ff (hex with alpha)
+         * @endcode
+         * @see hexCode2RGBA
+         */
+        inline uint64_t RGBA2HexCode(const SDL_Color& color, bool alpha_enabled = false) {
             return alpha_enabled ? (color.r * 255 * 255 * 255 + color.g * 255 * 255 + color.b * 255 + color.a) :
                    (color.r * 256 * 256 + color.g * 256 + color.b);
         }
 
-        inline SDL_Color RGBAValue2Color(uint64_t color_value, bool alpha_enabled = false) {
+        /**
+         * \if EN
+         * @brief Convert hexadecimal code to RGBA color
+         * @param color_value       Specified hex code
+         * @param alpha_enabled     Whether to include a transparent channel (default is `false`)
+         * @return Return a converted RGBA color
+         * \endif
+         * @code
+         * SDL_Color color = MyEngine::RGBAColor::HexCode2RGBA(0x808080, false);
+         * SDL_Color color_alpha = MyEngine::RGBAColor::HexCode2RGBA(0x808080c0, true)
+         * //       color = SDL_Color(128, 128, 128, 255);
+         * // color_alpha = SDL_Color(128, 128, 128, 192);
+         * @endcode
+         * @see RGBA2HexCode
+         */
+        inline SDL_Color hexCode2RGBA(uint64_t color_value, bool alpha_enabled = false) {
             return (alpha_enabled ? SDL_Color((color_value >> 24) & 255, (color_value >> 16) & 255, (color_value >> 8) & 255, (color_value & 255))
                     : SDL_Color((color_value >> 16) & 255, (color_value >> 8) & 255, (color_value & 255), 255));
         }

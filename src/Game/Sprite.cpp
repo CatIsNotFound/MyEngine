@@ -92,7 +92,7 @@ void MyEngine::Sprite::setColorAlpha(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
 }
 
 void MyEngine::Sprite::setColorAlpha(uint64_t hex_code) {
-    auto [r, g, b, a] = RGBAColor::RGBAValue2Color(hex_code, true);
+    auto [r, g, b, a] = RGBAColor::hexCode2RGBA(hex_code, true);
     _property->color_alpha = { .r = r, .g = g, .b = b, .a = a };
 }
 

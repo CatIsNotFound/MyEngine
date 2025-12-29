@@ -3,6 +3,16 @@
 #define MYENGINE_UTILS_VARIANT_H
 #include "../Libs.h"
 namespace MyEngine {
+    /**
+     * \if EN
+     * @brief Variant
+     * @details A general-purpose variant container for storing basic data types,
+     * supporting integers, floating-point numbers, strings, and pointers.
+     * @details Suitable for scenarios that require unified storage of different basic types such as integers,
+     * floating-point numbers, strings, and pointers,
+     * such as configuration parsing, script parameter passing, and multi-type parameter encapsulation for interfaces.
+     * \endif
+     */
     class Variant {
         int32_t convert2Int32() const;
         uint32_t convert2UInt32() const;
@@ -11,6 +21,12 @@ namespace MyEngine {
         float convert2Float() const;
         double convert2Double() const;
     public:
+        /**
+         * \if EN
+         * @brief Data type
+         * @details Used to indicate the data type stored by the variant
+         * \endif
+         */
         enum Type {
             Null,
             Bool,
@@ -136,10 +152,50 @@ namespace MyEngine {
         Variant(std::string& string) : _type(String), _value(new std::string(string)) {}
         Variant(void* pointer, std::function<void(void*)> deleter = {})
             : _type(Pointer), _value(pointer), _deleter(std::move(deleter)) {}
+        /**
+         * \if EN
+         * @brief Get the data type stored in the current variant
+         * @return Return an enum of type `Type`
+         * \endif
+         * @see Type
+         * @see typeName
+         */
         Type type() const;
+        /**
+         * \if EN
+         * @brief Get the data type name of the current variant
+         * @return Return the data type name of a string
+         * \endif
+         * @see Type
+         * @see type
+         */
         const char* typeName() const;
+        /**
+         * \if EN
+         * @brief Check whether the current variant has no stored data
+         * @return Whether the data for the current variant is empty
+         * \endif
+         */
         bool isNull() const;
+        /**
+         * \if EN
+         * @brief Check if the current variant is set with a deleter to release the pointer
+         * @return Returns `true` if set, otherwise `false`
+         * \endif
+         * @see setDeleter
+         */
         bool hasDeleter() const;
+        /**
+         * \if EN
+         * @brief Set the deleter used for releasing the pointer
+         * @param deleter Specify a function for freeing a pointer
+         * @details When a variant is destructed, a deleter is automatically called to release the pointer,
+         * thereby preventing issues such as memory leaks.
+         * @note For reference-counted pointers, there is no need to set a deleter.
+         * Otherwise, it may cause the pointer to be deleted twice.
+         * \endif
+         * @see hasDeleter
+         */
         void setDeleter(std::function<void(void*)> deleter);
         
         void setValue();

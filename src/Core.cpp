@@ -86,7 +86,7 @@ namespace MyEngine {
     }
 
     void Renderer::fillBackground(uint64_t rgb_hex) {
-        addCommand<RenderCommand::FillCMD>(_renderer, RGBAColor::RGBAValue2Color(rgb_hex));
+        addCommand<RenderCommand::FillCMD>(_renderer, RGBAColor::hexCode2RGBA(rgb_hex));
     }
 
     void Renderer::drawPoint(Graphics::Point *point) {
@@ -550,22 +550,6 @@ namespace MyEngine {
     void Window::keyUpEvent(int) {}
     void Window::keyDownEvent(int) {}
     void Window::keyPressedEvent(int) {}
-
-    void Window::fingerUpEvent(const MyEngine::Vector2 &position, uint64_t finger_id) {
-//        Logger::log(std::format("[Finger up] pos: ({:.2f}, {:.2f}), id: {}", position.x, position.y, finger_id));
-    }
-    void Window::fingerDownEvent(const MyEngine::Vector2 &position, uint64_t finger_id) {
-//        Logger::log(std::format("[Finger down] pos: ({:.2f}, {:.2f}), id: {}", position.x, position.y, finger_id));
-    }
-    void Window::fingerMovedEvent(const MyEngine::Vector2 &position, const MyEngine::Vector2 &distance,
-                                  float pressure, uint64_t finger_id) {
-//        Logger::log(std::format("[Finger move] pos: ({:.2f}, {:.2f}), dis: ({:.2f}, {:.2f}), id: {}",
-//                                position.x, position.y, distance.x, distance.y, finger_id));
-    }
-    void Window::fingerTappedEvent(uint64_t finger_id) {
-//        Logger::log(std::format("[Finger tapped] id: {}", finger_id));
-    }
-
     void Window::dragInEvent() {}
     void Window::dragOutEvent() {}
     void Window::dragMovedEvent(const Vector2 &position, const char *url) {}
@@ -724,58 +708,6 @@ namespace MyEngine {
                         win->mouseMovedEvent(_mouse_down_dis);
                     } else {
                         win->mouseUpEvent();
-                    }
-                }
-
-                // Touch screen event
-                // - Cope with finger actions
-                if (!win->_finger_down) {
-                    auto f_id = ev.tfinger.fingerID;
-                    auto w = static_cast<float>(win->geometry().width),
-                         h = static_cast<float>(win->geometry().height);
-                    auto f_pos = Vector2(ev.tfinger.x * w, ev.tfinger.y * h);
-                    if (ev.tfinger.type == SDL_EVENT_FINGER_DOWN) {
-                        if (!win->_finger_event_list.contains(f_id)) {
-                            win->_finger_event_list.try_emplace(f_id, f_id, ev.tfinger.pressure, f_pos);
-                        } else {
-                            win->_finger_event_list.at(f_id).pressure = ev.tfinger.pressure;
-                        }
-                        win->fingerDownEvent(f_pos, f_id);
-                    }
-                } else {
-                    auto f_id = ev.tfinger.fingerID;
-                    auto w = static_cast<float>(win->geometry().width),
-                            h = static_cast<float>(win->geometry().height);
-                    auto f_pos = Vector2(ev.tfinger.x * w, ev.tfinger.y * h);
-                    if (ev.tfinger.type == SDL_EVENT_FINGER_DOWN) {
-                        if (!win->_finger_event_list.contains(f_id)) {
-                            win->_finger_event_list.try_emplace(f_id, f_id, ev.tfinger.pressure, f_pos);
-                        } else {
-                            win->_finger_event_list.at(f_id).pressure = ev.tfinger.pressure;
-                        }
-                        win->fingerDownEvent(f_pos, f_id);
-                    } else if (ev.tfinger.type == SDL_EVENT_FINGER_MOTION) {
-                        Vector2* pressed_down_pos = nullptr;
-                        float pressure = 0;
-                        if (win->_finger_event_list.contains(f_id)) {
-                            pressed_down_pos = &win->_finger_event_list.at(f_id).finger_down_pos;
-                            pressure = win->_finger_event_list.at(f_id).pressure;
-                        } else {
-                            pressure = ev.tfinger.pressure;
-                            win->_finger_event_list.try_emplace(f_id, f_id, pressure, f_pos);
-                        }
-                        if (pressed_down_pos) {
-                            win->fingerMovedEvent(f_pos, *pressed_down_pos - f_pos,
-                                                  pressure, f_id);
-                        } else {
-                            win->fingerMovedEvent(f_pos, Vector2(),
-                                                  pressure, f_id);
-                        }
-                    } else if (ev.tfinger.type == SDL_EVENT_FINGER_UP) {
-                        if (win->_finger_event_list.contains(f_id)) {
-                            win->_finger_event_list.erase(f_id);
-                        }
-                        win->fingerUpEvent(f_pos, f_id);
                     }
                 }
 

@@ -1,6 +1,6 @@
 # Color Namespace Definition Table
 
-This table lists the color names, hex codes, and RGBA values for the standard colors defined in the `StdColor` namespace.
+This table lists the color names, hex codes, and RGBA values for the standard colors defined in the `MyEngine::StdColor` namespace.
 
 For more details, please refer to the [RGBA Color Namespace Definition Table](RGBAColorMap.md).
 
@@ -10,16 +10,16 @@ For more details, please refer to the [RGBA Color Namespace Definition Table](RG
 
 2. Hex code conversion to RGBA color
 
-   Convert hexadecimal codes to RGBA colors by using the `RGBAColor::Color2RGBAValue()` function.
+   Convert hexadecimal codes to RGBA colors by using the `RGBAColor::RGBA2HexCode()` function.
 
    ```cpp
-   SColor color = RGBAColor::Color2RGBAValue(0xff0000); // Red
+   SColor color = RGBAColor::RGBA2HexCode(0xff0000); // Red
    ```
 
-   For hexadecimal codes that contain an alpha channel, you just need to set the second parameter to `true` when calling the `RGBAColor::Color2RGBAValue()` function in order to convert it.
+   For hexadecimal codes that contain an alpha channel, you just need to set the second parameter to `true` when calling the `RGBAColor::RGBA2HexCode()` function in order to convert it.
 
    ```cpp
-   SColor color = RGBAColor::Color2RGBAValue(0xff0000C0, true); // RedTransport
+   SColor color = RGBAColor::RGBA2HexCode(0xff0000C0, true); // RedTransport
    ```
 
 ## StdColor

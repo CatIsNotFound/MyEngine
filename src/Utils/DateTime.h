@@ -4,8 +4,17 @@
 #include "Logger.h"
 
 namespace MyEngine {
+    /**
+     * \if EN
+     * @brief DateTime
+     * @details Used for handling date and time-related functions,
+     * supporting retrieving the current datetime,
+     * formatting datetime, and converting between timestamps and datetime.
+     * @note This class is a static class and does not require obtaining a global singleton.
+     * \endif
+     */
     class DateTime {
-        static std::string timezone;
+        inline static std::string timezone{std::chrono::current_zone()->name()};
     public:
         DateTime() = delete;
         ~DateTime() = delete;
@@ -14,67 +23,109 @@ namespace MyEngine {
         DateTime& operator=(const DateTime&) = delete;
         DateTime& operator=(DateTime&&) = delete;
 
-        struct DT {
-            uint16_t year;
-            uint8_t month;
-            uint8_t day;
-            uint8_t hour;
-            uint8_t minute;
-            uint8_t second;
+        /**
+         * \if EN
+         * @brief Describe the days of the week
+         * \endif
+         */
+        enum Weekday {
+            Monday = 1,
+            Mon = 1,
+            Tuesday,
+            Tue = 2,
+            Wednesday,
+            Wed = 3,
+            Thursday,
+            Thu = 4,
+            Friday,
+            Fri = 5,
+            Saturday,
+            Sat = 6,
+            Sunday,
+            Sun = 7
         };
 
-        enum Weekday {
-            Monday,
-            Mon = 0,
-            Tuesday,
-            Tue = 1,
-            Wednesday,
-            Wed = 2,
-            Thursday,
-            Thu = 3,
-            Friday,
-            Fri = 4,
-            Saturday,
-            Sat = 5,
-            Sunday,
-            Sun = 6
+        /**
+         * \if EN
+         * @struct MyEngine::DateTime::DT
+         * @brief Date and time
+         * @details Used to obtain information describing date and time
+         * such as year, month, day, hour, minute, and second
+         * \endif
+         */
+        struct DT {
+            uint16_t year;
+            /// 1~12
+            uint8_t month;
+            /// 1~31
+            uint8_t day;
+            /// 0~23
+            uint8_t hour;
+            /// 0~59
+            uint8_t minute;
+            /// 0~59
+            uint8_t second;
+            /// @see Weekday
+            Weekday weekday;
         };
 
         enum Month {
-            January,
-            Jan = 0,
+            January = 1,
+            Jan = 1,
             February,
-            Feb = 1,
+            Feb = 2,
             March,
-            Mar = 2,
+            Mar = 3,
             April,
-            Apr = 3,
+            Apr = 4,
             May,
             June,
-            Jun = 5,
+            Jun = 6,
             July,
-            Jul = 6,
+            Jul = 7,
             August,
-            Aug = 7,
+            Aug = 8,
             September,
-            Sep = 8,
+            Sep = 9,
             October,
-            Oct = 9,
+            Oct = 10,
             November,
-            Nov = 10,
+            Nov = 11,
             December,
-            Dec = 11
+            Dec = 12
         };
 
+        /**
+         * \if EN
+         * @brief unit of time
+         * \endif
+         */
         enum TimeBase {
             Nanoseconds,
             Microseconds,
             Milliseconds,
             Seconds,
             Minutes,
-            Hours
+            Hours,
+            Days
         };
 
+        /**
+         * \if EN
+         * @brief Get the weekday as a string
+         * @param weekday       Specified weekday
+         * @param short_name    Whether to return the abbreviation (default is `false`)
+         * @return Returns a string representing the converted weekday
+         * \endif
+         * @code
+         * auto weekday = MyEngine::DateTime::weekdayStr(MyEngine::DateTime::Sunday, false);
+         * auto short_weekday = MyEngine::DateTime::weekdayStr(MyEngine::DateTime::Sun, true);
+         * // Output:
+         * //       weekday = "Sunday";
+         * // short_weekday = "Sun";
+         * @endcode
+         * @see mouthStr
+         */
         static const char* weekdayStr(Weekday weekday, bool short_name = false) {
             switch (weekday) {
                 case Mon:
@@ -96,6 +147,22 @@ namespace MyEngine {
             }
         }
 
+        /**
+         * \if EN
+         * @brief Get the month as a string
+         * @param month         Specified month
+         * @param short_name    Whether to return the abbreviation (default is `false`)
+         * @return Returns a string representing the converted month
+         * \endif
+         * @code
+         * auto month = MyEngine::DateTime::monthStr(MyEngine::DateTime::December, false);
+         * auto short_month = MyEngine::DateTime::monthStr(MyEngine::DateTime::Dec, true);
+         * // Output:
+         * //       month = "December";
+         * // short_month = "Dec";
+         * @endcode
+         * @see weekdayStr
+         */
         static const char* monthStr(Month month, bool short_name = false) {
             switch (month) {
                 case Jan:
@@ -127,27 +194,52 @@ namespace MyEngine {
             }
         }
 
+        /**
+         * \if EN
+         * @brief Set default time zone
+         * @param tz    Specify the time zone (usually `Asia/Shanghai`, `America/New_York`, `UTC`, etc.)
+         * @return Returns `true` if the default time zone was set successfully, otherwise `false`.
+         * \endif
+         * @code
+         * MyEngine::DateTime::setDefaultTimezone("Asia/Shanghai");
+         * @endcode
+         * @see currentTimezone
+         */
         static bool setDefaultTimezone(const std::string& tz) {
             try {
                 std::chrono::locate_zone(tz);
                 timezone = tz;
             } catch (const std::runtime_error& e) {
-                Logger::log(std::format("DateTime: Can't set invalid timezone: {}", tz), Logger::Error);
+                Logger::log(std::format("DateTime: Can't set invalid timezone: {}", tz),
+                            Logger::Error);
                 return false;
             }
             return true;
         }
 
+
+        /**
+         * \if EN
+         * @brief Get the current timezone
+         * @return Return the time zone name using a string
+         * \endif
+         * @see setDefaultTimezone
+         */
         static std::string_view currentTimezone() {
             return timezone;
         }
 
-        static uint64_t currentTimestamp() {
-            auto now = std::chrono::system_clock::now();
-            return now.time_since_epoch().count();
-        }
-
-        static uint64_t getTicks(TimeBase timebase) {
+        /**
+         * \if EN
+         * @brief Get the current timestamp
+         * @param timebase  Specify a time unit (Default: `Seconds`)
+         * @return Return the converted timestamp
+         * \endif
+         * @see TimeBase
+         * @see generateTimestamp
+         * @see parseFromTimestamp
+         */
+        static uint64_t currentTimestamp(TimeBase timebase = Seconds) {
             using namespace std::chrono;
             if (timebase == Nanoseconds) {
                 return duration_cast<nanoseconds>(system_clock::now().time_since_epoch()).count();
@@ -161,16 +253,35 @@ namespace MyEngine {
                 return duration_cast<minutes>(system_clock::now().time_since_epoch()).count();
             } else if (timebase == Hours) {
                 return duration_cast<hours>(system_clock::now().time_since_epoch()).count();
+            } else if (timebase == Days) {
+                return duration_cast<days>(system_clock::now().time_since_epoch()).count();
             }
             return 0llu;
         }
 
+        /**
+         * \if EN
+         * @brief Get the current date and time
+         * @return Returns a string type used to represent the current date and time
+         * \endif
+         * @see formatCurrentDateTime
+         * @see currentDateTime
+         */
         static std::string now() {
             auto now = std::chrono::system_clock::now();
             auto zoned = std::chrono::zoned_time(timezone, now);
             return std::format("{}", zoned);
         }
 
+        /**
+         * \if EN
+         * @brief Get the current date and time
+         * @return Returns a `DT` type used to represent the current date and time
+         * \endif
+         * @see DT
+         * @see now
+         * @see formatCurrentDateTime
+         */
         static DT currentDateTime() {
             using namespace std::chrono;
             auto now = system_clock::now();
@@ -179,6 +290,7 @@ namespace MyEngine {
             auto day_time = floor<days>(local_time);
             year_month_day ymy{day_time};
             hh_mm_ss time{local_time - day_time};
+            weekday w_day = weekday{sys_days{ymy}};
             DT _ret{};
             _ret.year = int(ymy.year());
             _ret.month = static_cast<uint8_t>(static_cast<unsigned>(ymy.month()));
@@ -186,26 +298,78 @@ namespace MyEngine {
             _ret.hour = static_cast<uint8_t>(time.hours().count());
             _ret.minute = static_cast<uint8_t>(time.minutes().count());
             _ret.second = static_cast<uint8_t>(time.seconds().count());
+            auto real_weekday = (w_day.c_encoding() == 0 ? 7 : w_day.c_encoding());
+            _ret.weekday = static_cast<Weekday>(real_weekday);
             return _ret;
         }
 
-        static uint64_t generateTimestamp(const DT& datetime) {
+        /**
+         * \if EN
+         * @brief Convert the specified date and time to a timestamp
+         * @param datetime      Specified datetime
+         * @param time_base     Specified the unit of time
+         * @return Return a converted timestamp
+         * \endif
+         * @see DT
+         * @see TimeBase
+         * @see parseFromTimestamp
+         */
+        static uint64_t generateTimestamp(const DT& datetime, TimeBase time_base = Seconds) {
             using namespace std::chrono;
-            year y(datetime.year);
+            auto real_year = (datetime.year < 1900 ? datetime.year + 1900 : datetime.year);
+            year y(real_year);
             month m(datetime.month);
             day d(datetime.day);
             year_month_day ymd(y, m, d);
-            auto days = sys_days{ymd};
             if (!ymd.ok()) {
                 Logger::log("DateTime: Current date is not valid!", Logger::Error);
                 return 0;
             }
-            auto time = hours(datetime.hour) + minutes(datetime.minute) + seconds(datetime.second);
+            auto days = sys_days{ymd};
+            if (datetime.hour > 23 || datetime.minute > 59 || datetime.second > 59) {
+                Logger::log("DateTime: Invalid hour/minute/second", Logger::Error);
+                return 0;
+            }
+            if (time_base == Days) {
+                return days.time_since_epoch().count();
+            }
+            const auto HH = hours(datetime.hour);
+            const auto MM = minutes(datetime.minute);
+            const auto SS = seconds(datetime.second);
+            auto time = HH + MM + SS;
+            if (time_base == Hours) {
+                auto time_point = days + HH;
+                return time_point.time_since_epoch().count();
+            } else if (time_base == Minutes) {
+                auto time_point = days + (HH + MM);
+                return time_point.time_since_epoch().count();
+            }
             auto time_point = days + time;
-            return time_point.time_since_epoch().count();
+            auto sec = time_point.time_since_epoch().count();
+            switch (time_base) {
+                case Nanoseconds:
+                    return sec * 1000000000ull;
+                case Microseconds:
+                    return sec * 1000000ull;
+                case Milliseconds:
+                    return sec * 1000ull;
+                default:
+                    return sec;
+            }
         }
 
-        static DT parseFromTimestamp(uint64_t timestamp, TimeBase timebase = Milliseconds) {
+        /**
+         * \if EN
+         * @brief Convert timestamp to date and time
+         * @param timestamp     Specified timestamp
+         * @param timebase      Specified time unit
+         * @return Return the converted date and time
+         * \endif
+         * @see DT
+         * @see TimeBase
+         * @see generateTimestamp
+         */
+        static DT parseFromTimestamp(uint64_t timestamp, TimeBase timebase = Seconds) {
             using namespace std::chrono;
             uint64_t nanoseconds_count = 0;
             switch (timebase) {
@@ -216,17 +380,19 @@ namespace MyEngine {
                     nanoseconds_count = timestamp * 1000;
                     break;
                 case Milliseconds:
-                    nanoseconds_count = timestamp * 1000000;
+                    nanoseconds_count = timestamp * 1000000ull;
                     break;
                 case Seconds:
-                    nanoseconds_count = timestamp * 1000000000;
+                    nanoseconds_count = timestamp * 1000000000ull;
                     break;
                 case Minutes:
-                    nanoseconds_count = timestamp * 60000000000;
+                    nanoseconds_count = timestamp * 60000000000ull;
                     break;
                 case Hours:
-                    nanoseconds_count = timestamp * 3600000000000;
+                    nanoseconds_count = timestamp * 3600000000000ull;
                     break;
+                case Days:
+                    nanoseconds_count = timestamp * 86400000000000ull;
             }
 
             const duration<long long int, std::ratio<1, 10000000>> NANO(nanoseconds_count);
@@ -235,6 +401,7 @@ namespace MyEngine {
             auto day_time = floor<days>(now);
             year_month_day ymy{day_time};
             hh_mm_ss time{now - day_time};
+            weekday weekday{sys_days{ymy}};
             DT _ret{};
             _ret.year = int(ymy.year());
             _ret.month = static_cast<uint8_t>(static_cast<unsigned>(ymy.month()));
@@ -242,12 +409,34 @@ namespace MyEngine {
             _ret.hour = static_cast<uint8_t>(time.hours().count());
             _ret.minute = static_cast<uint8_t>(time.minutes().count());
             _ret.second = static_cast<uint8_t>(time.seconds().count());
+            auto real_weekday = (weekday.c_encoding() == 0 ? 7 : weekday.c_encoding());
+            _ret.weekday = static_cast<Weekday>(real_weekday);
             return _ret;
         }
 
+        /**
+         * \if EN
+         * @brief Format the specified datetime and convert it to a string
+         * @param datetime  Specified datetime
+         * @param format    Specified format (compatible with POSIX formatting rules)
+         * @return Return a formatted string
+         * @note To output '%', please include '\\%' in string to avoid parsing
+         * \endif
+         * @code
+         * MyEngine::DateTime::DT dt(2025, 12, 28, 10, 24, 30);
+         * auto s1 = MyEngine::DateTime::formatDateTime(dt, "Now: %E");
+         * auto s2 = MyEngine::DateTime::formatDateTime(dt, "Time: %H:%M:%S");
+         * // Output:
+         * // - s1: "Now: Sun Dec 24 12:24:48 AM 2025"
+         * // - s2: "Time: 12:24:48"
+         * @endcode
+         * @see now
+         * @see formatCurrentDateTime
+         */
         static std::string formatDateTime(const DT& datetime, const std::string& format) {
             using namespace std::chrono;
-            year y(datetime.year);
+            auto real_year = (datetime.year < 1900 ? datetime.year + 1900 : datetime.year);
+            year y(real_year);
             month m(datetime.month);
             day d(datetime.day);
             year_month_day ymd(y, m, d);
@@ -259,16 +448,19 @@ namespace MyEngine {
             weekday w_day = weekday{t_sys};
             std::string output;
             for (size_t p = 0; p < format.size();) {
-                if (format[p] != '%') {
+                if (format[p] != '%' && format[p] != '\\') {
                     output += format[p++];
                     continue;
                 }
                 auto sub_str = format.substr(p, 2);
                 p += 2;
+                if (sub_str[0] == '\\') {
+                    output += sub_str[1]; continue;
+                }
                 if (sub_str == "%Y") {
-                    output += std::to_string(datetime.year);
+                    output += std::to_string(real_year);
                 } else if (sub_str == "%y") {
-                    output += std::format("{:02d}", (datetime.year % 100));
+                    output += std::format("{:02d}", (real_year % 100));
                 } else if (sub_str == "%m") {
                     output += std::format("{:02d}", datetime.month);
                 } else if (sub_str == "%d") {
@@ -282,16 +474,20 @@ namespace MyEngine {
                 } else if (sub_str == "%S") {
                     output += std::format("{:02d}", datetime.second);
                 } else if (sub_str == "%a") {
-                    output += std::format("{}", weekdayStr(static_cast<Weekday>(w_day.iso_encoding()), true));
+                    output += std::format("{}",
+                          weekdayStr(static_cast<Weekday>(w_day.iso_encoding()), true));
                 } else if (sub_str == "%A") {
-                    output += std::format("{}", weekdayStr(static_cast<Weekday>(w_day.iso_encoding()), false));
+                    output += std::format("{}",
+                          weekdayStr(static_cast<Weekday>(w_day.iso_encoding()), false));
                 } else if (sub_str == "%b") {
-                    output += std::format("{}", monthStr(static_cast<Month>(datetime.month), true));
+                    output += std::format("{}",
+                          monthStr(static_cast<Month>(datetime.month), true));
                 } else if (sub_str == "%B") {
-                    output += std::format("{}", monthStr(static_cast<Month>(datetime.month), false));
+                    output += std::format("{}",
+                          monthStr(static_cast<Month>(datetime.month), false));
                 } else if (sub_str == "%C") {
                     output += std::format("{:04d}/{:02d}/{:02d} {:02d}:{:02d}:{:02d}",
-                                          datetime.year, datetime.month, datetime.day,
+                                          real_year, datetime.month, datetime.day,
                                           datetime.hour, datetime.minute, datetime.second);
                 } else if (sub_str == "%E") {
                     output += std::format("{} {} {:02d} {:02d}:{:02d}:{:02d} {} {:04d}",
@@ -302,24 +498,42 @@ namespace MyEngine {
                              datetime.minute,
                              datetime.second,
                              (datetime.hour / 12 ? "PM" : "AM"),
-                             datetime.year);
+                             real_year);
                 }
             }
             return output;
         }
 
+        /**
+         * \if EN
+         * @brief Format the current datetime and convert it to a string
+         * @param format    Specified format (compatible with POSIX formatting rules)
+         * @return Return a formatted string
+         * @note To output `%`, please include `\\%` in string to avoid parsing
+         * \endif
+         * @code
+         * auto now = MyEngine::DateTime::formatCurrentDateTime("Now: %C");
+         * // output:
+         * //    - now = "Now: 2025/12/24 12:34:56 UTC"
+         * @endcode
+         * @see formatDateTime
+         * @see now
+         */
         static std::string formatCurrentDateTime(const std::string& format) {
             auto now = std::chrono::system_clock::now();
             auto zoned = std::chrono::zoned_time(timezone, now);
             std::string output;
             size_t p = 0;
             for (; p < format.size();) {
-                if (format[p] != '%') {
+                if (format[p] != '%' && format[p] != '\\') {
                     output += format[p++];
                     continue;
                 }
                 auto sub_str = format.substr(p, 2);
                 p += 2;
+                if (sub_str[0] == '\\') {
+                    output += sub_str[1]; continue;
+                }
                 if (sub_str == "%Y") {
                     output += std::format("{:%Y}", zoned);
                 } else if (sub_str == "%y") {
@@ -337,7 +551,10 @@ namespace MyEngine {
                 } else if (sub_str == "%M") {
                     output += std::format("{:%M}", zoned);
                 } else if (sub_str == "%S") {
-                    output += std::format("{:%S}", zoned);
+                    auto t = std::chrono::system_clock::to_time_t(zoned);
+                    std::stringstream ss;
+                    ss << std::put_time(std::localtime(&t), "%S");
+                    output += ss.str();
                 } else if (sub_str == "%a") {
                     output += std::format("{:%a}", zoned);
                 } else if (sub_str == "%A") {
@@ -349,18 +566,20 @@ namespace MyEngine {
                 } else if (sub_str == "%Z") {
                     output += std::format("{:%Z}", zoned);
                 } else if (sub_str == "%C") {
-                    output += std::format("{:%Y/%m/%d %H:%M:%S}", zoned);
+                    auto t = std::chrono::system_clock::to_time_t(zoned);
+                    std::stringstream ss;
+                    ss << std::put_time(std::localtime(&t), "%S");
+                    output += std::format("{:%Y/%m/%d %H:%M:}{}", zoned, ss.str());
                 } else if (sub_str == "%E") {
-                    output += std::format("{:%a %b %d %I:%M:%S %p %Z %Y}", zoned);
+                    auto t = std::chrono::system_clock::to_time_t(zoned);
+                    std::stringstream ss;
+                    ss << std::put_time(std::localtime(&t), "%S");
+                    output += std::format("{:%a %b %d %I:%M:}{} {:%p %Z %Y}", zoned, ss.str(), zoned);
                 }
             }
             return output;
         }
-
-
     };
-
-    inline std::string DateTime::timezone{std::chrono::current_zone()->name()};
 }
 
 #endif //MYENGINE_UTILS_DATETIME_H

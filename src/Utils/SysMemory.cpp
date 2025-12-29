@@ -22,7 +22,7 @@ namespace MyEngine {
             return m_status;
         }
 #else
-        /// Linux, Apple and more UNIX-like OS
+        // Linux, Apple and more UNIX-like OS
             FILE* file = fopen("/proc/meminfo", "r");
             if (!file) {
                 if (ok) *ok = false;
@@ -40,7 +40,7 @@ namespace MyEngine {
         return m_status;
     }
 
-    /// Get current process used memory size
+    // Get current process used memory size
     size_t SysMemory::getCurProcUsedMemSize(bool* ok) {
         size_t used_mem = 0;
 #ifdef _WIN32
@@ -52,7 +52,7 @@ namespace MyEngine {
             return 0;
         }
 #else
-        /// Linux, Apple and more UNIX-like OS
+        // Linux, Apple and more UNIX-like OS
             FILE* file = fopen("/proc/self/status", "r");
             if (!file) {
                 if (ok) *ok = false;

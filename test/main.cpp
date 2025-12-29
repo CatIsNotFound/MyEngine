@@ -86,5 +86,19 @@ int main() {
 
     });
 
+    DateTime::DT dt(2025, 12, 28, 10, 24, 30);
+
+//    Logger::log(std::format("{}/{}/{} {:02d}:{:02d}:{:02d} , {}", dt.year, dt.month, dt.day, dt.hour,
+//                            dt.minute, dt.second, DateTime::weekdayStr(dt.weekday)));
+//    Logger::log(std::format("Hours: {}", DateTime::generateTimestamp(dt, DateTime::Hours)), MyEngine::Logger::Info);
+//    Logger::log(std::format("Minutes: {}", DateTime::generateTimestamp(dt, DateTime::Minutes)), MyEngine::Logger::Info);
+//    Logger::log(std::format("Seconds: {}", DateTime::generateTimestamp(dt, DateTime::Seconds)), MyEngine::Logger::Info);
+//    Logger::log(std::format("Millisecond: {}", DateTime::generateTimestamp(dt, DateTime::Milliseconds)), MyEngine::Logger::Info);
+//    Logger::log(std::format("Microsecond: {}", DateTime::generateTimestamp(dt, DateTime::Microseconds)), MyEngine::Logger::Info);
+//    Logger::log(std::format("Nanosecond: {}", DateTime::generateTimestamp(dt, DateTime::Nanoseconds)), MyEngine::Logger::Info);
+    DateTime::setDefaultTimezone("Asia/Shanghai");
+    Logger::log(DateTime::now());
+    Logger::log(DateTime::formatCurrentDateTime(R"(Now: \%E)"));
+    Logger::log(DateTime::formatCurrentDateTime("Now: \\%C"));
     return engine.exec();
 }
