@@ -10,7 +10,7 @@
 namespace MyEngine {
     class Engine;
     class Window;
-    struct TextureProperty;
+    class TextureProperty;
     class Texture;
     class EventSystem;
     
@@ -318,6 +318,7 @@ namespace MyEngine {
             TTF_Text* self;
             std::string text;
             std::string font_name;
+            Size text_size{};
             SDL_Color font_color{StdColor::Black};
         };
         struct FontEngine {

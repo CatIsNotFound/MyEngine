@@ -51,7 +51,8 @@ protected:
                     (uint8_t)MyEngine::RandomGenerator::randUInt(0, 255),
                     255
             };
-            _props[i]->setGeomentry((float)c * block_size.width, (float)r * block_size.height, block_size.width, block_size.height);
+            _props[i]->setGeometry((float) c * block_size.width, (float) r * block_size.height, block_size.width,
+                                   block_size.height);
         }
         _props.resize(count);
         _props.shrink_to_fit();

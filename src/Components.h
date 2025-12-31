@@ -280,17 +280,22 @@ namespace MyEngine {
         [[nodiscard]] const Size& size() const {
             return _size;
         }
-        void setGeomentry(const Vector2& pos, const Size& size) {
+        void setGeometry(const Vector2& pos, const Size& size) {
             _position.reset(pos);
             _size.reset(size);
             setScale(_scale);
         }
-        void setGeomentry(float x, float y, float width, float height) {
+        void setGeometry(float x, float y, float width, float height) {
             _position.reset(x, y);
             _size.reset(width, height);
             setScale(_scale);
         }
-        [[nodiscard]] GeometryF geomentry() const {
+        void setGeometry(const GeometryF& geometry) {
+            _position.reset(geometry.pos);
+            _size.reset(geometry.size);
+            setScale(_scale);
+        }
+        [[nodiscard]] GeometryF geometry() const {
             return GeometryF{_position, _size};
         }
         void setScale(float scale = 1.0f) {

@@ -2,15 +2,18 @@
 #ifndef MYENGINE_WIDGETS_LABEL_H
 #define MYENGINE_WIDGETS_LABEL_H
 #include "AbstractWidget.h"
-#define LABEL_TEXT_POSITION "Label.textPosition"
+
 #define LABEL_IMAGE_GEOMETRY "Label.imageGeometry"
+#define LABEL_IMAGE_SIZE     "Label.imageOriginalSize"
 namespace MyEngine {
     namespace Widget {
         class Label : public AbstractWidget {
         public:
             enum ImageFilledMode {
+                None,
                 Stretch,
                 Center,
+                Fit,
                 Fill
             };
             enum Alignment {
@@ -42,6 +45,9 @@ namespace MyEngine {
             [[nodiscard]] const SDL_Color& fontColor() const;
             [[nodiscard]] float fontSize() const;
 
+            void setTextAlignment(Alignment alignment);
+            [[nodiscard]] Alignment textAlignment() const;
+
             void setBackgroundVisible(bool visible);
             void setBackgroundColor(const SDL_Color& back_color);
             void setBackgroundColor(uint64_t hex_code, bool alpha = false);
@@ -52,8 +58,11 @@ namespace MyEngine {
             void setBackgroundImage(Texture* texture, bool delete_later = false);
             void setBackgroundImage(const std::string& image_path);
             void setBackgroundImageFillMode(ImageFilledMode filled_mode);
+            void clearBackgroundImage();
+            void setBackgroundImageVisible(bool visible);
             [[nodiscard]] const Texture* const backgroundImage() const;
             [[nodiscard]] ImageFilledMode backgroundImageFilledMode() const;
+            [[nodiscard]] bool backgroundImageVisible() const;
 
         protected:
             void loadEvent() override;
@@ -72,17 +81,15 @@ namespace MyEngine {
             uint64_t _text_id{0};
             bool _visible_bg{true};
             bool _visible_text{};
+            bool _visible_img{};
             Font* _font{};
             TextSystem::Text* _text{};
-            std::shared_ptr<Texture> _bg_img{}, _img{};
+            std::shared_ptr<Texture> _bg_img{};
             SDL_Color _none_color{};
             std::string _none_str{}, _string{};
             ImageFilledMode _fill_mode{Stretch};
             Alignment _alignment{LeftTop};
-            bool _delete_font{};
-            bool _delete_bg_img{};
-            bool _delete_img{};
-            bool _remove_text{};
+            Vector2 _text_pos{};
         };
     }
 }

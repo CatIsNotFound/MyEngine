@@ -1147,6 +1147,9 @@ namespace MyEngine {
             _text_map.erase(text_id);
             return false;
         }
+        int w = 0, h = 0;
+        TTF_GetTextSize(_text_map[text_id].self, &w, &h);
+        _text_map[text_id].text_size.reset(static_cast<float>(w), static_cast<float>(h));
         return true;
     }
 
@@ -1174,6 +1177,9 @@ namespace MyEngine {
             return false;
         }
         m_text.text = text;
+        int w = 0, h = 0;
+        TTF_GetTextSize(_text_map[text_id].self, &w, &h);
+        _text_map[text_id].text_size.reset(static_cast<float>(w), static_cast<float>(h));
         return true;
     }
 
@@ -1191,6 +1197,9 @@ namespace MyEngine {
             return false;
         }
         m_text.text += text;
+        int w = 0, h = 0;
+        TTF_GetTextSize(_text_map[text_id].self, &w, &h);
+        _text_map[text_id].text_size.reset(static_cast<float>(w), static_cast<float>(h));
         return true;
     }
 
@@ -1213,6 +1222,9 @@ namespace MyEngine {
             return false;
         }
         m_text.font_name = font_name;
+        int w = 0, h = 0;
+        TTF_GetTextSize(_text_map[text_id].self, &w, &h);
+        _text_map[text_id].text_size.reset(static_cast<float>(w), static_cast<float>(h));
         return true;
     }
 

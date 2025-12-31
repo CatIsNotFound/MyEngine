@@ -5,14 +5,14 @@
 namespace MyEngine::Widget {
 
     Label::Label(Window *window) : AbstractWidget(window) {
-        NEW_PROPERTY_PTR(this, LABEL_TEXT_POSITION, Vector2)
         NEW_PROPERTY_PTR(this, LABEL_IMAGE_GEOMETRY, GeometryF)
+        NEW_PROPERTY_PTR(this, LABEL_IMAGE_SIZE, Size);
     }
 
     Label::Label(std::string object_name, Window *window) : AbstractWidget(window) {
         AbstractWidget::_object_name = std::move(object_name);
-        NEW_PROPERTY_PTR(this, LABEL_TEXT_POSITION, Vector2)
         NEW_PROPERTY_PTR(this, LABEL_IMAGE_GEOMETRY, GeometryF)
+        NEW_PROPERTY_PTR(this, LABEL_IMAGE_SIZE, Size)
     }
 
     Label::~Label() {}
@@ -69,6 +69,7 @@ namespace MyEngine::Widget {
         if (TextSystem::global()->isTextContain(_text_id)) {
             TextSystem::global()->setText(_text_id, text);
             _string = text;
+
         }
     }
 
@@ -79,8 +80,6 @@ namespace MyEngine::Widget {
     void Label::appendText(const std::string &text) {
         if (TextSystem::global()->isTextContain(_text_id)) {
             TextSystem::global()->appendText(_text_id, text);
-            auto text_geo = GET_PROPERTY_PTR(this, LABEL_TEXT_POSITION, GeometryF);
-
             updateTextGeometry();
         }
     }
@@ -113,6 +112,13 @@ namespace MyEngine::Widget {
         return _font->fontSize();
     }
 
+    void Label::setTextAlignment(Label::Alignment alignment) {
+        _alignment = alignment;
+        alignmentChangedEvent(alignment);
+    }
+
+    Label::Alignment Label::textAlignment() const { return _alignment; }
+
     void Label::setBackgroundVisible(bool visible) {
         _visible_bg = visible;
     }
@@ -134,14 +140,24 @@ namespace MyEngine::Widget {
     }
 
     void Label::setBackgroundImage(SDL_Surface *surface, bool delete_later) {
+        if (!surface) {
+            Logger::log("Label: The specified surface is not valid!", Logger::Error);
+            return;
+        }
         if (!_bg_img) {
             _bg_img = std::make_shared<Texture>(surface, render(), !delete_later);
         } else {
             _bg_img->setImageFromSurface(surface, !delete_later);
         }
+        auto img_geo = GET_PROPERTY_PTR(this, LABEL_IMAGE_SIZE, Size);
+        img_geo->reset(_bg_img->property()->size());
     }
 
     void Label::setBackgroundImage(Texture *texture, bool delete_later) {
+        if (!texture) {
+            Logger::log("Label: The specified surface is not valid!", Logger::Error);
+            return;
+        }
         if (!_bg_img) {
             _bg_img = delete_later ? std::shared_ptr<Texture>(texture)
                     : std::make_shared<Texture>(texture->imagePath(), render());
@@ -152,6 +168,8 @@ namespace MyEngine::Widget {
                 _bg_img->setImagePath(texture->imagePath());
             }
         }
+        auto img_geo = GET_PROPERTY_PTR(this, LABEL_IMAGE_SIZE, Size);
+        img_geo->reset(_bg_img->property()->size());
     }
 
     void Label::setBackgroundImage(const std::string &image_path) {
@@ -160,18 +178,33 @@ namespace MyEngine::Widget {
         } else {
             _bg_img->setImagePath(image_path);
         }
+        auto img_geo = GET_PROPERTY_PTR(this, LABEL_IMAGE_SIZE, Size);
+        img_geo->reset(_bg_img->property()->size());
     }
 
     void Label::setBackgroundImageFillMode(Label::ImageFilledMode filled_mode) {
         _fill_mode = filled_mode;
+        imageFillModeChangedEvent(_fill_mode);
+    }
+
+    void Label::clearBackgroundImage() {
+        if (_bg_img) _bg_img.reset();
+    }
+
+    void Label::setBackgroundImageVisible(bool visible) {
+        _visible_img = visible;
     }
 
     const Texture *const Label::backgroundImage() const {
-        return _bg_img.get();
+        return (_bg_img ? _bg_img.get() : nullptr);
     }
 
     Label::ImageFilledMode Label::backgroundImageFilledMode() const {
         return _fill_mode;
+    }
+
+    bool Label::backgroundImageVisible() const {
+        return _visible_bg;
     }
 
     void Label::loadEvent() {
@@ -188,21 +221,23 @@ namespace MyEngine::Widget {
         if (_visible_bg) {
             renderer->drawRectangle(&_trigger_area);
         }
-        if (_visible_text) {
+
+        if (_visible_text || _visible_img) {
             renderer->setClipView(toGeometryInt(_trigger_area.geometry()));
-            TextSystem::global()->drawText(_text_id, Vector2(), renderer);
+            if (_visible_img && _bg_img) _bg_img->draw();
+            if (_visible_text) TextSystem::global()->drawText(_text_id, _text_pos, renderer);
             renderer->setClipView({});
         }
     }
 
     void Label::moveEvent(const Vector2 &position) {
         AbstractWidget::moveEvent(position);
-        if (_bg_img) updateBgIMGGeometry();
-        if (_text) updateTextGeometry();
     }
 
     void Label::resizeEvent(const Size &size) {
         AbstractWidget::resizeEvent(size);
+         if (_bg_img) updateBgIMGGeometry();
+         if (_text) updateTextGeometry();
     }
 
     void Label::visibleChangedEvent(bool visible) {
@@ -219,48 +254,94 @@ namespace MyEngine::Widget {
     }
 
     void Label::alignmentChangedEvent(Label::Alignment alignment) {
-
+        updateTextGeometry();
     }
 
     void Label::updateBgIMGGeometry() {
+        if (!_bg_img || !_visible_img) return;
         GeometryF* img_geo = GET_PROPERTY_PTR(this, LABEL_IMAGE_GEOMETRY, GeometryF);
+        Size* img_size = GET_PROPERTY_PTR(this, LABEL_IMAGE_SIZE, Size);
         auto con_geo = _trigger_area.geometry();
+        float scaled{};
+        const float ARs = con_geo.size.width / con_geo.size.height;
+        const float ARi = img_size->width / img_size->height;
+        Size new_size{};
+        Logger::log(std::format("CON_GEO: ({} x {})", con_geo.size.width, con_geo.size.height));
         switch (_fill_mode) {
+            case None:
+                _bg_img->property()->setGeometry(0, 0, img_size->width, img_size->height);
+                break;
             case Stretch:
-                img_geo->reset(con_geo);
+                _bg_img->property()->setGeometry(0, 0, con_geo.size.width, con_geo.size.height);
                 break;
             case Center:
+                _bg_img->property()->setGeometry(con_geo.size.width * 0.5f - img_size->width * 0.5f,
+                                                 con_geo.size.height * 0.5f - img_size->height * 0.5f,
+                                                 img_size->width, img_size->height);
+                break;
+            case Fit:
+                if (ARi > ARs) {
+                    scaled = con_geo.size.width / img_size->width;
+                } else {
+                    scaled = con_geo.size.height / img_size->height;
+                }
+                _bg_img->property()->resize(img_size->width * scaled, img_size->height * scaled);
+                new_size.reset(_bg_img->property()->size());
+                _bg_img->property()->move((con_geo.size.width - new_size.width) * 0.5f,
+                                          (con_geo.size.height - new_size.height) * 0.5f);
                 break;
             case Fill:
+                if (ARi > ARs) {
+                    scaled = con_geo.size.height / img_size->height;
+                } else {
+                    scaled = con_geo.size.width / img_size->width;
+                }
+                _bg_img->property()->resize(img_size->width * scaled, img_size->height * scaled);
+                new_size.reset(_bg_img->property()->size());
+                _bg_img->property()->move((con_geo.size.width - new_size.width) * 0.5f,
+                                          (con_geo.size.height - new_size.height) * 0.5f);
                 break;
+
         }
+        Logger::log(std::format("Update Geometry: {}, {}, {}, {}",
+                                _bg_img->property()->geometry().pos.x, _bg_img->property()->geometry().pos.y,
+                                _bg_img->property()->geometry().size.width, _bg_img->property()->geometry().size.height));
     }
 
     void Label::updateTextGeometry() {
-        GeometryF* text_geo = GET_PROPERTY_PTR(this, LABEL_TEXT_POSITION, GeometryF);
-        auto con_geo = _trigger_area.geometry();
+        const GeometryF& GEOMETRY = _trigger_area.geometry();
+        const Size& SIZE = _text->text_size;
         switch (_alignment)  {
             case LeftTop:
-                text_geo->resetPos(con_geo.pos);
+                _text_pos.reset(0, 0);
                 break;
             case CenterTop:
-
+                _text_pos.reset((GEOMETRY.size.width * 0.5f - SIZE.width * 0.5f),0);
                 break;
             case RightTop:
+                _text_pos.reset((GEOMETRY.size.width - SIZE.width),0);
                 break;
             case LeftMiddle:
+                _text_pos.reset(0,(GEOMETRY.size.height * 0.5f - SIZE.height * 0.5f));
                 break;
             case CenterMiddle:
-                text_geo->resetPos(con_geo.pos.x + (con_geo.size.width / 2) - text_geo->size.width / 2,
-                                   con_geo.pos.y + (con_geo.size.height / 2) - text_geo->size.height / 2);
+                _text_pos.reset((GEOMETRY.size.width * 0.5f - SIZE.width * 0.5f),
+                                 (GEOMETRY.size.height * 0.5f - SIZE.height * 0.5f));
                 break;
             case RightMiddle:
+                _text_pos.reset((GEOMETRY.size.width - SIZE.width),
+                                 (GEOMETRY.size.height * 0.5f - SIZE.height * 0.5f));
                 break;
             case LeftBottom:
+                _text_pos.reset(0,(GEOMETRY.size.height - SIZE.height));
                 break;
             case CenterBottom:
+                _text_pos.reset((GEOMETRY.size.width * 0.5f - SIZE.width * 0.5f),
+                                 (GEOMETRY.size.height - SIZE.height));
                 break;
             case RightBottom:
+                _text_pos.reset((GEOMETRY.size.width - SIZE.width),
+                                 (GEOMETRY.size.height - SIZE.height));
                 break;
         }
     }
