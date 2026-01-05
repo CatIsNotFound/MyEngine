@@ -44,282 +44,71 @@ namespace MyEngine::Widget {
     }
 
     void Button::setBackgroundImage(WidgetStatus status, Texture *texture, bool delete_later) {
-        Texture* prop = nullptr;
-        switch (status) {
-            case WidgetStatus::Normal:
-                if (hasProperty(BACKGROUND_IMAGE_STATUS_NORMAL)) {
-                    prop = GET_PROPERTY_PTR(this, BACKGROUND_IMAGE_STATUS_NORMAL, Texture)
-                    if (!delete_later) {
-                        prop->setImagePath(texture->imagePath());
-                        prop->property()->reset(*texture->property());
-                    } else {
-                        setProperty(BACKGROUND_IMAGE_STATUS_NORMAL,
-                                    new Texture(texture->imagePath(), texture->renderer()),
-                                    [](void* value) { delete static_cast<Texture*>(value); });
-                    }
-                } else {
-                    if (delete_later) {
-                        setProperty(BACKGROUND_IMAGE_STATUS_NORMAL,
-                                    new Texture(texture->imagePath(), texture->renderer()),
-                                    [](void* value) { delete static_cast<Texture*>(value); });
-                    } else {
-                        setProperty(BACKGROUND_IMAGE_STATUS_NORMAL,
-                                    new Texture(texture->imagePath(), texture->renderer()));
-                    }
-                }
-                break;
-            case WidgetStatus::Active:
-                if (hasProperty(BACKGROUND_IMAGE_STATUS_NORMAL)) {
-                    prop = GET_PROPERTY_PTR(this, BACKGROUND_IMAGE_STATUS_ACTIVE, Texture)
-                    if (!delete_later) {
-                        prop->setImagePath(texture->imagePath());
-                        prop->property()->reset(*texture->property());
-                    } else {
-                        setProperty(BACKGROUND_IMAGE_STATUS_ACTIVE,
-                                    new Texture(texture->imagePath(), texture->renderer()),
-                                    [](void* value) { delete static_cast<Texture*>(value); });
-                    }
-                } else {
-                    if (delete_later) {
-                        setProperty(BACKGROUND_IMAGE_STATUS_ACTIVE,
-                                    new Texture(texture->imagePath(), texture->renderer()),
-                                    [](void* value) { delete static_cast<Texture*>(value); });
-                    } else {
-                        setProperty(BACKGROUND_IMAGE_STATUS_ACTIVE,
-                                    new Texture(texture->imagePath(), texture->renderer()));
-                    }
-                }
-                break;
-            case WidgetStatus::Disabled:
-                if (hasProperty(BACKGROUND_IMAGE_STATUS_DISABLED)) {
-                    prop = GET_PROPERTY_PTR(this, BACKGROUND_IMAGE_STATUS_DISABLED, Texture)
-                    if (!delete_later) {
-                        prop->setImagePath(texture->imagePath());
-                        prop->property()->reset(*texture->property());
-                    } else {
-                        setProperty(BACKGROUND_IMAGE_STATUS_DISABLED,
-                                    new Texture(texture->imagePath(), texture->renderer()),
-                                    [](void* value) { delete static_cast<Texture*>(value); });
-                    }
-                } else {
-                    if (delete_later) {
-                        setProperty(BACKGROUND_IMAGE_STATUS_DISABLED,
-                                    new Texture(texture->imagePath(), texture->renderer()),
-                                    [](void* value) { delete static_cast<Texture*>(value); });
-                    } else {
-                        setProperty(BACKGROUND_IMAGE_STATUS_DISABLED,
-                                    new Texture(texture->imagePath(), texture->renderer()));
-                    }
-                }
-                break;
-            case WidgetStatus::Hovered:
-                if (hasProperty(BACKGROUND_IMAGE_STATUS_HOVERED)) {
-                    prop = GET_PROPERTY_PTR(this, BACKGROUND_IMAGE_STATUS_HOVERED, Texture)
-                    if (!delete_later) {
-                        prop->setImagePath(texture->imagePath());
-                        prop->property()->reset(*texture->property());
-                    } else {
-                        setProperty(BACKGROUND_IMAGE_STATUS_HOVERED,
-                                    new Texture(texture->imagePath(), texture->renderer()),
-                                    [](void* value) { delete static_cast<Texture*>(value); });
-                    }
-                } else {
-                    if (delete_later) {
-                        setProperty(BACKGROUND_IMAGE_STATUS_HOVERED,
-                                    new Texture(texture->imagePath(), texture->renderer()),
-                                    [](void* value) { delete static_cast<Texture*>(value); });
-                    } else {
-                        setProperty(BACKGROUND_IMAGE_STATUS_HOVERED,
-                                    new Texture(texture->imagePath(), texture->renderer()));
-                    }
-                }
-                break;
-            case WidgetStatus::Pressed:
-                if (hasProperty(BACKGROUND_IMAGE_STATUS_PRESSED)) {
-                    prop = GET_PROPERTY_PTR(this, BACKGROUND_IMAGE_STATUS_PRESSED, Texture)
-                    if (!delete_later) {
-                        prop->setImagePath(texture->imagePath());
-                        prop->property()->reset(*texture->property());
-                    } else {
-                        setProperty(BACKGROUND_IMAGE_STATUS_PRESSED,
-                                    new Texture(texture->imagePath(), texture->renderer()),
-                                    [](void* value) { delete static_cast<Texture*>(value); });
-                    }
-                } else {
-                    if (delete_later) {
-                        setProperty(BACKGROUND_IMAGE_STATUS_PRESSED,
-                                    new Texture(texture->imagePath(), texture->renderer()),
-                                    [](void* value) { delete static_cast<Texture*>(value); });
-                    } else {
-                        setProperty(BACKGROUND_IMAGE_STATUS_PRESSED,
-                                    new Texture(texture->imagePath(), texture->renderer()));
-                    }
-                }
-                break;
-            case WidgetStatus::Checked:
-                if (hasProperty(BACKGROUND_IMAGE_STATUS_CHECKED)) {
-                    prop = GET_PROPERTY_PTR(this, BACKGROUND_IMAGE_STATUS_CHECKED, Texture)
-                    if (!delete_later) {
-                        prop->setImagePath(texture->imagePath());
-                        prop->property()->reset(*texture->property());
-                    } else {
-                        setProperty(BACKGROUND_IMAGE_STATUS_CHECKED,
-                                    new Texture(texture->imagePath(), texture->renderer()),
-                                    [](void* value) { delete static_cast<Texture*>(value); });
-                    }
-                } else {
-                    if (delete_later) {
-                        setProperty(BACKGROUND_IMAGE_STATUS_CHECKED,
-                                    new Texture(texture->imagePath(), texture->renderer()),
-                                    [](void* value) { delete static_cast<Texture*>(value); });
-                    } else {
-                        setProperty(BACKGROUND_IMAGE_STATUS_CHECKED,
-                                    new Texture(texture->imagePath(), texture->renderer()));
-                    }
-                }
-                break;
+        if (!texture) {
+            Logger::log("Button: The specified texture is not valid!", Logger::Error);
+            return;
+        }
+
+        auto property_key = getBackgroundImagePropertyKey(status);
+        if (property_key.empty()) return;
+
+        if (hasProperty(property_key)) {
+            auto* prop = _GET_PROPERTY_PTR(this, property_key, Texture);
+            prop->setImagePath(texture->imagePath());
+            prop->property()->reset(*texture->property());
+        } else {
+            if (delete_later) {
+                setProperty(property_key,
+                           new Texture(texture->imagePath(), texture->renderer()),
+                           [](void* value) { delete static_cast<Texture*>(value); });
+            } else {
+                setProperty(property_key,
+                           new Texture(texture->imagePath(), texture->renderer()),
+                           [](void* value) { delete static_cast<Texture*>(value); });
+            }
         }
     }
 
     void Button::setBackgroundColor(WidgetStatus status, const SDL_Color &color) {
-        SDL_Color* prop = nullptr;
-        switch (status) {
-            case WidgetStatus::Normal:
-                if (hasProperty(BACKGROUND_COLOR_STATUS_NORMAL)) {
-                    prop = GET_PROPERTY_PTR(this, BACKGROUND_COLOR_STATUS_NORMAL, SDL_Color)
-                    prop->r = color.r; prop->g = color.g; prop->b = color.b; prop->a = color.a;
-                }
-                break;
-            case WidgetStatus::Active:
-                if (hasProperty(BACKGROUND_COLOR_STATUS_ACTIVE)) {
-                    prop = GET_PROPERTY_PTR(this, BACKGROUND_COLOR_STATUS_ACTIVE, SDL_Color)
-                    prop->r = color.r; prop->g = color.g; prop->b = color.b; prop->a = color.a;
-                }
-                break;
-            case WidgetStatus::Disabled:
-                if (hasProperty(BACKGROUND_COLOR_STATUS_DISABLED)) {
-                    prop = GET_PROPERTY_PTR(this, BACKGROUND_COLOR_STATUS_DISABLED, SDL_Color)
-                    prop->r = color.r; prop->g = color.g; prop->b = color.b; prop->a = color.a;
-                }
-                break;
-            case WidgetStatus::Hovered:
-                if (hasProperty(BACKGROUND_COLOR_STATUS_HOVERED)) {
-                    prop = GET_PROPERTY_PTR(this, BACKGROUND_COLOR_STATUS_HOVERED, SDL_Color)
-                    prop->r = color.r; prop->g = color.g; prop->b = color.b; prop->a = color.a;
-                }
-                break;
-            case WidgetStatus::Pressed:
-                if (hasProperty(BACKGROUND_COLOR_STATUS_PRESSED)) {
-                    prop = GET_PROPERTY_PTR(this, BACKGROUND_COLOR_STATUS_PRESSED, SDL_Color)
-                    prop->r = color.r; prop->g = color.g; prop->b = color.b; prop->a = color.a;
-                }
-                break;
-            case WidgetStatus::Checked:
-                if (hasProperty(BACKGROUND_COLOR_STATUS_CHECKED)) {
-                    prop = GET_PROPERTY_PTR(this, BACKGROUND_COLOR_STATUS_CHECKED, SDL_Color)
-                    prop->r = color.r; prop->g = color.g; prop->b = color.b; prop->a = color.a;
-                }
-                break;
+        auto property_key = getBackgroundColorPropertyKey(status);
+        if (property_key.empty()) return;
+
+        if (hasProperty(property_key)) {
+            auto* prop = _GET_PROPERTY_PTR(this, property_key, SDL_Color);
+            prop->r = color.r; prop->g = color.g; prop->b = color.b; prop->a = color.a;
         }
     }
 
     void Button::setTextColor(WidgetStatus status, const SDL_Color &color) {
-        SDL_Color* prop = nullptr;
-        switch (status) {
-            case WidgetStatus::Normal:
-                if (hasProperty(TEXT_COLOR_STATUS_NORMAL)) {
-                    prop = GET_PROPERTY_PTR(this, TEXT_COLOR_STATUS_NORMAL, SDL_Color)
-                    prop->r = color.r; prop->g = color.g; prop->b = color.b; prop->a = color.a;
-                }
-                break;
-            case WidgetStatus::Active:
-                if (hasProperty(TEXT_COLOR_STATUS_ACTIVE)) {
-                    prop = GET_PROPERTY_PTR(this, TEXT_COLOR_STATUS_ACTIVE, SDL_Color)
-                    prop->r = color.r; prop->g = color.g; prop->b = color.b; prop->a = color.a;
-                }
-                break;
-            case WidgetStatus::Disabled:
-                if (hasProperty(TEXT_COLOR_STATUS_DISABLED)) {
-                    prop = GET_PROPERTY_PTR(this, TEXT_COLOR_STATUS_DISABLED, SDL_Color)
-                    prop->r = color.r; prop->g = color.g; prop->b = color.b; prop->a = color.a;
-                }
-                break;
-            case WidgetStatus::Hovered:
-                if (hasProperty(TEXT_COLOR_STATUS_HOVERED)) {
-                    prop = GET_PROPERTY_PTR(this, TEXT_COLOR_STATUS_HOVERED, SDL_Color)
-                    prop->r = color.r; prop->g = color.g; prop->b = color.b; prop->a = color.a;
-                }
-                break;
-            case WidgetStatus::Pressed:
-                if (hasProperty(TEXT_COLOR_STATUS_PRESSED)) {
-                    prop = GET_PROPERTY_PTR(this, TEXT_COLOR_STATUS_PRESSED, SDL_Color)
-                    prop->r = color.r; prop->g = color.g; prop->b = color.b; prop->a = color.a;
-                }
-                break;
-            case WidgetStatus::Checked:
-                if (hasProperty(TEXT_COLOR_STATUS_CHECKED)) {
-                    prop = GET_PROPERTY_PTR(this, TEXT_COLOR_STATUS_CHECKED, SDL_Color)
-                    prop->r = color.r; prop->g = color.g; prop->b = color.b; prop->a = color.a;
-                }
-                break;
+        auto property_key = getTextColorPropertyKey(status);
+        if (property_key.empty()) return;
+
+        if (hasProperty(property_key)) {
+            auto* prop = _GET_PROPERTY_PTR(this, property_key, SDL_Color);
+            prop->r = color.r; prop->g = color.g; prop->b = color.b; prop->a = color.a;
         }
     }
 
     const Texture *Button::backgroundImage(WidgetStatus status) const {
-        switch (status) {
-            case WidgetStatus::Normal:
-                if (!hasProperty(BACKGROUND_IMAGE_STATUS_NORMAL)) return nullptr;
-                return GET_PROPERTY_PTR(this, BACKGROUND_IMAGE_STATUS_NORMAL, Texture)
-            case WidgetStatus::Active:
-                if (!hasProperty(BACKGROUND_IMAGE_STATUS_ACTIVE)) return nullptr;
-                return GET_PROPERTY_PTR(this, BACKGROUND_IMAGE_STATUS_ACTIVE, Texture)
-            case WidgetStatus::Disabled:
-                if (!hasProperty(BACKGROUND_IMAGE_STATUS_DISABLED)) return nullptr;
-                return GET_PROPERTY_PTR(this, BACKGROUND_IMAGE_STATUS_DISABLED, Texture)
-            case WidgetStatus::Hovered:
-                if (!hasProperty(BACKGROUND_IMAGE_STATUS_HOVERED)) return nullptr;
-                return GET_PROPERTY_PTR(this, BACKGROUND_IMAGE_STATUS_HOVERED, Texture)
-            case WidgetStatus::Pressed:
-                if (!hasProperty(BACKGROUND_IMAGE_STATUS_PRESSED)) return nullptr;
-                return GET_PROPERTY_PTR(this, BACKGROUND_IMAGE_STATUS_PRESSED, Texture)
-            case WidgetStatus::Checked:
-                if (!hasProperty(BACKGROUND_IMAGE_STATUS_CHECKED)) return nullptr;
-                return GET_PROPERTY_PTR(this, BACKGROUND_IMAGE_STATUS_CHECKED, Texture)
-        }
+        auto property_key = getBackgroundImagePropertyKey(status);
+        if (property_key.empty() || !hasProperty(property_key)) return nullptr;
+        return _GET_PROPERTY_PTR(this, property_key, Texture);
     }
 
     const SDL_Color &Button::backgroundColor(WidgetStatus status) const {
-        switch (status) {
-            case WidgetStatus::Normal:
-                return *GET_PROPERTY_PTR(this, BACKGROUND_COLOR_STATUS_NORMAL, SDL_Color)
-            case WidgetStatus::Active:
-                return *GET_PROPERTY_PTR(this, BACKGROUND_COLOR_STATUS_ACTIVE, SDL_Color)
-            case WidgetStatus::Disabled:
-                return *GET_PROPERTY_PTR(this, BACKGROUND_COLOR_STATUS_DISABLED, SDL_Color)
-            case WidgetStatus::Hovered:
-                return *GET_PROPERTY_PTR(this, BACKGROUND_COLOR_STATUS_HOVERED, SDL_Color)
-            case WidgetStatus::Pressed:
-                return *GET_PROPERTY_PTR(this, BACKGROUND_COLOR_STATUS_PRESSED, SDL_Color)
-            case WidgetStatus::Checked:
-                return *GET_PROPERTY_PTR(this, BACKGROUND_COLOR_STATUS_CHECKED, SDL_Color)
-        }
+        auto property_key = getBackgroundColorPropertyKey(status);
+        return *_GET_PROPERTY_PTR(this, property_key, SDL_Color);
     }
 
     const SDL_Color &Button::textColor(WidgetStatus status) const {
-        switch (status) {
-            case WidgetStatus::Normal:
-                return *GET_PROPERTY_PTR(this, TEXT_COLOR_STATUS_NORMAL, SDL_Color)
-            case WidgetStatus::Active:
-                return *GET_PROPERTY_PTR(this, TEXT_COLOR_STATUS_ACTIVE, SDL_Color)
-            case WidgetStatus::Disabled:
-                return *GET_PROPERTY_PTR(this, TEXT_COLOR_STATUS_DISABLED, SDL_Color)
-            case WidgetStatus::Hovered:
-                return *GET_PROPERTY_PTR(this, TEXT_COLOR_STATUS_HOVERED, SDL_Color)
-            case WidgetStatus::Pressed:
-                return *GET_PROPERTY_PTR(this, TEXT_COLOR_STATUS_PRESSED, SDL_Color)
-            case WidgetStatus::Checked:
-                return *GET_PROPERTY_PTR(this, TEXT_COLOR_STATUS_CHECKED, SDL_Color)
-        }
+        auto property_key = getTextColorPropertyKey(status);
+        return *_GET_PROPERTY_PTR(this, property_key, SDL_Color);
+    }
+
+    void Button::loadEvent() {
+        AbstractWidget::loadEvent();
+        updateStatus(WidgetStatus::Normal);
+        Label::setTextColor(RGBAColor::MixGrayDark);
     }
 
     void Button::focusInEvent() {
@@ -384,7 +173,7 @@ namespace MyEngine::Widget {
     }
 
     void Button::keyPressedEvent(SDL_Scancode scancode) {
-        AbstractWidget::keyPressedEvent(SDL_SCANCODE_KP_00);
+        AbstractWidget::keyPressedEvent(scancode);
         if (_event) _event();
         if (_triggers.contains(TriggerAction::KeyPressed)) {
             _triggers[TriggerAction::KeyPressed]();
@@ -449,76 +238,106 @@ namespace MyEngine::Widget {
     }
 
     void Button::initStatus() {
-        NEW_PROPERTY_WITH_DEFAULT_VALUE_PTR(this, BACKGROUND_COLOR_STATUS_NORMAL, SDL_Color, RGBAColor::BlueIce)
-        NEW_PROPERTY_WITH_DEFAULT_VALUE_PTR(this, BACKGROUND_COLOR_STATUS_ACTIVE, SDL_Color, RGBAColor::BlueBaby)
-        NEW_PROPERTY_WITH_DEFAULT_VALUE_PTR(this, BACKGROUND_COLOR_STATUS_DISABLED, SDL_Color, RGBAColor::MixGrayLight)
-        NEW_PROPERTY_WITH_DEFAULT_VALUE_PTR(this, BACKGROUND_COLOR_STATUS_HOVERED, SDL_Color, RGBAColor::BlueLight)
-        NEW_PROPERTY_WITH_DEFAULT_VALUE_PTR(this, BACKGROUND_COLOR_STATUS_PRESSED, SDL_Color, RGBAColor::MixGray)
-        NEW_PROPERTY_WITH_DEFAULT_VALUE_PTR(this, BACKGROUND_COLOR_STATUS_CHECKED, SDL_Color, RGBAColor::BlueSky)
+        _NEW_PROPERTY_WITH_DEFAULT_VALUE_PTR(this, ENGINE_PROP_BACKGROUND_COLOR_STATUS_NORMAL, SDL_Color, RGBAColor::BlueIce);
+        _NEW_PROPERTY_WITH_DEFAULT_VALUE_PTR(this, ENGINE_PROP_BACKGROUND_COLOR_STATUS_ACTIVE, SDL_Color, RGBAColor::BlueBaby);
+        _NEW_PROPERTY_WITH_DEFAULT_VALUE_PTR(this, ENGINE_PROP_BACKGROUND_COLOR_STATUS_DISABLED, SDL_Color, RGBAColor::MixGrayLight);
+        _NEW_PROPERTY_WITH_DEFAULT_VALUE_PTR(this, ENGINE_PROP_BACKGROUND_COLOR_STATUS_HOVERED, SDL_Color, RGBAColor::BlueLight);
+        _NEW_PROPERTY_WITH_DEFAULT_VALUE_PTR(this, ENGINE_PROP_BACKGROUND_COLOR_STATUS_PRESSED, SDL_Color, RGBAColor::MixGray);
+        _NEW_PROPERTY_WITH_DEFAULT_VALUE_PTR(this, ENGINE_PROP_BACKGROUND_COLOR_STATUS_CHECKED, SDL_Color, RGBAColor::BlueSky);
 
-        NEW_PROPERTY_WITH_DEFAULT_VALUE_PTR(this, TEXT_COLOR_STATUS_NORMAL, SDL_Color, RGBAColor::MixGrayDark)
-        NEW_PROPERTY_WITH_DEFAULT_VALUE_PTR(this, TEXT_COLOR_STATUS_ACTIVE, SDL_Color, RGBAColor::BlueCobalt)
-        NEW_PROPERTY_WITH_DEFAULT_VALUE_PTR(this, TEXT_COLOR_STATUS_DISABLED, SDL_Color, RGBAColor::MixGray)
-        NEW_PROPERTY_WITH_DEFAULT_VALUE_PTR(this, TEXT_COLOR_STATUS_HOVERED, SDL_Color, RGBAColor::BlueRoyal)
-        NEW_PROPERTY_WITH_DEFAULT_VALUE_PTR(this, TEXT_COLOR_STATUS_PRESSED, SDL_Color, RGBAColor::BluePrussian)
-        NEW_PROPERTY_WITH_DEFAULT_VALUE_PTR(this, TEXT_COLOR_STATUS_CHECKED, SDL_Color, RGBAColor::BlueNavy)
-        updateStatus(WidgetStatus::Normal);
-        Label::setFontColor(RGBAColor::MixGrayDark);
-
+        _NEW_PROPERTY_WITH_DEFAULT_VALUE_PTR(this, ENGINE_PROP_TEXT_COLOR_STATUS_NORMAL, SDL_Color, RGBAColor::MixGrayDark);
+        _NEW_PROPERTY_WITH_DEFAULT_VALUE_PTR(this, ENGINE_PROP_TEXT_COLOR_STATUS_ACTIVE, SDL_Color, RGBAColor::BlueCobalt);
+        _NEW_PROPERTY_WITH_DEFAULT_VALUE_PTR(this, ENGINE_PROP_TEXT_COLOR_STATUS_DISABLED, SDL_Color, RGBAColor::MixGray);
+        _NEW_PROPERTY_WITH_DEFAULT_VALUE_PTR(this, ENGINE_PROP_TEXT_COLOR_STATUS_HOVERED, SDL_Color, RGBAColor::BlueRoyal);
+        _NEW_PROPERTY_WITH_DEFAULT_VALUE_PTR(this, ENGINE_PROP_TEXT_COLOR_STATUS_PRESSED, SDL_Color, RGBAColor::BluePrussian);
+        _NEW_PROPERTY_WITH_DEFAULT_VALUE_PTR(this, ENGINE_PROP_TEXT_COLOR_STATUS_CHECKED, SDL_Color, RGBAColor::BlueNavy);
     }
 
     void Button::updateStatus(WidgetStatus status) {
-        SDL_Color back_color{}, text_color{};
-        Texture* _img = nullptr;
+        _wid_status = status;
+
+        auto bg_color = getBackgroundColorForStatus(status);
+        auto text_color = getTextColorForStatus(status);
+
+        Label::setBackgroundColor(bg_color);
+        Label::setTextColor(text_color);
+
+        auto* texture = getBackgroundImageForStatus(status);
+        if (texture && !texture->imagePath().empty()) {
+            Label::setBackgroundImage(texture->imagePath());
+        }
+    }
+
+    std::string Button::getBackgroundImagePropertyKey(WidgetStatus status) const {
         switch (status) {
-            case WidgetStatus::Normal:
-                back_color = *GET_PROPERTY_PTR(this, BACKGROUND_COLOR_STATUS_NORMAL, SDL_Color)
-                text_color = *GET_PROPERTY_PTR(this, TEXT_COLOR_STATUS_NORMAL, SDL_Color)
-                if (hasProperty(BACKGROUND_IMAGE_STATUS_NORMAL)) {
-                    _img = GET_PROPERTY_PTR(this, BACKGROUND_IMAGE_STATUS_NORMAL, Texture)
-                }
-                break;
-            case WidgetStatus::Active:
-                back_color = *GET_PROPERTY_PTR(this, BACKGROUND_COLOR_STATUS_ACTIVE, SDL_Color)
-                text_color = *GET_PROPERTY_PTR(this, TEXT_COLOR_STATUS_ACTIVE, SDL_Color)
-                if (hasProperty(BACKGROUND_IMAGE_STATUS_ACTIVE)) {
-                    _img = GET_PROPERTY_PTR(this, BACKGROUND_IMAGE_STATUS_ACTIVE, Texture)
-                }
-                break;
-            case WidgetStatus::Disabled:
-                back_color = *GET_PROPERTY_PTR(this, BACKGROUND_COLOR_STATUS_DISABLED, SDL_Color)
-                text_color = *GET_PROPERTY_PTR(this, TEXT_COLOR_STATUS_DISABLED, SDL_Color)
-                if (hasProperty(BACKGROUND_IMAGE_STATUS_DISABLED)) {
-                    _img = GET_PROPERTY_PTR(this, BACKGROUND_IMAGE_STATUS_DISABLED, Texture)
-                }
-                break;
-            case WidgetStatus::Hovered:
-                back_color = *GET_PROPERTY_PTR(this, BACKGROUND_COLOR_STATUS_HOVERED, SDL_Color)
-                text_color = *GET_PROPERTY_PTR(this, TEXT_COLOR_STATUS_HOVERED, SDL_Color)
-                if (hasProperty(BACKGROUND_IMAGE_STATUS_HOVERED)) {
-                    _img = GET_PROPERTY_PTR(this, BACKGROUND_IMAGE_STATUS_HOVERED, Texture)
-                }
-                break;
-            case WidgetStatus::Pressed:
-                back_color = *GET_PROPERTY_PTR(this, BACKGROUND_COLOR_STATUS_PRESSED, SDL_Color)
-                text_color = *GET_PROPERTY_PTR(this, TEXT_COLOR_STATUS_PRESSED, SDL_Color)
-                if (hasProperty(BACKGROUND_IMAGE_STATUS_PRESSED)) {
-                    _img = GET_PROPERTY_PTR(this, BACKGROUND_IMAGE_STATUS_PRESSED, Texture)
-                }
-                break;
-            case WidgetStatus::Checked:
-                back_color = *GET_PROPERTY_PTR(this, BACKGROUND_COLOR_STATUS_CHECKED, SDL_Color)
-                text_color = *GET_PROPERTY_PTR(this, TEXT_COLOR_STATUS_CHECKED, SDL_Color)
-                if (hasProperty(BACKGROUND_IMAGE_STATUS_CHECKED)) {
-                    _img = GET_PROPERTY_PTR(this, BACKGROUND_IMAGE_STATUS_CHECKED, Texture)
-                }
-                break;
+            case WidgetStatus::Normal: return ENGINE_PROP_BACKGROUND_IMAGE_STATUS_NORMAL;
+            case WidgetStatus::Active: return ENGINE_PROP_BACKGROUND_IMAGE_STATUS_ACTIVE;
+            case WidgetStatus::Disabled: return ENGINE_PROP_BACKGROUND_IMAGE_STATUS_DISABLED;
+            case WidgetStatus::Hovered: return ENGINE_PROP_BACKGROUND_IMAGE_STATUS_HOVERED;
+            case WidgetStatus::Pressed: return ENGINE_PROP_BACKGROUND_IMAGE_STATUS_PRESSED;
+            case WidgetStatus::Checked: return ENGINE_PROP_BACKGROUND_IMAGE_STATUS_CHECKED;
+            default: return "";
         }
-        Label::setBackgroundColor(back_color);
-        Label::setFontColor(text_color);
-        if (_img) {
-            Label::setBackgroundImage(_img);
+    }
+
+    std::string Button::getBackgroundColorPropertyKey(WidgetStatus status) const {
+        switch (status) {
+            case WidgetStatus::Normal: return ENGINE_PROP_BACKGROUND_COLOR_STATUS_NORMAL;
+            case WidgetStatus::Active: return ENGINE_PROP_BACKGROUND_COLOR_STATUS_ACTIVE;
+            case WidgetStatus::Disabled: return ENGINE_PROP_BACKGROUND_COLOR_STATUS_DISABLED;
+            case WidgetStatus::Hovered: return ENGINE_PROP_BACKGROUND_COLOR_STATUS_HOVERED;
+            case WidgetStatus::Pressed: return ENGINE_PROP_BACKGROUND_COLOR_STATUS_PRESSED;
+            case WidgetStatus::Checked: return ENGINE_PROP_BACKGROUND_COLOR_STATUS_CHECKED;
+            default: return "";
         }
+    }
+
+    std::string Button::getTextColorPropertyKey(WidgetStatus status) const {
+        switch (status) {
+            case WidgetStatus::Normal: return ENGINE_PROP_TEXT_COLOR_STATUS_NORMAL;
+            case WidgetStatus::Active: return ENGINE_PROP_TEXT_COLOR_STATUS_ACTIVE;
+            case WidgetStatus::Disabled: return ENGINE_PROP_TEXT_COLOR_STATUS_DISABLED;
+            case WidgetStatus::Hovered: return ENGINE_PROP_TEXT_COLOR_STATUS_HOVERED;
+            case WidgetStatus::Pressed: return ENGINE_PROP_TEXT_COLOR_STATUS_PRESSED;
+            case WidgetStatus::Checked: return ENGINE_PROP_TEXT_COLOR_STATUS_CHECKED;
+            default: return "";
+        }
+    }
+
+    SDL_Color Button::getBackgroundColorForStatus(WidgetStatus status) const {
+        std::string property_key = getBackgroundColorPropertyKey(status);
+        if (hasProperty(property_key)) {
+            return *_GET_PROPERTY_PTR(this, property_key, SDL_Color);
+        }
+        
+        property_key = getBackgroundColorPropertyKey(WidgetStatus::Normal);
+        if (hasProperty(property_key)) {
+            return *_GET_PROPERTY_PTR(this, property_key, SDL_Color);
+        }
+        
+        return SDL_Color{0, 0, 0, 255};
+    }
+
+    SDL_Color Button::getTextColorForStatus(WidgetStatus status) const {
+        std::string property_key = getTextColorPropertyKey(status);
+        if (hasProperty(property_key)) {
+            return *_GET_PROPERTY_PTR(this, property_key, SDL_Color);
+        }
+        
+        property_key = getTextColorPropertyKey(WidgetStatus::Normal);
+        if (hasProperty(property_key)) {
+            return *_GET_PROPERTY_PTR(this, property_key, SDL_Color);
+        }
+        
+        return SDL_Color{255, 255, 255, 255};
+    }
+
+    Texture* Button::getBackgroundImageForStatus(WidgetStatus status) const {
+        auto property_key = getBackgroundImagePropertyKey(status);
+        if (!property_key.empty() && hasProperty(property_key)) {
+            return _GET_PROPERTY_PTR(this, property_key, Texture);
+        }
+        return nullptr;
     }
 }
 

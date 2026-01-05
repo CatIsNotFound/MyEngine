@@ -3,7 +3,22 @@
 #define MYENGINE_WIDGETS_LABEL_H
 #include "AbstractWidget.h"
 
-#define LABEL_ORIGINAL_IMAGE_SIZE     "Label.imageOriginalSize"
+#define ENGINE_PROP_ORIGINAL_IMAGE_SIZE       "BackgroundImage.originalImageSize"
+#define ENGINE_PROP_TEXT_COLOR                "TextColor"
+#define ENGINE_PROP_FONT_NAME                 "Font.name"
+#define ENGINE_PROP_FONT_SIZE                 "Font.size"
+#define ENGINE_SIGNAL_LABEL_TEXT_CHANGED                         0b1
+#define ENGINE_SIGNAL_LABEL_TEXT_COLOR_CHANGED                   0b10
+#define ENGINE_SIGNAL_LABEL_FONT_CHANGED                         0b100
+#define ENGINE_SIGNAL_LABEL_FONT_SIZE_CHANGED                    0b1000
+#define ENGINE_SIGNAL_LABEL_AUTO_RESIZED_TEXT_CHANGED            0b10000
+#define ENGINE_SIGNAL_LABEL_TEXT_ALIGNMENT_CHANGED               0b100000
+#define ENGINE_SIGNAL_LABEL_BACKGROUND_IMAGE_CHANGED             0b1000000
+#define ENGINE_SIGNAL_LABEL_BACKGROUND_IMAGE_FILLED_CHANGED      0b10000000
+#define ENGINE_SIGNAL_LABEL_SIZE_CHANGED                         0b100000000
+
+
+
 namespace MyEngine {
     namespace Widget {
         class Label : public AbstractWidget {
@@ -38,10 +53,10 @@ namespace MyEngine {
             void setText(const std::string& text);
             [[nodiscard]] const std::string& text() const;
             void appendText(const std::string& text);
-            void setFontColor(const SDL_Color& color);
-            void setFontColor(uint64_t hex_code, bool alpha = false);
+            void setTextColor(const SDL_Color& color);
+            void setTextColor(uint64_t hex_code, bool alpha = false);
             void setFontSize(float size);
-            [[nodiscard]] const SDL_Color& fontColor() const;
+            [[nodiscard]] const SDL_Color& textColor() const;
             [[nodiscard]] float fontSize() const;
 
             void setTextAlignment(Alignment alignment);
@@ -86,10 +101,16 @@ namespace MyEngine {
             bool _visible_img{};
             bool _auto_resize_by_text{};
             Font* _font{};
-            SDL_Color _text_color{};
             TextSystem::Text* _text{};
             std::shared_ptr<Texture> _bg_img{};
+            std::vector<std::shared_ptr<Texture>> _temp_imgs{};
             std::string _none_str{}, _string{};
+            /**
+             * @brief 改变信号
+             * @details 使用 `uint16_t` 类型，采用二进制的方式表示各个状态是否有所改变.
+             * @details 通常使用 `ENGINE_SIGNAL_LABEL_XXXXX` 表示每个信号位
+             **/
+            uint16_t _changer_signal{};
             ImageFilledMode _fill_mode{};
             Alignment _alignment{};
             Vector2 _text_pos{};

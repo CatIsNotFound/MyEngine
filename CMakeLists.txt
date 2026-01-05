@@ -70,10 +70,6 @@ if (BUILD_SHARED_LIBS_ONLY)
             src/Algorithm/Collider.h
             src/MultiThread/ThreadPool.h
             src/Utils/Logger.h
-            src/UI/Control.h
-            src/UI/Control.cpp
-            src/UI/Button.cpp
-            src/UI/Button.h
             src/Utils/FileSystem.cpp
             src/Utils/FileSystem.h
             src/Utils/RGBAColor.h
@@ -83,7 +79,6 @@ if (BUILD_SHARED_LIBS_ONLY)
             src/Game/SpriteSheet.h
             src/Utils/SysMemory.h
             src/Utils/SysMemory.cpp
-            src/UI/All.h
             src/Game/GObject.cpp
             src/Game/GObject.h
             src/Game/Collider.cpp
@@ -126,10 +121,6 @@ else ()
             src/Algorithm/Collider.h
             src/MultiThread/ThreadPool.h
             src/Utils/Logger.h
-            src/UI/Control.h
-            src/UI/Control.cpp
-            src/UI/Button.cpp
-            src/UI/Button.h
             src/Utils/FileSystem.cpp
             src/Utils/FileSystem.h
             src/Utils/RGBAColor.h
@@ -139,7 +130,6 @@ else ()
             src/Game/SpriteSheet.h
             src/Utils/SysMemory.h
             src/Utils/SysMemory.cpp
-            src/UI/All.h
             src/Game/GObject.cpp
             src/Game/GObject.h
             src/Game/Collider.cpp

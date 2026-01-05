@@ -40,6 +40,8 @@ namespace MyEngine {
          *
          */
         static const std::string& currentPath();
+
+        static std::string getDirectoryFromFile(const std::string& file_path);
         /**
          * @brief 指定文件是否存在
          * @param path 指定文件路径

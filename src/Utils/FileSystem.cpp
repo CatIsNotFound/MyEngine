@@ -16,6 +16,20 @@ namespace MyEngine {
         return _main_path;
     }
 
+    std::string FileSystem::getDirectoryFromFile(const std::string &file_path) {
+        if (isFile(file_path)) {
+            auto _out = file_path;
+            if (file_path.back() == '/' || file_path.back() == '\\') {
+                _out.pop_back();
+            }
+            auto pos = _out.find_last_of('/');
+            if (pos == std::string::npos) pos = _out.find_last_of('\\');
+            return _out.substr(0, pos);
+        }
+        if (isDir(file_path)) return file_path;
+        return {};
+    }
+
     bool FileSystem::isFile(const std::string &path) {
         if (path.front() != '.') {
             return std::filesystem::is_regular_file(path);

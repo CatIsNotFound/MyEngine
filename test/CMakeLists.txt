@@ -15,7 +15,10 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         SDL3_ttf::SDL3_ttf
 )
 
-
+if (MSVC)
+    message("Using MSVC options")
+    add_compile_options(/EHsc /W4 /D_DEBUG /MDd)
+endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin

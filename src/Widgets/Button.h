@@ -3,26 +3,26 @@
 #define MYENGINE_WIDGETS_BUTTON_H
 #include "Label.h"
 
-#define BACKGROUND_IMAGE_STATUS_NORMAL    "BackgroundImage.status.normal"
-#define BACKGROUND_IMAGE_STATUS_ACTIVE    "BackgroundImage.status.active"
-#define BACKGROUND_IMAGE_STATUS_DISABLED  "BackgroundImage.status.disabled"
-#define BACKGROUND_IMAGE_STATUS_HOVERED   "BackgroundImage.status.hovered"
-#define BACKGROUND_IMAGE_STATUS_PRESSED   "BackgroundImage.status.pressed"
-#define BACKGROUND_IMAGE_STATUS_CHECKED   "BackgroundImage.status.checked"
+#define ENGINE_PROP_BACKGROUND_IMAGE_STATUS_NORMAL    "BackgroundImage.status.normal"
+#define ENGINE_PROP_BACKGROUND_IMAGE_STATUS_ACTIVE    "BackgroundImage.status.active"
+#define ENGINE_PROP_BACKGROUND_IMAGE_STATUS_DISABLED  "BackgroundImage.status.disabled"
+#define ENGINE_PROP_BACKGROUND_IMAGE_STATUS_HOVERED   "BackgroundImage.status.hovered"
+#define ENGINE_PROP_BACKGROUND_IMAGE_STATUS_PRESSED   "BackgroundImage.status.pressed"
+#define ENGINE_PROP_BACKGROUND_IMAGE_STATUS_CHECKED   "BackgroundImage.status.checked"
 
-#define TEXT_COLOR_STATUS_NORMAL          "TextColor.status.normal"
-#define TEXT_COLOR_STATUS_ACTIVE          "TextColor.status.active"
-#define TEXT_COLOR_STATUS_DISABLED        "TextColor.status.disabled"
-#define TEXT_COLOR_STATUS_HOVERED         "TextColor.status.hovered"
-#define TEXT_COLOR_STATUS_PRESSED         "TextColor.status.pressed"
-#define TEXT_COLOR_STATUS_CHECKED         "TextColor.status.checked"
+#define ENGINE_PROP_TEXT_COLOR_STATUS_NORMAL          "TextColor.status.normal"
+#define ENGINE_PROP_TEXT_COLOR_STATUS_ACTIVE          "TextColor.status.active"
+#define ENGINE_PROP_TEXT_COLOR_STATUS_DISABLED        "TextColor.status.disabled"
+#define ENGINE_PROP_TEXT_COLOR_STATUS_HOVERED         "TextColor.status.hovered"
+#define ENGINE_PROP_TEXT_COLOR_STATUS_PRESSED         "TextColor.status.pressed"
+#define ENGINE_PROP_TEXT_COLOR_STATUS_CHECKED         "TextColor.status.checked"
 
-#define BACKGROUND_COLOR_STATUS_NORMAL      "BackgroundColor.status.normal"
-#define BACKGROUND_COLOR_STATUS_ACTIVE      "BackgroundColor.status.active"
-#define BACKGROUND_COLOR_STATUS_DISABLED    "BackgroundColor.status.disabled"
-#define BACKGROUND_COLOR_STATUS_HOVERED     "BackgroundColor.status.hovered"
-#define BACKGROUND_COLOR_STATUS_PRESSED     "BackgroundColor.status.pressed"
-#define BACKGROUND_COLOR_STATUS_CHECKED     "BackgroundColor.status.checked"
+#define ENGINE_PROP_BACKGROUND_COLOR_STATUS_NORMAL      "BackgroundColor.status.normal"
+#define ENGINE_PROP_BACKGROUND_COLOR_STATUS_ACTIVE      "BackgroundColor.status.active"
+#define ENGINE_PROP_BACKGROUND_COLOR_STATUS_DISABLED    "BackgroundColor.status.disabled"
+#define ENGINE_PROP_BACKGROUND_COLOR_STATUS_HOVERED     "BackgroundColor.status.hovered"
+#define ENGINE_PROP_BACKGROUND_COLOR_STATUS_PRESSED     "BackgroundColor.status.pressed"
+#define ENGINE_PROP_BACKGROUND_COLOR_STATUS_CHECKED     "BackgroundColor.status.checked"
 
 
 namespace MyEngine {
@@ -48,6 +48,7 @@ namespace MyEngine {
             [[nodiscard]] const SDL_Color& textColor(WidgetStatus status) const;
 
         protected:
+            void loadEvent() override;
             void focusInEvent() override;
             void focusOutEvent() override;
             void mouseEnteredEvent() override;
@@ -70,7 +71,14 @@ namespace MyEngine {
         private:
             void initStatus();
             void updateStatus(WidgetStatus status);
-        private:
+
+            [[nodiscard]] std::string getBackgroundImagePropertyKey(WidgetStatus status) const;
+            [[nodiscard]] std::string getBackgroundColorPropertyKey(WidgetStatus status) const;
+            [[nodiscard]] std::string getTextColorPropertyKey(WidgetStatus status) const;
+            [[nodiscard]] SDL_Color getBackgroundColorForStatus(WidgetStatus status) const;
+            [[nodiscard]] SDL_Color getTextColorForStatus(WidgetStatus status) const;
+            [[nodiscard]] Texture* getBackgroundImageForStatus(WidgetStatus status) const;
+            
             WidgetStatus _wid_status{};
             bool _checkable{}, _checked{};
             std::function<void()> _event{};

@@ -5,19 +5,21 @@
 #include "../Utils/Cursor.h"
 #include "../Utils/Variant.h"
 
-#define NEW_PROPERTY_PTR(POINTER, NAME, CLASS)                                   \
+#define _NEW_PROPERTY_PTR(POINTER, NAME, CLASS)                                   \
 POINTER->setProperty(NAME, static_cast<void*>(new CLASS()), [](void* v) {        \
     delete static_cast<CLASS*>(v);                                               \
-});
+})
 
-#define NEW_PROPERTY_WITH_DEFAULT_VALUE_PTR(POINTER, NAME, CLASS, DEFAULT_VALUE)          \
+#define _NEW_PROPERTY_WITH_DEFAULT_VALUE_PTR(POINTER, NAME, CLASS, DEFAULT_VALUE)          \
 POINTER->setProperty(NAME, static_cast<void*>(new CLASS(DEFAULT_VALUE)), [](void* v) {    \
     delete static_cast<CLASS*>(v);                                                        \
-});
+})
 
-#define GET_PROPERTY_PTR(POINTER, NAME, CLASS)                                   \
-static_cast<CLASS*>(POINTER->property(NAME)->toPointer());
+#define _SET_PROPERTY_PTR(POINTER, NAME, OBJECT) \
+POINTER->setProperty(NAME, OBJECT)
 
+#define _GET_PROPERTY_PTR(POINTER, NAME, CLASS)                                   \
+static_cast<CLASS*>(POINTER->property(NAME)->toPointer())
 
 namespace MyEngine {
     namespace Widget {
@@ -100,7 +102,7 @@ namespace MyEngine {
             void setProperty(const std::string& name, float value);
             void setProperty(const std::string& name, double value);
             void setProperty(const std::string& name, const char* value);
-            void setProperty(const std::string& name, std::string& value);
+            void setProperty(const std::string& name, const std::string& value);
             void setProperty(const std::string& name, std::string&& value);
             void setProperty(const std::string& name, void* value);
             void setProperty(const std::string& name, void* value, std::function<void(void*)> deleter);
@@ -141,7 +143,7 @@ namespace MyEngine {
             virtual void endedInputEvent();
             virtual void inputEvent(const char* string);
             virtual void propertyChanged(const std::string& property, const Variant& variant);
-            virtual void fontChanged(Font* font);
+
         protected:
             std::string _object_name{};
             Graphics::Rectangle _trigger_area;

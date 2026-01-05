@@ -67,6 +67,20 @@ namespace MyEngine {
             uint8_t second;
             /// @see Weekday
             Weekday weekday;
+
+            bool operator==(const DT& other) {
+                if (this->year != other.year) return false;
+                if (this->month != other.month) return false;
+                if (this->day != other.day) return false;
+                if (this->hour != other.hour) return false;
+                if (this->minute != other.minute) return false;
+                if (this->second != other.second) return false;
+                return true;
+            }
+
+            bool operator!=(const DT& other) {
+                return operator==(other);
+            }
         };
 
         enum Month {

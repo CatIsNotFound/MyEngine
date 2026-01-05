@@ -5,24 +5,42 @@
 namespace MyEngine::Widget {
 
     Label::Label(Window *window) : AbstractWidget(window) {
-        NEW_PROPERTY_PTR(this, LABEL_ORIGINAL_IMAGE_SIZE, Size)
+        _NEW_PROPERTY_PTR(this, ENGINE_PROP_ORIGINAL_IMAGE_SIZE, Size);
+        _NEW_PROPERTY_PTR(this, ENGINE_PROP_TEXT_COLOR, SDL_Color);
+        setProperty(ENGINE_PROP_FONT_NAME, "");
+        setProperty(ENGINE_PROP_FONT_SIZE, 9.f);
     }
 
     Label::Label(std::string object_name, Window *window) : AbstractWidget(std::move(object_name), window) {
-        NEW_PROPERTY_PTR(this, LABEL_ORIGINAL_IMAGE_SIZE, Size)
+        _NEW_PROPERTY_PTR(this, ENGINE_PROP_ORIGINAL_IMAGE_SIZE, Size);
+        _NEW_PROPERTY_PTR(this, ENGINE_PROP_TEXT_COLOR, SDL_Color);
+        setProperty(ENGINE_PROP_FONT_NAME, "");
+        setProperty(ENGINE_PROP_FONT_SIZE, 9.f);
     }
 
     Label::~Label() {}
 
     void Label::setFont(const std::string &font_name, const std::string &font_path, float font_size) {
-        if (TextSystem::global()->addFont(font_name, font_path,
-                                  AbstractWidget::render(), font_size)) {
+        if (!TextSystem::global()->isFontContain(font_name)) {
+            TextSystem::global()->addFont(font_name, font_path,
+                                          AbstractWidget::render(), font_size);
             TextSystem::global()->font(font_name)->setFontPath(font_path);
             TextSystem::global()->font(font_name)->setFontSize(font_size);
         }
         _font = TextSystem::global()->font(font_name);
         if (_text_id > 0) {
-            TextSystem::global()->setTextFont(_text_id, font_name);
+            // TODO: Need to move the code
+            // TextSystem::global()->setTextFont(_text_id, font_name);
+            auto font = property(ENGINE_PROP_FONT_NAME)->toString();
+            auto f_size = property(ENGINE_PROP_FONT_SIZE)->toFloat();
+            if (font != font_name) {
+                setProperty(ENGINE_PROP_FONT_NAME, font_name);
+                _changer_signal |= ENGINE_SIGNAL_LABEL_FONT_CHANGED;
+            }
+            if (f_size != font_size) {
+                setProperty(ENGINE_PROP_FONT_SIZE, font_size);
+                _changer_signal |= ENGINE_SIGNAL_LABEL_FONT_SIZE_CHANGED;
+            }
         } else {
             _text_id = IDGenerator::getNewTextID();
             TextSystem::global()->addText(_text_id, font_name, _none_str);
@@ -32,25 +50,36 @@ namespace MyEngine::Widget {
             }
             _visible_text = is_contain;
         }
-        TextSystem::global()->setTextColor(_text_id, _text_color);
+        // TODO: Need to move this code line
+        // TextSystem::global()->setTextColor(_text_id, _text_color);
+        _changer_signal |= ENGINE_SIGNAL_LABEL_TEXT_COLOR_CHANGED;
     }
 
     void Label::setFont(const std::string &font_name) {
         if (!TextSystem::global()->isFontContain(font_name)) {
+            Logger::log(std::format("Label: The font name '{}' is not contained! "
+                    "You need to specified font path.", font_name),Logger::Error);
             return;
         }
         _font = TextSystem::global()->font(font_name);
         if (_text_id > 0) {
-            TextSystem::global()->setTextFont(_text_id, font_name);
+            // TODO: Need to move this code line
+            // TextSystem::global()->setTextFont(_text_id, font_name);
+            _changer_signal |= ENGINE_SIGNAL_LABEL_FONT_CHANGED;
+            setProperty(ENGINE_PROP_FONT_NAME, font_name);
         } else {
             _text_id = IDGenerator::getNewTextID();
-            TextSystem::global()->addText(_text_id, font_name, _string);
-            bool is_contain = TextSystem::global()->isTextContain(_text_id);
-            if (is_contain) {
-                _text = TextSystem::global()->indexOfText(_text_id);
+            if (TextSystem::global()->isTextContain(_text_id)) {
+                TextSystem::global()->setTextFont(_text_id, font_name);
+            } else {
+                TextSystem::global()->addText(_text_id, font_name, _string);
             }
-            _visible_text = is_contain;
         }
+        _text = TextSystem::global()->indexOfText(_text_id);
+        _visible_text = true;
+        // TODO: Need to move code
+        // TextSystem::global()->setTextColor(_text_id, _text_color);
+        _changer_signal |= ENGINE_SIGNAL_LABEL_TEXT_COLOR_CHANGED;
     }
 
     const std::string &Label::fontName() const {
@@ -63,7 +92,9 @@ namespace MyEngine::Widget {
 
     void Label::setText(const std::string &text) {
         if (TextSystem::global()->isTextContain(_text_id)) {
-            TextSystem::global()->setText(_text_id, text);
+            // TODO: Need to move code
+            // TextSystem::global()->setText(_text_id, text);
+            _changer_signal |= ENGINE_SIGNAL_LABEL_TEXT_CHANGED;
             _string = text;
         }
     }
@@ -74,30 +105,45 @@ namespace MyEngine::Widget {
 
     void Label::appendText(const std::string &text) {
         if (TextSystem::global()->isTextContain(_text_id)) {
-            TextSystem::global()->appendText(_text_id, text);
+            // TODO: Need to move code
+//            TextSystem::global()->appendText(_text_id, text);
+            _string += text;
+            _changer_signal |= ENGINE_SIGNAL_LABEL_TEXT_CHANGED;
         }
     }
 
-    void Label::setFontColor(const SDL_Color &color) {
+    void Label::setTextColor(const SDL_Color &color) {
         if (TextSystem::global()->isTextContain(_text_id)) {
-            TextSystem::global()->setTextColor(_text_id, color);
+            // TODO: Need to move this code
+            // TextSystem::global()->setTextColor(_text_id, color);
+            _changer_signal |= ENGINE_SIGNAL_LABEL_TEXT_COLOR_CHANGED;
+            auto text_color = _GET_PROPERTY_PTR(this, ENGINE_PROP_TEXT_COLOR, SDL_Color);
+            text_color->r = color.r;
+            text_color->g = color.g;
+            text_color->b = color.b;
+            text_color->a = color.a;
         }
-        _text_color = color;
     }
 
-    void Label::setFontColor(uint64_t hex_code, bool alpha) {
+    void Label::setTextColor(uint64_t hex_code, bool alpha) {
         auto color = RGBAColor::hexCode2RGBA(hex_code, alpha);
         if (TextSystem::global()->isTextContain(_text_id)) {
-            TextSystem::global()->setTextColor(_text_id, color);
+            // TextSystem::global()->setTextColor(_text_id, color);
+            _changer_signal |= ENGINE_SIGNAL_LABEL_TEXT_COLOR_CHANGED;
         }
-        _text_color = color;
     }
 
     void Label::setFontSize(float size) {
-        TextSystem::global()->setFontSize(fontName(), size);
+        auto font_name = fontName();
+        if (TextSystem::global()->isFontContain(font_name)) {
+            // TODO: Need to move this code
+//            TextSystem::global()->setFontSize(font_name, size);
+            _changer_signal |= ENGINE_SIGNAL_LABEL_FONT_SIZE_CHANGED;
+            setProperty(ENGINE_PROP_FONT_SIZE, size);
+        }
     }
 
-    const SDL_Color &Label::fontColor() const {
+    const SDL_Color &Label::textColor() const {
         return _text->font_color;
     }
 
@@ -108,17 +154,14 @@ namespace MyEngine::Widget {
     void Label::setTextAlignment(Label::Alignment alignment) {
         if (_auto_resize_by_text) return;
         _alignment = alignment;
-        alignmentChangedEvent(alignment);
+        _changer_signal |= ENGINE_SIGNAL_LABEL_TEXT_ALIGNMENT_CHANGED;
     }
 
     Label::Alignment Label::textAlignment() const { return _alignment; }
 
     void Label::setAutoResizedByTextEnabled(bool enabled) {
         _auto_resize_by_text = enabled;
-        updateTextGeometry();
-        if (enabled) {
-            updateBgIMGGeometry();
-        }
+        _changer_signal |= ENGINE_SIGNAL_LABEL_AUTO_RESIZED_TEXT_CHANGED;
     }
 
     bool Label::isAutoResizedByTextEnabled() const { return _auto_resize_by_text; }
@@ -153,7 +196,7 @@ namespace MyEngine::Widget {
         } else {
             _bg_img->setImageFromSurface(surface, !delete_later);
         }
-        auto img_geo = GET_PROPERTY_PTR(this, LABEL_ORIGINAL_IMAGE_SIZE, Size)
+        auto img_geo = _GET_PROPERTY_PTR(this, ENGINE_PROP_ORIGINAL_IMAGE_SIZE, Size);
         img_geo->reset(_bg_img->property()->size());
     }
 
@@ -174,8 +217,10 @@ namespace MyEngine::Widget {
                 _bg_img->property()->reset(*texture->property());
             }
         }
-        auto img_geo = GET_PROPERTY_PTR(this, LABEL_ORIGINAL_IMAGE_SIZE, Size)
+        auto img_geo = _GET_PROPERTY_PTR(this, ENGINE_PROP_ORIGINAL_IMAGE_SIZE, Size);
         img_geo->reset(_bg_img->property()->size());
+        _visible_img = (_bg_img != nullptr);
+        _visible_bg = false;
     }
 
     void Label::setBackgroundImage(const std::string &image_path) {
@@ -184,7 +229,7 @@ namespace MyEngine::Widget {
         } else {
             _bg_img->setImagePath(image_path);
         }
-        auto img_geo = GET_PROPERTY_PTR(this, LABEL_ORIGINAL_IMAGE_SIZE, Size)
+        auto img_geo = _GET_PROPERTY_PTR(this, ENGINE_PROP_ORIGINAL_IMAGE_SIZE, Size);
         img_geo->reset(_bg_img->property()->size());
     }
 
@@ -215,7 +260,8 @@ namespace MyEngine::Widget {
 
     void Label::loadEvent() {
         AbstractWidget::loadEvent();
-
+        updateBgIMGGeometry();
+        updateTextGeometry();
     }
 
     void Label::unloadEvent() {
@@ -224,6 +270,52 @@ namespace MyEngine::Widget {
 
     void Label::paintEvent(MyEngine::Renderer *renderer) {
         AbstractWidget::paintEvent(renderer);
+        bool update_text = false, update_img = false;
+        bool size_changed = (_changer_signal & ENGINE_SIGNAL_LABEL_SIZE_CHANGED);
+        if (_text) {
+            if (_changer_signal & ENGINE_SIGNAL_LABEL_TEXT_CHANGED) {
+                TextSystem::global()->setText(_text_id, _string);
+                update_text = true;
+            }
+            if (_changer_signal & ENGINE_SIGNAL_LABEL_TEXT_COLOR_CHANGED) {
+                auto text_color = *_GET_PROPERTY_PTR(this, ENGINE_PROP_TEXT_COLOR, SDL_Color);
+                TextSystem::global()->setTextColor(_text_id, text_color);
+                update_text = true;
+            }
+            if (_changer_signal & ENGINE_SIGNAL_LABEL_FONT_CHANGED) {
+                auto font = property(ENGINE_PROP_FONT_NAME)->toString();
+                TextSystem::global()->setTextFont(_text_id, font);
+                update_text = true;
+            }
+            if (_changer_signal & ENGINE_SIGNAL_LABEL_FONT_SIZE_CHANGED) {
+                auto size = property(ENGINE_PROP_FONT_SIZE)->toFloat();
+                TextSystem::global()->setFontSize(_text->font_name, size);
+                update_text = true;
+            }
+            if (_changer_signal & ENGINE_SIGNAL_LABEL_AUTO_RESIZED_TEXT_CHANGED) {
+                if (_auto_resize_by_text) {
+                    _trigger_area.resize(_text->text_size);
+                }
+                update_text = true;
+            }
+            if (_changer_signal & ENGINE_SIGNAL_LABEL_TEXT_ALIGNMENT_CHANGED) {
+                update_text = true;
+            }
+            if (size_changed) update_text = true;
+        }
+        if (_bg_img) {
+            if (size_changed) update_img = true;
+//            if (_changer_signal & ENGINE_SIGNAL_LABEL_BACKGROUND_IMAGE_CHANGED) {
+//
+//            }
+        }
+
+        if (update_text) {
+            updateTextGeometry();
+        } else if (update_img) {
+            updateBgIMGGeometry();
+        }
+        _changer_signal = 0;
         if (_visible_bg) {
             renderer->drawRectangle(&_trigger_area);
         }
@@ -242,8 +334,9 @@ namespace MyEngine::Widget {
 
     void Label::resizeEvent(const Size &size) {
         AbstractWidget::resizeEvent(size);
-         if (_bg_img) updateBgIMGGeometry();
-         if (_text) updateTextGeometry();
+        _changer_signal |= ENGINE_SIGNAL_LABEL_SIZE_CHANGED;
+//        if (_bg_img) updateBgIMGGeometry();
+//        if (_text) updateTextGeometry();
     }
 
     void Label::visibleChangedEvent(bool visible) {
@@ -265,7 +358,7 @@ namespace MyEngine::Widget {
 
     void Label::updateBgIMGGeometry() {
         if (!_bg_img || !_visible_img) return;
-        Size* img_size = GET_PROPERTY_PTR(this, LABEL_ORIGINAL_IMAGE_SIZE, Size)
+        Size* img_size = _GET_PROPERTY_PTR(this, ENGINE_PROP_ORIGINAL_IMAGE_SIZE, Size);
         auto con_geo = _trigger_area.geometry();
         float scaled{};
         const float ARs = con_geo.size.width / con_geo.size.height;
@@ -308,9 +401,6 @@ namespace MyEngine::Widget {
                 break;
 
         }
-        Logger::log(std::format("Update Geometry: {}, {}, {}, {}",
-                                _bg_img->property()->geometry().pos.x, _bg_img->property()->geometry().pos.y,
-                                _bg_img->property()->geometry().size.width, _bg_img->property()->geometry().size.height));
     }
 
     void Label::updateTextGeometry() {

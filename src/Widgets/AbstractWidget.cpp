@@ -85,7 +85,7 @@ namespace MyEngine::Widget {
                         if (scancode) {
                             keyUpEvent(static_cast<SDL_Scancode>(scancode));
                         }
-                        keyPressedEvent(SDL_SCANCODE_KP_00);
+                        keyPressedEvent(static_cast<SDL_Scancode>(scancode));
                     } else if (!ev.key.repeat) {
                         uint64_t scancode = ev.key.scancode;
                         if (scancode) {
@@ -197,6 +197,7 @@ namespace MyEngine::Widget {
     void AbstractWidget::unload() {
         unloadEvent();
         EventSystem::global()->removeEvent(_ev_id);
+
     }
 
     void AbstractWidget::setObjectName(std::string object_name) {
@@ -435,11 +436,11 @@ namespace MyEngine::Widget {
         propertyChanged(name, _prop_map.at(name));
     }
 
-    void AbstractWidget::setProperty(const std::string& name, std::string& value) {
+    void AbstractWidget::setProperty(const std::string& name, const std::string& value) {
         if (_prop_map.contains(name)) {
-            _prop_map.at(name).setValue(value);
+            _prop_map.at(name).setValue(value.c_str());
         } else {
-            _prop_map.try_emplace(name, value);
+            _prop_map.try_emplace(name, value.c_str());
         }
         propertyChanged(name, _prop_map.at(name));
     }
@@ -558,5 +559,4 @@ namespace MyEngine::Widget {
     }
 
     void AbstractWidget::propertyChanged(const std::string &property, const Variant &variant) {}
-    void AbstractWidget::fontChanged(MyEngine::Font *font) {}
 }

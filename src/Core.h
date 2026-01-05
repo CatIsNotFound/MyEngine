@@ -254,6 +254,10 @@ namespace MyEngine {
     public:
         using constIter = std::unordered_map<SDL_WindowID, std::unique_ptr<Window>>::const_iterator;
         using iter = std::unordered_map<SDL_WindowID, std::unique_ptr<Window>>::iterator;
+        Engine(const Engine&) = delete;
+        Engine(Engine&&) = delete;
+        Engine& operator=(const Engine&) = delete;
+        Engine& operator=(Engine&&) = delete;
         explicit Engine(std::string&& app_name = "Hello world", std::string&& app_version = "v1.0.0",
                         std::string&& app_id = "HelloWorld.app");
         ~Engine();
