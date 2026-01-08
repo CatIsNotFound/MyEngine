@@ -738,7 +738,7 @@ namespace MyEngine {
                         memset(win->_drop_url, 0, 255);
                     } else if (ev.drop.type == SDL_EVENT_DROP_FILE) {
                         win->dropEvent(ev.drop.data, ev.drop.source);
-                        strncpy(win->_drop_url, ev.drop.data, 255);
+                        strncpy(win->_drop_url, ev.drop.data, 128);
                         if (ev.drop.source) {
                             win->_drop_source.resize(strlen(ev.drop.source));
                             strncpy(win->_drop_source.data(), ev.drop.source, strlen(ev.drop.source));
@@ -747,7 +747,7 @@ namespace MyEngine {
                         win->_dragging = false;
                     } else if (ev.drop.type == SDL_EVENT_DROP_TEXT) {
                         win->dropEvent(ev.drop.data, nullptr);
-                        strncpy(win->_drop_url, ev.drop.data, 255);
+                        strncpy(win->_drop_url, ev.drop.data, 128);
                         if (ev.drop.source) {
                             win->_drop_source.resize(strlen(ev.drop.source));
                             strncpy(win->_drop_source.data(), ev.drop.source, strlen(ev.drop.source));

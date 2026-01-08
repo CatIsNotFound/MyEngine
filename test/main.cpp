@@ -9,12 +9,12 @@ int main(int argc, const char* argv[]) {
 //    Logger::setBaseLogLevel(MyEngine::Logger::Debug);
     Engine engine;
     FileSystem::setCurrentPath(FileSystem::getDirectoryFromFile(argv[0]));
-     engine.setFPS(60);
+    engine.setFPS(0);
     auto win = new Window(&engine, engine.applicationName());
-     auto win2 = new Window(&engine, "Second window");
+    auto win2 = new Window(&engine, "Second window");
     win->setResizable(true);
 //    win->renderer()->setVSyncMode(Renderer::HalfRate);
-    engine.setLimitMaxMemorySize(100'000);
+    engine.setLimitMaxMemorySize(500'000);
 
     Texture texture1(FileSystem::getAbsolutePath("./back_button_1.png"), win->renderer());
     Texture texture2(FileSystem::getAbsolutePath("./back_button_2.png"), win->renderer());

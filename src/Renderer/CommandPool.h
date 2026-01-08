@@ -29,6 +29,7 @@ namespace MyEngine {
                     std::lock_guard<std::mutex> lock(sub_pool->mutex);
                     for (size_t i = 0; i < sub_pool->cmd_list.size(); ++i) {
                         auto cmd = sub_pool->cmd_list[i].release();
+                        cmd->~T();
                         _pool_res->deallocate(cmd, sizeof(T), alignof(T));
                     }
                     sub_pool->cmd_list.clear();
