@@ -21,6 +21,14 @@ POINTER->setProperty(NAME, OBJECT)
 #define _GET_PROPERTY_PTR(POINTER, NAME, CLASS)                                   \
 static_cast<CLASS*>(POINTER->property(NAME)->toPointer())
 
+#define ENGINE_PROP_TEXT_COLOR                           "TextColor"
+#define ENGINE_PROP_FONT_NAME                            "Font.name"
+#define ENGINE_PROP_FONT_SIZE                            "Font.size"
+#define ENGINE_PROP_BACKGROUND_IMAGE_ORIGINAL_SIZE       "BackgroundImage.originalImageSize"
+#define ENGINE_PROP_BACKGROUND_IMAGE_PATH                "BackgroundImage.path"
+#define ENGINE_PROP_BACKGROUND_IMAGE_SELF                "BackgroundImage.surface"
+#define ENGINE_PROP_BACKGROUND_IMAGE_TEXTURE             "BackgroundImage.texture"
+
 namespace MyEngine {
     namespace Widget {
         enum class WidgetStatus {
@@ -107,7 +115,8 @@ namespace MyEngine {
             void setProperty(const std::string& name, void* value);
             void setProperty(const std::string& name, void* value, std::function<void(void*)> deleter);
             void setProperty(const std::string& name);
-            void clearAllProperties();
+            void eraseProperty(const std::string& name);
+            void clearProperties();
             [[nodiscard]] bool hasProperty(const std::string& name) const;
             const Variant *const property(const std::string& name) const;
 

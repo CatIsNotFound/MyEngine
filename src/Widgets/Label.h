@@ -3,13 +3,6 @@
 #define MYENGINE_WIDGETS_LABEL_H
 #include "AbstractWidget.h"
 
-#define ENGINE_PROP_ORIGINAL_IMAGE_SIZE       "BackgroundImage.originalImageSize"
-#define ENGINE_PROP_TEXT_COLOR                "TextColor"
-#define ENGINE_PROP_FONT_NAME                 "Font.name"
-#define ENGINE_PROP_FONT_SIZE                 "Font.size"
-#define ENGINE_PROP_BACKGROUND_IMAGE_PATH     "BackgroundImage.path"
-#define ENGINE_PROP_BACKGROUND_IMAGE_SELF     "BackgroundImage.surface"
-#define ENGINE_PROP_BACKGROUND_IMAGE_TEXTURE  "BackgroundImage.texture"
 #define ENGINE_SIGNAL_LABEL_TEXT_CHANGED                         0b1
 #define ENGINE_SIGNAL_LABEL_TEXT_COLOR_CHANGED                   0b10
 #define ENGINE_SIGNAL_LABEL_FONT_CHANGED                         0b100

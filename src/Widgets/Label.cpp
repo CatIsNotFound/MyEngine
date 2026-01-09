@@ -5,7 +5,7 @@
 namespace MyEngine::Widget {
 
     Label::Label(Window *window) : AbstractWidget(window) {
-        _NEW_PROPERTY_PTR(this, ENGINE_PROP_ORIGINAL_IMAGE_SIZE, Size);
+        _NEW_PROPERTY_PTR(this, ENGINE_PROP_BACKGROUND_IMAGE_ORIGINAL_SIZE, Size);
         _NEW_PROPERTY_PTR(this, ENGINE_PROP_TEXT_COLOR, SDL_Color);
         setProperty(ENGINE_PROP_FONT_NAME, "");
         setProperty(ENGINE_PROP_FONT_SIZE, 9.f);
@@ -15,7 +15,7 @@ namespace MyEngine::Widget {
     }
 
     Label::Label(std::string object_name, Window *window) : AbstractWidget(std::move(object_name), window) {
-        _NEW_PROPERTY_PTR(this, ENGINE_PROP_ORIGINAL_IMAGE_SIZE, Size);
+        _NEW_PROPERTY_PTR(this, ENGINE_PROP_BACKGROUND_IMAGE_ORIGINAL_SIZE, Size);
         _NEW_PROPERTY_PTR(this, ENGINE_PROP_TEXT_COLOR, SDL_Color);
         setProperty(ENGINE_PROP_FONT_NAME, "");
         setProperty(ENGINE_PROP_FONT_SIZE, 9.f);
@@ -201,7 +201,7 @@ namespace MyEngine::Widget {
             _bg_img = std::make_unique<Texture>(surface, render(), !delete_later);
             _visible_img = (_bg_img != nullptr);
             _visible_bg = (!_bg_img);
-            auto img_geo = _GET_PROPERTY_PTR(this, ENGINE_PROP_ORIGINAL_IMAGE_SIZE, Size);
+            auto img_geo = _GET_PROPERTY_PTR(this, ENGINE_PROP_BACKGROUND_IMAGE_ORIGINAL_SIZE, Size);
             img_geo->reset(_bg_img->property()->size());
         } else {
             if (delete_later) _changer_signal |= ENGINE_SIGNAL_LABEL_BACKGROUND_IMAGE_NEED_DELETE;
@@ -219,7 +219,7 @@ namespace MyEngine::Widget {
             _bg_img = delete_later ? std::unique_ptr<Texture>(texture)
                     : std::make_unique<Texture>(texture->imagePath(), render());
             _bg_img->property()->reset(*texture->property());
-            auto img_geo = _GET_PROPERTY_PTR(this, ENGINE_PROP_ORIGINAL_IMAGE_SIZE, Size);
+            auto img_geo = _GET_PROPERTY_PTR(this, ENGINE_PROP_BACKGROUND_IMAGE_ORIGINAL_SIZE, Size);
             img_geo->reset(_bg_img->property()->size());
             _visible_img = (_bg_img != nullptr);
             _visible_bg = (!_bg_img);
@@ -235,7 +235,7 @@ namespace MyEngine::Widget {
             _bg_img = std::make_unique<Texture>(image_path, render());
             _visible_img = (_bg_img != nullptr);
             _visible_bg = (!_bg_img);
-            auto img_geo = _GET_PROPERTY_PTR(this, ENGINE_PROP_ORIGINAL_IMAGE_SIZE, Size);
+            auto img_geo = _GET_PROPERTY_PTR(this, ENGINE_PROP_BACKGROUND_IMAGE_ORIGINAL_SIZE, Size);
             img_geo->reset(_bg_img->property()->size());
         } else {
             _changer_signal |= ENGINE_SIGNAL_LABEL_BACKGROUND_IMAGE_CHANGED;
@@ -315,7 +315,9 @@ namespace MyEngine::Widget {
             if (size_changed) update_text = true;
         }
         if (_bg_img) {
-            if (size_changed) update_img = true;
+            if (size_changed) {
+                update_img = true;
+            }
             if (_changer_signal & ENGINE_SIGNAL_LABEL_BACKGROUND_IMAGE_CHANGED) {
                 bool is_changed_img = false;
                 auto path = property(ENGINE_PROP_BACKGROUND_IMAGE_PATH);
@@ -345,7 +347,7 @@ namespace MyEngine::Widget {
                     is_changed_img = true;
                 }
                 if (is_changed_img) {
-                    auto img_geo = _GET_PROPERTY_PTR(this, ENGINE_PROP_ORIGINAL_IMAGE_SIZE, Size);
+                    auto img_geo = _GET_PROPERTY_PTR(this, ENGINE_PROP_BACKGROUND_IMAGE_ORIGINAL_SIZE, Size);
                     img_geo->reset(_bg_img->property()->size());
                 }
                 update_img = true;
@@ -354,7 +356,8 @@ namespace MyEngine::Widget {
 
         if (update_text) {
             updateTextGeometry();
-        } else if (update_img) {
+        }
+        if (update_img) {
             updateBgIMGGeometry();
         }
         _changer_signal = 0;
@@ -389,7 +392,7 @@ namespace MyEngine::Widget {
 
     void Label::updateBgIMGGeometry() {
         if (!_bg_img || !_visible_img) return;
-        Size* img_size = _GET_PROPERTY_PTR(this, ENGINE_PROP_ORIGINAL_IMAGE_SIZE, Size);
+        Size* img_size = _GET_PROPERTY_PTR(this, ENGINE_PROP_BACKGROUND_IMAGE_ORIGINAL_SIZE, Size);
         auto con_geo = _trigger_area.geometry();
         float scaled{};
         const float ARs = con_geo.size.width / con_geo.size.height;

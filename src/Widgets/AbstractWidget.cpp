@@ -14,7 +14,7 @@ namespace MyEngine::Widget {
         load();
     }
 
-    AbstractWidget::~AbstractWidget() {}
+    AbstractWidget::~AbstractWidget() {  }
 
     void AbstractWidget::load() {
         if (!_window) {
@@ -102,7 +102,7 @@ namespace MyEngine::Widget {
             if (Cursor::global()->focusOn() != _window->windowID()) return;
             // Mouse Event
             auto cur_pos = EventSystem::global()->captureMousePosition();
-            auto cur_abs_dis = EventSystem::global()->captureMouseAbsDistance();
+            // auto cur_abs_dis = EventSystem::global()->captureMouseAbsDistance();
             auto trigger = (Algorithm::comparePosInRect(cur_pos, _trigger_area) > 0);
             if (!_status.mouse_in) {
                 if (EventSystem::global()->captureMouse(EventSystem::None)) {
@@ -482,7 +482,14 @@ namespace MyEngine::Widget {
         propertyChanged(name, _prop_map.at(name));
     }
 
-    void AbstractWidget::clearAllProperties() {
+    void AbstractWidget::eraseProperty(const std::string& name) {
+        if (_prop_map.contains(name)) {
+            _prop_map.at(name).clearValue();
+            _prop_map.erase(name);
+        }
+    }
+
+    void AbstractWidget::clearProperties() {
         for (auto& [name, value] : _prop_map) {
             value.clearValue();
         }
@@ -506,7 +513,7 @@ namespace MyEngine::Widget {
     void AbstractWidget::loadEvent() {}
 
     void AbstractWidget::unloadEvent() {
-        clearAllProperties();
+        clearProperties();
     }
 
     void AbstractWidget::moveEvent(const Vector2 &position) {}

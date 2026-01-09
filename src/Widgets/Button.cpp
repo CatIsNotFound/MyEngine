@@ -4,11 +4,11 @@
 
 namespace MyEngine::Widget {
     Button::Button(std::string object_name, Window *window) : Label(std::move(object_name), window) {
-        initStatus();
+        init();
     }
 
     Button::Button(Window *window) : Label(window) {
-        initStatus();
+        init();
     }
 
     Button::~Button() {
@@ -159,20 +159,20 @@ namespace MyEngine::Widget {
 
     void Button::keyDownEvent(SDL_Scancode scancode) {
         AbstractWidget::keyDownEvent(scancode);
-        if (isFocusEnabled()) {
-            updateStatus(WidgetStatus::Pressed);
-        }
+        if (isConfirmKey(scancode) && isFocusEnabled())
+                updateStatus(WidgetStatus::Pressed);
     }
 
     void Button::keyUpEvent(SDL_Scancode scancode) {
         AbstractWidget::keyUpEvent(scancode);
-        if (isFocusEnabled()) {
+        if (isConfirmKey(scancode) && isFocusEnabled()) {
             updateStatus(isHovered() ? WidgetStatus::Hovered : WidgetStatus::Active);
         }
     }
 
     void Button::keyPressedEvent(SDL_Scancode scancode) {
         AbstractWidget::keyPressedEvent(scancode);
+        if (!isConfirmKey(scancode)) return;
         if (_event) _event();
         if (_triggers.contains(TriggerAction::KeyPressed)) {
             _triggers[TriggerAction::KeyPressed]();
@@ -236,7 +236,7 @@ namespace MyEngine::Widget {
                      (isFocusEnabled() ? WidgetStatus::Active : WidgetStatus::Normal));
     }
 
-    void Button::initStatus() {
+    void Button::init() {
         _NEW_PROPERTY_WITH_DEFAULT_VALUE_PTR(this, ENGINE_PROP_BACKGROUND_COLOR_STATUS_NORMAL, SDL_Color, RGBAColor::BlueIce);
         _NEW_PROPERTY_WITH_DEFAULT_VALUE_PTR(this, ENGINE_PROP_BACKGROUND_COLOR_STATUS_ACTIVE, SDL_Color, RGBAColor::BlueBaby);
         _NEW_PROPERTY_WITH_DEFAULT_VALUE_PTR(this, ENGINE_PROP_BACKGROUND_COLOR_STATUS_DISABLED, SDL_Color, RGBAColor::MixGrayLight);

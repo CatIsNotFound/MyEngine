@@ -69,8 +69,14 @@ namespace MyEngine {
             void checkedChanged(bool checked);
             void enableChangedEvent(bool enabled) override;
         private:
-            void initStatus();
+            void init();
             void updateStatus(WidgetStatus status);
+            bool isConfirmKey(SDL_Scancode scancode) {
+                return scancode == SDL_SCANCODE_SPACE ||
+                       scancode == SDL_SCANCODE_RETURN ||
+                       scancode == SDL_SCANCODE_RETURN2 ||
+                       scancode == SDL_SCANCODE_KP_ENTER;
+            }
 
             [[nodiscard]] std::string getBackgroundImagePropertyKey(WidgetStatus status) const;
             [[nodiscard]] std::string getBackgroundColorPropertyKey(WidgetStatus status) const;

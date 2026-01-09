@@ -99,6 +99,8 @@ if (BUILD_SHARED_LIBS_ONLY)
             src/Widgets/Label.h
             src/Widgets/Button.cpp
             src/Widgets/Button.h
+            src/Widgets/LineEdit.cpp
+            src/Widgets/LineEdit.h
     )
 else ()
     add_library(${PROJECT_NAME} STATIC
@@ -150,6 +152,8 @@ else ()
             src/Widgets/Label.h
             src/Widgets/Button.cpp
             src/Widgets/Button.h
+            src/Widgets/LineEdit.cpp
+            src/Widgets/LineEdit.h
     )
 endif ()
 

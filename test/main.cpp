@@ -6,13 +6,14 @@
 using namespace MyEngine;
 
 int main(int argc, const char* argv[]) {
-//    Logger::setBaseLogLevel(MyEngine::Logger::Debug);
+    Logger::setBaseLogLevel(MyEngine::Logger::Debug);
     Engine engine;
     FileSystem::setCurrentPath(FileSystem::getDirectoryFromFile(argv[0]));
-    engine.setFPS(61);
+    engine.setFPS(30);
     engine.setRenderSetup(512, true);
     auto win = new Window(&engine, engine.applicationName());
     auto win2 = new Window(&engine, "Second window");
+    win2->setWindowOpacity(0.75f);
     win->setResizable(true);
 //    win->renderer()->setVSyncMode(Renderer::HalfRate);
     engine.setLimitMaxMemorySize(200'000);
@@ -29,6 +30,7 @@ int main(int argc, const char* argv[]) {
     Widget::Button button1("button1", win);
     Widget::Button button2("button2", win);
     Widget::Button button3("button3", win);
+    Widget::Button button4("button4", win);
     Widget::Label label("label", win);
     Timer timer(10, [&label, &engine, &win, &timer] {
         if (!engine.isWindowExist(win->windowID())) {
@@ -48,6 +50,7 @@ int main(int argc, const char* argv[]) {
     button1.setGeometry(20, 20, 180, 60);
     button2.setGeometry(20, 90, 180, 60);
     button3.setGeometry(20, 160, 180, 60);
+    button4.setGeometry(220, 20, 180, 60);
     label.setGeometry(20, 240, 180, 60);
 
     button1.setBackgroundVisible(false);
@@ -57,29 +60,32 @@ int main(int argc, const char* argv[]) {
     button1.setBackgroundImage(Widget::WidgetStatus::Pressed, &texture3);
     button1.setBackgroundImage(Widget::WidgetStatus::Disabled, &texture4);
     button1.setBackgroundImage(Widget::WidgetStatus::Checked, &texture3);
-    button1.setBackgroundImageFillMode(Widget::Label::Stretch);
+    button1.setBackgroundImageFillMode(Widget::Label::Fit);
     button1.setFont(first_font.font_name, first_font.font_path, 32.f);
     button2.setFont(first_font.font_name);
     button3.setFont(first_font.font_name);
+    button4.setFont(first_font.font_name);
     label.setFont(first_font.font_name);
 
     label.setBackgroundImage(&texture1, false);
-    label.setBackgroundImageFillMode(Widget::Label::Fit);
+    label.setBackgroundImageFillMode(MyEngine::Widget::Label::Fit);
     label.setTextColor(StdColor::Black);
     label.setTextAlignment(Widget::Label::CenterMiddle);
 
     button1.setText("Test 1");
     button2.setText("Test 2");
     button3.setText("Test 3");
+    button4.setText("Test 4");
     label.setText("Output");
 
     button1.setTextAlignment(Widget::Label::CenterMiddle);
     button2.setTextAlignment(Widget::Label::CenterMiddle);
-    button3.setTextAlignment(Widget::Label::RightMiddle);
+    button3.setTextAlignment(Widget::Label::CenterMiddle);
+    button4.setTextAlignment(Widget::Label::CenterMiddle);
 
     button2.setFocusEnabled(true);
-    button2.setHotKeyEnabled(true);
-    button2.setHotKey(SDL_SCANCODE_LCTRL, SDL_SCANCODE_LALT, SDL_SCANCODE_SPACE);
+    button3.setHotKeyEnabled(true);
+    button3.setHotKey(SDL_SCANCODE_LCTRL, SDL_SCANCODE_D);
 
     button1.setTriggerEvent([&label, &button1]{
         label.setText("Hello world");
@@ -102,6 +108,9 @@ int main(int argc, const char* argv[]) {
             tri = false;
         }
         label.setTextAlignment(MyEngine::Widget::Label::CenterMiddle);
+    });
+    button4.setTriggerEvent([&button1] {
+        button1.setEnabled(!button1.enabled());
     });
 
     win->installPaintEvent([&win](Renderer* r) {
