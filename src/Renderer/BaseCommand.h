@@ -7,7 +7,7 @@ namespace MyEngine {
     namespace RenderCommand {
         class BaseCommand {
         public:
-            enum class Mode {
+            enum class Mode : uint8_t {
                 Single,
                 Multiple,
                 Custom
@@ -34,7 +34,7 @@ namespace MyEngine {
         public:
             explicit BlendModeCMD(SDL_Renderer* renderer, SDL_BlendMode blend_mode);
 
-            ~BlendModeCMD() = default;
+            ~BlendModeCMD() override = default;
 
             void reset(SDL_Renderer* renderer, SDL_BlendMode blend_mode);
 

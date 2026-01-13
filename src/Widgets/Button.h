@@ -79,8 +79,8 @@ namespace MyEngine {
             }
 
             [[nodiscard]] std::string getBackgroundImagePropertyKey(WidgetStatus status) const;
-            [[nodiscard]] std::string getBackgroundColorPropertyKey(WidgetStatus status) const;
-            [[nodiscard]] std::string getTextColorPropertyKey(WidgetStatus status) const;
+            [[nodiscard]] static std::string getBackgroundColorPropertyKey(WidgetStatus status) ;
+            [[nodiscard]] static std::string getTextColorPropertyKey(WidgetStatus status) ;
             [[nodiscard]] SDL_Color getBackgroundColorForStatus(WidgetStatus status) const;
             [[nodiscard]] SDL_Color getTextColorForStatus(WidgetStatus status) const;
             [[nodiscard]] Texture* getBackgroundImageForStatus(WidgetStatus status) const;

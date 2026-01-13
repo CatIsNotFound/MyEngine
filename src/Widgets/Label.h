@@ -18,24 +18,6 @@ namespace MyEngine {
     namespace Widget {
         class Label : public AbstractWidget {
         public:
-            enum ImageFilledMode {
-                None,
-                Stretch,
-                Center,
-                Fit,
-                Fill
-            };
-            enum Alignment {
-                LeftTop,
-                CenterTop,
-                RightTop,
-                LeftMiddle,
-                CenterMiddle,
-                RightMiddle,
-                LeftBottom,
-                CenterBottom,
-                RightBottom
-            };
             explicit Label(Window* window);
             explicit Label(std::string object_name, Window* window);
             ~Label();

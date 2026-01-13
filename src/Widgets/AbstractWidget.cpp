@@ -39,7 +39,13 @@ namespace MyEngine::Widget {
                 this->loadEvent();
                 _status.is_loaded = true;
             }
-            if (!_enabled) return;
+
+            if (!_enabled) {
+                if (_status.input_mode) {
+                    setInputModeEnabled(false);
+                }
+                return;
+            }
 
             // Hotkey Event
             auto cur_cap_keys = EventSystem::global()->captureKeyboardStatus();
@@ -55,21 +61,35 @@ namespace MyEngine::Widget {
                     }
                 }
             }
-            // Keyboard Event
-            if (_focus) {
-                if (_status.input_mode) {
-                    // Set the key group for exiting input mode
-                    if (std::find(cur_cap_keys.begin(),
-                                  cur_cap_keys.end(), SDL_SCANCODE_ESCAPE) != cur_cap_keys.end()) {
-                        setInputModeEnabled(false);
-                    }
-
-                    if (ev.text.type == SDL_EVENT_TEXT_INPUT) {
-                        char text[16] = {};
-                        strncpy(text, ev.text.text, strlen(ev.text.text));
-                        inputEvent(text);
+            // Input Event
+            if (_status.input_mode) {
+                // Set the keys to cope with different events
+                if (ev.key.down) {
+                    switch (ev.key.key) {
+                        case SDLK_RETURN:
+                        case SDLK_KP_ENTER:
+                        case SDLK_ESCAPE:
+                            setInputModeEnabled(false);
+                            break;
+                        case SDLK_BACKSPACE:
+                            keyDownEvent(SDL_SCANCODE_BACKSPACE);
+                        case SDLK_LEFT:
+                            keyDownEvent(SDL_SCANCODE_LEFT);
+                        case SDLK_RIGHT:
+                            keyDownEvent(SDL_SCANCODE_RIGHT);
+                        case SDLK_DELETE:
+                            keyDownEvent(SDL_SCANCODE_DELETE);
                     }
                 }
+
+                if (ev.text.type == SDL_EVENT_TEXT_INPUT) {
+                    char text[16] = {};
+                    strncpy(text, ev.text.text, strlen(ev.text.text));
+                    inputEvent(text);
+                }
+            }
+            // Keyboard Event
+            if (_focus) {
                 if (!_status.key_down) {
                     if (!cur_cap_keys.empty()) {
                         _status.key_down = true;
@@ -102,8 +122,11 @@ namespace MyEngine::Widget {
             if (Cursor::global()->focusOn() != _window->windowID()) return;
             // Mouse Event
             auto cur_pos = EventSystem::global()->captureMousePosition();
-            // auto cur_abs_dis = EventSystem::global()->captureMouseAbsDistance();
             auto trigger = (Algorithm::comparePosInRect(cur_pos, _trigger_area) > 0);
+            // Add the input event when the mouse moved out and clicked
+            if (_status.input_mode && !trigger && EventSystem::global()->captureMouse(EventSystem::Left)) {
+                setInputModeEnabled(false);
+            }
             if (!_status.mouse_in) {
                 if (EventSystem::global()->captureMouse(EventSystem::None)) {
                     if (trigger) {

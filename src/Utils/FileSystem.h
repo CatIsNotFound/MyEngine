@@ -16,19 +16,22 @@ namespace MyEngine {
          * @enum Filter
          * @brief 文件类型筛选
          */
-        enum Filter {
+        enum Filter : uint8_t {
             All,
             FilesOnly,
             DirectoriesOnly
         };
 
-        enum DataSize {
+        enum DataSize : uint8_t {
             B,
             KB,
             MB,
             GB,
             TB
         };
+
+        static float translateSize(size_t size, DataSize data_size);
+        static size_t translateSize(float size, DataSize data_size);
 
         /**
          * @brief 设置当前的目录

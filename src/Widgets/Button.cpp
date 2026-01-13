@@ -45,7 +45,8 @@ namespace MyEngine::Widget {
 
     void Button::setBackgroundImage(WidgetStatus status, Texture *texture, bool delete_later) {
         if (!texture) {
-            Logger::log("Button: The specified texture is not valid!", Logger::Error);
+            Logger::log(std::format("Button ({}): The specified texture is not valid!", _object_name),
+                        Logger::Error);
             return;
         }
 
@@ -279,7 +280,7 @@ namespace MyEngine::Widget {
         }
     }
 
-    std::string Button::getBackgroundColorPropertyKey(WidgetStatus status) const {
+    std::string Button::getBackgroundColorPropertyKey(WidgetStatus status) {
         switch (status) {
             case WidgetStatus::Normal: return ENGINE_PROP_BACKGROUND_COLOR_STATUS_NORMAL;
             case WidgetStatus::Active: return ENGINE_PROP_BACKGROUND_COLOR_STATUS_ACTIVE;
@@ -291,7 +292,7 @@ namespace MyEngine::Widget {
         }
     }
 
-    std::string Button::getTextColorPropertyKey(WidgetStatus status) const {
+    std::string Button::getTextColorPropertyKey(WidgetStatus status) {
         switch (status) {
             case WidgetStatus::Normal: return ENGINE_PROP_TEXT_COLOR_STATUS_NORMAL;
             case WidgetStatus::Active: return ENGINE_PROP_TEXT_COLOR_STATUS_ACTIVE;

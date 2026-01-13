@@ -2,131 +2,41 @@
 #include "FilledWin.h"
 #include "MyEngine"
 #include "Widgets/Button.h"
+#include "Widgets/LineEdit.h"
 
 using namespace MyEngine;
 
 int main(int argc, const char* argv[]) {
-    Logger::setBaseLogLevel(MyEngine::Logger::Debug);
-    Engine engine;
+    Logger::setBaseLogLevel(MyEngine::Logger::Warn);
     FileSystem::setCurrentPath(FileSystem::getDirectoryFromFile(argv[0]));
-    engine.setFPS(30);
-    engine.setRenderSetup(512, true);
-    auto win = new Window(&engine, engine.applicationName());
-    auto win2 = new Window(&engine, "Second window");
-    win2->setWindowOpacity(0.75f);
+    Engine engine;
+    engine.setFPS(60);
+    engine.setLimitMaxMemorySize(FileSystem::translateSize(10.f, MyEngine::FileSystem::MB));
+    auto win = new Window(&engine, "Test");
+    Graphics::Rectangle progress(0, 0, 0, 0, 4, StdColor::Orange, StdColor::Yellow);
+    BGM bgm(AudioSystem::global()->mixer(), FileSystem::getAbsolutePath("./main.mp3"));
+    bgm.setVolume(0.10f);
+    bgm.play(0, true);
+    Widget::LineEdit line_edit("line_edit", win);
     win->setResizable(true);
-//    win->renderer()->setVSyncMode(Renderer::HalfRate);
-    engine.setLimitMaxMemorySize(200'000);
-    Texture texture1(FileSystem::getAbsolutePath("./back_button_1.png"), win->renderer());
-    Texture texture2(FileSystem::getAbsolutePath("./back_button_2.png"), win->renderer());
-    Texture texture3(FileSystem::getAbsolutePath("./back_button_3.png"), win->renderer());
-    Texture texture4(FileSystem::getAbsolutePath("./back_button_4.png"), win->renderer());
-    auto def_fonts = FontDatabase::getSystemDefaultFont();
-    auto first_font = def_fonts.front();
-    auto second_font = def_fonts.at(1);
-    TextSystem::global()->addFont(first_font.font_name, first_font.font_path, win->renderer(), 32.f);
-    TextSystem::global()->addFont(second_font.font_name, second_font.font_path, win->renderer(), 32.f);
-
-    Widget::Button button1("button1", win);
-    Widget::Button button2("button2", win);
-    Widget::Button button3("button3", win);
-    Widget::Button button4("button4", win);
-    Widget::Label label("label", win);
-    Timer timer(10, [&label, &engine, &win, &timer] {
-        if (!engine.isWindowExist(win->windowID())) {
-            if (win) {
-                Logger::log("The window pointer is still not null!");
-            } else {
-                timer.stop();
-            }
-        }
-
-        static float dx = 1, dy = 1;
-        auto pos = label.position();
-        if (pos.x >= 700 || pos.x <= 0) dx = -dx;
-        if (pos.y >= 570 || pos.y <= 0) dy = -dy;
-        label.move(pos.x + dx, pos.y + dy);
+    win->installPaintEvent([&](Renderer* r) {
+        r->fillBackground(RGBAColor::BlueLake);
+        r->drawRectangle(&progress);
+        r->drawDebugFPS();
+        r->drawDebugText(std::format("BGM: {} / {}", bgm.position(), bgm.duration()), {20, 30});
     });
-    button1.setGeometry(20, 20, 180, 60);
-    button2.setGeometry(20, 90, 180, 60);
-    button3.setGeometry(20, 160, 180, 60);
-    button4.setGeometry(220, 20, 180, 60);
-    label.setGeometry(20, 240, 180, 60);
-
-    button1.setBackgroundVisible(false);
-    button1.setBackgroundImageVisible(true);
-    button1.setBackgroundImage(Widget::WidgetStatus::Normal, &texture1);
-    button1.setBackgroundImage(Widget::WidgetStatus::Hovered, &texture2);
-    button1.setBackgroundImage(Widget::WidgetStatus::Pressed, &texture3);
-    button1.setBackgroundImage(Widget::WidgetStatus::Disabled, &texture4);
-    button1.setBackgroundImage(Widget::WidgetStatus::Checked, &texture3);
-    button1.setBackgroundImageFillMode(Widget::Label::Fit);
-    button1.setFont(first_font.font_name, first_font.font_path, 32.f);
-    button2.setFont(first_font.font_name);
-    button3.setFont(first_font.font_name);
-    button4.setFont(first_font.font_name);
-    label.setFont(first_font.font_name);
-
-    label.setBackgroundImage(&texture1, false);
-    label.setBackgroundImageFillMode(MyEngine::Widget::Label::Fit);
-    label.setTextColor(StdColor::Black);
-    label.setTextAlignment(Widget::Label::CenterMiddle);
-
-    button1.setText("Test 1");
-    button2.setText("Test 2");
-    button3.setText("Test 3");
-    button4.setText("Test 4");
-    label.setText("Output");
-
-    button1.setTextAlignment(Widget::Label::CenterMiddle);
-    button2.setTextAlignment(Widget::Label::CenterMiddle);
-    button3.setTextAlignment(Widget::Label::CenterMiddle);
-    button4.setTextAlignment(Widget::Label::CenterMiddle);
-
-    button2.setFocusEnabled(true);
-    button3.setHotKeyEnabled(true);
-    button3.setHotKey(SDL_SCANCODE_LCTRL, SDL_SCANCODE_D);
-
-    button1.setTriggerEvent([&label, &button1]{
-        label.setText("Hello world");
-        button1.setFontSize(24.f);
+    auto font_map = FontDatabase::getFontDatabaseFromSystem();
+    FontDatabase::FontInfo def_font = {"simsun", font_map.at("simsun")};
+    line_edit.setGeometry(20, 80, 1024, 48);
+    line_edit.setFont(def_font.font_name, def_font.font_path, 24.f);
+//    line_edit.setFocusEnabled(true);
+//    line_edit.setFocusEnabled(true);
+    line_edit.setText("123abc");
+    line_edit.setPadding(90);
+    EventSystem::global()->appendGlobalEvent(IDGenerator::getNewGlobalEventID(), [&] {
+        float p = (float) (bgm.position()) / (float) (bgm.duration());
+        progress.resize(win->geometry().width * p, 20);
     });
-    button2.setTriggerEvent([&label, &button1, &timer]{
-        label.setText("Active");
-        button1.setFontSize(32.f);
-        if (timer.enabled()) timer.stop(); else timer.start(0);
-    });
-    button3.setTriggerEvent([&label, &second_font, &first_font]{
-        static bool tri = false;
-        if (!tri) {
-            label.resize(100, 50);
-            label.setFont(second_font.font_name);
-            tri = true;
-        } else {
-            label.resize(180, 60);
-            label.setFont(first_font.font_name);
-            tri = false;
-        }
-        label.setTextAlignment(MyEngine::Widget::Label::CenterMiddle);
-    });
-    button4.setTriggerEvent([&button1] {
-        button1.setEnabled(!button1.enabled());
-    });
-
-    win->installPaintEvent([&win](Renderer* r) {
-        r->fillBackground(StdColor::Lavender);
-        r->drawDebugFPS({20, (float)(win->geometry().height) - 20});
-        r->drawDebugText(std::format("Memory: {} kB", SysMemory::getCurProcUsedMemSize()), {20, (float)(win->geometry().height - 30)});
-        r->drawDebugText(std::format("Render counts: {}", r->renderCountInSec()), {20, (float)(win->geometry().height - 40)});
-    });
-
-    win2->installPaintEvent([&win2](Renderer* r) {
-        r->fillBackground(StdColor::LightPink);
-        r->drawDebugFPS({20, (float)(win2->geometry().height) - 20});
-        r->drawDebugText(std::format("Memory: {} kB", SysMemory::getCurProcUsedMemSize()), {20, (float)(win2->geometry().height - 30)});
-    });
-
-    timer.start(0);
     engine.exec();
     return 0;
 }

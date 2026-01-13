@@ -31,16 +31,37 @@ static_cast<CLASS*>(POINTER->property(NAME)->toPointer())
 
 namespace MyEngine {
     namespace Widget {
-        enum class WidgetStatus {
+        enum class WidgetStatus : uint8_t {
             Normal,
             Active,
             Disabled,
             Hovered,
             Pressed,
-            Checked
+            Checked,
+            Input
         };
 
-        enum class TriggerAction {
+        enum ImageFilledMode : uint8_t {
+            None,
+            Stretch,
+            Center,
+            Fit,
+            Fill
+        };
+
+        enum Alignment : uint8_t {
+            LeftTop,
+            CenterTop,
+            RightTop,
+            LeftMiddle,
+            CenterMiddle,
+            RightMiddle,
+            LeftBottom,
+            CenterBottom,
+            RightBottom
+        };
+
+        enum class TriggerAction : uint8_t {
             Unknown,
             MouseClicked,
             MouseDblClicked,

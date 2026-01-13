@@ -14,6 +14,7 @@ namespace MyEngine {
     bool Engine::_show_app_info{true};
     bool FontDatabase::_is_loaded{false};
     FontMap FontDatabase::_font_db{};
+    std::vector<FontDatabase::FontInfo> FontDatabase::_def_fonts{};
 
     std::unique_ptr<TextSystem> TextSystem::_instance{};
     std::unique_ptr<AudioSystem> AudioSystem::_instance{};

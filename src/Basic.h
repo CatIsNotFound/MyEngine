@@ -213,9 +213,9 @@ namespace MyEngine {
          * @param y The new y position.
          * @param width The new width.
          * @param height The new height.
-         * @see move
-         * @see reshape
          * \endif
+         * @see move
+         * @see resize
          */
         void setGeometry(int x, int y, int width, int height) {
             this->x = x;
@@ -224,15 +224,22 @@ namespace MyEngine {
             this->height = height;
         }
 
+        void setGeometry(const Geometry& geometry) {
+            this->x = geometry.x;
+            this->y = geometry.y;
+            this->width = geometry.width;
+            this->height = geometry.height;
+        }
+
         /**
          * \if EN
          * @brief Change the position of the geometry.
          * @details Set the new position of the geometry.
          * @param x The new x position.
          * @param y The new y position.
-         * @see setGeometry
-         * @see reshape
          * \endif
+         * @see setGeometry
+         * @see resize
          */
         void move(int x, int y) {
             this->x = x;
@@ -245,9 +252,9 @@ namespace MyEngine {
          * @details Set the new size of the geometry.
          * @param width The new width.
          * @param height The new height.
+         * \endif
          * @see setGeometry
          * @see move
-         * \endif
          */
         void resize(int width, int height) {
             this->width = width;

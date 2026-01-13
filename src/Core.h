@@ -31,7 +31,7 @@ namespace MyEngine {
         template<typename T, typename ...Args>
         void addCommand(Args... args);
     public:
-        enum VSyncMode {
+        enum VSyncMode : int8_t {
             Disable,
             Enabled,
             HalfRate,
@@ -87,7 +87,7 @@ namespace MyEngine {
         struct WindowSize {
             int width, height;
         };
-        enum GraphicEngine {
+        enum GraphicEngine : uint8_t {
             OpenGL,
             Vulkan
         };

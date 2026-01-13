@@ -220,7 +220,7 @@ namespace MyEngine {
 #endif
             for (auto& font_dir : find_font_dir) {
                 StringList font_files = FileSystem::listFilesRecursively(font_dir,
-                                                                         {".ttf", ".otf", ".ttc", ".woff", ".eot"});
+                                                         {".ttf", ".otf", ".ttc", ".woff", ".eot"});
                 for (auto& file : font_files) {
                     auto short_file = FileSystem::getShortFileName(file, true);
                     if (!_font_db.contains(short_file)) {
@@ -242,29 +242,29 @@ namespace MyEngine {
 
     std::vector<FontDatabase::FontInfo> FontDatabase::getSystemDefaultFont() {
         if (!_is_loaded) getFontDatabaseFromSystem();
-        std::vector<FontDatabase::FontInfo> default_fonts;
+        if (!_def_fonts.empty()) return _def_fonts;
 #ifdef _WIN32
         StringList common_fonts = { "arial", "segoeui", "tahoma", "verdana", "calibri" };
         for (auto& font_name : common_fonts) {
             auto path = findFontFromSystem(font_name);
-            if (!path.empty()) default_fonts.push_back({font_name, path});
+            if (!path.empty()) _def_fonts.push_back({font_name, path});
         }
 #endif
 #ifdef __linux__
         StringList common_fonts = { "AdwaitaSans-Regular", "DejaVuSans", "Roboto-Regular", "Ubuntu-R" };
         for (auto& font_name : common_fonts) {
             auto path = findFontFromSystem(font_name);
-            if (!path.empty()) default_fonts.push_back({font_name, path});
+            if (!path.empty()) _def_fonts.push_back({font_name, path});
         }
 #endif
 #ifdef __APPLE__
         StringList common_fonts = { "SanFrancisco-Regular", "HelveticaNeue", "ArialMT", "TimesNewRomanPSMT" };
         for (auto& font_name : common_fonts) {
             auto path = findFontFromSystem(font_name);
-            if (!path.empty()) default_fonts.push_back({font_name, path});
+            if (!path.empty()) _def_fonts.push_back({font_name, path});
         }
 #endif
-        return default_fonts;
+        return _def_fonts;
     }
 
     Texture::Texture(const std::string &path, Renderer *renderer)

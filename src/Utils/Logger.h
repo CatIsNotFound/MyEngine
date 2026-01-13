@@ -6,7 +6,7 @@
 namespace MyEngine {
     class Logger {
     public:
-        enum LogLevel {
+        enum LogLevel : uint8_t {
             Debug,
             Info,
             Warn,
@@ -95,21 +95,14 @@ namespace MyEngine {
             }
         }
 
-        static LogLevel _base_level;
-        static LogLevel _last_log_level;
-        static std::string _last_log_info;
-        static uint64_t _started_time;
-        static uint64_t _running_time;
-        static std::string _output_file_name;
-        static bool _write_log;
+        inline static LogLevel _base_level{Logger::Info};
+        inline static LogLevel _last_log_level{Logger::Debug};
+        inline static std::string _last_log_info{};
+        inline static uint64_t _started_time
+            {static_cast<uint64_t>(std::chrono::high_resolution_clock::now().time_since_epoch().count())};
+        inline static uint64_t _running_time{};
+        inline static std::string _output_file_name{"./App.log"};
+        inline static bool _write_log{false};
     };
-
-    inline Logger::LogLevel Logger::_base_level = Logger::Info;
-    inline Logger::LogLevel Logger::_last_log_level = Logger::Debug;
-    inline uint64_t Logger::_started_time = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-    inline uint64_t Logger::_running_time = 0;
-    inline std::string Logger::_last_log_info;
-    inline std::string Logger::_output_file_name = "./App.log";
-    inline bool Logger::_write_log = false;
 }
 #endif //MYENGINE_UTILS_LOGGER_H

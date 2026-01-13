@@ -101,6 +101,7 @@ if (BUILD_SHARED_LIBS_ONLY)
             src/Widgets/Button.h
             src/Widgets/LineEdit.cpp
             src/Widgets/LineEdit.h
+            src/Algorithm/String.h
     )
 else ()
     add_library(${PROJECT_NAME} STATIC
@@ -154,6 +155,7 @@ else ()
             src/Widgets/Button.h
             src/Widgets/LineEdit.cpp
             src/Widgets/LineEdit.h
+            src/Algorithm/String.h
     )
 endif ()
 

@@ -3,6 +3,36 @@
 
 namespace MyEngine {
     std::string FileSystem::_main_path = std::filesystem::absolute(".").string();
+    float FileSystem::translateSize(size_t size, MyEngine::FileSystem::DataSize data_size) {
+        switch (data_size) {
+            case KB:
+                return static_cast<float>(size) / 1024.0f;
+            case MB:
+                return static_cast<float>(size) / 1024.0f / 1024.f;
+            case GB:
+                return static_cast<float>(size) / 1024.0f / 1024.f / 1024.f;
+            case TB:
+                return static_cast<float>(size) / 1024.0f / 1024.f / 1024.f / 1024.f;
+            default:
+                return static_cast<float>(size);
+        }
+    }
+
+    size_t FileSystem::translateSize(float size, MyEngine::FileSystem::DataSize data_size) {
+        switch (data_size) {
+            case KB:
+                return static_cast<size_t>(size) * 1024;
+            case MB:
+                return static_cast<size_t>(size) * 1024 * 1024;
+            case GB:
+                return static_cast<size_t>(size) * 1024 * 1024 * 1024;
+            case TB:
+                return static_cast<size_t>(size) * 1024 * 1024 * 1024 * 1024;
+            default:
+                return static_cast<size_t>(size);
+        }
+    }
+
     bool FileSystem::setCurrentPath(const std::string &main_directory) {
         if (std::filesystem::is_directory(main_directory)) {
             _main_path = std::filesystem::absolute(main_directory).string();
@@ -274,19 +304,7 @@ namespace MyEngine {
     }
 
     float FileSystem::readableSize(const std::string &file_path, MyEngine::FileSystem::DataSize data_size) {
-        auto size = getFileSize(file_path);
-        switch (data_size) {
-            case KB:
-                return static_cast<float>(size) / 1024.0f;
-            case MB:
-                return static_cast<float>(size) / 1024.0f / 1024.f;
-            case GB:
-                return static_cast<float>(size) / 1024.0f / 1024.f / 1024.f;
-            case TB:
-                return static_cast<float>(size) / 1024.0f / 1024.f / 1024.f / 1024.f;
-            default:
-                return static_cast<float>(size);
-        }
+        return translateSize(getFileSize(file_path), data_size);
     }
 
     std::string FileSystem::getAbsolutePath(const std::string &path) {

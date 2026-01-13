@@ -34,7 +34,6 @@
  *
  * @details 你可以使用 `getID()` 函数从指定的生成器生成 ID
  * @return 创建新 ID 生成器的 index 值
- * @see getID
  */
 
 /**
@@ -81,8 +80,6 @@
  * @param y 新的 y 坐标
  * @param width 新的宽度
  * @param height 新的高度
- * @see move
- * @see resize
  */
 
 /**
@@ -91,8 +88,6 @@
  * @details 设置一个坐标作为新的位置
  * @param x 新的 x 坐标
  * @param y 新的 y 坐标
- * @see setGeometry
- * @see resize
  */
 
 /**
@@ -101,8 +96,6 @@
  * @details 设置一个新的尺寸作为新的大小
  * @param x 新的宽度
  * @param y 新的高度
- * @see setGeometry
- * @see move
  */
 
 /**

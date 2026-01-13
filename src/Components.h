@@ -7,20 +7,20 @@
 namespace MyEngine {
     class Font {
     public:
-        enum Style {
+        enum Style : uint8_t {
             Regular = 0x0,
             Bold = 0x1,
             Italic = 0x2,
             Underline = 0x4,
             Strikethrough = 0x8
         };
-        enum Direction {
+        enum Direction : uint8_t {
             LeftToRight = 4,
             RightToLeft,
             TopToBottom,
             BottomToTop
         };
-        enum Hinting {
+        enum Hinting : uint8_t {
             Normal,
             Light,
             Mono,
@@ -91,11 +91,12 @@ namespace MyEngine {
     private:
         static bool _is_loaded;
         static FontMap _font_db;
+        static std::vector<FontInfo> _def_fonts;
     };
 
     class BGM {
     public:
-        enum PlayStatus {
+        enum PlayStatus : uint8_t {
             Invalid,
             Loading,
             Loaded,

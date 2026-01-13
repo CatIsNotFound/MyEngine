@@ -7,7 +7,7 @@ namespace MyEngine::Widget {
     Label::Label(Window *window) : AbstractWidget(window) {
         _NEW_PROPERTY_PTR(this, ENGINE_PROP_BACKGROUND_IMAGE_ORIGINAL_SIZE, Size);
         _NEW_PROPERTY_PTR(this, ENGINE_PROP_TEXT_COLOR, SDL_Color);
-        setProperty(ENGINE_PROP_FONT_NAME, "");
+        setProperty(ENGINE_PROP_FONT_NAME);
         setProperty(ENGINE_PROP_FONT_SIZE, 9.f);
         setProperty(ENGINE_PROP_BACKGROUND_IMAGE_PATH);
         setProperty(ENGINE_PROP_BACKGROUND_IMAGE_SELF);
@@ -17,7 +17,7 @@ namespace MyEngine::Widget {
     Label::Label(std::string object_name, Window *window) : AbstractWidget(std::move(object_name), window) {
         _NEW_PROPERTY_PTR(this, ENGINE_PROP_BACKGROUND_IMAGE_ORIGINAL_SIZE, Size);
         _NEW_PROPERTY_PTR(this, ENGINE_PROP_TEXT_COLOR, SDL_Color);
-        setProperty(ENGINE_PROP_FONT_NAME, "");
+        setProperty(ENGINE_PROP_FONT_NAME);
         setProperty(ENGINE_PROP_FONT_SIZE, 9.f);
         setProperty(ENGINE_PROP_BACKGROUND_IMAGE_PATH);
         setProperty(ENGINE_PROP_BACKGROUND_IMAGE_SELF);
@@ -35,8 +35,6 @@ namespace MyEngine::Widget {
         }
         _font = TextSystem::global()->font(font_name);
         if (_text_id > 0) {
-            // TODO: Need to move the code
-            // TextSystem::global()->setTextFont(_text_id, font_name);
             auto font = property(ENGINE_PROP_FONT_NAME)->toString();
             auto f_size = property(ENGINE_PROP_FONT_SIZE)->toFloat();
             if (font != font_name) {
@@ -56,21 +54,17 @@ namespace MyEngine::Widget {
             }
             _visible_text = is_contain;
         }
-        // TODO: Need to move this code line
-        // TextSystem::global()->setTextColor(_text_id, _text_color);
         _changer_signal |= ENGINE_SIGNAL_LABEL_TEXT_COLOR_CHANGED;
     }
 
     void Label::setFont(const std::string &font_name) {
         if (!TextSystem::global()->isFontContain(font_name)) {
-            Logger::log(std::format("Label: The font name '{}' is not contained! "
-                    "You need to specified font path.", font_name),Logger::Error);
+            Logger::log(std::format("Label ({}): The font name '{}' is not contained! "
+                    "You need to specified font path.", _object_name, font_name),Logger::Error);
             return;
         }
         _font = TextSystem::global()->font(font_name);
         if (_text_id > 0) {
-            // TODO: Need to move this code line
-            // TextSystem::global()->setTextFont(_text_id, font_name);
             _changer_signal |= ENGINE_SIGNAL_LABEL_FONT_CHANGED;
             setProperty(ENGINE_PROP_FONT_NAME, font_name);
         } else {
@@ -83,8 +77,6 @@ namespace MyEngine::Widget {
         }
         _text = TextSystem::global()->indexOfText(_text_id);
         _visible_text = true;
-        // TODO: Need to move code
-        // TextSystem::global()->setTextColor(_text_id, _text_color);
         _changer_signal |= ENGINE_SIGNAL_LABEL_TEXT_COLOR_CHANGED;
     }
 
@@ -98,8 +90,6 @@ namespace MyEngine::Widget {
 
     void Label::setText(const std::string &text) {
         if (TextSystem::global()->isTextContain(_text_id)) {
-            // TODO: Need to move code
-            // TextSystem::global()->setText(_text_id, text);
             _changer_signal |= ENGINE_SIGNAL_LABEL_TEXT_CHANGED;
             _string = text;
         }
@@ -111,8 +101,6 @@ namespace MyEngine::Widget {
 
     void Label::appendText(const std::string &text) {
         if (TextSystem::global()->isTextContain(_text_id)) {
-            // TODO: Need to move code
-//            TextSystem::global()->appendText(_text_id, text);
             _string += text;
             _changer_signal |= ENGINE_SIGNAL_LABEL_TEXT_CHANGED;
         }
@@ -120,8 +108,6 @@ namespace MyEngine::Widget {
 
     void Label::setTextColor(const SDL_Color &color) {
         if (TextSystem::global()->isTextContain(_text_id)) {
-            // TODO: Need to move this code
-            // TextSystem::global()->setTextColor(_text_id, color);
             _changer_signal |= ENGINE_SIGNAL_LABEL_TEXT_COLOR_CHANGED;
             auto text_color = _GET_PROPERTY_PTR(this, ENGINE_PROP_TEXT_COLOR, SDL_Color);
             text_color->r = color.r;
@@ -134,7 +120,6 @@ namespace MyEngine::Widget {
     void Label::setTextColor(uint64_t hex_code, bool alpha) {
         auto color = RGBAColor::hexCode2RGBA(hex_code, alpha);
         if (TextSystem::global()->isTextContain(_text_id)) {
-            // TextSystem::global()->setTextColor(_text_id, color);
             _changer_signal |= ENGINE_SIGNAL_LABEL_TEXT_COLOR_CHANGED;
         }
     }
@@ -142,8 +127,6 @@ namespace MyEngine::Widget {
     void Label::setFontSize(float size) {
         auto font_name = fontName();
         if (TextSystem::global()->isFontContain(font_name)) {
-            // TODO: Need to move this code
-//            TextSystem::global()->setFontSize(font_name, size);
             _changer_signal |= ENGINE_SIGNAL_LABEL_FONT_SIZE_CHANGED;
             setProperty(ENGINE_PROP_FONT_SIZE, size);
         }
@@ -157,13 +140,13 @@ namespace MyEngine::Widget {
         return _font->fontSize();
     }
 
-    void Label::setTextAlignment(Label::Alignment alignment) {
+    void Label::setTextAlignment(Alignment alignment) {
         if (_auto_resize_by_text) return;
         _alignment = alignment;
         _changer_signal |= ENGINE_SIGNAL_LABEL_TEXT_ALIGNMENT_CHANGED;
     }
 
-    Label::Alignment Label::textAlignment() const { return _alignment; }
+    Alignment Label::textAlignment() const { return _alignment; }
 
     void Label::setAutoResizedByTextEnabled(bool enabled) {
         _auto_resize_by_text = enabled;
@@ -194,7 +177,8 @@ namespace MyEngine::Widget {
 
     void Label::setBackgroundImage(SDL_Surface *surface, bool delete_later) {
         if (!surface) {
-            Logger::log("Label: The specified surface is not valid!", Logger::Error);
+            Logger::log(std::format("Label ({}): The specified surface is not valid!", _object_name),
+                        Logger::Error);
             return;
         }
         if (!_bg_img) {
@@ -212,7 +196,8 @@ namespace MyEngine::Widget {
 
     void Label::setBackgroundImage(Texture *texture, bool delete_later) {
         if (!texture) {
-            Logger::log("Label: The specified surface is not valid!", Logger::Error);
+            Logger::log(std::format("Label (): The specified surface is not valid!", _object_name),
+                        Logger::Error);
             return;
         }
         if (!_bg_img) {
@@ -243,7 +228,7 @@ namespace MyEngine::Widget {
         }
     }
 
-    void Label::setBackgroundImageFillMode(Label::ImageFilledMode filled_mode) {
+    void Label::setBackgroundImageFillMode(ImageFilledMode filled_mode) {
         _fill_mode = filled_mode;
         _changer_signal |= ENGINE_SIGNAL_LABEL_BACKGROUND_IMAGE_FILLED_CHANGED;
     }
@@ -260,7 +245,7 @@ namespace MyEngine::Widget {
         return (_bg_img ? _bg_img.get() : nullptr);
     }
 
-    Label::ImageFilledMode Label::backgroundImageFilledMode() const {
+    ImageFilledMode Label::backgroundImageFilledMode() const {
         return _fill_mode;
     }
 

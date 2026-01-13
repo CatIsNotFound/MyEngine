@@ -23,7 +23,7 @@ namespace MyEngine {
          *
          * 获取系统下当前使用的鼠标光标
          */
-        enum StdCursor {
+        enum StdCursor : uint8_t {
             Default             = 0x00,
             Normal              = 0x00,
             Edit                = 0x01,
