@@ -102,10 +102,12 @@ namespace MyEngine {
             [[nodiscard]] bool isFocusEnabled() const;
             [[nodiscard]] bool isHovered() const;
 
+        protected:
             void setInputModeEnabled(bool enabled);
             [[nodiscard]] bool isInputModeEnabled() const;
             [[nodiscard]] const std::string& getInputChar() const;
 
+        public:
             void setCursor(Cursor::StdCursor cursor_style);
             [[nodiscard]] Cursor::StdCursor cursor() const;
 

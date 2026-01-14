@@ -23,7 +23,7 @@ else()
 endif()
 
 set(BUILD_TEST OFF CACHE BOOL "Build Test")
-set(BUILD_GTEST ON CACHE BOOL "Build Test Cases Project")
+set(BUILD_GTEST OFF CACHE BOOL "Build Test Cases Project")
 set(BUILD_SHARED_LIBS_ONLY OFF CACHE BOOL "Build Shared Libraries Only")
 
 if (NOT EXISTS ${SDL3_LIB})
@@ -102,6 +102,8 @@ if (BUILD_SHARED_LIBS_ONLY)
             src/Widgets/LineEdit.cpp
             src/Widgets/LineEdit.h
             src/Algorithm/String.h
+            src/Widgets/ScrollBar.cpp
+            src/Widgets/ScrollBar.h
     )
 else ()
     add_library(${PROJECT_NAME} STATIC
@@ -156,6 +158,8 @@ else ()
             src/Widgets/LineEdit.cpp
             src/Widgets/LineEdit.h
             src/Algorithm/String.h
+            src/Widgets/ScrollBar.cpp
+            src/Widgets/ScrollBar.h
     )
 endif ()
 

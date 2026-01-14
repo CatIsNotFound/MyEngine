@@ -17,7 +17,8 @@
 #define ENGINE_PROP_LINE_EDIT_BACKGROUND_COLOR_DISABLED            "lineEdit.disabled.backgroundColor"
 #define ENGINE_PROP_LINE_EDIT_TEXT_COLOR                           "lineEdit.text.color"
 #define ENGINE_PROP_LINE_EDIT_TEXT                                 "lineEdit.text.text"
-#define ENGINE_PROP_LINE_EDIT_TEXT_SIZE                            "lineEdit.text.size"
+#define ENGINE_PROP_LINE_EDIT_PASSWORD                             "lineEdit.text.password"
+#define ENGINE_PROP_LINE_EDIT_PASSWORD_LENGTH                      "lineEdit.text.password.length"
 #define ENGINE_PROP_LINE_EDIT_PLACEHOLDER_TEXT                     "lineEdit.placeholder.text"
 #define ENGINE_PROP_LINE_EDIT_PLACE_HOLDER_TEXT_COLOR              "lineEdit.placeholder.color"
 #define ENGINE_PROP_LINE_EDIT_PADDING_HORIZONTAL                   "lineEdit.padding.horizontal"
@@ -26,13 +27,18 @@
 #define ENGINE_BOOL_LINE_EDIT_PLACEHOLDER_TEXT_VISIBLE             0b1
 #define ENGINE_BOOL_LINE_EDIT_PASSWORD_MODE                        0b10
 #define ENGINE_BOOL_LINE_EDIT_HAS_TEXT                             0b100
+#define ENGINE_BOOL_LINE_EDIT_CURSOR_VISIBLE                       0b1000
+#define ENGINE_BOOL_LINE_EDIT_BACKGROUND_VISIBLE                   0b10000
+#define ENGINE_BOOL_LINE_EDIT_BORDER_VISIBLE                       0b100000
+
 #define ENGINE_SIGNAL_LINE_EDIT_TEXT_CHANGED                       0b1
-#define ENGINE_SIGNAL_LINE_EDIT_PLACEHOLDER_TEXT_CHANGED           0b10
-#define ENGINE_SIGNAL_LINE_EDIT_PLACEHOLDER_TEXT_COLOR_CHANGED     0b100
-#define ENGINE_SIGNAL_LINE_EDIT_FONT_CHANGED                       0b1000
-#define ENGINE_SIGNAL_LINE_EDIT_FONT_SIZE_CHANGED                  0b10000
-#define ENGINE_SIGNAL_LINE_EDIT_TEXT_COLOR_CHANGED                 0b100000
-#define ENGINE_SIGNAL_LINE_EDIT_TEXT_SIZE_CHANGED                  0b1000000
+#define ENGINE_SIGNAL_LINE_EDIT_PASSWORD_CHANGED                   0b10
+#define ENGINE_SIGNAL_LINE_EDIT_PLACEHOLDER_TEXT_CHANGED           0b100
+#define ENGINE_SIGNAL_LINE_EDIT_PLACEHOLDER_TEXT_COLOR_CHANGED     0b1000
+#define ENGINE_SIGNAL_LINE_EDIT_FONT_CHANGED                       0b10000
+#define ENGINE_SIGNAL_LINE_EDIT_FONT_SIZE_CHANGED                  0b100000
+#define ENGINE_SIGNAL_LINE_EDIT_TEXT_COLOR_CHANGED                 0b1000000
+#define ENGINE_SIGNAL_LINE_EDIT_TEXT_SIZE_CHANGED                  0b10000000
 
 namespace MyEngine {
     namespace Widget {
@@ -44,8 +50,8 @@ namespace MyEngine {
 
             void setFont(const std::string &font_name, const std::string& font_path, float font_size = 9.f);
             void setFont(const std::string &font_name);
-            [[nodiscard]] const std::string& fontName() const;
-            [[nodiscard]] const std::string& fontPath() const;
+            [[nodiscard]] std::string_view fontName() const;
+            [[nodiscard]] std::string_view fontPath() const;
             void setFontSize(float size);
             [[nodiscard]] float fontSize() const;
 
@@ -54,7 +60,7 @@ namespace MyEngine {
             [[nodiscard]] const StringList& textList() const;
             void setPlaceHolderText(const std::string& text);
             [[nodiscard]] std::string_view placeHolderText() const;
-            void setPasswordEnabled(bool enabled, const std::string& secret = "●");
+            void setPasswordEnabled(bool enabled, const std::string& secret = "*");
             [[nodiscard]] bool passwordEnabled() const;
 
             void setTextColor(const SDL_Color& color);
@@ -66,6 +72,10 @@ namespace MyEngine {
             void setBorderColor(const SDL_Color& color, WidgetStatus status = WidgetStatus::Normal);
             [[nodiscard]] const SDL_Color& backgroundColor(WidgetStatus status = WidgetStatus::Normal) const;
             [[nodiscard]] const SDL_Color& borderColor(WidgetStatus status = WidgetStatus::Normal) const;
+            void setBackgroundVisible(bool visible);
+            void setBorderVisible(bool visible);
+            [[nodiscard]] bool backgroundVisible() const;
+            [[nodiscard]] bool borderVisible() const;
 
             void setHorizontalPadding(int value);
             void setVerticalPadding(int value);
@@ -74,6 +84,10 @@ namespace MyEngine {
             [[nodiscard]] int horizontalPadding() const;
             [[nodiscard]] int verticalPadding() const;
 
+            void setTextCursorStyle(uint8_t size, const SDL_Color& color = StdColor::Black);
+            void setTextCursorStyle(uint8_t size, uint64_t hex_code, bool alpha = false);
+            [[nodiscard]] uint8_t textCursorSize() const;
+            [[nodiscard]] const SDL_Color& textCursorColor() const;
         protected:
             void loadEvent() override;
             void unloadEvent() override;
@@ -83,6 +97,7 @@ namespace MyEngine {
             void enableChangedEvent(bool enabled) override;
             void resizeEvent(const MyEngine::Size &size) override;
             void keyDownEvent(SDL_Scancode scancode) override;
+            void keyPressedEvent(SDL_Scancode scancode) override;
             void mouseEnteredEvent() override;
             void mouseLeftEvent() override;
             void mouseClickedEvent() override;
@@ -96,6 +111,7 @@ namespace MyEngine {
             void init();
             void updateStatus(WidgetStatus status);
             void updateTextPosition();
+            void updateText();
             static std::string getBackgroundColorPropertyKey(WidgetStatus status);
             static std::string getBorderColorPropertyKey(WidgetStatus status);
             SDL_Color getBackgroundColor(WidgetStatus status);
@@ -104,7 +120,7 @@ namespace MyEngine {
             uint64_t _text_id{}, _place_text_id{};
             Font* _font{};
             TextSystem::Text* _text{}, *_place_text{};
-            std::string _none_str{};
+            const char* _none_str{};
             char _secret_char[8]{};
             StringList _strings{};
             Vector2 _text_pos{};

@@ -24,8 +24,8 @@ namespace MyEngine {
 
             void setFont(const std::string &font_name, const std::string& font_path, float font_size = 9.f);
             void setFont(const std::string &font_name);
-            [[nodiscard]] const std::string& fontName() const;
-            [[nodiscard]] const std::string& fontPath() const;
+            [[nodiscard]] std::string_view fontName() const;
+            [[nodiscard]] std::string_view fontPath() const;
 
             void setText(const std::string& text);
             [[nodiscard]] const std::string& text() const;
@@ -79,7 +79,8 @@ namespace MyEngine {
             Font* _font{};
             TextSystem::Text* _text{};
             std::unique_ptr<Texture> _bg_img{};
-            std::string _none_str{}, _string{};
+            std::string _string{};
+            const char* _none_str{};
             Vector2 _text_pos{};
             /**
              * @brief 改变信号

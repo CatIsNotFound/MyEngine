@@ -80,12 +80,12 @@ namespace MyEngine::Widget {
         _changer_signal |= ENGINE_SIGNAL_LABEL_TEXT_COLOR_CHANGED;
     }
 
-    const std::string &Label::fontName() const {
-        return _text ? _text->font_name : _none_str;
+    std::string_view Label::fontName() const {
+        return _text ? _text->font_name.data() : _none_str;
     }
 
-    const std::string &Label::fontPath() const {
-        return _font ? _font->fontPath() : _none_str;
+    std::string_view Label::fontPath() const {
+        return _font ? _font->fontPath().data() : _none_str;
     }
 
     void Label::setText(const std::string &text) {
@@ -126,7 +126,7 @@ namespace MyEngine::Widget {
 
     void Label::setFontSize(float size) {
         auto font_name = fontName();
-        if (TextSystem::global()->isFontContain(font_name)) {
+        if (TextSystem::global()->isFontContain(font_name.data())) {
             _changer_signal |= ENGINE_SIGNAL_LABEL_FONT_SIZE_CHANGED;
             setProperty(ENGINE_PROP_FONT_SIZE, size);
         }

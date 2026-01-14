@@ -13,43 +13,75 @@ int main(int argc, const char* argv[]) {
     engine.setFPS(30);
     engine.setLimitMaxMemorySize(FileSystem::translateSize(10.f, MyEngine::FileSystem::MB));
     auto win = new Window(&engine, "Test");
-    Graphics::Rectangle progress(0, 0, 0, 0, 4, StdColor::Orange, StdColor::Yellow);
-    BGM bgm(AudioSystem::global()->mixer(), FileSystem::getAbsolutePath("./main.mp3"));
-    bgm.setVolume(0.01f);
-    bgm.setSpeedAndPitch(1.25f);
-    bgm.play(0, true);
-    Widget::LineEdit line_edit("line_edit", win);
     win->setResizable(true);
-    win->installPaintEvent([&](Renderer* r) {
-        r->fillBackground(RGBAColor::BlueLake);
-        r->drawRectangle(&progress);
-        r->drawDebugFPS();
-        r->drawDebugText(std::format("BGM: {} / {}", bgm.position(), bgm.duration()), {20, 30});
-        r->drawDebugText(std::format("MEMORY: {:.2f} MB", FileSystem::translateSize(SysMemory::getCurProcUsedMemSize(), MyEngine::FileSystem::KB)), {20, 40});
+    win->installPaintEvent([&](Renderer* r){
+        r->fillBackground(RGBAColor::RedLightPink);
+        static bool _t = false;
+        if (!_t) {
+            _t = true;
+            r->setBlendMode(SDL_BLENDMODE_BLEND);
+        }
+        r->drawDebugFPS({(float)win->geometry().width - 60, 20});
     });
-    auto font_map = FontDatabase::getFontDatabaseFromSystem();
-    FontDatabase::FontInfo def_font = {"simsun", font_map.at("simsun")};
-    line_edit.setGeometry(20, 80, 280, 48);
-    line_edit.setFont(def_font.font_name, def_font.font_path, 20.f);
-    line_edit.setPadding(12);
-//    line_edit.setPlaceHolderText("Input some text...");
-    Widget::Button button("button", win);
-    button.setFont(def_font.font_name);
-    button.setText("Confirm");
-    button.move(50, 370);
-    button.setTextAlignment(Widget::Alignment::CenterMiddle);
-    button.setTriggerEvent([&] {
-        bool is_empty = line_edit.placeHolderText().empty();
-        line_edit.setPlaceHolderText(is_empty ? "Input here..." : "");
-        if (is_empty) {
-            button.setText("Hide");
+
+    Widget::LineEdit user_name("user_name", win),
+                     user_passwd("user_passwd", win);
+    auto sys_db = FontDatabase::getFontDatabaseFromSystem();
+    user_name.setGeometry(80, 100, 240, 40);
+    user_passwd.setGeometry(80, 150, 240, 40);
+    user_name.setPlaceHolderText("User name");
+    user_passwd.setPlaceHolderText("Password");
+    user_name.setFont("simsun", sys_db.at("simsun"), 20.f);
+    user_name.setTextCursorStyle(4, RGBAColor::BlueDark);
+    user_name.setPadding(8, 8);
+    user_passwd.setFont("simsun");
+    user_passwd.setPasswordEnabled(true);
+    user_passwd.setTextCursorStyle(2, RGBAColor::MixGrayDark);
+    user_passwd.setText("123456");
+    user_passwd.setBackgroundVisible(false);
+    user_passwd.setPadding(8, 8);
+//    user_passwd.setBorderVisible(false);
+    Widget::Button button("show_passwd", win);
+    button.setGeometry(120, 200, 140, 24);
+    button.setFont("simsun");
+    button.setText("Show password");
+    button.setTextAlignment(MyEngine::Widget::CenterMiddle);
+    button.setTriggerEvent([&button, &user_passwd] {
+        if (user_passwd.passwordEnabled()) {
+            user_passwd.setPasswordEnabled(false);
+            button.setText("Hide password");
         } else {
-            button.setText("Show");
+            user_passwd.setPasswordEnabled(true);
+            button.setText("Show password");
         }
     });
-    EventSystem::global()->appendGlobalEvent(IDGenerator::getNewGlobalEventID(), [&] {
-        float p = (float) (bgm.position()) / (float) (bgm.duration());
-        progress.resize(win->geometry().width * p, 20);
+    Widget::Button login("login", win);
+    login.setGeometry(120, 230, 140, 24);
+    login.setFont("simsun");
+    login.setText("Login");
+    login.setTextAlignment(MyEngine::Widget::CenterMiddle);
+
+    Widget::Label label("label", win);
+    label.move(80, 70);
+    label.setAutoResizedByTextEnabled(true);
+    label.setFont("simsun");
+    label.setTextColor(StdColor::Black);
+    label.setText("Welcome");
+    label.setBackgroundColor(RGBAColor::BlueIce);
+    login.setTriggerEvent([&] {
+        if (user_name.text() == "admin" && user_passwd.text() == "123456") {
+            label.setText("Login Successful!");
+        } else {
+            label.setText("User name or password is incorrect!");
+        }
+    });
+    Widget::Button enabled_trigger("enabled_trigger", win);
+    enabled_trigger.setGeometry(120, 260, 140, 24);
+    enabled_trigger.setFont("simsun");
+    enabled_trigger.setText("Click me");
+    enabled_trigger.setTextAlignment(MyEngine::Widget::CenterMiddle);
+    enabled_trigger.setTriggerEvent([&] {
+        user_name.setEnabled(!user_name.enabled());
     });
     return engine.exec();
 }

@@ -71,13 +71,13 @@ namespace MyEngine::Widget {
         _changer_signal |= ENGINE_SIGNAL_LINE_EDIT_TEXT_COLOR_CHANGED;
     }
 
-    const std::string &LineEdit::fontName() const {
-        return _text ? _text->font_name : _none_str;
+    std::string_view LineEdit::fontName() const {
+        return _text ? _text->font_name.data() : _none_str;
     }
 
-    const std::string &LineEdit::fontPath() const {
+    std::string_view LineEdit::fontPath() const {
         auto font = fontName();
-        return _text ? _text->font_name : _none_str;
+        return _text ? TextSystem::global()->font(font.data())->fontPath().data() : _none_str;
     }
 
     void LineEdit::setFontSize(float size) {
@@ -98,6 +98,11 @@ namespace MyEngine::Widget {
         } else {
             _status |= ENGINE_BOOL_LINE_EDIT_HAS_TEXT;
             if (!placeHolderText().empty()) _status ^= ENGINE_BOOL_LINE_EDIT_PLACEHOLDER_TEXT_VISIBLE;
+        }
+        if (_status & ENGINE_BOOL_LINE_EDIT_PASSWORD_MODE) {
+            setProperty(ENGINE_PROP_LINE_EDIT_PASSWORD_LENGTH, _strings.size());
+            setProperty(ENGINE_PROP_LINE_EDIT_PASSWORD,
+                        Algorithm::multiplicationString(_secret_char, _strings.size()));
         }
         textChangedEvent();
     }
@@ -126,9 +131,14 @@ namespace MyEngine::Widget {
         if (enabled) {
             _status |= ENGINE_BOOL_LINE_EDIT_PASSWORD_MODE;
             strncpy(_secret_char, secret.data(), sizeof(char) * 8);
+            setProperty(ENGINE_PROP_LINE_EDIT_PASSWORD_LENGTH, _strings.size());
+            setProperty(ENGINE_PROP_LINE_EDIT_PASSWORD,
+                        Algorithm::multiplicationString(_secret_char, _strings.size()));
         } else {
-            _changer_signal ^= ENGINE_BOOL_LINE_EDIT_PASSWORD_MODE;
+            setProperty(ENGINE_PROP_LINE_EDIT_PASSWORD_LENGTH, 0);
+            _status ^= ENGINE_BOOL_LINE_EDIT_PASSWORD_MODE;
         }
+        _changer_signal |= ENGINE_SIGNAL_LINE_EDIT_PASSWORD_CHANGED;
     }
 
     bool LineEdit::passwordEnabled() const {
@@ -177,6 +187,32 @@ namespace MyEngine::Widget {
         return *_GET_PROPERTY_PTR(this, key, SDL_Color);
     }
 
+    void LineEdit::setBackgroundVisible(bool visible) {
+        if (!visible && (_status & ENGINE_BOOL_LINE_EDIT_BACKGROUND_VISIBLE)) {
+            _status ^= ENGINE_BOOL_LINE_EDIT_BACKGROUND_VISIBLE;
+        } else {
+            _status |= ENGINE_BOOL_LINE_EDIT_BACKGROUND_VISIBLE;
+        }
+        updateStatus(_wid_status);
+    }
+
+    void LineEdit::setBorderVisible(bool visible) {
+        if (!visible && (_status & ENGINE_BOOL_LINE_EDIT_BORDER_VISIBLE)) {
+            _status ^= ENGINE_BOOL_LINE_EDIT_BORDER_VISIBLE;
+        } else {
+            _status |= ENGINE_BOOL_LINE_EDIT_BORDER_VISIBLE;
+        }
+        updateStatus(_wid_status);
+    }
+
+    bool LineEdit::backgroundVisible() const {
+        return (_status & ENGINE_BOOL_LINE_EDIT_BACKGROUND_VISIBLE);
+    }
+
+    bool LineEdit::borderVisible() const {
+        return (_status & ENGINE_BOOL_LINE_EDIT_BORDER_VISIBLE);
+    }
+
     void LineEdit::setHorizontalPadding(int value) {
         setProperty(ENGINE_PROP_LINE_EDIT_PADDING_HORIZONTAL, value);
         auto geo = toGeometryInt(_trigger_area.geometry());
@@ -218,14 +254,33 @@ namespace MyEngine::Widget {
         return property(ENGINE_PROP_LINE_EDIT_PADDING_VERTICAL)->toInt32();
     }
 
+    void LineEdit::setTextCursorStyle(uint8_t size, const SDL_Color &color) {
+        _cursor_line.setSize(size);
+        _cursor_line.setColor(color);
+    }
+
+    void LineEdit::setTextCursorStyle(uint8_t size, uint64_t hex_code, bool alpha) {
+        _cursor_line.setSize(size);
+        _cursor_line.setColor(RGBAColor::hexCode2RGBA(hex_code, alpha));
+    }
+
+    uint8_t LineEdit::textCursorSize() const {
+        return _cursor_line.size();
+    }
+
+    const SDL_Color &LineEdit::textCursorColor() const {
+        return _cursor_line.color();
+    }
+
     void LineEdit::loadEvent() {
         AbstractWidget::loadEvent();
         auto status = WidgetStatus::Normal;
         if (isFocusEnabled()) status = WidgetStatus::Active;
         if (!enabled()) status = WidgetStatus::Disabled;
         updateStatus(status);
-        _changer_signal |= ENGINE_SIGNAL_LINE_EDIT_PLACEHOLDER_TEXT_COLOR_CHANGED;
-        _changer_signal |= ENGINE_SIGNAL_LINE_EDIT_TEXT_COLOR_CHANGED;
+        _changer_signal |= (ENGINE_SIGNAL_LINE_EDIT_PLACEHOLDER_TEXT_COLOR_CHANGED |
+                            ENGINE_SIGNAL_LINE_EDIT_TEXT_COLOR_CHANGED);
+
         if (!_strings.empty()) _status |= ENGINE_BOOL_LINE_EDIT_HAS_TEXT;
     }
 
@@ -249,6 +304,12 @@ namespace MyEngine::Widget {
 
     void LineEdit::paintEvent(MyEngine::Renderer *renderer) {
         AbstractWidget::paintEvent(renderer);
+        if (!(_status & ENGINE_BOOL_LINE_EDIT_BACKGROUND_VISIBLE)) {
+            _trigger_area.setBackgroundColor(RGBAColor::Transparent);
+        }
+        if (!(_status & ENGINE_BOOL_LINE_EDIT_BORDER_VISIBLE)) {
+            _trigger_area.setBorderColor(RGBAColor::Transparent);
+        }
         renderer->drawRectangle(&_trigger_area);
 
         if (_text) {
@@ -259,12 +320,12 @@ namespace MyEngine::Widget {
                 show_text_mode = true;      // show placeholder text
             }
             if (_changer_signal & ENGINE_SIGNAL_LINE_EDIT_TEXT_CHANGED) {
-                auto text = Algorithm::mergeStringList(_strings);
-                setProperty(ENGINE_PROP_LINE_EDIT_TEXT, text);
-                TextSystem::global()->setText(_text_id, text);
+                updateText();
                 update_text_pos = true;
             }
-
+            if (_changer_signal & ENGINE_SIGNAL_LINE_EDIT_PASSWORD_CHANGED) {
+                updateText();
+            }
             if (_changer_signal & ENGINE_SIGNAL_LINE_EDIT_TEXT_SIZE_CHANGED) {
                 TextSystem::global()->setFontSize(_text->font_name,
                                                   property(ENGINE_PROP_FONT_SIZE)->toFloat());
@@ -296,11 +357,12 @@ namespace MyEngine::Widget {
             }
             renderer->setViewport({});
 
-            static bool show_cur = false;
+            bool show_cur = (_status & ENGINE_BOOL_LINE_EDIT_CURSOR_VISIBLE) > 0;
             if (!_start_tick) _start_tick = SDL_GetTicks();
             auto now_tick = SDL_GetTicks();
             if (now_tick - _start_tick >= 500) {
                 show_cur = !show_cur;
+                _status ^= ENGINE_BOOL_LINE_EDIT_CURSOR_VISIBLE;
                 _start_tick = SDL_GetTicks();
             }
             if (_wid_status == WidgetStatus::Input && show_cur) renderer->drawLine(&_cursor_line);
@@ -338,6 +400,13 @@ namespace MyEngine::Widget {
                 break;
             default:
                 break;
+        }
+    }
+
+    void LineEdit::keyPressedEvent(SDL_Scancode scancode) {
+        if ((scancode == SDL_SCANCODE_RETURN ||
+            scancode == SDL_SCANCODE_KP_ENTER) && !isInputModeEnabled()) {
+            setInputModeEnabled(true);
         }
     }
 
@@ -401,9 +470,11 @@ namespace MyEngine::Widget {
         setProperty(ENGINE_PROP_BACKGROUND_IMAGE_SELF);
         setProperty(ENGINE_PROP_BACKGROUND_IMAGE_TEXTURE);
         setProperty(ENGINE_PROP_LINE_EDIT_TEXT, "");
+        setProperty(ENGINE_PROP_LINE_EDIT_PASSWORD, "");
+        setProperty(ENGINE_PROP_LINE_EDIT_PASSWORD_LENGTH, 0ULL);
         setProperty(ENGINE_PROP_LINE_EDIT_PLACEHOLDER_TEXT, "");
-        setProperty(ENGINE_PROP_LINE_EDIT_PADDING_HORIZONTAL, 0);
-        setProperty(ENGINE_PROP_LINE_EDIT_PADDING_VERTICAL, 0);
+        setProperty(ENGINE_PROP_LINE_EDIT_PADDING_HORIZONTAL, 4.f);
+        setProperty(ENGINE_PROP_LINE_EDIT_PADDING_VERTICAL, 4.f);
         _NEW_PROPERTY_WITH_DEFAULT_VALUE_PTR(this, ENGINE_PROP_LINE_EDIT_BACKGROUND_COLOR_NORMAL,
                                              SDL_Color, RGBAColor::BlueIce);
         _NEW_PROPERTY_WITH_DEFAULT_VALUE_PTR(this, ENGINE_PROP_LINE_EDIT_BORDER_COLOR_NORMAL,
@@ -434,26 +505,30 @@ namespace MyEngine::Widget {
         _trigger_area.setBorder(2, RGBAColor::MixGrayDark);
         _cursor_line.setSize(1);
         _cursor_line.setColor(StdColor::Black);
+        _status |= (ENGINE_BOOL_LINE_EDIT_BACKGROUND_VISIBLE |
+                    ENGINE_BOOL_LINE_EDIT_BORDER_VISIBLE);
     }
 
     void LineEdit::updateStatus(WidgetStatus status) {
         _wid_status = status;
 
-        auto bd_color = getBorderColor(status);
-        auto bg_color = getBackgroundColor(status);
-
-        _trigger_area.setBorderColor(bd_color);
-        _trigger_area.setBackgroundColor(bg_color);
-
+        if (_status & ENGINE_BOOL_LINE_EDIT_BORDER_VISIBLE) {
+            auto bd_color = getBorderColor(status);
+            _trigger_area.setBorderColor(bd_color);
+        }
+        if (_status & ENGINE_BOOL_LINE_EDIT_BACKGROUND_VISIBLE) {
+            auto bg_color = getBackgroundColor(status);
+            _trigger_area.setBackgroundColor(bg_color);
+        }
         updateTextPosition();
     }
 
     void LineEdit::updateTextPosition() {
-        auto hp = horizontalPadding();
+        auto hp = (float)horizontalPadding();
         float dis = _trigger_area.geometry().size.width - _text->text_size.width;
         Vector2 st_pos, ed_pos;
-        st_pos.y += _real_area.y;
-        // auto text_height = (_wid_status == WidgetStatus::Input ? _text->text_size.height : _place_text->text_size.height);
+        auto real_area = toGeometryFloat(_real_area);
+        st_pos.y += real_area.pos.y;
         float text_height = 0.f;
         if (_status & ENGINE_BOOL_LINE_EDIT_PLACEHOLDER_TEXT_VISIBLE) {
             text_height = _place_text->text_size.height;
@@ -463,19 +538,39 @@ namespace MyEngine::Widget {
 
 
         if (dis - hp * 2 < 0) {
-            st_pos.x += _real_area.x + _real_area.width;
+            st_pos.x += real_area.pos.x + real_area.size.width;
             ed_pos.reset(st_pos);
             _text_pos = {_wid_status == WidgetStatus::Input ? dis - hp * 2 : 0,
-                         _real_area.height / 2.f - text_height / 2.f};
+                         real_area.size.height / 2.f - text_height / 2.f};
         } else {
-            st_pos.x += _real_area.x + _text->text_size.width;
+            st_pos.x += real_area.pos.x + _text->text_size.width;
             ed_pos.reset(st_pos);
-            _text_pos = {0, _real_area.height / 2.f - text_height / 2.f};
+            _text_pos = {0, real_area.size.height / 2.f - text_height / 2.f};
         }
-        ed_pos.y += _real_area.height;
+        ed_pos.y += real_area.size.height;
 
         _cursor_line.setStartPosition(st_pos);
         _cursor_line.setEndPosition(ed_pos);
+    }
+
+    void LineEdit::updateText() {
+        auto text = Algorithm::mergeStringList(_strings);
+        setProperty(ENGINE_PROP_LINE_EDIT_TEXT, text);
+        if (_status & ENGINE_BOOL_LINE_EDIT_PASSWORD_MODE) {
+            auto passwd = property(ENGINE_PROP_LINE_EDIT_PASSWORD)->toString();
+            auto pass_length = property(ENGINE_PROP_LINE_EDIT_PASSWORD_LENGTH)->toUInt64();
+            if (pass_length < _strings.size()) {
+                passwd.append(Algorithm::multiplicationString
+                                      (_secret_char, _strings.size() - pass_length));
+            } else {
+                passwd.assign(passwd.substr(0, _strings.size() * strlen(_secret_char)));
+            }
+            TextSystem::global()->setText(_text_id, passwd);
+            setProperty(ENGINE_PROP_LINE_EDIT_PASSWORD, passwd);
+            setProperty(ENGINE_PROP_LINE_EDIT_PASSWORD_LENGTH, _strings.size());
+        } else {
+            TextSystem::global()->setText(_text_id, text);
+        }
     }
 
     std::string LineEdit::getBorderColorPropertyKey(WidgetStatus status) {

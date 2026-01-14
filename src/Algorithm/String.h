@@ -5,6 +5,23 @@
 
 namespace MyEngine {
     namespace Algorithm {
+        inline static std::string mergeStringList(const StringList& string_list, bool reverse = false) {
+            std::string output;
+            for (auto& s : string_list) {
+                if (reverse) output.assign(s + output);
+                else output += s;
+            }
+            return output;
+        }
+
+        inline static std::string multiplicationString(const char* str, uint32_t count = 1) {
+            std::string output;
+            while (count--) {
+                output += str;
+            }
+            return output;
+        }
+
         inline static StringList splitUTF_8(const std::string& utf8_string) {
             StringList _ret;
             size_t char_length = 0;
@@ -28,13 +45,7 @@ namespace MyEngine {
             return _ret;
         }
 
-        inline static std::string mergeStringList(const StringList& string_list) {
-            std::string output;
-            for (auto& s : string_list) {
-                output += s;
-            }
-            return output;
-        }
+
     }
 }
 
