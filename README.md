@@ -16,11 +16,11 @@ The project is currently under development. For detailed update content, please 
 
 | GCC  | Clang | MSVC                  | Apple Clang |
 | ---- | ----- | --------------------- | ----------- |
-| 12+  | 15+   | 19.37+ (VS2022 17.7+) | 15.0+       |
+| 12+  | 15+   | 19.37+ (VS2022 17.7+) | 16.0+       |
 
 For installing GNU GCC Compiler, please refer to the [Installing GNU GCC Compiler](https://github.com/CatIsNotFound/MyEngine/wiki/Compiler%20Installation%20Guide) page.
 
-If you used IDE, please refer to the [IDE Configuration Guide](https://github.com/CatIsNotFound/MyEngine/wiki/IDE%20Setup%20Guide) article.
+If you used IDE, please refer to the [IDE Configuration Guide](https://github.com/CatIsNotFound/MyEngine/wiki/IDE%20Setup%20Guide) page.
 
 ## Environment Dependencies
 

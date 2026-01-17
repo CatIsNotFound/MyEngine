@@ -14,9 +14,11 @@ MyEngine 是一个轻量级但功能强大的 2D 图形框架，构建于 SDL3 �
 
 | GCC  | Clang | MSVC                  | Apple Clang |
 | ---- | ----- | --------------------- | ----------- |
-| 12+  | 15+   | 19.37+ (VS2022 17.7+) | 15.0+       |
+| 12+  | 15+   | 19.37+ (VS2022 17.7+) | 16.0+       |
 
-参见 [编译器安装向导](https://github.com/CatIsNotFound/MyEngine/wiki/%E7%BC%96%E8%AF%91%E5%99%A8%E5%AE%89%E8%A3%85%E5%90%91%E5%AF%BC) 或 [IDE 配置指南](https://github.com/CatIsNotFound/MyEngine/wiki/IDE%20%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97) 文章。
+若了解如何安装 C/C++ 编译器，请参见 [编译器安装向导](https://github.com/CatIsNotFound/MyEngine/wiki/%E7%BC%96%E8%AF%91%E5%99%A8%E5%AE%89%E8%A3%85%E5%90%91%E5%AF%BC) 
+
+若已经安装 IDE，请参考 [IDE 配置指南](https://github.com/CatIsNotFound/MyEngine/wiki/IDE%20%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97)。
 
 ## 环境依赖
 
