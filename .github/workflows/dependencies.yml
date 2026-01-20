@@ -1,8 +1,6 @@
 name: Install environment dependencies
 on:
   workflow_call:
-    inputs:
-
   push:
     branches: [ main, development ]
   pull_request:
