@@ -151,6 +151,7 @@ Currently, no official version has been released yet. It is expected to be relea
            r->fillBackground(StdColor::DarkBlue);
            r->drawDebugText("Hello world!", {20, 20}, StdColor::White);		    
        });
+       win->show();
        return engine.exec();
    }
    ```

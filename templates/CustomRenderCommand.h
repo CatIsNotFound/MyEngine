@@ -2,13 +2,13 @@
 #ifndef MYENGINE_CUSTOMRENDERCOMMAND_H
 #define MYENGINE_CUSTOMRENDERCOMMAND_H
 
-#include "MyEngine"
+#include <MyEngine>
 
 class CustomCommand : public MyEngine::RenderCommand::BaseCommand {
 public:
     /// TODO: Need to change the arguments what you need.
     explicit CustomCommand(SDL_Renderer* renderer, SDL_Color color, SDL_BlendMode blend_mode)
-        : MyEngine::RenderCommand::BaseCommand(renderer, "You need to modify me") {
+            : MyEngine::RenderCommand::BaseCommand(renderer, "You need to modify me") {
         _render_color = color;
         _blend_mode = blend_mode;
         /// TODO: You can add more codes to set the arguments.

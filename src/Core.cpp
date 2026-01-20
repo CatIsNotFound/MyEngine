@@ -208,9 +208,9 @@ namespace MyEngine {
         : _title(title), _window_geometry(0, 0, width, height),
           _visible(true), _resizable(false), _engine(object) {
         if (engine == Vulkan)
-            _window = SDL_CreateWindow(_title.c_str(), width, height, SDL_WINDOW_VULKAN);
+            _window = SDL_CreateWindow(_title.c_str(), width, height, SDL_WINDOW_VULKAN | SDL_WINDOW_HIDDEN);
         else
-            _window = SDL_CreateWindow(_title.c_str(), width, height, SDL_WINDOW_OPENGL);
+            _window = SDL_CreateWindow(_title.c_str(), width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
         if (!_window) {
             Engine::throwFatalError();
         }
@@ -417,6 +417,31 @@ namespace MyEngine {
         return _fullscreen;
     }
 
+    bool Window::minimizeWindow() {
+        return SDL_MinimizeWindow(_window);
+    }
+
+    bool Window::maximizeWindow() {
+        return SDL_MaximizeWindow(_window);
+    }
+
+    bool Window::restoreWindow() {
+        return SDL_RestoreWindow(_window);
+    }
+
+    bool Window::isMinimizedWindow() const {
+        return SDL_GetWindowFlags(_window) & SDL_WINDOW_MINIMIZED;
+    }
+
+    bool Window::isMaximizedWindow() const {
+        return SDL_GetWindowFlags(_window) & SDL_WINDOW_MAXIMIZED;
+    }
+
+    bool Window::isRestoredWindow() const {
+        return !(SDL_GetWindowFlags(_window) &
+                    (SDL_WINDOW_MINIMIZED | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_FULLSCREEN));
+    }
+
     void Window::setWindowTitle(const std::string& title) {
         _title = title;
         SDL_SetWindowTitle(_window, title.c_str());
@@ -470,9 +495,8 @@ namespace MyEngine {
         return _dragging_pos;
     }
 
-    void Window::droppedInfo(char *url, std::string& source) const {
-        if (url)    strncpy(url, _drop_url, strlen(_drop_url));
-        source.assign(_drop_source.begin(), _drop_source.end());
+    std::string_view Window::droppedInfo() const {
+        return _drop_url;
     }
 
     SDL_Window* Window::self() const {
@@ -527,39 +551,32 @@ namespace MyEngine {
     }
 
     void Window::showEvent() {}
-
     void Window::hideEvent() {}
-
     void Window::windowMinimizedEvent() {}
-
     void Window::windowMaximizedEvent() {}
-
+    void Window::windowRestoredEvent() {}
     void Window::enteredFullscreenEvent() {}
-
     void Window::leaveFullscreenEvent() {}
-
     void Window::mouseEnteredEvent() { Cursor::global()->setCursor(_cursor); }
     void Window::mouseLeftEvent() {}
-
     void Window::mouseUpEvent() {}
-    void Window::mouseDownEvent(int) {}
-    void Window::mouseClickedEvent(int) {}
-    void Window::mouseMovedEvent(const MyEngine::Vector2 &) {}
-
-    void Window::keyUpEvent(int) {}
-    void Window::keyDownEvent(int) {}
-    void Window::keyPressedEvent(int) {}
+    void Window::mouseDownEvent(MouseStatus button) {}
+    void Window::mouseClickedEvent(MouseStatus button) {}
+    void Window::mouseMovedEvent(const Vector2 &position, const Vector2 &distance) {}
+    void Window::keyUpEvent(SDL_Scancode keycode) {}
+    void Window::keyDownEvent(SDL_Scancode keycode) {}
+    void Window::keyPressedEvent(SDL_Scancode keycode) {}
     void Window::dragInEvent() {}
     void Window::dragOutEvent() {}
     void Window::dragMovedEvent(const Vector2 &position, const char *url) {}
-    void Window::dropEvent(const char *url, const char *source) {}
+    void Window::dropEvent(const char *url) {}
 
     EventSystem::~EventSystem() = default;
 
     EventSystem* EventSystem::global(Engine* engine) {
         if (!_instance) {
             _instance = std::unique_ptr<EventSystem>(new EventSystem(engine));
-        } 
+        }
         return _instance.get();
     }
 
@@ -661,6 +678,8 @@ namespace MyEngine {
                     win->windowMinimizedEvent();
                 } else if (ev.window.type == SDL_EVENT_WINDOW_MAXIMIZED) {
                     win->windowMaximizedEvent();
+                } else if (ev.window.type == SDL_EVENT_WINDOW_RESTORED) {
+                    win->windowRestoredEvent();
                 } else if (ev.window.type == SDL_EVENT_WINDOW_ENTER_FULLSCREEN) {
                     win->enteredFullscreenEvent();
                 } else if (ev.window.type == SDL_EVENT_WINDOW_LEAVE_FULLSCREEN) {
@@ -700,18 +719,18 @@ namespace MyEngine {
                 static uint32_t old_mouse_event{0};
                 if (!mouse_down) {
                     if (_mouse_events > 0) {
-                        win->mouseDownEvent(static_cast<int>(_mouse_events));
+                        win->mouseDownEvent(static_cast<MouseStatus>(_mouse_events));
                         mouse_down = true;
                         old_mouse_event = _mouse_events;
                     }
                 } else {
                     if (_mouse_events > 0) {
-                        win->mouseMovedEvent(_mouse_down_dis);
+                        win->mouseMovedEvent(_mouse_pos, _mouse_down_dis);
                         old_mouse_event = _mouse_events;
                     } else {
                         mouse_down = false;
                         win->mouseUpEvent();
-                        win->mouseClickedEvent(static_cast<int>(old_mouse_event));
+                        win->mouseClickedEvent(static_cast<MouseStatus>(old_mouse_event));
                         old_mouse_event = 0;
                     }
                 }
@@ -726,32 +745,20 @@ namespace MyEngine {
                         win->_dragging_pos.reset(
                             Cursor::global()->globalPosition() - toGeometryFloat(win->geometry()).pos);
                         win->dragInEvent();
-                        memset(win->_drop_url, 0, 255);
-                        win->_drop_source.clear();
                     }
                 } else {
                     if (ev.drop.type == SDL_EVENT_DROP_COMPLETE) {
                         win->dragOutEvent();
                         win->_dragging_pos.reset(0, 0);
                         win->_dragging = false;
-                        win->_drop_source.clear();
-                        memset(win->_drop_url, 0, 255);
                     } else if (ev.drop.type == SDL_EVENT_DROP_FILE) {
-                        win->dropEvent(ev.drop.data, ev.drop.source);
-                        strncpy(win->_drop_url, ev.drop.data, 128);
-                        if (ev.drop.source) {
-                            win->_drop_source.resize(strlen(ev.drop.source));
-                            strncpy(win->_drop_source.data(), ev.drop.source, strlen(ev.drop.source));
-                        }
+                        win->dropEvent(ev.drop.data);
+                        win->_drop_url.assign(ev.drop.data);
                         win->_dragging_pos.reset(0, 0);
                         win->_dragging = false;
                     } else if (ev.drop.type == SDL_EVENT_DROP_TEXT) {
-                        win->dropEvent(ev.drop.data, nullptr);
-                        strncpy(win->_drop_url, ev.drop.data, 128);
-                        if (ev.drop.source) {
-                            win->_drop_source.resize(strlen(ev.drop.source));
-                            strncpy(win->_drop_source.data(), ev.drop.source, strlen(ev.drop.source));
-                        }
+                        win->dropEvent(ev.drop.data);
+                        win->_drop_url.assign(ev.drop.data);
                         win->_dragging = false;
                     } else {
                         auto real_pos = Cursor::global()->globalPosition() - toGeometryFloat(win->geometry()).pos;
@@ -785,15 +792,15 @@ namespace MyEngine {
         return _mouse_events;
     }
 
-    bool EventSystem::captureMouse(EventSystem::MouseStatus mouse_status) const {
-        if (mouse_status == Left) {
+    bool EventSystem::captureMouse(MouseStatus mouse_status) const {
+        if (mouse_status == MouseStatus::Left) {
             return _mouse_events % 2;
-        } else if (mouse_status == Right) {
-            return _mouse_events >= Right;
-        } else if (mouse_status == Middle) {
-            return !(_mouse_events % 3) || (_mouse_events == LeftMiddleRight);
+        } else if (mouse_status == MouseStatus::Right) {
+            return _mouse_events >= static_cast<uint32_t>(MouseStatus::Right);
+        } else if (mouse_status == MouseStatus::Middle) {
+            return !(_mouse_events % 3) || (_mouse_events == static_cast<uint32_t>(MouseStatus::LeftMiddleRight));
         }
-        return _mouse_events == mouse_status;
+        return _mouse_events == static_cast<uint32_t>(mouse_status);
     }
 
     const Vector2& EventSystem::captureMouseAbsDistance() const {

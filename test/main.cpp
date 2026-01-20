@@ -14,6 +14,7 @@ int main(int argc, const char* argv[]) {
     engine.setFPS(30);
     engine.setLimitMaxMemorySize(FileSystem::translateSize(10.f, MyEngine::FileSystem::MB));
     auto win = new MyWindow(&engine, "Test");
+    win->show();
     win->setResizable(true);
     win->installPaintEvent([&](Renderer* r){
         r->fillBackground(RGBAColor::RedLightPink);
@@ -84,6 +85,23 @@ int main(int argc, const char* argv[]) {
     enabled_trigger.setTextAlignment(MyEngine::Widget::CenterMiddle);
     enabled_trigger.setTriggerEvent([&] {
         user_name.setEnabled(!user_name.enabled());
+    });
+
+    Widget::Button min_btn("min", win), max_btn("max", win),
+                    full_btn("full", win);
+    full_btn.setGeometry(win->geometry().width - 180, 20, 40, 40);
+    min_btn.setGeometry(win->geometry().width - 120, 20, 40, 40);
+    max_btn.setGeometry(win->geometry().width - 60, 20, 40, 40);
+    min_btn.setTriggerEvent([&] { win->minimizeWindow(); });
+    max_btn.setTriggerEvent([&] {
+        if (win->isMaximizedWindow()) {
+            win->restoreWindow();
+        } else {
+            win->maximizeWindow();
+        }
+    });
+    full_btn.setTriggerEvent([&] {
+        win->setFullScreen(!win->fullScreen());
     });
     return engine.exec();
 }

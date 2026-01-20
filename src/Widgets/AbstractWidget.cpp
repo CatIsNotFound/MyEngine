@@ -124,11 +124,11 @@ namespace MyEngine::Widget {
             auto cur_pos = EventSystem::global()->captureMousePosition();
             auto trigger = (Algorithm::comparePosInRect(cur_pos, _trigger_area) > 0);
             // Add the input event when the mouse moved out and clicked
-            if (_status.input_mode && !trigger && EventSystem::global()->captureMouse(EventSystem::Left)) {
+            if (_status.input_mode && !trigger && EventSystem::global()->captureMouse(MouseStatus::Left)) {
                 setInputModeEnabled(false);
             }
             if (!_status.mouse_in) {
-                if (EventSystem::global()->captureMouse(EventSystem::None)) {
+                if (EventSystem::global()->captureMouse(MouseStatus::None)) {
                     if (trigger) {
                         _status.mouse_in = true;
                         mouseEnteredEvent();
@@ -140,8 +140,8 @@ namespace MyEngine::Widget {
                     }
                 }
             } else {
-                auto left_btn = EventSystem::global()->captureMouse(EventSystem::Left);
-                auto right_btn = EventSystem::global()->captureMouse(EventSystem::Right);
+                auto left_btn = EventSystem::global()->captureMouse(MouseStatus::Left);
+                auto right_btn = EventSystem::global()->captureMouse(MouseStatus::Right);
                 if (trigger) {
                     if (left_btn && !_status.mouse_down) {
                         mouseDownEvent();

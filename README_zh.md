@@ -149,6 +149,7 @@ MyEngine 是一个轻量级但功能强大的 2D 图形框架，构建于 SDL3 �
          r->fillBackground(StdColor::DarkBlue);
          r->drawDebugText("Hello world!", {20, 20}, StdColor::White);		    
       });
+      win->show();
       return engine.exec();
    }
    ```

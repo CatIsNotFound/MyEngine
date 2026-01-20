@@ -9,23 +9,25 @@ public:
             : MyEngine::Window(engine, std::move(title), w, h) {}
 
 protected:
-    void mouseDownEvent(int button) override {
-        MyEngine::Logger::log("Mouse down");
+    void windowMinimizedEvent() override {
+        MyEngine::Logger::log("Minizied window!");
     }
 
-    void mouseUpEvent() override {
-        MyEngine::Logger::log("Mouse up");
+    void windowMaximizedEvent() override {
+        MyEngine::Logger::log("Maximized window!");
     }
 
-    void mouseMovedEvent(const MyEngine::Vector2 & pos) override {
-        MyEngine::Logger::log("Mouse moving");
+    void windowRestoredEvent() override {
+        MyEngine::Logger::log("Restored window!");
     }
 
-    void mouseClickedEvent(int button) override {
-        MyEngine::Logger::log(std::format("Mouse clicked: {}", button));
+    void enteredFullscreenEvent() override {
+        MyEngine::Logger::log("Entered fullscreen");
     }
 
-
+    void leaveFullscreenEvent() override {
+        MyEngine::Logger::log("Exited fullscreen");
+    }
 private:
 };
 

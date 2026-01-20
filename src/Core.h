@@ -13,6 +13,17 @@ namespace MyEngine {
     class TextureProperty;
     class Texture;
     class EventSystem;
+
+    enum class MouseStatus : uint8_t {
+        None,
+        Left,
+        Middle,
+        LeftMiddle,
+        Right,
+        LeftRight,
+        MiddleRight,
+        LeftMiddleRight
+    };
     
     namespace RenderCommand {
         class BaseCommand;
@@ -127,6 +138,13 @@ namespace MyEngine {
         void setFullScreen(bool enabled, bool move_to_center = false);
         [[nodiscard]] bool fullScreen() const;
 
+        bool minimizeWindow();
+        bool maximizeWindow();
+        bool restoreWindow();
+        [[nodiscard]] bool isMinimizedWindow() const;
+        [[nodiscard]] bool isMaximizedWindow() const;
+        [[nodiscard]] bool isRestoredWindow() const;
+
         void setWindowTitle(const std::string& title);
         [[nodiscard]] const std::string& windowTitle() const;
 
@@ -140,7 +158,7 @@ namespace MyEngine {
         [[nodiscard]] bool dragDropEnabled() const;
         [[nodiscard]] bool isDragging() const;
         [[nodiscard]] const Vector2& draggingPosition() const;
-        void droppedInfo(char* url, std::string& source) const;
+        std::string_view droppedInfo() const;
 
         [[nodiscard]] SDL_Window* self() const;
         [[nodiscard]] Engine* engine() const;
@@ -156,21 +174,22 @@ namespace MyEngine {
         virtual void hideEvent();
         virtual void windowMinimizedEvent();
         virtual void windowMaximizedEvent();
+        virtual void windowRestoredEvent();
         virtual void enteredFullscreenEvent();
         virtual void leaveFullscreenEvent();
         virtual void mouseEnteredEvent();
         virtual void mouseLeftEvent();
         virtual void mouseUpEvent();
-        virtual void mouseDownEvent(int);
-        virtual void mouseClickedEvent(int);
-        virtual void mouseMovedEvent(const Vector2&);
-        virtual void keyUpEvent(int);
-        virtual void keyDownEvent(int);
-        virtual void keyPressedEvent(int);
+        virtual void mouseDownEvent(MouseStatus button);
+        virtual void mouseClickedEvent(MouseStatus button);
+        virtual void mouseMovedEvent(const Vector2& position, const Vector2& distance);
+        virtual void keyUpEvent(SDL_Scancode keycode);
+        virtual void keyDownEvent(SDL_Scancode keycode);
+        virtual void keyPressedEvent(SDL_Scancode keycode);
         virtual void dragInEvent();
         virtual void dragOutEvent();
         virtual void dragMovedEvent(const Vector2 &position, const char *url);
-        virtual void dropEvent(const char *url, const char *source);
+        virtual void dropEvent(const char *url);
 
     private:
         Geometry _window_geometry;
@@ -191,8 +210,7 @@ namespace MyEngine {
         std::unordered_map<uint64_t, FingerEvent> _finger_event_list;
         bool _dragging{false};
         bool _drag_mode{false};
-        char _drop_url[128]{};
-        std::string _drop_source{};
+        std::string _drop_url{};
         Vector2 _mouse_pos{}, _dragging_pos{};
         Cursor::StdCursor _cursor{};
         std::deque<std::function<void(Renderer*)>> _paint_event_list;
@@ -201,16 +219,6 @@ namespace MyEngine {
 
     class EventSystem {
     public:
-        enum MouseStatus {
-            None,
-            Left,
-            Middle,
-            LeftMiddle,
-            Right,
-            LeftRight,
-            MiddleRight,
-            LeftMiddleRight
-        };
         EventSystem(EventSystem &&) = delete;
         EventSystem(const EventSystem &) = delete;
         EventSystem &operator=(EventSystem &&) = delete;
