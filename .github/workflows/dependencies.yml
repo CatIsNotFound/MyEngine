@@ -126,8 +126,7 @@ jobs:
           cd ~/git/SDL
           mkdir -p build ; cd build
           echo "* Starting configure SDL3...."
-          cmake .. -DCMAKE_BUILD_TYPE=Release -DSDL_TEST=OFF -DCMAKE_INSTALL_PREFIX=~/Libs/SDL3 \
-                   -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"  
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DSDL_TEST=OFF -DCMAKE_INSTALL_PREFIX=~/Libs/SDL3
           echo "* Compiling and installing SDL3...."
           cmake --build . -j4 --target install
           if [ $? -eq 0 ]; then
@@ -142,8 +141,7 @@ jobs:
           cd ~/git/SDL_image
           mkdir -p build ; cd build
           echo "* Starting configure SDL3_image...."
-          cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=~/Libs/SDL3 -DCMAKE_INSTALL_PREFIX=~/Libs/SDL3_image \
-                   -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" 
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=~/Libs/SDL3 -DCMAKE_INSTALL_PREFIX=~/Libs/SDL3_image
           echo "* Compiling and installing SDL3_image...."
           cmake --build . -j4 --target install
           if [ $? -eq 0 ]; then
@@ -158,8 +156,7 @@ jobs:
           cd ~/git/SDL_mixer
           mkdir -p build ; cd build
           echo "* Starting configure SDL3_mixer...."
-          cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=~/Libs/SDL3 -DCMAKE_INSTALL_PREFIX=~/Libs/SDL3_mixer \
-                   -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" 
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=~/Libs/SDL3 -DCMAKE_INSTALL_PREFIX=~/Libs/SDL3_mixer
           echo "* Compiling and installing SDL3_mixer...."
           cmake --build . -j4 --target install
           if [ $? -eq 0 ]; then
@@ -174,8 +171,7 @@ jobs:
           cd ~/git/SDL_ttf
           mkdir -p build ; cd build
           echo "* Starting configure SDL3_ttf...."
-          cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=~/Libs/SDL3 -DCMAKE_INSTALL_PREFIX=~/Libs/SDL3_ttf \
-                   -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" 
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=~/Libs/SDL3 -DCMAKE_INSTALL_PREFIX=~/Libs/SDL3_ttf
           echo "* Compiling and installing SDL3_ttf...."
           cmake --build . -j4 --target install
           if [ $? -eq 0 ]; then
@@ -201,7 +197,7 @@ jobs:
           git clone --depth 1 https://github.com/microsoft/vcpkg.git C:\vcpkg
           C:\vcpkg\bootstrap-vcpkg.bat -disableMetrics
           # 安装 SDL 依赖的第三方库（MSVC 版本）
-          C:\vcpkg\vcpkg install libpng:x64-windows libjpeg-turbo:x64-windows flac:x64-windows ogg:x64-windows vorbis:x64-windows mpg123:x64-windows freetype:x64-windows harfbuzz:x64-windows webp:x64-windows
+          C:\vcpkg\vcpkg install libpng:x64-windows libjpeg-turbo:x64-windows libflac:x64-windows libogg:x64-windows libvorbis:x64-windows mpg123:x64-windows freetype:x64-windows harfbuzz:x64-windows libwebp:x64-windows
           # 设置 vcpkg 根目录
           echo "VCPKG_ROOT=C:\vcpkg" | Out-File -FilePath $env:GITHUB_ENV -Append
           echo "VCPKG_DEFAULT_TRIPLET=x64-windows" | Out-File -FilePath $env:GITHUB_ENV -Append
