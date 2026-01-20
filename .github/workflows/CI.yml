@@ -8,7 +8,7 @@ on:
 jobs:
   ci-linux:
     uses: ./.github/workflows/dependencies.yml@main
-    secrets: inherit  # 继承当前工作流的密钥（如需）
+    secrets: inherit
 
   ci-macos:
     uses: ./.github/workflows/dependencies.yml@main
@@ -50,13 +50,13 @@ jobs:
     runs-on: windows-latest
     defaults:
       run:
-        shell: pwsh
+        shell: cmd
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Compiling and installing project
-        shell: pwsh
+        shell: cmd
         run: |
           mkdir build
           cd build
