@@ -1,0 +1,83 @@
+name: Cross-Platform CI/CD
+on:
+  push:
+    branches: [ main, development ]
+  pull_request:
+    branches: [ main, development ]
+
+jobs:
+  ci-linux:
+    uses: ./.github/workflows/dependencies.yml@main
+    secrets: inherit  # 继承当前工作流的密钥（如需）
+
+  ci-macos:
+    uses: ./.github/workflows/dependencies.yml@main
+    secrets: inherit
+
+  ci-windows:
+    uses: ./.github/workflows/dependencies.yml@main
+    secrets: inherit
+
+  ci-project-linux:
+    needs: [ ci-linux ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Compiling and installing project
+        shell: bash
+        run: |
+          mkdir -p build ; cd build
+          echo "* Configuring project..."
+          cmake .. -DSDL3_LIB=~/Libs/SDL3 \
+                   -DSDL3_IMAGE_LIB=~/Libs/SDL3_image \
+                   -DSDL3_MIXER_LIB=~/Libs/SDL3_mixer \
+                   -DSDL3_TTF_LIB=~/Libs/SDL3_ttf \
+                   -DBUILD_TEST=OFF \
+                   -DCMAKE_BUILD_TYPE=Release \
+                   -DCMAKE_INSTALL_PREFIX=~/Libs/MyEngine
+          echo "* Compiling and installing project..."
+          cmake --build . -j4 --target install
+          if [ $? -eq 0 ]; then
+              echo "* No errors occurred, finished! "
+          else
+              echo "* Failed to compile and install! "
+          fi
+
+  ci-project-windows:
+    needs: [ ci-windows ]
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Compiling and installing project
+        shell: pwsh
+        run: |
+          mkdir build
+          cd build
+          echo * Configuring project...
+          cmake .. -G "Visual Studio 17 2022" -A x64 ^
+                   -DSDL3_LIB=%USERPROFILE%\Libs\SDL3 ^
+                   -DSDL3_IMAGE_LIB=%USERPROFILE%\Libs\SDL3_image ^
+                   -DSDL3_MIXER_LIB=%USERPROFILE%\Libs\SDL3_mixer ^
+                   -DSDL3_TTF_LIB=%USERPROFILE%\Libs\SDL3_ttf ^
+                   -DBUILD_TEST=OFF ^
+                   -DCMAKE_BUILD_TYPE=Release ^
+                   -DCMAKE_INSTALL_PREFIX=%USERPROFILE%\Libs\MyEngine
+          if %errorlevel% neq 0 (
+            echo * CMake configure failed!
+            exit /b 1
+          )
+          echo * Compiling and installing project...
+          cmake --build . --config Release --target INSTALL -j4
+          if %errorlevel% equ 0 (
+            echo * No errors occurred, finished!
+          ) else (
+            echo * Failed to compile and install!
+            exit /b 1
+          )
