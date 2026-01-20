@@ -1,4 +1,4 @@
-name: Install environment dependencies
+name: Compile and Install Project
 on:
   workflow_call:
   push:
@@ -50,6 +50,7 @@ jobs:
               echo "* No error occurred, finished! "
           else
               echo "* Failed to compile and install! "
+              exit 1
           fi
 
       - name: Compiling and installing SDL3_image
@@ -65,6 +66,7 @@ jobs:
               echo "* No error occurred, finished! "
           else
               echo "* Failed to compile and install! "
+              exit 1
           fi
 
       - name: Compiling and installing SDL3_mixer
@@ -80,6 +82,7 @@ jobs:
               echo "* No error occurred, finished! "
           else
               echo "* Failed to compile and install! "
+              exit 1
           fi
 
       - name: Compiling and installing SDL3_ttf
@@ -96,6 +99,27 @@ jobs:
           else
               echo "* Failed to compile and install! "
           fi
+
+      - name: Compiling and installing project
+        shell: bash
+        run: |
+          mkdir -p build ; cd build
+          echo "* Configuring project..."
+          cmake .. -DSDL3_LIB=~/Libs/SDL3 \
+                   -DSDL3_IMAGE_LIB=~/Libs/SDL3_image \
+                   -DSDL3_MIXER_LIB=~/Libs/SDL3_mixer \
+                   -DSDL3_TTF_LIB=~/Libs/SDL3_ttf \
+                   -DBUILD_TEST=OFF \
+                   -DCMAKE_BUILD_TYPE=Release \
+                   -DCMAKE_INSTALL_PREFIX=~/Libs/MyEngine
+          echo "* Compiling and installing project..."
+          cmake --build . -j4 --target install
+          if [ $? -eq 0 ]; then
+              echo "* No errors occurred, finished! "
+          else
+              echo "* Failed to compile and install! "
+              exit 1
+          fi
       
   env-macos:
     runs-on: macos-latest
@@ -108,7 +132,6 @@ jobs:
         run: |
           brew update
           brew install cmake pkg-config ninja 
-          
           
           mkdir -p ~/Libs
           mkdir -p ~/git ; cd ~/git
@@ -133,6 +156,7 @@ jobs:
               echo "* No error occurred, finished! "
           else
               echo "* Failed to compile and install! "
+              exit 1
           fi
 
       - name: Compiling and installing SDL3_image
@@ -148,6 +172,7 @@ jobs:
               echo "* No error occurred, finished! "
           else
               echo "* Failed to compile and install! "
+              exit 1
           fi
 
       - name: Compiling and installing SDL3_mixer
@@ -163,6 +188,7 @@ jobs:
               echo "* No error occurred, finished! "
           else
               echo "* Failed to compile and install! "
+              exit 1
           fi
 
       - name: Compiling and installing SDL3_ttf
@@ -178,6 +204,28 @@ jobs:
               echo "* No error occurred, finished! "
           else
               echo "* Failed to compile and install! "
+              exit 1
+          fi
+
+      - name: Compiling and installing project
+        shell: bash
+        run: |
+          mkdir -p build ; cd build
+          echo "* Configuring project..."
+          cmake .. -DSDL3_LIB=~/Libs/SDL3 \
+                   -DSDL3_IMAGE_LIB=~/Libs/SDL3_image \
+                   -DSDL3_MIXER_LIB=~/Libs/SDL3_mixer \
+                   -DSDL3_TTF_LIB=~/Libs/SDL3_ttf \
+                   -DBUILD_TEST=OFF \
+                   -DCMAKE_BUILD_TYPE=Release \
+                   -DCMAKE_INSTALL_PREFIX=~/Libs/MyEngine
+          echo "* Compiling and installing project..."
+          cmake --build . -j4 --target install
+          if [ $? -eq 0 ]; then
+              echo "* No errors occurred, finished! "
+          else
+              echo "* Failed to compile and install! "
+              exit 1
           fi
       
       
@@ -197,7 +245,7 @@ jobs:
           git clone --depth 1 https://github.com/microsoft/vcpkg.git C:\vcpkg
           C:\vcpkg\bootstrap-vcpkg.bat -disableMetrics
           # 安装 SDL 依赖的第三方库（MSVC 版本）
-          C:\vcpkg\vcpkg install libpng:x64-windows libjpeg-turbo:x64-windows libflac:x64-windows libogg:x64-windows libvorbis:x64-windows mpg123:x64-windows freetype:x64-windows harfbuzz:x64-windows libwebp:x64-windows
+          # C:\vcpkg\vcpkg install libpng:x64-windows libjpeg-turbo:x64-windows libflac:x64-windows libogg:x64-windows libvorbis:x64-windows mpg123:x64-windows freetype:x64-windows harfbuzz:x64-windows libwebp:x64-windows
           # 设置 vcpkg 根目录
           echo "VCPKG_ROOT=C:\vcpkg" | Out-File -FilePath $env:GITHUB_ENV -Append
           echo "VCPKG_DEFAULT_TRIPLET=x64-windows" | Out-File -FilePath $env:GITHUB_ENV -Append
@@ -249,7 +297,8 @@ jobs:
             -DCMAKE_BUILD_TYPE=Release `
             -DCMAKE_PREFIX_PATH="$HOME\Libs\SDL3" `
             -DCMAKE_INSTALL_PREFIX="$HOME\Libs\SDL3_image" `
-            -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT\scripts\buildsystems\vcpkg.cmake"
+            -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT\scripts\buildsystems\vcpkg.cmake" `
+            -DSDLIMAGE_VENDORED=OFF
           Write-Host "* Compiling and installing SDL3_image...."
           cmake --build . -j4 --config Release --target install
           if ($LASTEXITCODE -eq 0) {
@@ -300,4 +349,30 @@ jobs:
               Write-Host "* Failed to compile and install! "
               exit 1
           }
-      
+
+      - name: Compiling and installing project
+        shell: cmd
+        run: |
+          mkdir build
+          cd build
+          echo * Configuring project...
+          cmake .. -G "Visual Studio 17 2022" -A x64 ^
+                   -DSDL3_LIB=%USERPROFILE%\Libs\SDL3 ^
+                   -DSDL3_IMAGE_LIB=%USERPROFILE%\Libs\SDL3_image ^
+                   -DSDL3_MIXER_LIB=%USERPROFILE%\Libs\SDL3_mixer ^
+                   -DSDL3_TTF_LIB=%USERPROFILE%\Libs\SDL3_ttf ^
+                   -DBUILD_TEST=OFF ^
+                   -DCMAKE_BUILD_TYPE=Release ^
+                   -DCMAKE_INSTALL_PREFIX=%USERPROFILE%\Libs\MyEngine
+          if %errorlevel% neq 0 (
+            echo * CMake configure failed!
+            exit /b 1
+          )
+          echo * Compiling and installing project...
+          cmake --build . --config Release --target INSTALL -j4
+          if %errorlevel% equ 0 (
+            echo * No errors occurred, finished!
+          ) else (
+            echo * Failed to compile and install!
+            exit /b 1
+          )
