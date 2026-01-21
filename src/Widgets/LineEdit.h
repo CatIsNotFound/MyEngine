@@ -21,8 +21,8 @@
 #define ENGINE_PROP_LINE_EDIT_PASSWORD_LENGTH                      "lineEdit.text.password.length"
 #define ENGINE_PROP_LINE_EDIT_PLACEHOLDER_TEXT                     "lineEdit.placeholder.text"
 #define ENGINE_PROP_LINE_EDIT_PLACE_HOLDER_TEXT_COLOR              "lineEdit.placeholder.color"
-#define ENGINE_PROP_LINE_EDIT_PADDING_HORIZONTAL                   "lineEdit.padding.horizontal"
-#define ENGINE_PROP_LINE_EDIT_PADDING_VERTICAL                     "lineEdit.padding.vertical"
+#define ENGINE_PROP_LINE_EDIT_PADDING_HORIZONTAL                   "lineEdit.paddingHorizontal.horizontal"
+#define ENGINE_PROP_LINE_EDIT_PADDING_VERTICAL                     "lineEdit.paddingHorizontal.vertical"
 
 #define ENGINE_BOOL_LINE_EDIT_PLACEHOLDER_TEXT_VISIBLE             0b1
 #define ENGINE_BOOL_LINE_EDIT_PASSWORD_MODE                        0b10

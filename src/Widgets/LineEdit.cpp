@@ -520,6 +520,7 @@ namespace MyEngine::Widget {
     }
 
     void LineEdit::updateTextPosition() {
+        if (!_text) return;
         auto hp = (float)horizontalPadding();
         float dis = _trigger_area.geometry().size.width - _text->text_size.width;
         Vector2 st_pos, ed_pos;
@@ -531,7 +532,6 @@ namespace MyEngine::Widget {
         } else {
             text_height = _text->text_size.height;
         }
-
 
         if (dis - hp * 2 < 0) {
             st_pos.x += real_area.pos.x + real_area.size.width;

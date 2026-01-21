@@ -15,6 +15,7 @@ namespace MyEngine::Widget {
     }
 
     void Button::setChecked(bool checked) {
+        if (!_checkable) return;
         _checked = checked;
         checkedChanged(checked);
     }

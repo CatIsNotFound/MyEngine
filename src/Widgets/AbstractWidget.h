@@ -74,7 +74,11 @@ namespace MyEngine {
         public:
             explicit AbstractWidget(Window* window);
             explicit AbstractWidget(std::string object_name, Window* window);
+            explicit AbstractWidget(std::string object_name, AbstractWidget* parent);
             virtual ~AbstractWidget();
+
+            void setParent(AbstractWidget* parent);
+            [[nodiscard]] AbstractWidget* parent() const;
 
             void setObjectName(std::string object_name);
             [[nodiscard]] const std::string& objectName() const;
@@ -215,6 +219,7 @@ namespace MyEngine {
             Status _status{};
             std::string _cur_ch{};
             std::unordered_map<std::string, Variant> _prop_map{};
+            AbstractWidget* _parent{};
         };
     }
 }

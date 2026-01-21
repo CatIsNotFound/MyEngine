@@ -205,12 +205,11 @@ namespace MyEngine {
     }
 
     Window::Window(Engine* object, const std::string& title, int width, int height,  GraphicEngine engine)
-        : _title(title), _window_geometry(0, 0, width, height),
-          _visible(true), _resizable(false), _engine(object) {
+        : _window_geometry(0, 0, width, height), _engine(object) {
         if (engine == Vulkan)
-            _window = SDL_CreateWindow(_title.c_str(), width, height, SDL_WINDOW_VULKAN | SDL_WINDOW_HIDDEN);
+            _window = SDL_CreateWindow(title.c_str(), width, height, SDL_WINDOW_VULKAN | SDL_WINDOW_HIDDEN);
         else
-            _window = SDL_CreateWindow(_title.c_str(), width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
+            _window = SDL_CreateWindow(title.c_str(), width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
         if (!_window) {
             Engine::throwFatalError();
         }
@@ -317,7 +316,6 @@ namespace MyEngine {
             Logger::log(std::format("Window: Can't show window! Exception: {}", SDL_GetError()), Logger::Error);
             return false;
         }
-        _visible = true;
         return true;
     }
 
@@ -327,12 +325,11 @@ namespace MyEngine {
             Logger::log(std::format("Window: Can't hide window! Exception: {}", SDL_GetError()), Logger::Error);
             return false;
         }
-        _visible = false;
         return true;
     }
 
     bool Window::visible() const {
-        return _visible;
+        return !(SDL_GetWindowFlags(_window) & SDL_WINDOW_HIDDEN);
     }
 
     void Window::close() {
@@ -345,12 +342,11 @@ namespace MyEngine {
             Logger::log(std::format("Window: Can't set window resizable mode! Exception: {}", SDL_GetError()), Logger::Error);
             return false;
         }
-        _resizable = enabled;
         return true;
     }
 
     bool Window::resizable() const {
-        return _resizable;
+        return SDL_GetWindowFlags(_window) & SDL_WINDOW_RESIZABLE;
     }
 
     void Window::setRenderer(Renderer* renderer) {
@@ -367,14 +363,14 @@ namespace MyEngine {
 
     void Window::setBorderless(bool enabled) {
         bool _ok = SDL_SetWindowBordered(_window, !enabled);
-        if (_ok) _borderless = enabled;
-        else Logger::log(std::format("Window (ID {}): Can't set borderless for this window! "
+        if (!_ok)
+            Logger::log(std::format("Window (ID {}): Can't set borderless for this window! "
                                      "Exception: {}", _winID, SDL_GetError()),
                          Logger::Error);
     }
 
     bool Window::borderless() const {
-        return _borderless;
+        return SDL_GetWindowFlags(_window) & SDL_WINDOW_BORDERLESS;
     }
 
     void Window::setWindowOpacity(float opacity) {
@@ -405,16 +401,17 @@ namespace MyEngine {
         if (!_ok) {
             Logger::log(std::format("Window (ID {}): Can't set fullscreen for this window!", _winID),
                         Logger::Error);
-        } else _fullscreen = enabled;
+            return;
+        }
         if (move_to_center) {
-            Cursor::global()->moveToCenter(_fullscreen ? this : nullptr);
+            Cursor::global()->moveToCenter(fullScreen() ? this : nullptr);
         } else {
             Cursor::global()->move(_mouse_pos, nullptr);
         }
     }
 
     bool Window::fullScreen() const {
-        return _fullscreen;
+        return SDL_GetWindowFlags(_window) & SDL_WINDOW_FULLSCREEN;
     }
 
     bool Window::minimizeWindow() {
@@ -443,12 +440,11 @@ namespace MyEngine {
     }
 
     void Window::setWindowTitle(const std::string& title) {
-        _title = title;
         SDL_SetWindowTitle(_window, title.c_str());
     }
 
-    const std::string& Window::windowTitle() const {
-        return _title;
+    std::string_view Window::windowTitle() const {
+        return SDL_GetWindowTitle(_window);
     }
 
     void Window::setWindowIcon(const std::string& icon_path) {
@@ -781,6 +777,8 @@ namespace MyEngine {
         for (auto& id : _del_g_event_deque) {
             _global_event_list.erase(id);
         }
+        _del_event_deque.clear();
+        _del_g_event_deque.clear();
         return true;
     }
 
@@ -819,8 +817,8 @@ namespace MyEngine {
         return _kb_events[code];
     }
 
-    Engine::Engine(std::string&& app_name, std::string&& app_version, std::string&& app_id)
-        : _app_id(app_id), _app_name(app_name), _app_version(app_version), _running(true) {
+    Engine::Engine(const char *app_name, const char *app_version, const char *app_id)
+        : _running(true) {
         if (_show_app_info) {
             std::cout << std::format("MyEngine {} (Based on SDL {}.{}.{})\n",
                                      MYENGINE_FULL_VERSION, SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_MICRO_VERSION)
@@ -833,7 +831,7 @@ namespace MyEngine {
         if (!SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_EVENTS)) {
             throwFatalError();
         }
-        SDL_SetAppMetadata(app_name.c_str(), app_version.c_str(), app_id.c_str());
+        SDL_SetAppMetadata(app_name, app_version, app_id);
         Logger::log("Engine: Started up application!");
         TextSystem::global();
         AudioSystem::global();
@@ -849,39 +847,67 @@ namespace MyEngine {
         _show_app_info = false;
     }
 
-    void Engine::setApplicationID(std::string &&app_id) {
-        _app_id = std::move(app_id);
-        SDL_SetAppMetadata(_app_name.c_str(), _app_version.c_str(), _app_id.c_str());
-    }
-    void Engine::setApplicationID(const std::string &app_id) {
-        _app_id = app_id;
-        SDL_SetAppMetadata(_app_name.c_str(), _app_version.c_str(), _app_id.c_str());
-    }
-    void Engine::setApplicationName(std::string &&app_name) {
-        _app_name = std::move(app_name);
-        SDL_SetAppMetadata(_app_name.c_str(), _app_version.c_str(), _app_id.c_str());
-    }
-    void Engine::setApplicationName(const std::string &app_name) {
-        _app_name = app_name;
-        SDL_SetAppMetadata(_app_name.c_str(), _app_version.c_str(), _app_id.c_str());
-    }
-    void Engine::setApplicationVersion(std::string &&app_version) {
-        _app_version = std::move(app_version);
-        SDL_SetAppMetadata(_app_name.c_str(), _app_version.c_str(), _app_id.c_str());
-    }
-    void Engine::setApplicationVersion(const std::string &app_version) {
-        _app_version = app_version;
-        SDL_SetAppMetadata(_app_name.c_str(), _app_version.c_str(), _app_id.c_str());
+    void Engine::setApplicationID(const char *app_id) {
+        SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_IDENTIFIER_STRING, app_id);
     }
 
-    const std::string& Engine::applicationID() const { return _app_id; }
-    const std::string& Engine::applicationName() const { return _app_name; }
-    const std::string& Engine::applicationVersion() const { return _app_version; }
+    void Engine::setApplicationName(const char *app_name) {
+        SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_NAME_STRING, app_name);
+    }
+
+    void Engine::setApplicationVersion(const char *app_version) {
+        SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_VERSION_STRING, app_version);
+    }
+
+    void Engine::setApplicationCopyright(const char *app_copyright) {
+        SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_COPYRIGHT_STRING, app_copyright);
+    }
+
+    void Engine::setApplicationAuthor(const char *app_author) {
+        SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_CREATOR_STRING, app_author);
+    }
+
+    void Engine::setApplicationTypeName(const char *app_type) {
+        SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_TYPE_STRING, app_type);
+    }
+
+    void Engine::setApplicationURL(const char *app_url) {
+        SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_URL_STRING, app_url);
+    }
+
+    std::string_view Engine::applicationID() const {
+        return SDL_GetAppMetadataProperty(SDL_PROP_APP_METADATA_IDENTIFIER_STRING);
+    }
+
+    std::string_view Engine::applicationName() const {
+        return SDL_GetAppMetadataProperty(SDL_PROP_APP_METADATA_NAME_STRING);
+    }
+
+    std::string_view Engine::applicationVersion() const {
+        return SDL_GetAppMetadataProperty(SDL_PROP_APP_METADATA_VERSION_STRING);
+    }
+
+    std::string_view Engine::applicationCopyright() const {
+        return SDL_GetAppMetadataProperty(SDL_PROP_APP_METADATA_COPYRIGHT_STRING);
+    }
+
+    std::string_view Engine::applicationAuthor() const {
+        return SDL_GetAppMetadataProperty(SDL_PROP_APP_METADATA_CREATOR_STRING);
+    }
+
+    std::string_view Engine::applicationTypeName() const {
+        return SDL_GetAppMetadataProperty(SDL_PROP_APP_METADATA_TYPE_STRING);
+    }
+
+    std::string_view Engine::applicationURL() const {
+        return SDL_GetAppMetadataProperty(SDL_PROP_APP_METADATA_URL_STRING);
+    }
 
     void Engine::setLimitMaxMemorySize(size_t mem_in_kb) {
         _max_mem_kb = mem_in_kb;
         _warn_mem_kb = static_cast<size_t>(static_cast<float>(_max_mem_kb) * 0.85f);
     }
+
     size_t Engine::limitMaxMemorySize() const { return _max_mem_kb; }
 
     void Engine::setRenderSetup(uint32_t max_commands, bool auto_incresement) {

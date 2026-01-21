@@ -19,6 +19,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 if (MSVC)
     message("Using MSVC options")
     add_compile_options(/EHsc /W4 /D_DEBUG /MDd)
+else()
+    add_compile_options(-Wall -g )
 endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES

@@ -1,7 +1,18 @@
 #pragma once
 #ifndef MYENGINE_CORE_H
 #define MYENGINE_CORE_H
-#define MYENGINE_FULL_VERSION "v0.1.3-beta"
+#ifndef MYENGINE_FULL_VERSION
+#define MYENGINE_FULL_VERSION "0.0.0"
+#endif
+#ifndef APP_NAME
+#define APP_NAME "Hello world"
+#endif
+#ifndef APP_VERSION
+#define APP_VERSION "v1.0.0"
+#endif
+#ifndef APP_ID
+#define APP_ID "helloWorld.app"
+#endif
 #include "Exception.h"
 #include "Basic.h"
 #include "Components.h"
@@ -146,7 +157,7 @@ namespace MyEngine {
         [[nodiscard]] bool isRestoredWindow() const;
 
         void setWindowTitle(const std::string& title);
-        [[nodiscard]] const std::string& windowTitle() const;
+        [[nodiscard]] std::string_view windowTitle() const;
 
         void setWindowIcon(const std::string& icon_path);
         [[nodiscard]] SDL_Surface* windowIcon() const;
@@ -197,11 +208,6 @@ namespace MyEngine {
         SDL_Window* _window{nullptr};
         SDL_Surface* _win_icon{nullptr};
         SDL_WindowID _winID{};
-        std::string _title{};
-        bool _visible{true};
-        bool _resizable{false};
-        bool _borderless{false};
-        bool _fullscreen{false};
         struct FingerEvent {
             uint64_t finger_id{};
             float pressure{};
@@ -212,9 +218,9 @@ namespace MyEngine {
         bool _drag_mode{false};
         std::string _drop_url{};
         Vector2 _mouse_pos{}, _dragging_pos{};
-        Cursor::StdCursor _cursor{};
         std::deque<std::function<void(Renderer*)>> _paint_event_list;
         Engine* _engine;
+        Cursor::StdCursor _cursor{};
     };
 
     class EventSystem {
@@ -248,12 +254,12 @@ namespace MyEngine {
         Engine* _engine{nullptr};
         bool* _kb_events{nullptr};
         int _nums_keys{0};
+        bool _mouse_down_changed{false};
         std::vector<int> _keys_status;
         uint32_t _mouse_events{0};
         Vector2 _mouse_pos{0, 0}, _mouse_down_dis{0, 0}, _before_mouse_down_pos{0, 0};
-        bool _mouse_down_changed{false};
         std::unordered_map<uint64_t, std::function<void(SDL_Event)>> _event_list{};
-        std::deque<uint64_t> _del_event_deque, _del_g_event_deque;
+        std::vector<uint64_t> _del_event_deque, _del_g_event_deque;
         std::unordered_map<uint64_t, std::function<void()>> _global_event_list{};
     };
 
@@ -265,21 +271,26 @@ namespace MyEngine {
         Engine(Engine&&) = delete;
         Engine& operator=(const Engine&) = delete;
         Engine& operator=(Engine&&) = delete;
-        explicit Engine(std::string&& app_name = "Hello world", std::string&& app_version = "v1.0.0",
-                        std::string&& app_id = "HelloWorld.app");
+        explicit Engine(const char *app_name = APP_NAME, const char *app_version = APP_VERSION,
+                        const char *app_id = APP_ID);
         ~Engine();
         static void disabledShowAppInfo();
 
-        void setApplicationID(const std::string& app_id);
-        void setApplicationID(std::string&& app_id);
-        void setApplicationName(const std::string& app_id);
-        void setApplicationName(std::string&& app_id);
-        void setApplicationVersion(const std::string& app_version);
-        void setApplicationVersion(std::string&& app_version);
+        void setApplicationID(const char *app_id);
+        void setApplicationName(const char *app_name);
+        void setApplicationVersion(const char *app_version);
+        void setApplicationCopyright(const char *app_copyright);
+        void setApplicationAuthor(const char *app_author);
+        void setApplicationTypeName(const char *app_type);
+        void setApplicationURL(const char *app_url);
 
-        [[nodiscard]] const std::string& applicationID() const;
-        [[nodiscard]] const std::string& applicationName() const;
-        [[nodiscard]] const std::string& applicationVersion() const;
+        [[nodiscard]] std::string_view applicationID() const;
+        [[nodiscard]] std::string_view applicationName() const;
+        [[nodiscard]] std::string_view applicationVersion() const;
+        [[nodiscard]] std::string_view applicationCopyright() const;
+        [[nodiscard]] std::string_view applicationAuthor() const;
+        [[nodiscard]] std::string_view applicationTypeName() const;
+        [[nodiscard]] std::string_view applicationURL() const;
 
         void setLimitMaxMemorySize(size_t mem_in_kb);
         [[nodiscard]] size_t limitMaxMemorySize() const;
@@ -309,17 +320,17 @@ namespace MyEngine {
     private:
         void cleanUp();
         void running();
-        bool _running;
-        static int _return_code;
         static bool _quit_requested;
-        uint32_t _fps{0};
-        double _frame_in_ns{0};
-        uint32_t _real_fps{0};
+        static int _return_code;
         static SDL_WindowID _main_window_id;
         static bool _show_app_info;
+
+        double _frame_in_ns{0};
+        uint32_t _fps{0};
+        uint32_t _real_fps{0};
+        bool _running{};
         std::unordered_map<SDL_WindowID, std::unique_ptr<Window>> _window_list;
         std::function<void()> _clean_up_event;
-        std::string _app_name, _app_id, _app_version;
         size_t _used_mem_kb{0}, _max_mem_kb{0}, _warn_mem_kb{0};
     };
 

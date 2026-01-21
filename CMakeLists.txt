@@ -7,6 +7,7 @@ include(CMakeFindDependencyMacro)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+add_compile_definitions(MYENGINE_FULL_VERSION="v${PROJECT_VERSION}")
 
 function(SHOW_USAGE)
     message("\nUsage: cmake <MyEngine project path> -B <Your build path> -D<OPTIONS>[=VALUE] ....")
@@ -31,10 +32,6 @@ if(HELP)
 endif()
 
 message("Project ${PROJECT_NAME} is configuring...")
-
-if(NOT EXISTS ${CMAKE_BUILD_TYPE})
-    set(CMAKE_BUILD_TYPE "Release")
-endif()
 
 if(WIN32)
         set(SDL3_LIB "C:/Program Files (x86)/SDL3" CACHE PATH "SDL3 Libs Path")
@@ -132,8 +129,10 @@ if (BUILD_SHARED_LIBS_ONLY)
             src/Widgets/LineEdit.cpp
             src/Widgets/LineEdit.h
             src/Algorithm/String.h
-            src/Widgets/ScrollBar.cpp
-            src/Widgets/ScrollBar.h
+            src/Widgets/AbstractLayout.cpp
+            src/Widgets/AbstractLayout.h
+            src/Widgets/VerticalLayout.cpp
+            src/Widgets/VerticalLayout.h
     )
 else ()
     add_library(${PROJECT_NAME} STATIC
@@ -188,8 +187,10 @@ else ()
             src/Widgets/LineEdit.cpp
             src/Widgets/LineEdit.h
             src/Algorithm/String.h
-            src/Widgets/ScrollBar.cpp
-            src/Widgets/ScrollBar.h
+            src/Widgets/AbstractLayout.cpp
+            src/Widgets/AbstractLayout.h
+            src/Widgets/VerticalLayout.cpp
+            src/Widgets/VerticalLayout.h
     )
 endif ()
 

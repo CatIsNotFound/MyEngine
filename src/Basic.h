@@ -641,7 +641,7 @@ namespace MyEngine {
          * \endif
          * @see reshape
          */
-        explicit Matrix2D() : _row(0), _col(0), _datas() {}
+        explicit Matrix2D() : _row(0), _col(0), _datas(), _deleter() {}
 
         /**
          * \if EN

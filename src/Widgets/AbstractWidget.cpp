@@ -14,7 +14,21 @@ namespace MyEngine::Widget {
         load();
     }
 
-    AbstractWidget::~AbstractWidget() {  }
+    AbstractWidget::AbstractWidget(std::string object_name, MyEngine::Widget::AbstractWidget *parent)
+        : _window(parent->_window), _renderer(parent->_renderer), _object_name(std::move(object_name)),
+          _ev_id(IDGenerator::getNewEventID()) {
+        load();
+    }
+
+    AbstractWidget::~AbstractWidget() = default;
+
+    void AbstractWidget::setParent(MyEngine::Widget::AbstractWidget *parent) {
+        _parent = parent;
+    }
+
+    AbstractWidget* AbstractWidget::parent() const {
+        return _parent;
+    }
 
     void AbstractWidget::load() {
         if (!_window) {

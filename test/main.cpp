@@ -1,6 +1,7 @@
 
 #include "FilledWin.h"
 #include "MyEngine"
+#include "Widgets/VerticalLayout.h"
 #include "Widgets/Button.h"
 #include "Widgets/LineEdit.h"
 #include "MyWindow.h"
@@ -10,10 +11,15 @@ using namespace MyEngine;
 int main(int argc, const char* argv[]) {
     Logger::setBaseLogLevel(MyEngine::Logger::Debug);
     FileSystem::setCurrentPath(FileSystem::getDirectoryFromFile(argv[0]));
-    Engine engine;
+    Engine engine("Test App", "v0.1.1", "test.app");
+    engine.setApplicationTypeName("Unknown");
+    engine.setApplicationAuthor("CatIsNotFound");
+    engine.setApplicationCopyright("(C) 2026 Made by MyEngine");
+    engine.setApplicationURL("https://github.com/CatIsNotFound/MyEngine");
     engine.setFPS(30);
-    engine.setLimitMaxMemorySize(FileSystem::translateSize(10.f, MyEngine::FileSystem::MB));
-    auto win = new MyWindow(&engine, "Test");
+    engine.setLimitMaxMemorySize(FileSystem::translateSize(100.f, MyEngine::FileSystem::KB));
+    Logger::log(std::format("Mem: {} KB", engine.limitMaxMemorySize()));
+    auto win = new MyWindow(&engine, engine.applicationName().data());
     win->show();
     win->setResizable(true);
     win->installPaintEvent([&](Renderer* r){
@@ -26,82 +32,16 @@ int main(int argc, const char* argv[]) {
         r->drawDebugFPS({60, 20});
     });
     
-
-    Widget::LineEdit user_name("user_name", win),
-                     user_passwd("user_passwd", win);
-    auto sys_db = FontDatabase::getFontDatabaseFromSystem();
-    user_name.setGeometry(80, 100, 240, 40);
-    user_passwd.setGeometry(80, 150, 240, 40);
-    user_name.setPlaceHolderText("User name");
-    user_passwd.setPlaceHolderText("Password");
-    user_name.setFont("simsun", sys_db.at("simsun"), 20.f);
-    user_name.setTextCursorStyle(4, RGBAColor::BlueDark);
-    user_name.setPadding(8, 8);
-    user_passwd.setFont("arial", sys_db.at("arial"), 20.f);
-    user_passwd.setPasswordEnabled(true);
-    user_passwd.setTextCursorStyle(2, RGBAColor::MixGrayDark);
-    user_passwd.setText("123456");
-    user_passwd.setBackgroundVisible(false);
-    user_passwd.setPadding(8, 8);
-//    user_passwd.setBorderVisible(false);
-    Widget::Button button("show_passwd", win);
-    button.setGeometry(120, 200, 140, 24);
-    button.setFont("simsun");
-    button.setText("Show password");
-    button.setTextAlignment(MyEngine::Widget::CenterMiddle);
-    button.setTriggerEvent([&button, &user_passwd] {
-        if (user_passwd.passwordEnabled()) {
-            user_passwd.setPasswordEnabled(false);
-            button.setText("Hide password");
-        } else {
-            user_passwd.setPasswordEnabled(true);
-            button.setText("Show password");
-        }
-    });
-    Widget::Button login("login", win);
-    login.setGeometry(120, 230, 140, 24);
-    login.setFont("simsun");
-    login.setText("Login");
-    login.setTextAlignment(MyEngine::Widget::CenterMiddle);
-    login.setFocusEnabled(true);
-    Widget::Label label("label", win);
-    label.move(80, 70);
-    label.setAutoResizedByTextEnabled(true);
-    label.setFont("simsun");
-    label.setTextColor(StdColor::Black);
-    label.setText("Welcome");
-    label.setBackgroundColor(RGBAColor::BlueIce);
-    login.setTriggerEvent([&] {
-        if (user_name.text() == "admin" && user_passwd.text() == "123456") {
-            label.setText("Login Successful!");
-        } else {
-            label.setText("User name or password is incorrect!");
-        }
-    });
-    Widget::Button enabled_trigger("enabled_trigger", win);
-    enabled_trigger.setGeometry(120, 260, 140, 24);
-    enabled_trigger.setFont("simsun");
-    enabled_trigger.setText("Click me");
-    enabled_trigger.setTextAlignment(MyEngine::Widget::CenterMiddle);
-    enabled_trigger.setTriggerEvent([&] {
-        user_name.setEnabled(!user_name.enabled());
-    });
-
-    Widget::Button min_btn("min", win), max_btn("max", win),
-                    full_btn("full", win);
-    full_btn.setGeometry(win->geometry().width - 180, 20, 40, 40);
-    min_btn.setGeometry(win->geometry().width - 120, 20, 40, 40);
-    max_btn.setGeometry(win->geometry().width - 60, 20, 40, 40);
-    min_btn.setTriggerEvent([&] { win->minimizeWindow(); });
-    max_btn.setTriggerEvent([&] {
-        if (win->isMaximizedWindow()) {
-            win->restoreWindow();
-        } else {
-            win->maximizeWindow();
-        }
-    });
-    full_btn.setTriggerEvent([&] {
-        win->setFullScreen(!win->fullScreen());
+    Widget::VerticalLayout vlayout("vlayout", win);
+    vlayout.setPadding(6);
+    vlayout.setMargin(16);
+    vlayout.setGeometry(60, 60, 400, 400);
+    Widget::Button btn1("btn1", win), btn2("btn2", win);
+    Widget::LineEdit edit1("edit1", win), edit2("edit2", win);
+    vlayout.addWidgets({ &edit1, &btn1, &edit2, &btn2 });
+    btn1.setTriggerEvent([&vlayout] {
+        vlayout.resize(RandomGenerator::randFloat(200.f, 800.f),
+                       RandomGenerator::randFloat(200.f, 800.f));
     });
     return engine.exec();
 }
