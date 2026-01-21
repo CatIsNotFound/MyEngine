@@ -308,7 +308,8 @@ namespace MyEngine {
 
         Vector2 operator*(float v) const { return {this->x * v, this->y * v}; };
 
-        Vector2 operator/(const Vector2 &v) const { return {this->x / v.x, this->y / v.y}; }
+        Vector2 operator/(const Vector2 &v) const { return {(v.x ? this->x / v.x : this->x),
+                                                            (v.y ? this->y / v.y : this->y)}; }
 
         Vector2 operator/(float v) const { return (v != 0) ? Vector2(this->x / v, this->y / v) : *this; }
 
@@ -333,8 +334,8 @@ namespace MyEngine {
         }
 
         void operator/=(const Vector2 &v) {
-            this->x /= v.x;
-            this->y /= v.y;
+            if (v.x) this->x /= v.x;
+            if (v.y) this->y /= v.y;
         }
 
         void operator/=(float v) {
@@ -425,7 +426,8 @@ namespace MyEngine {
 
         Size operator*(float v) const { return {this->width * v, this->height * v}; }
 
-        Size operator/(const Size &s) const { return {this->width / s.width, this->height / s.height}; }
+        Size operator/(const Size &s) const { return {(s.width ? this->width / s.width : this->width),
+                                                      (s.height ? this->height / s.height : this->height) }; }
 
         Size operator/(float v) const { return (v == 0) ? *this : Size(this->width / v, this->height / v); }
 
@@ -450,8 +452,8 @@ namespace MyEngine {
         }
 
         void operator/=(const Size &s) {
-            this->width /= s.width;
-            this->height /= s.height;
+            if (s.width) this->width /= s.width;
+            if (s.height) this->height /= s.height;
         }
 
         void operator/=(float v) {
@@ -547,6 +549,46 @@ namespace MyEngine {
         void resetSize(float width, float height) {
             this->size.width = width;
             this->size.height = height;
+        }
+
+        GeometryF operator+(const GeometryF& geometry) {
+            GeometryF _out;
+            _out.pos.reset(this->pos + geometry.pos);
+            _out.size.reset(this->size + geometry.size);
+            return _out;
+        }
+
+        GeometryF operator-(const GeometryF& geometry) {
+            GeometryF _out;
+            _out.pos.reset(this->pos - geometry.pos);
+            _out.size.reset(this->size - geometry.size);
+            return _out;
+        }
+
+        GeometryF operator*(const GeometryF& geometry) {
+            GeometryF _out;
+            _out.pos.reset(this->pos * geometry.pos);
+            _out.size.reset(this->size * geometry.size);
+            return _out;
+        }
+
+        GeometryF operator/(const GeometryF& geometry) {
+            GeometryF _out;
+            _out.pos.reset(geometry.pos / this->pos);
+            _out.size.reset(geometry.size / this->size);
+            return _out;
+        }
+
+        GeometryF& operator+=(const GeometryF& geometry) {
+            this->pos += geometry.pos;
+            this->size += geometry.size;
+            return *this;
+        }
+
+        GeometryF& operator-=(const GeometryF& geometry) {
+            this->pos -= geometry.pos;
+            this->size -= geometry.size;
+            return *this;
         }
     };
 

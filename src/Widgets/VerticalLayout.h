@@ -1,6 +1,6 @@
 
-#ifndef MYENGINE_VERTICALLAYOUT_H
-#define MYENGINE_VERTICALLAYOUT_H
+#ifndef MYENGINE_WIDGETS_VERTICALLAYOUT_H
+#define MYENGINE_WIDGETS_VERTICALLAYOUT_H
 
 #include "AbstractLayout.h"
 namespace MyEngine {
@@ -19,4 +19,4 @@ namespace MyEngine {
     }
 }
 
-#endif //MYENGINE_VERTICALLAYOUT_H
+#endif //MYENGINE_WIDGETS_VERTICALLAYOUT_H

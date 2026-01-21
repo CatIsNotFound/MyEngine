@@ -133,6 +133,8 @@ if (BUILD_SHARED_LIBS_ONLY)
             src/Widgets/AbstractLayout.h
             src/Widgets/VerticalLayout.cpp
             src/Widgets/VerticalLayout.h
+            src/Widgets/HorizontalLayout.cpp
+            src/Widgets/HorizontalLayout.h
     )
 else ()
     add_library(${PROJECT_NAME} STATIC
@@ -191,6 +193,8 @@ else ()
             src/Widgets/AbstractLayout.h
             src/Widgets/VerticalLayout.cpp
             src/Widgets/VerticalLayout.h
+            src/Widgets/HorizontalLayout.cpp
+            src/Widgets/HorizontalLayout.h
     )
 endif ()
 

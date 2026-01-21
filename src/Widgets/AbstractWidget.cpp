@@ -40,7 +40,9 @@ namespace MyEngine::Widget {
         _renderer = _window->renderer();
         _renderer->window()->installPaintEvent([this](Renderer* r) {
             if (!_visible) return;
+            if (_parent) r->setViewport(toGeometryInt(_parent->geometry()));
             paintEvent(r);
+            if (_parent) r->setViewport({});
         }, true);
         _trigger_area.setGeometry(0, 0, 200, 50);
         uint64_t win_id = _window->windowID();
@@ -136,7 +138,14 @@ namespace MyEngine::Widget {
             if (Cursor::global()->focusOn() != _window->windowID()) return;
             // Mouse Event
             auto cur_pos = EventSystem::global()->captureMousePosition();
-            auto trigger = (Algorithm::comparePosInRect(cur_pos, _trigger_area) > 0);
+            bool trigger = false;
+            if (_parent) {
+                auto new_geo = Algorithm::translateObjectInParent(_trigger_area.geometry(),
+                                                                  _parent->geometry());
+                trigger = (Algorithm::comparePosInGeometry(cur_pos, new_geo) > 0);
+            } else {
+                trigger = (Algorithm::comparePosInRect(cur_pos, _trigger_area) > 0);
+            }
             // Add the input event when the mouse moved out and clicked
             if (_status.input_mode && !trigger && EventSystem::global()->captureMouse(MouseStatus::Left)) {
                 setInputModeEnabled(false);

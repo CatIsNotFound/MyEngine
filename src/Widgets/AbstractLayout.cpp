@@ -151,12 +151,10 @@ namespace MyEngine::Widget {
     }
 
     void AbstractLayout::loadEvent() {
-        _trigger_area.setBackgroundColor(StdColor::LightBlue);
     }
 
     void AbstractLayout::paintEvent(MyEngine::Renderer *renderer) {
         AbstractWidget::paintEvent(renderer);
-        renderer->drawRectangle(&_trigger_area);
     }
 
     void AbstractLayout::resizeEvent(const Size &size) {

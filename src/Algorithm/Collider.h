@@ -28,11 +28,29 @@ namespace MyEngine {
             }
         }
 
-        inline int8_t comparePosInRect(const Vector2& vec, const Graphics::Rectangle& rect) {
-            float left = rect.geometry().pos.x;
-            float right = left + rect.geometry().size.width;
-            float top = rect.geometry().pos.y;
-            float bottom = top + rect.geometry().size.height;
+        inline GeometryF translateObjectInParent(const GeometryF& object, const GeometryF& parent) {
+            GeometryF new_geometry;
+            new_geometry.resetPos(parent.pos + object.pos);
+            Size available_size(
+                    parent.size.width - object.pos.x,
+                    parent.size.height - object.pos.y
+            );
+
+            available_size.width = std::max(0.0f, available_size.width);
+            available_size.height = std::max(0.0f, available_size.height);
+
+            Size final_size;
+            final_size.width = std::min(object.size.width, available_size.width);
+            final_size.height = std::min(object.size.height, available_size.height);
+            new_geometry.resetSize(final_size);
+            return new_geometry;
+        }
+
+        inline int8_t comparePosInGeometry(const Vector2& vec, const GeometryF& geometry) {
+            float left =geometry.pos.x;
+            float right = left + geometry.size.width;
+            float top = geometry.pos.y;
+            float bottom = top + geometry.size.height;
             if ((vec.x > left) && (vec.x < right) && (vec.y > top) && (vec.y < bottom)) return 1;
 
             bool onX = (vec.x == left || vec.x == right);
@@ -40,6 +58,10 @@ namespace MyEngine {
             if (onX && onY) return 0;
 
             return -1;
+        }
+
+        inline int8_t comparePosInRect(const Vector2& vec, const Graphics::Rectangle& rect) {
+            return comparePosInGeometry(vec, rect.geometry());
         }
 
         inline int8_t comparePosInRotatedRect(const Vector2& vec, const Graphics::Rectangle& rect) {

@@ -2,6 +2,7 @@
 #include "FilledWin.h"
 #include "MyEngine"
 #include "Widgets/VerticalLayout.h"
+#include "Widgets/HorizontalLayout.h"
 #include "Widgets/Button.h"
 #include "Widgets/LineEdit.h"
 #include "MyWindow.h"
@@ -32,10 +33,10 @@ int main(int argc, const char* argv[]) {
         r->drawDebugFPS({60, 20});
     });
     
-    Widget::VerticalLayout vlayout("vlayout", win);
+    Widget::HorizontalLayout vlayout("vlayout", win);
     vlayout.setPadding(6);
     vlayout.setMargin(16);
-    vlayout.setGeometry(60, 60, 400, 400);
+    vlayout.setGeometry(60, 60, 800, 200);
     Widget::Button btn1("btn1", win), btn2("btn2", win);
     Widget::LineEdit edit1("edit1", win), edit2("edit2", win);
     vlayout.addWidgets({ &edit1, &btn1, &edit2, &btn2 });
