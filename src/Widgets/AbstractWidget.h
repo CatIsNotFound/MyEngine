@@ -4,6 +4,7 @@
 #include "../Components.h"
 #include "../Utils/Cursor.h"
 #include "../Utils/Variant.h"
+#include "../Algorithm/Collider.h"
 
 #define _NEW_PROPERTY_PTR(POINTER, NAME, CLASS)                                   \
 POINTER->setProperty(NAME, static_cast<void*>(new CLASS()), [](void* v) {        \
@@ -149,6 +150,8 @@ namespace MyEngine {
 
         protected:
             Renderer* render() { return _renderer; }
+            void setLockWidgetEnabled(bool enabled) { _status.lock_widget = enabled; }
+            [[nodiscard]] bool lockWidgetEnabled() const { return _status.lock_widget; }
             virtual void loadEvent();
             virtual void unloadEvent();
             virtual void moveEvent(const Vector2& position);
@@ -203,6 +206,7 @@ namespace MyEngine {
             Cursor::StdCursor _cur_style{Cursor::Default};
             struct Status {
                 bool is_loaded{};
+                bool lock_widget{};
                 bool mouse_in{};
                 bool mouse_down{};
                 bool r_mouse_down{};

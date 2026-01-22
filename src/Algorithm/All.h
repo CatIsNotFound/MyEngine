@@ -4,5 +4,6 @@
 #include "Collider.h"
 #include "Draw.h"
 #include "String.h"
+#include "RGBAPixels.h"
 
 #endif //MYENGINE_ALGORITHM_H

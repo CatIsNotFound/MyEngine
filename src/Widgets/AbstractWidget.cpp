@@ -33,7 +33,7 @@ namespace MyEngine::Widget {
     void AbstractWidget::load() {
         if (!_window) {
             auto err = std::format("AbstractWidget ({}): The specified window can not be null!", _object_name);
-            Logger::log(err, Logger::Fatal);
+            Logger::log(Logger::Fatal, "AbstractWidget ({}): The specified window can not be null!", _object_name);
             throw InvalidArgumentException(err);
         }
         _engine = _window->engine();
@@ -296,11 +296,13 @@ namespace MyEngine::Widget {
     }
 
     void AbstractWidget::move(float x, float y) {
+        if (_status.lock_widget) return;
         _trigger_area.move(x, y);
         moveEvent(_trigger_area.geometry().pos);
     }
 
     void AbstractWidget::move(const Vector2 &position) {
+        if (_status.lock_widget) return;
         _trigger_area.move(position);
         moveEvent(_trigger_area.geometry().pos);
     }
@@ -310,11 +312,13 @@ namespace MyEngine::Widget {
     }
 
     void AbstractWidget::resize(float w, float h) {
+        if (_status.lock_widget) return;
         _trigger_area.resize(w, h);
         resizeEvent(_trigger_area.geometry().size);
     }
 
     void AbstractWidget::resize(const Size &size) {
+        if (_status.lock_widget) return;
         _trigger_area.resize(size);
         resizeEvent(_trigger_area.geometry().size);
     }
@@ -551,7 +555,7 @@ namespace MyEngine::Widget {
             return &_prop_map.at(name);
         } else {
             auto err = std::format("AbstractWidget ({}): Property '{}' is not found!", _object_name, name);
-            Logger::log(err, Logger::Fatal);
+            Logger::log(Logger::Fatal, "AbstractWidget ({}): Property '{}' is not found!", _object_name, name);
             throw NullPointerException(err);
         }
     }

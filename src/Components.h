@@ -37,25 +37,25 @@ namespace MyEngine {
         void setFontPath(const std::string& font_path);
         [[nodiscard]] const std::string& fontPath() const;
         void setFontSize(float size);
-        float fontSize() const;
+        [[nodiscard]] float fontSize() const;
         void setFontColor(const SDL_Color& color);
-        const SDL_Color& fontColor() const;
+        [[nodiscard]] const SDL_Color& fontColor() const;
         void setStyle(uint32_t flags);
         void setOutline(uint32_t value = 0);
-        uint32_t outline() const;
+        [[nodiscard]] uint32_t outline() const;
         void setOutlineColor(const SDL_Color& color);
-        SDL_Color outlineColor() const;
+        [[nodiscard]] SDL_Color outlineColor() const;
         void setFontDirection(Direction direction);
-        Direction fontDirection() const;
+        [[nodiscard]] Direction fontDirection() const;
         void setFontHinting(uint32_t flags);
         void setFontKerning(bool enabled);
         bool fontKerning() const;
         void setLineSpacing(uint32_t spacing);
-        uint32_t lineSpacing() const;
+        [[nodiscard]] uint32_t lineSpacing() const;
         SDL_Surface* toImage(const std::string& text);
         SDL_Surface* toImage(const std::string& text, const SDL_Color& backgrond_color);
 
-        TTF_Font* self() const;
+        [[nodiscard]] TTF_Font* self() const;
     private:
         TTF_Font* _font{nullptr};
         std::string _font_path{};

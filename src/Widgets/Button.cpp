@@ -46,8 +46,7 @@ namespace MyEngine::Widget {
 
     void Button::setBackgroundImage(WidgetStatus status, Texture *texture, bool delete_later) {
         if (!texture) {
-            Logger::log(std::format("Button ({}): The specified texture is not valid!", _object_name),
-                        Logger::Error);
+            Logger::log(Logger::Error, "Button ({}): The specified texture is not valid!", _object_name);
             return;
         }
 

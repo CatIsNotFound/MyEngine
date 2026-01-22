@@ -36,7 +36,7 @@ namespace MyEngine {
                 } else if ((byte & 0xf8) == 0xf0) {
                     char_length = 4;
                 } else {
-                    Logger::log("splitUTF_8: The specified character is not valid! Returned null!", Logger::Warn);
+                    Logger::log(Logger::Warn, "splitUTF_8: The specified character is not valid! Returned null!");
                     return {};
                 }
                 _ret.emplace_back(utf8_string.substr(i, char_length));

@@ -218,6 +218,7 @@ namespace MyEngine {
                 find_font_dir.emplace_back("~/Library/Fonts");
             }
 #endif
+
             for (auto& font_dir : find_font_dir) {
                 StringList font_files = FileSystem::listFilesRecursively(font_dir,
                                                          {".ttf", ".otf", ".ttc", ".woff", ".eot"});

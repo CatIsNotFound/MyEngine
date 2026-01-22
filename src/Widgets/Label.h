@@ -81,11 +81,6 @@ namespace MyEngine {
             std::unique_ptr<Texture> _bg_img{};
             std::string _string{};
             Vector2 _text_pos{};
-            /**
-             * @brief 改变信号
-             * @details 使用 `uint16_t` 类型，采用二进制的方式表示各个状态是否有所改变.
-             * @details 通常使用 `ENGINE_SIGNAL_LABEL_XXXXX` 表示每个信号位
-             **/
             uint16_t _changer_signal{};
             ImageFilledMode _fill_mode{};
             Alignment _alignment{};

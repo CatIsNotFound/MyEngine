@@ -16,8 +16,7 @@ namespace MyEngine {
         void BlendModeCMD::exec() {
             auto _ret = SDL_SetRenderDrawBlendMode(_renderer, _blend_mode);
             if (!_ret) {
-                Logger::log(std::format("Renderer: Set render draw blend mode failed! Exception: {}",
-                                        SDL_GetError()), Logger::Warn);
+                Logger::log(Logger::Warn, "Renderer: Set render draw blend mode failed! Exception: {}", SDL_GetError());
             }
         }
 
@@ -46,8 +45,7 @@ namespace MyEngine {
                                    _render_color.b, _render_color.a);
             auto _ret = SDL_RenderClear(_renderer);
             if (!_ret) {
-                Logger::log(std::format("Renderer: Render clear failed! Exception: {}",
-                                        SDL_GetError()), Logger::Error);
+                Logger::log(Logger::Error, "Renderer: Render clear failed! Exception: {}", SDL_GetError());
             }
         }
 
@@ -77,8 +75,7 @@ namespace MyEngine {
         void ViewPortCMD::exec() {
             bool _ret = SDL_SetRenderViewport(_renderer, (_reset ? nullptr : &_rect));
             if (!_ret) {
-                Logger::log(std::format("Renderer: Set renderer viewport failed! Exception: {}",
-                                        SDL_GetError()), Logger::Warn);
+                Logger::log(Logger::Warn, "Renderer: Set renderer viewport failed! Exception: {}", SDL_GetError());
             }
         }
 
@@ -169,6 +166,7 @@ namespace MyEngine {
                                         SDL_GetError()), Logger::Warn);
             }
             _ret = SDL_SetTextureAlphaMod(texture, color.a);
+
             if (!_ret) {
                 Logger::log(std::format("Renderer: Set texture alpha failed! Exception: {}",
                                         SDL_GetError()), Logger::Warn);

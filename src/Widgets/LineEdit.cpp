@@ -48,8 +48,7 @@ namespace MyEngine::Widget {
 
     void LineEdit::setFont(const std::string &font_name) {
         if (!TextSystem::global()->isFontContain(font_name)) {
-            Logger::log(std::format("LineEdit ({}): The font name '{}' is not contained! "
-                                "You need to specified font path.", _object_name, font_name),Logger::Error);
+            Logger::log(Logger::Error, "LineEdit ({}): The font name '{}' is not contained! You need to specified font path.", _object_name, font_name);
             return;
         }
         _font = TextSystem::global()->font(font_name);
@@ -449,7 +448,11 @@ namespace MyEngine::Widget {
 
     void LineEdit::inputEvent(const char *string) {
         AbstractWidget::inputEvent(string);
-        _strings.emplace_back(string);
+        auto new_str = Algorithm::splitUTF_8(string);
+        for (auto& s : new_str) {
+            _strings.emplace_back(s);
+        }
+
         _changer_signal |= ENGINE_SIGNAL_LINE_EDIT_TEXT_CHANGED;
         if (_status & ENGINE_BOOL_LINE_EDIT_PLACEHOLDER_TEXT_VISIBLE)
             _status ^= ENGINE_BOOL_LINE_EDIT_PLACEHOLDER_TEXT_VISIBLE;

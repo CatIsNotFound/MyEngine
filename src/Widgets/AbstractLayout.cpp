@@ -21,9 +21,7 @@ namespace MyEngine::Widget {
             widget->setParent(this);
             _widgets.emplace_back(widget);
         } else if (widget->parent() != this) {
-            Logger::log(std::format("AbstractLayout ({}): Widget \"{}\" is already had its parent! "
-                                    "Skipped adding widget to layout! ",
-                                    objectName(), widget->objectName()), Logger::Warn);
+            Logger::log(Logger::Warn, "AbstractLayout ({}): Widget \"{}\" is already had its parent! Skipped adding widget to layout! ", objectName(), widget->objectName());
             return;
         }
         _widgets.emplace_back(widget);
@@ -33,12 +31,11 @@ namespace MyEngine::Widget {
     void AbstractLayout::addWidgets(const std::vector<AbstractWidget *> &widgets) {
         for (auto& w : widgets) {
             if (w->parent()) {
-                Logger::log(std::format("AbstractLayout ({}): Widget \"{}\" is already had its parent! "
-                                        "Skipped adding widget to layout! ",
-                                        objectName(), w->objectName()), Logger::Warn);
+                Logger::log(Logger::Warn, "AbstractLayout ({}): Widget \"{}\" is already had its parent! Skipped adding widget to layout! ", objectName(), w->objectName());
                 continue;
             }
             w->setParent(this);
+
             _widgets.emplace_back(w);
         }
         layoutChanged();
@@ -80,12 +77,14 @@ namespace MyEngine::Widget {
         auto idx1 = indexOf(widget_1), idx2 = indexOf(widget_2);
         if (idx1 == -1 || idx2 == -1) return false;
         std::swap(_widgets[idx1], _widgets[idx2]);
+        layoutChanged();
         return true;
     }
 
     bool AbstractLayout::swapWidget(uint32_t index_1, uint32_t index_2) {
         if (index_1 > _widgets.size() || index_2 > _widgets.size()) return false;
         std::swap(_widgets[index_1], _widgets[index_2]);
+        layoutChanged();
         return true;
     }
 
@@ -155,6 +154,18 @@ namespace MyEngine::Widget {
 
     void AbstractLayout::paintEvent(MyEngine::Renderer *renderer) {
         AbstractWidget::paintEvent(renderer);
+    }
+
+    void AbstractLayout::enableChangedEvent(bool enabled) {
+        for (auto& w : _widgets) {
+            w->setEnabled(enabled);
+        }
+    }
+
+    void AbstractLayout::visibleChangedEvent(bool visible) {
+        for (auto& w : _widgets) {
+            w->setVisible(visible);
+        }
     }
 
     void AbstractLayout::resizeEvent(const Size &size) {

@@ -59,8 +59,7 @@ namespace MyEngine::Widget {
 
     void Label::setFont(const std::string &font_name) {
         if (!TextSystem::global()->isFontContain(font_name)) {
-            Logger::log(std::format("Label ({}): The font name '{}' is not contained! "
-                    "You need to specified font path.", _object_name, font_name),Logger::Error);
+            Logger::log(Logger::Error, "Label ({}): The font name '{}' is not contained! You need to specified font path.", _object_name, font_name);
             return;
         }
         _font = TextSystem::global()->font(font_name);
@@ -177,8 +176,7 @@ namespace MyEngine::Widget {
 
     void Label::setBackgroundImage(SDL_Surface *surface, bool delete_later) {
         if (!surface) {
-            Logger::log(std::format("Label ({}): The specified surface is not valid!", _object_name),
-                        Logger::Error);
+            Logger::log(Logger::Error, "Label ({}): The specified surface is not valid!", _object_name);
             return;
         }
         if (!_bg_img) {
@@ -196,8 +194,7 @@ namespace MyEngine::Widget {
 
     void Label::setBackgroundImage(Texture *texture, bool delete_later) {
         if (!texture) {
-            Logger::log(std::format("Label (): The specified surface is not valid!", _object_name),
-                        Logger::Error);
+            Logger::log(Logger::Error, "Label (): The specified surface is not valid!", _object_name);
             return;
         }
         if (!_bg_img) {
@@ -353,7 +350,9 @@ namespace MyEngine::Widget {
         if (_visible_text || _visible_img) {
             renderer->setClipView(toGeometryInt(_trigger_area.geometry()));
             if (_visible_img && _bg_img) _bg_img->draw();
-            if (_visible_text) TextSystem::global()->drawText(_text_id, _text_pos, renderer);
+            if (_visible_text) {
+                TextSystem::global()->drawText(_text_id,_text_pos, renderer);
+            }
             renderer->setClipView({});
         }
     }

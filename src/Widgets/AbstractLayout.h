@@ -41,6 +41,8 @@ namespace MyEngine {
         protected:
             void loadEvent() override;
             void paintEvent(MyEngine::Renderer *renderer) override;
+            void enableChangedEvent(bool enabled) override;
+            void visibleChangedEvent(bool visible) override;
             void resizeEvent(const MyEngine::Size &size) override;
             virtual void layoutChanged() = 0;
 

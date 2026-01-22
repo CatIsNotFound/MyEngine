@@ -180,7 +180,7 @@ namespace MyEngine {
         static uint64_t getID(size_t index = 0) {
             if (index >= _id_list.size()) {
                 auto err = std::format("IDGenerator: The index of {} is not exist!", index);
-                Logger::log(err, Logger::Fatal);
+                Logger::log(Logger::Fatal, "IDGenerator: The index of {} is not exist!", index);
                 throw OutOfRangeException(err);
             }
             return ++_id_list[index];
@@ -786,7 +786,7 @@ namespace MyEngine {
          * @see at
          * @throw OutOfRangeException
          */
-        const T &get(uint32_t row, uint32_t col);
+        const T &get(uint32_t row, uint32_t col) const;
 
         /**
          * \if EN
@@ -1124,7 +1124,7 @@ namespace MyEngine {
     bool Matrix2D<T>::fillN(const Matrix2D::Position &start, const Matrix2D::Position &end, const T &value) {
         auto st = start.row * _col + start.col, ed = end.row * _col + end.col;
         if (ed >= _datas.size()) {
-            Logger::log("Matrix2D::fillN(): One of the specified position is not valid!", Logger::Error);
+            Logger::log(Logger::Error, "Matrix2D::fillN(): One of the specified position is not valid!");
             return false;
         }
         std::fill(_datas.begin() + st, _datas.begin() + ed, value);
@@ -1136,8 +1136,7 @@ namespace MyEngine {
         auto new_size = line * col, origin_size = _row * _col;
         if (_row * _col != new_size) _datas.resize(new_size);
         if (_row * _col > new_size) {
-            Logger::log("Matrix2D: You have reduced the original matrix size, some datas will be discarded.",
-                        Logger::Warn);
+            Logger::log(Logger::Warn, "Matrix2D: You have reduced the original matrix size, some datas will be discarded.");
             if (_deleter) {
                 for (size_t i = new_size; i < origin_size; ++i) _deleter(_datas[i]);
             }
@@ -1155,7 +1154,7 @@ namespace MyEngine {
     }
 
     template<typename T>
-    const T &Matrix2D<T>::get(uint32_t row, uint32_t col) {
+    const T &Matrix2D<T>::get(uint32_t row, uint32_t col) const {
         auto idx = row * _col + col;
         if (idx >= _datas.size()) throw std::out_of_range("[FATAL] The specified position is out of range!");
         return _datas.at(idx);
@@ -1183,7 +1182,7 @@ namespace MyEngine {
             std::string err = std::format("Matrix2D::operator+(): Matrix dimensions mismatch! "
                                           "Original: ({}, {}), Specified: ({}, {})",
                                           _row, _col, other._row, other._col);
-            Logger::log(err, Logger::Error);
+            Logger::log(Logger::Error, "Matrix2D::operator+(): Matrix dimensions mismatch! Original: ({}, {}), Specified: ({}, {})", _row, _col, other._row, other._col);
             return InvalidArgumentException(err);
         }
     }
@@ -1200,7 +1199,7 @@ namespace MyEngine {
             std::string err = std::format("Matrix2D::operator-(): Matrix dimensions mismatch! "
                                           "Original: ({}, {}), Specified: ({}, {})",
                                           _row, _col, other._row, other._col);
-            Logger::log(err, Logger::Error);
+            Logger::log(Logger::Error, "Matrix2D::operator-(): Matrix dimensions mismatch! Original: ({}, {}), Specified: ({}, {})", _row, _col, other._row, other._col);
             return InvalidArgumentException(err);
         }
     }
@@ -1209,7 +1208,7 @@ namespace MyEngine {
     Matrix2D<T> Matrix2D<T>::operator*(const Matrix2D<T> &other) const {
         if (_col != other._row) {
             std::string err = "Matrix2D::operator*(): Matrix dimensions incompatible for multiplication!";
-            Logger::log(err, Logger::Fatal);
+            Logger::log(Logger::Fatal, "Matrix2D::operator*(): Matrix dimensions incompatible for multiplication!");
             throw BadValueException(err);
         }
         if constexpr (!std::is_integral_v<std::decay_t<T>> &&
@@ -1262,7 +1261,7 @@ namespace MyEngine {
         if (idx >= _datas.size()) {
             std::string err = std::format("Matrix2D::operator()(): "
                                           "The specified position ({}, {}) is out of range!", row, col);
-            Logger::log(err,Logger::Fatal);
+            Logger::log(Logger::Fatal, "Matrix2D::operator()(): The specified position ({}, {}) is out of range!", row, col);
             throw OutOfRangeException(err);
         }
         return _datas[idx];
@@ -1278,7 +1277,7 @@ namespace MyEngine {
                 v += value;
             } else {
                 std::string err = "Matrix2D::add(): Unsupported data type! Did you forget to specify function?";
-                Logger::log(err,Logger::Fatal);
+                Logger::log(Logger::Fatal, "Matrix2D::add(): Unsupported data type! Did you forget to specify function?");
                 throw InvalidArgumentException(err);
             }
         });
@@ -1294,7 +1293,7 @@ namespace MyEngine {
                 v += value;
             } else {
                 std::string err = "Matrix2D::add(): Unsupported data type! Did you forget to specify function?";
-                Logger::log(err,Logger::Fatal);
+                Logger::log(Logger::Fatal, "Matrix2D::add(): Unsupported data type! Did you forget to specify function?");
                 throw InvalidArgumentException(err);
             }
         });
@@ -1310,7 +1309,7 @@ namespace MyEngine {
                 v -= value;
             } else {
                 std::string err = "Matrix2D::sub(): Unsupported data type! Did you forget to specify function?";
-                Logger::log(err,Logger::Fatal);
+                Logger::log(Logger::Fatal, "Matrix2D::sub(): Unsupported data type! Did you forget to specify function?");
                 throw InvalidArgumentException(err);
             }
         });
@@ -1326,7 +1325,7 @@ namespace MyEngine {
                 v -= value;
             } else {
                 std::string err = "Matrix2D::sub(): Unsupported data type! Did you forget to specify function?";
-                Logger::log(err,Logger::Fatal);
+                Logger::log(Logger::Fatal, "Matrix2D::sub(): Unsupported data type! Did you forget to specify function?");
                 throw InvalidArgumentException(err);
             }
         });
@@ -1342,7 +1341,7 @@ namespace MyEngine {
                 v *= value;
             } else {
                 std::string err = "Matrix2D::times(): Unsupported data type! Did you forget to specify function?";
-                Logger::log(err,Logger::Fatal);
+                Logger::log(Logger::Fatal, "Matrix2D::times(): Unsupported data type! Did you forget to specify function?");
                 throw InvalidArgumentException(err);
             }
         });
@@ -1358,7 +1357,7 @@ namespace MyEngine {
                 v *= value;
             } else {
                 std::string err = "Matrix2D::times(): Unsupported data type! Did you forget to specify function?";
-                Logger::log(err,Logger::Fatal);
+                Logger::log(Logger::Fatal, "Matrix2D::times(): Unsupported data type! Did you forget to specify function?");
                 throw InvalidArgumentException(err);
             }
         });
@@ -1378,14 +1377,14 @@ namespace MyEngine {
                 }
             } else {
                 std::string err = "Matrix2D::times(): Unsupported data type! Did you forget to specify function?";
-                Logger::log(err,Logger::Fatal);
+                Logger::log(Logger::Fatal, "Matrix2D::times(): Unsupported data type! Did you forget to specify function?");
                 throw InvalidArgumentException(err);
             }
         } else {
             std::string err = std::format("Matrix2D::times(): Matrix dimensions mismatch! "
                                           "Original: ({}, {}), Specified: ({}, {})",
                                           _row, _col, other._row, other._col);
-            Logger::log(err,Logger::Fatal);
+            Logger::log(Logger::Fatal, "Matrix2D::times(): Matrix dimensions mismatch! Original: ({}, {}), Specified: ({}, {})", _row, _col, other._row, other._col);
             throw InvalidArgumentException(err);
         }
     }
@@ -1394,7 +1393,7 @@ namespace MyEngine {
     Matrix2D<T> Matrix2D<T>::multiply(const Matrix2D<T> &other) {
         if (_col != other._row) {
             std::string err = "Matrix2D::multiply(): Matrix dimensions incompatible for multiplication!";
-            Logger::log(err,Logger::Fatal);
+            Logger::log(Logger::Fatal, "Matrix2D::multiply(): Matrix dimensions incompatible for multiplication!");
             throw InvalidArgumentException(err);
         }
         Matrix2D<T> result(_row, other._col);
@@ -1481,8 +1480,7 @@ namespace MyEngine {
     template<typename T>
     Matrix2D<T> Matrix2D<T>::splitRows(uint32_t start_row, uint32_t end_row) {
         if (start_row == end_row) {
-            Logger::log("Matrix2D::splitRows(): The specified start row and end row cannot be the same!",
-                        Logger::Error);
+            Logger::log(Logger::Error, "Matrix2D::splitRows(): The specified start row and end row cannot be the same!");
             return Matrix2D<T>();
         }
         end_row = std::min(end_row, _row);
@@ -1500,8 +1498,7 @@ namespace MyEngine {
     template<typename T>
     Matrix2D<T> Matrix2D<T>::splitCols(uint32_t start_col, uint32_t end_col) {
         if (start_col == end_col) {
-            Logger::log("Matrix2D::splitCols(): The specified start row and end row cannot be the same!",
-                        Logger::Error);
+            Logger::log(Logger::Error, "Matrix2D::splitCols(): The specified start row and end row cannot be the same!");
             return Matrix2D<T>();
         }
         end_col = std::min(end_col, _col);
@@ -1519,7 +1516,7 @@ namespace MyEngine {
     template<typename T>
     Matrix2D<T> Matrix2D<T>::split(uint32_t rows, uint32_t cols, const Matrix2D::Position &start_pos) {
         if (start_pos.row >= _row || start_pos.col >= _col) {
-            Logger::log("Matrix2D::split(): The specified start position is not valid!", Logger::Error);
+            Logger::log(Logger::Error, "Matrix2D::split(): The specified start position is not valid!");
             return Matrix2D();
         }
         Matrix2D<T> _ret(rows, cols);
@@ -1570,7 +1567,7 @@ namespace MyEngine {
     template<typename T>
     Matrix2D<T> Matrix2D<T>::inverse() {
         if (_row != _col) {
-            Logger::log("Matrix2D::inverse(): The specified matrix size is not matched!", Logger::Error);
+            Logger::log(Logger::Error, "Matrix2D::inverse(): The specified matrix size is not matched!");
             return Matrix2D<T>();
         }
         if constexpr (!std::is_integral_v<std::decay_t<T>> &&
@@ -1600,7 +1597,7 @@ namespace MyEngine {
             }
 
             if (std::abs(augmented(max_row, i)) < static_cast<T>(1e-10)) {
-                Logger::log("Matrix2D::inverse(): Matrix is singular and cannot be inverted!", Logger::Error);
+                Logger::log(Logger::Error, "Matrix2D::inverse(): Matrix is singular and cannot be inverted!");
                 return Matrix2D<T>();
             }
 

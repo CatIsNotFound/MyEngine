@@ -4,15 +4,16 @@
 #include "Libs.h"
 
 #define EXCEPTION(C) \
-class C : public std::exception {                                   \
+class C : public std::runtime_error {                               \
 public:                                                             \
-    explicit C(std::string message) : _msg(std::move(message)) {}   \
+    explicit C(std::string message) : std::runtime_error(message.data()), \
+        _msg(std::move(message)) {}                                 \
     [[nodiscard]] const char * what() const noexcept override {     \
         return _msg.data();                                         \
     }                                                               \
 private:                                                            \
     std::string _msg;                                               \
-};
+}
 
 namespace MyEngine {
     EXCEPTION(EngineException);

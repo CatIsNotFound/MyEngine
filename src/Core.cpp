@@ -207,16 +207,18 @@ namespace MyEngine {
     Window::Window(Engine* object, const std::string& title, int width, int height,  GraphicEngine engine)
         : _window_geometry(0, 0, width, height), _engine(object) {
         if (engine == Vulkan)
-            _window = SDL_CreateWindow(title.c_str(), width, height, SDL_WINDOW_VULKAN | SDL_WINDOW_HIDDEN);
+            _window = SDL_CreateWindow(title.c_str(), width, height,
+                                       SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_VULKAN | SDL_WINDOW_HIDDEN);
         else
-            _window = SDL_CreateWindow(title.c_str(), width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
+            _window = SDL_CreateWindow(title.c_str(), width, height,
+                                       SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
         if (!_window) {
             Engine::throwFatalError();
         }
         _renderer = std::make_shared<Renderer>(this);
         _winID = SDL_GetWindowID(_window);
         SDL_GetWindowPosition(_window, &_window_geometry.x, &_window_geometry.y);
-        Logger::log(std::format("Window: created with ID {}", _winID), Logger::Debug);
+        Logger::log(Logger::Debug, "Window: created with ID {}", _winID);
         if (object) {
             object->newWindow(this);
         } else {
@@ -232,15 +234,14 @@ namespace MyEngine {
         if (_win_icon) SDL_DestroySurface(_win_icon);
         if (_window) {
             SDL_DestroyWindow(_window);
-            Logger::log(std::format("Window: ID {} destroyed",  _winID), Logger::Debug);
+            Logger::log(Logger::Debug, "Window: ID {} destroyed", _winID);
         }
     }
 
     bool Window::move(int x, int y) {
         bool _ret = SDL_SetWindowPosition(_window, x, y);
         if (!_ret) {
-            Logger::log(std::format("Window: Can't move window! Exception: {}", SDL_GetError()),
-                        Logger::Error);
+            Logger::log(Logger::Error, "Window: Can't move window! Exception: {}", SDL_GetError());
             return false;
         }
         _window_geometry.x = x;
@@ -251,8 +252,7 @@ namespace MyEngine {
     bool Window::resize(int width, int height) {
         bool _ret = SDL_SetWindowSize(_window, width, height);
         if (!_ret) {
-            Logger::log(std::format("Window: Can't reshape window! Exception: {}", SDL_GetError()),
-                        Logger::Error);
+            Logger::log(Logger::Error, "Window: Can't reshape window! Exception: {}", SDL_GetError());
             return false;
         }
         _window_geometry.width = width;
@@ -263,8 +263,7 @@ namespace MyEngine {
     bool Window::setMinimumSize(int width, int height) {
         bool _ret = SDL_SetWindowMinimumSize(_window, width, height);
         if (!_ret) {
-            Logger::log(std::format("Window: Can't reshape window! "
-                                    "Exception: {}", SDL_GetError()), Logger::Error);
+            Logger::log(Logger::Error, "Window: Can't reshape window! Exception: {}", SDL_GetError());
             return false;
         }
         return true;
@@ -273,8 +272,7 @@ namespace MyEngine {
     bool Window::setMaximumSize(int width, int height) {
         bool _ret = SDL_SetWindowMaximumSize(_window, width, height);
         if (!_ret) {
-            Logger::log(std::format("Window: Can't reshape window! "
-                                    "Exception: {}", SDL_GetError()), Logger::Error);
+            Logger::log(Logger::Error, "Window: Can't reshape window! Exception: {}", SDL_GetError());
             return false;
         }
         return true;
@@ -313,7 +311,7 @@ namespace MyEngine {
     bool Window::show() {
         auto _ret = SDL_ShowWindow(_window);
         if (!_ret) {
-            Logger::log(std::format("Window: Can't show window! Exception: {}", SDL_GetError()), Logger::Error);
+            Logger::log(Logger::Error, "Window: Can't show window! Exception: {}", SDL_GetError());
             return false;
         }
         return true;
@@ -322,7 +320,7 @@ namespace MyEngine {
     bool Window::hide() {
         bool _ret = SDL_HideWindow(_window);
         if (!_ret) {
-            Logger::log(std::format("Window: Can't hide window! Exception: {}", SDL_GetError()), Logger::Error);
+            Logger::log(Logger::Error, "Window: Can't hide window! Exception: {}", SDL_GetError());
             return false;
         }
         return true;
@@ -339,7 +337,7 @@ namespace MyEngine {
     bool Window::setResizable(bool enabled) {
         auto _ret = SDL_SetWindowResizable(_window, enabled);
         if (!_ret) {
-            Logger::log(std::format("Window: Can't set window resizable mode! Exception: {}", SDL_GetError()), Logger::Error);
+            Logger::log(Logger::Error, "Window: Can't set window resizable mode! Exception: {}", SDL_GetError());
             return false;
         }
         return true;
@@ -364,9 +362,7 @@ namespace MyEngine {
     void Window::setBorderless(bool enabled) {
         bool _ok = SDL_SetWindowBordered(_window, !enabled);
         if (!_ok)
-            Logger::log(std::format("Window (ID {}): Can't set borderless for this window! "
-                                     "Exception: {}", _winID, SDL_GetError()),
-                         Logger::Error);
+            Logger::log(Logger::Error, "Window (ID {}): Can't set borderless for this window! Exception: {}", _winID, SDL_GetError());
     }
 
     bool Window::borderless() const {
@@ -377,18 +373,14 @@ namespace MyEngine {
         if (opacity < 0.f || opacity > 1.f) return;
         bool _ok = SDL_SetWindowOpacity(_window, opacity);
         if (!_ok) {
-            Logger::log(std::format("Window (ID {}): Can't set window opacity for this window! "
-                                    "Exception: {}", _winID, SDL_GetError()),
-                        Logger::Error);
+            Logger::log(Logger::Error, "Window (ID {}): Can't set window opacity for this window! Exception: {}", _winID, SDL_GetError());
         }
     }
 
     float Window::windowOpacity() const {
         float ret = SDL_GetWindowOpacity(_window);
         if (ret == -1.0f) {
-            Logger::log(std::format("Window (ID {}): Can't get window opacity for this window! "
-                                    "Exception: {}", _winID, SDL_GetError()),
-                        Logger::Error);
+            Logger::log(Logger::Error, "Window (ID {}): Can't get window opacity for this window! Exception: {}", _winID, SDL_GetError());
         }
         return ret;
     }
@@ -399,8 +391,7 @@ namespace MyEngine {
         }
         bool _ok = SDL_SetWindowFullscreen(_window, enabled);
         if (!_ok) {
-            Logger::log(std::format("Window (ID {}): Can't set fullscreen for this window!", _winID),
-                        Logger::Error);
+            Logger::log(Logger::Error, "Window (ID {}): Can't set fullscreen for this window!", _winID);
             return;
         }
         if (move_to_center) {
@@ -450,15 +441,11 @@ namespace MyEngine {
     void Window::setWindowIcon(const std::string& icon_path) {
         _win_icon = IMG_Load(icon_path.c_str());
         if (!_win_icon) {
-            Logger::log(std::format("Window (ID {}): Can't set icon for this window!"
-                                    "Exception: {}", _winID, SDL_GetError()),
-                        Logger::Error);
+            Logger::log(Logger::Error, "Window (ID {}): Can't set icon for this window! Exception: {}", _winID, SDL_GetError());
         }
         bool ok = SDL_SetWindowIcon(_window, _win_icon);
         if (!ok) {
-            Logger::log(std::format("Window (ID {}): Can't set icon for this window!"
-                                    "Exception: {}", _winID, SDL_GetError()),
-                        Logger::Error);
+            Logger::log(Logger::Error, "Window (ID {}): Can't set icon for this window! Exception: {}", _winID, SDL_GetError());
         }
     }
 
@@ -520,16 +507,14 @@ namespace MyEngine {
     void Window::resizeEvent() {
         auto _ret = SDL_GetWindowSize(_window, &_window_geometry.width, &_window_geometry.height);
         if (!_ret) {
-            Logger::log(std::format("Window: Failed to get window size for ID {}!", _winID),
-                        Logger::Warn);
+            Logger::log(Logger::Warn, "Window: Failed to get window size for ID {}", _winID);
         }
     }
 
     void Window::moveEvent() {
         auto _ret = SDL_GetWindowPosition(_window, &_window_geometry.x, &_window_geometry.y);
         if (!_ret) {
-            Logger::log(std::format("Window: Failed to get window position for ID {}!", _winID),
-                        Logger::Warn);
+            Logger::log(Logger::Warn, "Window: Failed to get window position for ID {}", _winID);
         }
     }
 
@@ -539,10 +524,10 @@ namespace MyEngine {
 
     void Window::unloadEvent() {
         if (_engine) {
-            Logger::log(std::format("Window: Unload window id {}", _winID));
+            Logger::log(Logger::Info, "Window: Unload window id {}", _winID);
             _engine->removeWindow(_winID);
         } else {
-            Logger::log(std::format("Window: Unload window id {} failed!", _winID));
+            Logger::log(Logger::Error, "Window: Unload window id {} failed!", _winID);
         }
     }
 
@@ -582,33 +567,31 @@ namespace MyEngine {
 
     void EventSystem::appendEvent(uint64_t id, const std::function<void(SDL_Event)>& event) {
         if (_event_list.contains(id)) {
-            Logger::log(std::format("EventSystem: The event with ID {} is already exists! "
-                                    "It will overwrite it!", id), Logger::Warn);
+            Logger::log(Logger::Warn, "EventSystem: The event with ID {} is already exists! It will overwrite it!", id);
             _event_list[id] = event;
             return;
         }
         _event_list.emplace(id, event);
-        Logger::log(std::format("EventSystem: Append a new event with ID {}", id));
+        Logger::log(Logger::Info, "EventSystem: Append a new event with ID {}", id);
     }
 
     void EventSystem::removeEvent(uint64_t id) {
         if (_event_list.contains(id)) {
             // _event_list.erase(id);
             _del_event_deque.push_back(id);
-            Logger::log(std::format("EventSystem: Removed the event with ID {}", id));
+            Logger::log(Logger::Info, "EventSystem: Removed the event with ID {}", id);
         } else {
-            Logger::log(std::format("EventSystem: The event with ID {} is not found!", id), Logger::Warn);
+            Logger::log(Logger::Warn, "EventSystem: The event with ID {} is not found!", id);
         }
     }
 
     void EventSystem::appendGlobalEvent(uint64_t g_id, const std::function<void()>& event) {
         if (_global_event_list.contains(g_id)) {
-            Logger::log(std::format("EventSystem: The global event with ID {} is already exists! "
-                                    "It will overwrite it!", g_id), Logger::Warn);
+            Logger::log(Logger::Warn, "EventSystem: The global event with ID {} is already exists! It will overwrite it!", g_id);
             _global_event_list[g_id] = event;
         } else {
             _global_event_list.emplace(g_id, event);
-            Logger::log(std::format("EventSystem: Append a global event by ID {}", g_id));
+            Logger::log(Logger::Info, "EventSystem: Append a global event by ID {}", g_id);
         }
     }
 
@@ -616,10 +599,9 @@ namespace MyEngine {
         if (_global_event_list.contains(g_id)) {
             // _global_event_list.erase(g_id);
             _del_g_event_deque.push_back(g_id);
-            Logger::log(std::format("EventSystem: Removed a global event with ID {}", g_id));
+            Logger::log(Logger::Info, "EventSystem: Removed a global event with ID {}", g_id);
         } else {
-            Logger::log(std::format("EventSystem: The global event with ID {} is not found!", g_id),
-                        Logger::Warn);
+            Logger::log(Logger::Warn, "EventSystem: The global event with ID {} is not found!", g_id);
         }
     }
 
@@ -1059,9 +1041,7 @@ namespace MyEngine {
                 /// Update the render frame
                 _real_fps = frames;
                 if (_fps > 14 && _real_fps <= 14) {
-                    Logger::log(std::format("Engine: Low FPS detected: {} FPS, "
-                            "try to use `Engine::setFPS()` to limit the maximum frames in a second", _real_fps),
-                                Logger::Warn);
+                    Logger::log(Logger::Warn, "Engine: Low FPS detected: {} FPS, try to use `Engine::setFPS()` to limit the maximum frames in a second", _real_fps);
                 }
                 frames = 0;
                 start_time = SDL_GetTicks();
@@ -1071,8 +1051,7 @@ namespace MyEngine {
 
     TextSystem::TextSystem() {
         if (!TTF_Init()) {
-            Logger::log(std::format("TextSystem: Can't load Text System! "
-                                    "Exception: {}", SDL_GetError()), Logger::Fatal);
+            Logger::log(Logger::Fatal, "TextSystem: Can't load Text System! Exception: {}", SDL_GetError());
             return;
         }
         Logger::log("TextSystem: Loaded text system");
@@ -1099,13 +1078,11 @@ namespace MyEngine {
     bool TextSystem::addFont(const std::string& font_name, const std::string& font_path, Renderer* renderer,
                              float font_size) {
         if (_font_map.contains(font_name)) {
-            Logger::log(std::format("TextSystem: Font '{}' is already added!",
-                                    font_name), Logger::Error);
+            Logger::log(Logger::Error, "TextSystem: Font '{}' is already added!", font_name);
             return false;
         }
         if (!renderer) {
-            Logger::log("TextSystem: Can't add font! "
-                        "The specified renderer is not valid!", Logger::Error);
+            Logger::log(Logger::Error, "TextSystem: Can't add font! The specified renderer is not valid!");
             return false;
         }
         _font_map.emplace(font_name, 
@@ -1117,8 +1094,7 @@ namespace MyEngine {
             TTF_DestroyRendererTextEngine(new_font.engine);
             TTF_DestroySurfaceTextEngine(new_font.surface_engine);
             _font_map.erase(font_name);
-            Logger::log(std::format("TextSystem: Can't load font '{}'! "
-                                    "Exception: {}", font_name, SDL_GetError()), Logger::Error);
+            Logger::log(Logger::Error, "TextSystem: Can't load font '{}'! Exception: {}", font_name, SDL_GetError());
             return false;
         }
         return true;
@@ -1126,8 +1102,7 @@ namespace MyEngine {
 
     bool TextSystem::removeFont(const std::string& font_name) {
         if (!_font_map.contains(font_name)) {
-            Logger::log(std::format("TextSystem: Font '{}' is not in the font list!",
-                                    font_name), Logger::Error);
+            Logger::log(Logger::Error, "TextSystem: Font '{}' is not in the font list!", font_name);
             return false;
         }
         TTF_DestroyRendererTextEngine(_font_map[font_name].engine);
@@ -1176,13 +1151,11 @@ namespace MyEngine {
 
     bool TextSystem::addText(uint64_t text_id, const std::string& font_name, const std::string& text) {
         if (_text_map.contains(text_id)) {
-            Logger::log(std::format("TextSystem: Text ID {} is already added to text list!",
-                                    text_id), Logger::Error);
+            Logger::log(Logger::Error, "TextSystem: Text ID {} is already added to text list!", text_id);
             return false;
         }
         if (!_font_map.contains(font_name)) {
-            Logger::log(std::format("TextSystem: Text ID {} can not add the font '{}'!",
-                                    text_id, font_name), Logger::Error);
+            Logger::log(Logger::Error, "TextSystem: Text ID {} can not add the font '{}'!", text_id, font_name);
             return false;
         }
         _text_map.emplace(text_id, Text(nullptr, text, font_name));
@@ -1191,8 +1164,7 @@ namespace MyEngine {
                                                  text.c_str(),
                                                  text.size());
         if (!_text_map[text_id].self) {
-            Logger::log(std::format("TextSystem: Can't create text! "
-                                    "Exception: {}", SDL_GetError()), Logger::Error);
+            Logger::log(Logger::Error, "TextSystem: Can't create text! Exception: {}", SDL_GetError());
             _text_map.erase(text_id);
             return false;
         }
@@ -1204,8 +1176,7 @@ namespace MyEngine {
 
     bool TextSystem::removeText(uint64_t text_id) {
         if (!_text_map.contains(text_id)) {
-            Logger::log(std::format("TextSystem: Text ID {} is not in the text list!",
-                                    text_id), Logger::Error);
+            Logger::log(Logger::Error, "TextSystem: Text ID {} is not in the text list!", text_id);
             return false;
         }
         _text_map.erase(text_id);
@@ -1214,15 +1185,13 @@ namespace MyEngine {
 
     bool TextSystem::setText(uint64_t text_id, const std::string& text) {
         if (!_text_map.contains(text_id)) {
-            Logger::log(std::format("TextSystem: Text ID {} is not in the text list!",
-                                    text_id), Logger::Error);
+            Logger::log(Logger::Error, "TextSystem: Text ID {} is not in the text list!", text_id);
             return false;
         }
         auto& m_text = _text_map[text_id];
         auto _ret = TTF_SetTextString(m_text.self, text.c_str(), text.size());
         if (!_ret) {
-            Logger::log(std::format("TextSystem: Can't set text to text ID {}! "
-                                    "Exception: {}", text_id, SDL_GetError()), Logger::Error);
+            Logger::log(Logger::Error, "TextSystem: Can't set text to text ID {}! Exception: {}", text_id, SDL_GetError());
             return false;
         }
         m_text.text = text;
@@ -1234,15 +1203,13 @@ namespace MyEngine {
 
     bool TextSystem::appendText(uint64_t text_id, const std::string& text) {
         if (!_text_map.contains(text_id)) {
-            Logger::log(std::format("TextSystem: Text ID {} is not in the text list!",
-                                    text_id), Logger::Error);
+            Logger::log(Logger::Error, "TextSystem: Text ID {} is not in the text list!", text_id);
             return false;
         }
         auto& m_text = _text_map[text_id];
         auto _ret = TTF_AppendTextString(m_text.self, text.c_str(), text.size());
         if (!_ret) {
-            Logger::log(std::format("TextSystem: Can't set text to text ID {}! "
-                                    "Exception: {}", text_id, SDL_GetError()), Logger::Error);
+            Logger::log(Logger::Error, "TextSystem: Can't set text to text ID {}! Exception: {}", text_id, SDL_GetError());
             return false;
         }
         m_text.text += text;
@@ -1254,20 +1221,17 @@ namespace MyEngine {
 
     bool TextSystem::setTextFont(uint64_t text_id, const std::string& font_name) {
         if (!_text_map.contains(text_id)) {
-            Logger::log(std::format("TextSystem: Text ID {} is not in the text list!",
-                                    text_id), Logger::Error);
+            Logger::log(Logger::Error, "TextSystem: Text ID {} is not in the text list!", text_id);
             return false;
         }
         if (!_font_map.contains(font_name)) {
-            Logger::log(std::format("TextSystem: Font '{}' is not in the font list!",
-                                    font_name), Logger::Error);
+            Logger::log(Logger::Error, "TextSystem: Font '{}' is not in the font list!", font_name);
             return false;
         }
         auto& m_text = _text_map[text_id];
         auto _ret = TTF_SetTextFont(m_text.self, _font_map[font_name].font->self());
         if (!_ret) {
-            Logger::log(std::format("TextSystem: Can't set font '{}' to text ID {}! Exception: {}",
-                    font_name, text_id, SDL_GetError()), Logger::Error);
+            Logger::log(Logger::Error, "TextSystem: Can't set font '{}' to text ID {}! Exception: {}", font_name, text_id, SDL_GetError());
             return false;
         }
         m_text.font_name = font_name;
@@ -1279,15 +1243,13 @@ namespace MyEngine {
 
     bool TextSystem::setTextColor(uint64_t text_id, const SDL_Color& color) {
         if (!_text_map.contains(text_id)) {
-            Logger::log(std::format("TextSystem: Text ID {} is not in the text list!",
-                                    text_id), Logger::Error);
+            Logger::log(Logger::Error, "TextSystem: Text ID {} is not in the text list!", text_id);
             return false;
         }
         auto& m_text = _text_map[text_id];
         auto _ret = TTF_SetTextColor(m_text.self, color.r, color.g, color.b, color.a);
         if (!_ret) {
-            Logger::log(std::format("TextSystem: Can't set font color to text ID {}! Exception: {}",
-                    text_id, SDL_GetError()), Logger::Error);
+            Logger::log(Logger::Error, "TextSystem: Can't set font color to text ID {}! Exception: {}", text_id, SDL_GetError());
             return false;
         }
         m_text.font_color = color;
@@ -1321,8 +1283,7 @@ namespace MyEngine {
             return false;
         }
         if (!_text_map.contains(text_id)) {
-            Logger::log(std::format("TextSystem: Text ID {} is not in the text list!",
-                                    text_id), Logger::Error);
+            Logger::log(Logger::Error, "TextSystem: Text ID {} is not in the text list!", text_id);
             return false;
         }
         auto temp_pos = pos;
@@ -1348,13 +1309,11 @@ namespace MyEngine {
 
     SDL_Surface* TextSystem::toImage(uint64_t text_id) {
         if (!_text_map.contains(text_id)) {
-            Logger::log(std::format("TextSystem: Text ID {} is not in the text list!",
-                                    text_id), Logger::Error);
+            Logger::log(Logger::Error, "TextSystem: Text ID {} is not in the text list!", text_id);
             return nullptr;
         }
         if (!_font_map.contains(_text_map[text_id].font_name)) {
-            Logger::log(std::format("TextSystem: Text ID {} has not set the font! "
-                                    "Try to use `setTextFont()` at first!", text_id), Logger::Error);
+            Logger::log(Logger::Error, "TextSystem: Text ID {} has not set the font! Please use `setTextFont()` to set the font!", text_id);
             return nullptr;
         }
         auto& font_engine = _font_map[_text_map[text_id].font_name];
@@ -1365,8 +1324,7 @@ namespace MyEngine {
         SDL_DestroySurface(t_surface);
         auto _ret = TTF_DrawSurfaceText(temp_text, 0, 0, surface);
         if (!_ret) {
-            Logger::log(std::format("TextSystem: Text to image failed! "
-                                    "Exception: {}", SDL_GetError()), Logger::Error);
+            Logger::log(Logger::Error, "TextSystem: Text to image failed! Exception: {}", SDL_GetError());
             TTF_DestroyText(temp_text);
             return nullptr;
         }
@@ -1382,16 +1340,14 @@ namespace MyEngine {
  
     bool AudioSystem::load() {
         if (!MIX_Init()) {
-            Logger::log(std::format("AudioSystem: Can't initialized audio system! Exception: {}",
-                SDL_GetError()), Logger::Error);
+            Logger::log(Logger::Error, "AudioSystem: Can't initialized audio system! Exception: {}", SDL_GetError());
             return false;
         }
 
         SDL_AudioSpec _audio_spec(SDL_AUDIO_S16, 2, 44100);
         auto new_mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &_audio_spec);
         if (!new_mixer) {
-            Logger::log(std::format("AudioSystem: Can't initialized audio system! Exception: {}",
-                SDL_GetError()), Logger::Error);
+            Logger::log(Logger::Error, "AudioSystem: Can't initialized audio system! Exception: {}", SDL_GetError());
             return false;
         }
         _mixer_list.push_back(new_mixer);
@@ -1415,8 +1371,7 @@ namespace MyEngine {
             SDL_AudioSpec _audio_spec(SDL_AUDIO_S16, 2, 44100);
             auto new_mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &_audio_spec);
             if (!new_mixer) {
-                Logger::log(std::format("AudioSystem: Can't create the new mixer device! Exception: {}",
-                                        SDL_GetError()), Logger::Error);
+                Logger::log(Logger::Error, "AudioSystem: Can't create the new mixer device! Exception: {}", SDL_GetError());
             } else {
                 _mixer_list.push_back(new_mixer);
             }
@@ -1441,15 +1396,12 @@ namespace MyEngine {
         if (!_audio_map.contains(name)) {
             _audio_map.emplace(name, std::make_unique<BGM>(_mixer_list[mixer_index], path));
             if (std::get<std::unique_ptr<BGM>>(_audio_map.at(name))->isLoaded()) {
-                Logger::log(std::format("AudioSystem: Loaded BGM from path '{}' to Mixer #{}.", path,
-                                        mixer_index));
+                Logger::log(Logger::Info, "AudioSystem: Loaded BGM from path '{}' to Mixer #{}.", path, mixer_index);
             } else {
-                Logger::log(std::format("AudioSystem: Load BGM from path '{}' to Mixer #{} failed!", path,
-                                        mixer_index), Logger::Error);
+                Logger::log(Logger::Error, "AudioSystem: Load BGM from path '{}' to Mixer #{} failed!", path, mixer_index);
             }
         } else {
-            Logger::log(std::format("AudioSystem: Append BGM failed! "
-                                    "The name of '{}' is already exist!", name), Logger::Warn);
+            Logger::log(Logger::Warn, "AudioSystem: Append BGM failed! The name of '{}' is already exist!", name);
         }
     }
 
@@ -1457,22 +1409,19 @@ namespace MyEngine {
         if (!_audio_map.contains(name)) {
             _audio_map.emplace(name, std::make_unique<SFX>(_mixer_list[mixer_index], path));
             if (std::get<std::unique_ptr<SFX>>(_audio_map.at(name))->isLoaded()) {
-                Logger::log(std::format("AudioSystem: Loaded SFX from path '{}' to Mixer #{}.", path,
-                                        mixer_index));
+                Logger::log(Logger::Info, "AudioSystem: Loaded SFX from path '{}' to Mixer #{}.", path, mixer_index);
             } else {
-                Logger::log(std::format("AudioSystem: Load SFX from path '{}' to Mixer #{} failed!", path,
-                                        mixer_index), Logger::Error);
+                Logger::log(Logger::Error, "AudioSystem: Load SFX from path '{}' to Mixer #{} failed!", path, mixer_index);
             }
         } else {
-            Logger::log(std::format("AudioSystem: Append SFX failed! "
-                                    "The name of '{}' is already exist!", name), Logger::Warn);
+            Logger::log(Logger::Warn, "AudioSystem: Append SFX failed! The name of '{}' is already exist!", name);
         }
     }
 
     void AudioSystem::remove(const std::string &name) {
         if (_audio_map.contains(name)) {
             _audio_map.erase(name);
-            Logger::log(std::format("AudioSystem: Removed audio '{}'!", name));
+            Logger::log(Logger::Info, "AudioSystem: Removed audio '{}'!", name);
         }
     }
 
@@ -1514,20 +1463,27 @@ namespace MyEngine {
 
     void AudioSystem::setMixerVolume(float volume, size_t mixer_index) {
         if (mixer_index >= _mixer_list.size()) {
-            Logger::log(std::format("AudioSystem: Mixer #{} is not valid! "
-                        "Did you forget to called `AudioSystem::addNewMixer()`", mixer_index), Logger::Error);
+            Logger::log(Logger::Error, "AudioSystem: Mixer #{} is not valid! Did you forget to called `AudioSystem::addNewMixer()`", mixer_index);
             return;
         }
-        MIX_SetMasterGain(_mixer_list[mixer_index], volume);
-    }
 
+#if SDL_MIXER_MAJOR_VERSION < 3
+        MIX_SetMixerGain(_mixer_list[mixer_index], volume);
+#else
+        MIX_SetMixerGain(_mixer_list[mixer_index], volume);
+#endif
+    }
     float AudioSystem::mixerVolume(size_t mixer_index) {
         if (mixer_index >= _mixer_list.size()) {
-            Logger::log(std::format("AudioSystem: Mixer #{} is not valid! "
-                        "Did you forget to called `AudioSystem::addNewMixer()`", mixer_index), Logger::Error);
+            Logger::log(Logger::Error, "AudioSystem: Mixer #{} is not valid! Did you forget to called `AudioSystem::addNewMixer()`", mixer_index);
             return 0.f;
         }
+
+#if SDL_MIXER_MAJOR_VERSION < 3
         return MIX_GetMasterGain(_mixer_list[mixer_index]);
+#else
+        return MIX_GetMixerGain(_mixer_list[mixer_index]);
+#endif
     }
 
     void AudioSystem::stopAll() {
