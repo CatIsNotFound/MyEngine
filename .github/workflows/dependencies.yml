@@ -312,6 +312,8 @@ jobs:
         shell: pwsh
         run: |
           cd $HOME\git\SDL_mixer
+          Write-Host "* Downloading requirements libraries...."
+          .\external\Get-GitModules.ps1
           New-Item -ItemType Directory -Path build -Force
           cd build
           Write-Host "* Starting configure SDL3_mixer...."

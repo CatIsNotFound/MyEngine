@@ -44,13 +44,13 @@ Currently, no official version has been released yet. It is expected to be relea
 1. Clone the project using Git
 
    ```shell
-   git clone https://github.com/CatIsNotFound/MyEngine
+   git clone --depth 1 --recurse-submodules https://github.com/CatIsNotFound/MyEngine
    ```
    
    Or clone the project using the following URL:
 
    ```shell
-   git clone https://gitee.com/CatIsNotFound/MyEngine
+   git clone --depth 1 --recurse-submodules https://gitee.com/CatIsNotFound/MyEngine
    ```
 
 2. Configure the project using CMake

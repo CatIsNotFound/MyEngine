@@ -4,22 +4,30 @@
  */
 
 /**
- * @namespace StdColor
+ * @namespace MyEngine::StdColor
  * @brief 预定义标准 RGB 颜色
  * @ref related/ColorMap.md
  */
 
-/// @fn MyEngine::delay()
-/// @brief 设置在当前线程上延迟多少秒
+/**
+ * @fn MyEngine::delay(uint64_t)
+ * @brief 设置在当前线程上延迟多少秒
+ */
 
-/// @fn MyEngine::delayMS()
-/// @brief 设置在当前线程上延迟多少毫秒
+/**
+ * @fn MyEngine::delayMS(uint64_t)
+ * @brief 设置在当前线程上延迟多少毫秒
+ */
 
-/// @fn MyEngine::delayUS()
-/// @brief 设置在当前线程上延迟多少微秒
+/**
+ * @fn MyEngine::delayUS(uint64_t)
+ * @brief 设置在当前线程上延迟多少微秒
+ */
 
-/// @fn MyEngine::delayNS()
-/// @brief 设置在当前线程上延迟多少纳秒
+/**
+ * @fn MyEngine::delayNS(uint64_t)
+ * @brief 设置在当前线程上延迟多少纳秒
+ */
 
 /**
  * @class MyEngine::IDGenerator
@@ -157,14 +165,14 @@
 
 
 /**
- * @fn MyEngine::toGeometryInt()
+ * @fn MyEngine::toGeometryInt(const GeometryF &)
  * @brief 将 `GeometryF` 类型转换为 `Geometry` 类型的整型
  * @param geo 带转换的 `GeometryF` 类型
  * @return 包含两个整型值的 `Geometry` 类型
  */
 
 /**
- * @fn MyEngine::toGeometryFloat()
+ * @fn MyEngine::toGeometryFloat(const Geometry &)
  * @brief 将 `Geometry` 类型转换为 `GeometryF` 类型的浮点型
  * @param geo 带转换的 `Geometry` 类型
  * @return 包含两个浮点型值的 `GeometryF` 类型

@@ -6,34 +6,26 @@ on:
     branches: [ main, development ]
 
 jobs:
-  ci-linux:
-    uses: ./.github/workflows/dependencies.yml
-    secrets: inherit
-
-  ci-macos:
-    uses: ./.github/workflows/dependencies.yml
-    secrets: inherit
-
-  ci-windows:
+  dependencies:
     uses: ./.github/workflows/dependencies.yml
     secrets: inherit
 
   ci-project-linux:
-    needs: [ ci-linux ]
+    needs: [ dependencies ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
   ci-project-macos:
-    needs: [ ci-macos ]
+    needs: [ dependencies ]
     runs-on: macos-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
   ci-project-windows:
-    needs: [ ci-windows ]
+    needs: [ dependencies ]
     runs-on: windows-latest
     steps:
       - name: Checkout code

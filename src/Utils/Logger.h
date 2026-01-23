@@ -4,8 +4,24 @@
 #include "../Libs.h"
 #include "FileSystem.h"
 namespace MyEngine {
+    /**
+     * @if EN
+     * @class Logger
+     * @brief A Logging Tool for MyEngine
+     * @details A logging tool that supports multiple levels and customizable output
+     * @note This is a static class, there is no need to obtain a global singleton.
+     * @endif
+     */
     class Logger {
     public:
+        /**
+         * @if EN
+         * @enum LogLevel
+         * @brief Log Level, defined the severity of logs (from Debug to Fatal)
+         * @details Used for log filtering. After setting the global level, logs below this level will be ignored.
+         * @endif
+         * @see setBaseLogLevel
+         */
         enum LogLevel : uint8_t {
             Debug,
             Info,
@@ -21,6 +37,25 @@ namespace MyEngine {
         Logger &operator=(const Logger &) = delete;
         ~Logger() = delete;
 
+        /**
+         * \if EN
+         * @brief Outputs log messages as a string
+         * @param message Defines the log message
+         * @param level Uses the log level
+         * @note Not all log messages can be output to the terminal, it depends on the minimum log output level.
+         * @details This will output a line in the terminal in the format `[Runtime] [Log Level] Message Content`.
+         * @details If the logging tool allows writing to a log file, the output log message will also be written to the specified log file. This is helpful for viewing log files in real time!
+         * \endif
+         * @code
+         * MyEngine::Logger::log("This is an error message.", MyEngine::Logger::Error);
+         * // e.g:
+         * //   [3.801925] [ERROR] This is an error message.
+         * @endcode
+         * @see setBaseLogLevel
+         * @see setWriteLogEnabled
+         * @see setLogFileName
+         * @see log(LogLevel level, std::string_view format, Args... args)
+         */
         static void log(const std::string &message, LogLevel level = Debug) {
             if (level < _base_level) return;
             _running_time = std::chrono::high_resolution_clock::now().time_since_epoch().count();
@@ -40,6 +75,27 @@ namespace MyEngine {
             _last_log_info = message;
         }
 
+        /**
+         * \if EN
+         * @brief Formats and outputs log messages
+         * @tparam Args Types of the passed-in arguments
+         * @param level Defines the log level
+         * @param format Defines the output format string, using `{}` as placeholders for the passed-in arguments, similar to the usage of `std::format()`
+         * @param args Multiple arguments of different types to be passed in
+         * @note Not all log messages can be output to the terminal, it depends on the minimum log output level.
+         * @details This will output a line in the terminal in the format `[Runtime] [Log Level] Message Content`.
+         * @details If the logging tool allows writing to a log file, the output log message will also be written to the specified log file. This is helpful for viewing log files in real time!
+         * \endif
+         * @code
+         * MyEngine::Logger::log(MyEngine::Logger::Info, "Current memory in KB: {}", SysMemory::getCurProcUsedMemSize());
+         * // e.g:
+         * //   [3.801925] [INFO] Current memory in KB: 1002770
+         * @endcode
+         * @see setBaseLogLevel
+         * @see setWriteLogEnabled
+         * @see setLogFileName
+         * @see log(const std::string &message, constLogLevel level)
+         */
         template<typename ...Args>
         static void log(LogLevel level, std::string_view format, Args... args) {
             if (level < _base_level) return;
@@ -63,26 +119,78 @@ namespace MyEngine {
             }
         }
 
+        /**
+         * \if EN
+         * @brief Set the minimum level for output logs
+         * @param level Specify the minimum log level
+         * \endif
+         */
         static void setBaseLogLevel(LogLevel level) {
             _base_level = level;
         }
 
+        /**
+         * \if EN
+         * @brief Get the last log error
+         * @return Returns a log error message with a log level of `Error` or higher
+         * \endif
+         */
         static std::string lastError() {
             return (_last_log_level >= Error ? _last_log_info : "");
         }
 
+        /**
+         * \if EN
+         * @brief Sets the path for the output log file (Only used when writing logs is allowed)
+         * @param file_name Sets the output file path
+         * \endif
+         * @code
+         * MyEngine::Logger::setLogFileName("/path/to/your.log");
+         *
+         * @endcode
+         * @see setWriteLogFileEnabled
+         * @see writeLogFileEnabled
+         * @see currentLogFileName
+         */
         static void setLogFileName(const std::string& file_name) {
             _output_file_name = file_name;
         }
 
+        /**
+         * \if EN
+         * @brief Get the current output log file path
+         * @return Returns the output log file path, with the default file name being `App.log`
+         * \endif
+         * @see setWriteLogFileEnabled
+         * @see writeLogFileEnabled
+         * @see setLogFileName
+         */
         static std::string currentLogFileName() {
             return _output_file_name;
         }
 
+        /**
+         * \if EN
+         * @brief Set whether writing to the log file is allowed
+         * @param enabled Whether it is allowed, disabled by default
+         * \endif
+         * @see writeLogFileEnabled
+         * @see setLogFileName
+         * @see currentLogFileName
+         */
         static void setWriteLogFileEnabled(bool enabled) {
             _write_log = enabled;
         }
 
+        /**
+         * \if EN
+         * @brief Whether writing to the log file is currently allowed
+         * @return Returns `true` or `false` indicating whether writing to the log file is allowed
+         * \endif
+         * @see setWriteLogFileEnabled
+         * @see setLogFileName
+         * @see currentLogFileName
+         */
         static bool writeLogFileEnabled() {
             return _write_log;
         }

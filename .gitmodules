@@ -1,0 +1,12 @@
+[submodule "libs/SDL3"]
+	path = libs/SDL3
+	url = https://github.com/libsdl-org/SDL
+[submodule "libs/SDL3_image"]
+	path = libs/SDL3_image
+	url = https://github.com/libsdl-org/SDL_image
+[submodule "libs/SDL3_mixer"]
+	path = libs/SDL3_mixer
+	url = https://github.com/libsdl-org/SDL_mixer
+[submodule "libs/SDL3_ttf"]
+	path = libs/SDL3_ttf
+	url = https://github.com/libsdl-org/SDL_ttf

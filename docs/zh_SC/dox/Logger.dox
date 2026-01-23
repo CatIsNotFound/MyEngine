@@ -1,0 +1,73 @@
+/**
+ * @class MyEngine::Logger
+ * @brief 为 MyEngine 定制的日志工具
+ * @details 一个支持多级别、可自定义输出的日志工具
+ * @note 此类为静态类，无需获取全局单例
+ */
+
+/**
+ * @enum MyEngine::Logger::LogLevel
+ * @brief 日志级别，定义日志的严重程度（从低到高）
+ * @details 用于日志过滤，设置全局级别后，低于该级别的日志会被忽略
+ */
+
+/**
+ * @fn MyEngine::Logger::log(const std::string &message, LogLevel level = Debug)
+ * @brief 以字符串的形式输出日志消息
+ * @param message 定义日志消息
+ * @param level   使用日志等级
+ * @note 不是所有的日志消息都能输出在终端上，这取决于日志输出的最低级别。
+ * @details 这将在终端中输出一行格式为 `[运行时间] [日志级别] 消息内容` 的消息内容。
+ * @details 若日志工具允许写日志文件，则将输出的日志消息一同写入指定的日志文件中。这对于实时查看日志文件有帮助！
+ */
+
+/**
+ * @fn MyEngine::Logger::log(LogLevel level, std::string_view format, Args... args)
+ * @brief 格式化输出日志消息
+ * @tparam Args     传入的参数类型
+ * @param level     定义日志级别
+ * @param format    定义输出的格式字符串，使用 `{}` 代替传入的参数，与 `std::format()` 函数用法相同
+ * @param args      传入多个不同类型的参数
+ * @note 不是所有的日志消息都能输出在终端上，这取决于日志输出的最低级别。
+ * @details 这将在终端中输出一行格式为 `[运行时间] [日志级别] 消息内容` 的消息内容。
+ * @details 若日志工具允许写日志文件，则将输出的日志消息一同写入指定的日志文件中。这对于实时查看日志文件有帮助！
+ */
+
+/**
+ * @fn MyEngine::Logger::setBaseLogLevel()
+ * @brief 设置输出日志的最低等级
+ * @param level 设定最低的日志级别
+ */
+
+
+/**
+ * @fn MyEngine::Logger::lastError()
+ * @brief 获取上一个日志错误
+ * @return 返回一个日志等级为 `Error` 及以上的日志错误消息
+ */
+
+/**
+ * @fn MyEngine::Logger::setLogFileName()
+ * @brief 设置输出日志文件的路径，仅当允许写入日志时才会使用
+ * @param file_name 设定输出文件路径
+ */
+
+/**
+ * @fn MyEngine::Logger::currentLogFileName()
+ * @brief 获取当前输出日志文件路径
+ * @return 返回输出日志文件路径，默认输出的文件名为 `App.log`
+ */
+
+/**
+ * @fn MyEngine::Logger::setWriteLogFileEnabled()
+ * @brief 设定是否允许写入日志文件
+ * @param enabled 是否允许，默认启动下为禁用
+ */
+
+/**
+ * @fn MyEngine::Logger::writeLogFileEnabled()
+ * @brief 当前是否允许写入日志文件
+ * @return 返回 `true` 或 `false` 表示是否允许写入日志文件
+ */
+
+

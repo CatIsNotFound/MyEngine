@@ -37,6 +37,7 @@ int main(int argc, const char* argv[]) {
         r->setClipView({});
         r->setViewport({});
         r->drawDebugFPS({60, 20});
+
     });
 
     auto def_fonts_db = FontDatabase::getSystemDefaultFont();
@@ -67,5 +68,8 @@ int main(int argc, const char* argv[]) {
     Logger::log(Logger::Info, "Size: {}, {}, {}, {}",
                 vlayout.position().x, vlayout.position().y,
                 vlayout.size().width, vlayout.size().height);
+    std::optional<int> opt(3222);
+    Logger::log(Logger::Info, "{}", opt.value());
+
     return engine.exec();
 }

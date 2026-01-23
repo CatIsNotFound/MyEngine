@@ -42,13 +42,13 @@ MyEngine 是一个轻量级但功能强大的 2D 图形框架，构建于 SDL3 �
 1. 使用 Git 克隆项目
 
    ```shell
-   git clone https://github.com/CatIsNotFound/MyEngine
+   git clone --depth 1 --recurse-submodules https://github.com/CatIsNotFound/MyEngine
    ```
    
    或者使用如下目录克隆项目：
 
    ```shell
-   git clone https://gitee.com/CatIsNotFound/MyEngine
+   git clone --depth 1 --recurse-submodules https://gitee.com/CatIsNotFound/MyEngine
    ```
 
 2. 使用 CMake 配置项目
