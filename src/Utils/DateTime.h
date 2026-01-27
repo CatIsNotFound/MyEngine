@@ -2,6 +2,11 @@
 #ifndef MYENGINE_UTILS_DATETIME_H
 #define MYENGINE_UTILS_DATETIME_H
 #include "Logger.h"
+#ifdef __APPLE__
+#include <date/tz.h>
+using namespace date;
+#endif
+using namespace std::chrono;
 
 namespace MyEngine {
     /**
@@ -14,7 +19,7 @@ namespace MyEngine {
      * \endif
      */
     class DateTime {
-        inline static std::string timezone{std::chrono::current_zone()->name()};
+        inline static std::string timezone{current_zone()->name()};
     public:
         DateTime() = delete;
         ~DateTime() = delete;
@@ -221,7 +226,11 @@ namespace MyEngine {
          */
         static bool setDefaultTimezone(const std::string& tz) {
             try {
-                std::chrono::locate_zone(tz);
+#ifdef __APPLE__
+                date::locate_zone(tz);
+#else
+                locate_zone(tz);
+#endif
                 timezone = tz;
             } catch (const std::runtime_error& e) {
                 Logger::log(std::format("DateTime: Can't set invalid timezone: {}", tz),
@@ -282,8 +291,8 @@ namespace MyEngine {
          * @see currentDateTime
          */
         static std::string now() {
-            auto now = std::chrono::system_clock::now();
-            auto zoned = std::chrono::zoned_time(timezone, now);
+            auto now = system_clock::now();
+            auto zoned = zoned_time(timezone, now);
             return std::format("{}", zoned);
         }
 
@@ -448,7 +457,6 @@ namespace MyEngine {
          * @see formatCurrentDateTime
          */
         static std::string formatDateTime(const DT& datetime, const std::string& format) {
-            using namespace std::chrono;
             auto real_year = (datetime.year < 1900 ? datetime.year + 1900 : datetime.year);
             year y(real_year);
             month m(datetime.month);
@@ -534,8 +542,8 @@ namespace MyEngine {
          * @see now
          */
         static std::string formatCurrentDateTime(const std::string& format) {
-            auto now = std::chrono::system_clock::now();
-            auto zoned = std::chrono::zoned_time(timezone, now);
+            auto now = system_clock::now();
+            auto zoned = zoned_time(timezone, now);
             std::string output;
             size_t p = 0;
             for (; p < format.size();) {
@@ -565,7 +573,7 @@ namespace MyEngine {
                 } else if (sub_str == "%M") {
                     output += std::format("{:%M}", zoned);
                 } else if (sub_str == "%S") {
-                    auto t = std::chrono::system_clock::to_time_t(zoned);
+                    auto t = system_clock::to_time_t(zoned);
                     std::stringstream ss;
                     ss << std::put_time(std::localtime(&t), "%S");
                     output += ss.str();
@@ -580,12 +588,12 @@ namespace MyEngine {
                 } else if (sub_str == "%Z") {
                     output += std::format("{:%Z}", zoned);
                 } else if (sub_str == "%C") {
-                    auto t = std::chrono::system_clock::to_time_t(zoned);
+                    auto t = system_clock::to_time_t(zoned);
                     std::stringstream ss;
                     ss << std::put_time(std::localtime(&t), "%S");
                     output += std::format("{:%Y/%m/%d %H:%M:}{}", zoned, ss.str());
                 } else if (sub_str == "%E") {
-                    auto t = std::chrono::system_clock::to_time_t(zoned);
+                    auto t = system_clock::to_time_t(zoned);
                     std::stringstream ss;
                     ss << std::put_time(std::localtime(&t), "%S");
                     output += std::format("{:%a %b %d %I:%M:}{} {:%p %Z %Y}", zoned, ss.str(), zoned);

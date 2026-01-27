@@ -36,6 +36,10 @@ endif()
 
 message("Project ${PROJECT_NAME} is configuring...")
 
+if(APPLE)
+    find_package(date REQUIRED)
+endif()
+
 if(WIN32)
         set(SDL3_LIB "C:/Program Files (x86)/SDL3" CACHE PATH "SDL3 Libs Path")
         set(SDL3_IMAGE_LIB "C:/Program Files (x86)/SDL3_image" CACHE PATH "SDL3 Image Libs Path")
@@ -208,11 +212,16 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     $<INSTALL_INTERFACE:include>
 )
 
+list(APPEND TARGET_LIBS SDL3::SDL3)
+list(APPEND TARGET_LIBS SDL3_image::SDL3_image)
+list(APPEND TARGET_LIBS SDL3_mixer::SDL3_mixer)
+list(APPEND TARGET_LIBS SDL3_ttf::SDL3_ttf)
+if (APPLE)
+    list(APPEND TARGET_LIBS date::date)
+endif()
+
 target_link_libraries(${PROJECT_NAME} PUBLIC
-        SDL3::SDL3
-        SDL3_image::SDL3_image
-        SDL3_mixer::SDL3_mixer
-        SDL3_ttf::SDL3_ttf
+        ${TARGET_LIBS}
 )
 
 install(TARGETS ${PROJECT_NAME}

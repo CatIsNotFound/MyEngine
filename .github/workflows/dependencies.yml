@@ -143,9 +143,26 @@ jobs:
           git clone --depth 1 https://github.com/libsdl-org/SDL_image 
           git clone --depth 1 https://github.com/libsdl-org/SDL_mixer 
           git clone --depth 1 https://github.com/libsdl-org/SDL_ttf
+          git clone --depth 1 https://github.com/HowardHinnant/date.git
           
           echo "~/git: "
           ls ~/git
+
+      - name: Compiling and installing Date
+        shell: bash
+        run: |
+          cd ~/git/date
+          mkdir -p build ; cd build
+          echo "* Starting configure Date...."
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=~/Libs/date
+          echo "* Compiling and installing Date...."
+          cmake --build . -j4 --target install
+          if [ $? -eq 0 ]; then
+              echo "* No error occurred, finished! "
+          else
+              echo "* Failed to compile and install! "
+              exit 1
+          fi
 
       - name: Compiling and installing SDL3
         shell: bash
@@ -220,6 +237,7 @@ jobs:
                    -DSDL3_IMAGE_LIB=~/Libs/SDL3_image \
                    -DSDL3_MIXER_LIB=~/Libs/SDL3_mixer \
                    -DSDL3_TTF_LIB=~/Libs/SDL3_ttf \
+                   -DCMAKE_PREFIX_PATH=~/Libs/date \
                    -DBUILD_TEST=OFF \
                    -DCMAKE_BUILD_TYPE=Release \
                    -DCMAKE_INSTALL_PREFIX=~/Libs/MyEngine

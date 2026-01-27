@@ -10,3 +10,6 @@
 [submodule "libs/SDL3_ttf"]
 	path = libs/SDL3_ttf
 	url = https://github.com/libsdl-org/SDL_ttf
+[submodule "libs/date"]
+	path = libs/date
+	url = https://github.com/HowardHinnant/date.git
