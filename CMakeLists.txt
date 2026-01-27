@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
-project(MyEngine LANGUAGES C CXX VERSION 0.1.3)
+project(MyEngine LANGUAGES C CXX VERSION 0.2.1)
 
 include(CMakePackageConfigHelpers)
 include(CMakeFindDependencyMacro)

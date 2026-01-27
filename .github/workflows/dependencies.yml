@@ -2,9 +2,13 @@ name: Compile and Install Project
 on:
   workflow_call:
   push:
-    branches: [ main, development ]
+    branches:
+      - main
+      - development
   pull_request:
-    branches: [ main, development ]
+    branches:
+      - main
+      - development
 
 jobs:
   env-linux:

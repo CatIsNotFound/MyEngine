@@ -7,9 +7,7 @@
 
 namespace MyEngine {
     namespace Algorithm {
-        inline SDL_Color readPixelFromSurface(int x, int y, SDL_Surface* surface, bool* ok = nullptr,
-                                              const SDL_PixelFormatDetails* format = nullptr,
-                                              const SDL_Palette* palette = nullptr) {
+        inline SDL_Color readPixelFromSurface(SDL_Surface* surface, int x, int y, bool* ok = nullptr) {
             if (!surface) {
                 Logger::log("readPixelFromSurface: The specified surface is not valid!", Logger::Error);
                 if (ok) *ok = false;
@@ -23,19 +21,19 @@ namespace MyEngine {
                 return {};
             }
             auto pixel_buffer = static_cast<uint8_t*>(surface->pixels);
-            const SDL_PixelFormatDetails* n_format = format ? format : SDL_GetPixelFormatDetails(surface->format);
-            const SDL_Palette* n_palette = palette ? palette : SDL_GetSurfacePalette(surface);
+            const SDL_PixelFormatDetails* format = SDL_GetPixelFormatDetails(surface->format);
+            const SDL_Palette* palette = SDL_GetSurfacePalette(surface);
             int pitch = surface->pitch;
             int pixel_bytes = SDL_BYTESPERPIXEL(surface->format);
             int pixel_offset = y * pitch + x * pixel_bytes;
             auto pixel_ptr = reinterpret_cast<uint32_t*>(pixel_buffer + pixel_offset);
             SDL_Color _ret = {};
-            SDL_GetRGBA(*pixel_ptr, n_format, n_palette, &_ret.r, &_ret.g, &_ret.b, &_ret.a);
+            SDL_GetRGBA(*pixel_ptr, format, palette, &_ret.r, &_ret.g, &_ret.b, &_ret.a);
             if (ok) *ok = true;
             return _ret;
         }
 
-        inline bool writePixelToSurface(int x, int y, SDL_Color new_color, SDL_Surface* surface) {
+        inline bool writePixelToSurface(SDL_Surface* surface, int x, int y, SDL_Color new_color) {
             if (!surface) {
                 Logger::log("writePixelFromSurface: The specified surface is not valid!", Logger::Error);
                 return false;
@@ -66,6 +64,86 @@ namespace MyEngine {
             return true;
         }
 
+        inline bool writePixelsToSurface(SDL_Surface* surface, int x1, int y1, int x2, int y2, SDL_Color new_color) {
+            if (!surface) {
+                Logger::log("writePixelsToSurface: The specified surface is not valid!", Logger::Error);
+                return false;
+            }
+            if (y1 >= y2 && x1 > x2) {
+                std::swap(x1, x2);
+                std::swap(y1, y2);
+            }
+            if (surface->w <= x1 || surface->h <= y1) {
+                Logger::log("writePixelsToSurface: The start position is out of range!", Logger::Error);
+                return false;
+            }
+            if (surface->w <= x2 || surface->h <= y2) {
+                x2 = surface->w - 1; y2 = surface->h - 1;
+            }
+            if (!SDL_LockSurface(surface)) {
+                Logger::log(std::format("writePixelToSurface: "
+                                        "Failed to write pixel from the specified surface! "
+                                        "Exception: {}", SDL_GetError()), Logger::Error);
+                return false;
+            }
+            auto pixel_buffer = static_cast<uint8_t*>(surface->pixels);
+            const SDL_Palette* palette = SDL_GetSurfacePalette(surface);
+            int pitch = surface->pitch;
+            int pixel_bytes = SDL_BYTESPERPIXEL(surface->format);
+            for (int y = y1; y <= y2; ++y) {
+                for (int x = x1; x <= x2; ++x) {
+                    int pixel_offset = y * pitch + x * pixel_bytes;
+                    auto pixel_ptr = reinterpret_cast<uint32_t*>(pixel_buffer + pixel_offset);
+                    auto pixel_value = SDL_MapRGBA(SDL_GetPixelFormatDetails(surface->format),
+                                                   palette, new_color.r, new_color.g, new_color.b, new_color.a);
+                    memcpy(pixel_ptr, &pixel_value, pixel_bytes);
+                }
+            }
+            SDL_UnlockSurface(surface);
+            return true;
+        }
+
+        inline bool writePixelsToSurface(SDL_Surface* surface, const Matrix2D<SDL_Color>& color_map,
+                                         Matrix2D<SDL_Color>::Position start_pos = {0, 0}) {
+            if (!surface) {
+                Logger::log("writePixelsToSurface: The specified surface is not valid!", Logger::Error);
+                return false;
+            }
+            if (surface->w <= start_pos.col || surface->h <= start_pos.row) {
+                Logger::log("writePixelsToSurface: The start position is out of range!", Logger::Error);
+                return false;
+            }
+
+            if (!SDL_LockSurface(surface)) {
+                Logger::log(std::format("writePixelToSurface: "
+                                        "Failed to write pixel from the specified surface! "
+                                        "Exception: {}", SDL_GetError()), Logger::Error);
+                return false;
+            }
+            auto max_row = start_pos.row + color_map.rows();
+            auto max_col = start_pos.col + color_map.cols();
+            max_row = (surface->h <= max_row ? surface->h - 1 : max_row);
+            max_col = (surface->w <= max_col ? surface->w - 1 : max_col);
+            auto pixel_buffer = static_cast<uint8_t*>(surface->pixels);
+            const SDL_Palette* palette = SDL_GetSurfacePalette(surface);
+            int pitch = surface->pitch;
+            int pixel_bytes = SDL_BYTESPERPIXEL(surface->format);
+            for (int y = (int)start_pos.row; y <= (int)(max_row); ++y) {
+                for (int x = (int)start_pos.col; x <= (int)(max_col); ++x) {
+                    auto& new_color = color_map.get(y, x);
+                    int pixel_offset = y * pitch + x * pixel_bytes;
+                    auto pixel_ptr = reinterpret_cast<uint32_t*>(pixel_buffer + pixel_offset);
+                    auto pixel_value = SDL_MapRGBA(SDL_GetPixelFormatDetails(surface->format),
+                                                   palette, new_color.r, new_color.g, new_color.b, new_color.a);
+                    memcpy(pixel_ptr, &pixel_value, pixel_bytes);
+                }
+            }
+            SDL_UnlockSurface(surface);
+            Logger::log(Logger::Debug, "Success: Rendered {}x{} pixels, statred from ({}, {})",
+                        max_col, max_row, start_pos.row, start_pos.col);
+            return true;
+        }
+
         inline Matrix2D<SDL_Color> readPixelsFromSurface(SDL_Surface* surface, bool* ok = nullptr) {
             Matrix2D<SDL_Color> _map;
             if (!SDL_LockSurface(surface)) {
@@ -82,8 +160,8 @@ namespace MyEngine {
             int pitch = surface->pitch;
             int pixel_bytes = SDL_BYTESPERPIXEL(fmt);
             auto pixel_buffer = static_cast<uint8_t*>(surface->pixels);
-            for (int x = 0; x < surface->w; ++x) {
-                for (int y = 0; y < surface->h; ++y) {
+            for (int y = 0; y < surface->h; ++y) {
+                for (int x = 0; x < surface->w; ++x) {
                     int pixel_offset = y * pitch + x * pixel_bytes;
                     auto pixel_ptr = reinterpret_cast<uint32_t*>(pixel_buffer + pixel_offset);
                     uint32_t pixelValue = *pixel_ptr;
@@ -97,7 +175,7 @@ namespace MyEngine {
             return _map;
         }
 
-        inline Matrix2D<SDL_Color> readPixelAreaOnlyFromSurface(SDL_Surface* surface,
+        inline Matrix2D<SDL_Color> readPixelsOnlyFromSurface(SDL_Surface* surface,
                          Matrix2D<SDL_Color>::Position&& start_pos, Matrix2D<SDL_Color>::Position&& end_pos,
                          bool* ok = nullptr) {
             Matrix2D<SDL_Color> _map;
@@ -111,7 +189,7 @@ namespace MyEngine {
             if (end_pos.row >= surface->h) new_height -= end_pos.row - surface->h + 1;
             if (!SDL_LockSurface(surface)) {
                 if (ok) *ok = false;
-                Logger::log(std::format("readPixelsFromSurface: "
+                Logger::log(std::format("readPixelsOnlyFromSurface: "
                                         "Failed to get pixels from the specified surface! "
                                         "Exception: {}", SDL_GetError()), Logger::Error);
                 return _map;
@@ -284,25 +362,69 @@ namespace MyEngine {
             return _ret;
         }
 
-        inline SDL_Surface* drawWhiteShape2Surface(SDL_Surface* surface, bool* ok = nullptr) {
+        inline SDL_Surface* drawFilledWhiteSurface(SDL_Surface* surface, bool* ok = nullptr) {
             return processSurface(surface, [](SDL_Color& color) {
                 color.r = 255; color.g = 255; color.b = 255;
             }, ok);
         }
 
-        inline SDL_Surface* drawInvertedColor2Surface(SDL_Surface* surface, bool* ok = nullptr) {
+        inline SDL_Surface* drawInvertedColorSurface(SDL_Surface* surface, bool* ok = nullptr) {
             return processSurface(surface, [](SDL_Color& color) {
                 color.r = 255 - color.r; color.g = 255 - color.g; color.b = 255 - color.b;
             }, ok);
         }
 
-        inline SDL_Surface* drawGrayScale2Surface(SDL_Surface* surface, bool* ok = nullptr) {
+        inline SDL_Surface* drawGraySurface(SDL_Surface* surface, bool* ok = nullptr) {
             return processSurface(surface, [](SDL_Color& color) {
                 auto gray = static_cast<uint8_t>((77 * color.r + 150 * color.g + 29 * color.b) >> 8);
                 color = { gray, gray, gray, color.a };
             }, ok);
         }
 
+        inline SDL_Surface* drawDarkGraySurface(SDL_Surface* surface, bool* ok = nullptr) {
+            return processSurface(surface, [](SDL_Color& color) {
+                auto gray = std::min(std::min(color.r, color.g), color.b);
+                color = { gray, gray, gray, color.a };
+            }, ok);
+        }
+
+        inline SDL_Surface* drawLightGraySurface(SDL_Surface* surface, bool* ok = nullptr) {
+            return processSurface(surface, [](SDL_Color& color) {
+                auto gray = std::max(std::max(color.r, color.g), color.b);
+                color = { gray, gray, gray, color.a };
+            }, ok);
+        }
+
+        inline SDL_Surface* drawAvgGraySurface(SDL_Surface* surface, bool* ok = nullptr) {
+            return processSurface(surface, [](SDL_Color& color) {
+                auto gray = static_cast<uint8_t>((color.r + color.g + color.b) / 3);
+                color = { gray, gray, gray, color.a };
+            }, ok);
+        }
+
+        inline SDL_Surface* drawBrightnessSurface(SDL_Surface* surface, int16_t value, bool* ok = nullptr) {
+            value = std::clamp(value, (int16_t)-255, (int16_t)255);
+            return processSurface(surface, [&value](SDL_Color& color) {
+                color.r = std::clamp(color.r + value, 0, 255);
+                color.g = std::clamp(color.g + value, 0, 255);
+                color.b = std::clamp(color.b + value, 0, 255);
+            }, ok);
+        }
+
+        inline SDL_Surface* drawContrastSurface(SDL_Surface* surface, float alpha, bool* ok = nullptr) {
+            alpha = std::clamp(alpha, 0.f, 10.f);
+            return processSurface(surface, [&alpha](SDL_Color& color) {
+                color.r = static_cast<uint8_t>(std::clamp(static_cast<uint32_t>
+                                                (static_cast<float>(color.r - 128) * alpha + 128.f),
+                                             (uint32_t)0, (uint32_t)255));
+                color.g = static_cast<uint8_t>(std::clamp(static_cast<uint32_t>
+                                                (static_cast<float>(color.g - 128) * alpha + 128.f),
+                                             (uint32_t)0, (uint32_t)255));
+                color.b = static_cast<uint8_t>(std::clamp(static_cast<uint32_t>
+                                                (static_cast<float>(color.b - 128) * alpha + 128.f),
+                                             (uint32_t)0, (uint32_t)255));
+            }, ok);
+        }
     }
 }
 
