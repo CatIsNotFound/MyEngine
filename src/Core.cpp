@@ -1468,7 +1468,7 @@ namespace MyEngine {
         }
 
 #if SDL_MIXER_MAJOR_VERSION < 3
-        MIX_SetMixerGain(_mixer_list[mixer_index], volume);
+        MIX_SetMasterGain(_mixer_list[mixer_index], volume);
 #else
         MIX_SetMixerGain(_mixer_list[mixer_index], volume);
 #endif

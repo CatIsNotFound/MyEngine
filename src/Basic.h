@@ -260,6 +260,75 @@ namespace MyEngine {
             this->width = width;
             this->height = height;
         }
+
+        Geometry operator+(const Geometry& geo) {
+            Geometry _out = *this;
+            _out.x += geo.x;
+            _out.y += geo.y;
+            _out.width += geo.width;
+            _out.height += geo.height;
+            return _out;
+        }
+
+        Geometry operator-(const Geometry& geo) {
+            Geometry _out = *this;
+            _out.x -= geo.x;
+            _out.y -= geo.y;
+            _out.width -= geo.width;
+            _out.height -= geo.height;
+            return _out;
+        }
+
+        Geometry operator*(const Geometry& geo) {
+            Geometry _out = *this;
+            _out.x *= geo.x;
+            _out.y *= geo.y;
+            _out.width *= geo.width;
+            _out.height *= geo.height;
+            return _out;
+        }
+
+        Geometry operator/(const Geometry& geo) {
+            Geometry _out = *this;
+            if (geo.x) _out.x /= geo.x;
+            if (geo.y) _out.y /= geo.y;
+            if (geo.width) _out.width /= geo.width;
+            if (geo.height) _out.height /= geo.height;
+            return _out;
+        }
+
+        Geometry& operator+=(const Geometry& geo) {
+            this->x += geo.x;
+            this->y += geo.y;
+            this->width += geo.width;
+            this->height += geo.height;
+            return *this;
+        }
+
+        Geometry& operator-=(const Geometry& geo) {
+            this->x -= geo.x;
+            this->y -= geo.y;
+            this->width -= geo.width;
+            this->height -= geo.height;
+            return *this;
+        }
+
+        Geometry& operator*=(const Geometry& geo) {
+            this->x *= geo.x;
+            this->y *= geo.y;
+            this->width *= geo.width;
+            this->height *= geo.height;
+            return *this;
+        }
+
+        Geometry& operator/=(const Geometry& geo) {
+            this->x /= geo.x;
+            this->y /= geo.y;
+            this->width /= geo.width;
+            this->height /= geo.height;
+            return *this;
+        }
+
     };
 
     /**
@@ -463,27 +532,27 @@ namespace MyEngine {
         }
 
         bool operator==(const Size &s) const {
-            return (this->width != s.width) ? false : ((this->height != this->height) ? false : true);
+            return this->width == s.width && this->height == this->height;
         }
 
         bool operator!=(const Size &s) const {
-            return (this->width != s.width) ? true : ((this->height != this->height) ? true : false);
+            return (this->width != s.width) || (this->height != this->height);
         }
 
         bool operator>(const Size &s) const {
-            return (this->width > s.width && this->height > s.height);
+            return (this->width * this->height > s.width * s.height);
         }
 
         bool operator>=(const Size &s) const {
-            return (this->width >= s.width && this->height >= s.height);
+            return (this->width * this->height >= s.width * s.height);
         }
 
         bool operator<(const Size &s) const {
-            return (this->width < s.width && this->height < s.height);
+            return (this->width * this->height < s.width * s.height);
         }
 
         bool operator<=(const Size &s) const {
-            return (this->width <= s.width && this->height <= s.height);
+            return (this->width * this->height <= s.width * s.height);
         }
     };
 
@@ -1705,6 +1774,16 @@ namespace MyEngine {
             void setStartPosition(float x, float y) { _start_position.reset(x, y); update(); }
             void setEndPosition(const Vector2& pos) { _end_position.reset(pos.x, pos.y); update(); }
             void setEndPosition(float x, float y) { _end_position.reset(x, y); update(); }
+            void setGeometry(const Vector2& start_pos, const Vector2& end_pos) {
+                _start_position.reset(start_pos);
+                _end_position.reset(end_pos);
+                update();
+            }
+            void setGeometry(float x1, float y1, float x2, float y2) {
+                _start_position.reset(x1, y1);
+                _end_position.reset(x2, y2);
+                update();
+            }
             [[nodiscard]] uint8_t size() const { return _size; }
             void setSize(uint8_t new_size) { _size = new_size; update(); }
             [[nodiscard]] const SDL_Color& color() const { return _color; }

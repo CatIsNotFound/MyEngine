@@ -23,11 +23,23 @@ namespace MyEngine::Widget {
     AbstractWidget::~AbstractWidget() = default;
 
     void AbstractWidget::setParent(MyEngine::Widget::AbstractWidget *parent) {
+        if (isParentLinkToSelf(parent)) {
+            Logger::log(Logger::Error, "AbstractWidget ({}): "
+                                       "Can't set the specified parant to this widget.", _object_name);
+            return;
+        }
         _parent = parent;
+        auto new_render_geo = _trigger_area.geometry();
+        if (_parent) {
+            calcRenderGeometry(_parent, new_render_geo);
+        }
+        _render_geometry.setGeometry(toGeometryInt(new_render_geo));
+        Logger::log(Logger::Debug, "Render geo: {}, {}, {}, {}",
+                    _render_geometry.x, _render_geometry.y, _render_geometry.width, _render_geometry.height);
     }
 
-    AbstractWidget* AbstractWidget::parent() const {
-        return _parent;
+    const std::optional<AbstractWidget *> AbstractWidget::parent() const {
+        if (_parent) return _parent; else return {};
     }
 
     void AbstractWidget::load() {
@@ -40,7 +52,24 @@ namespace MyEngine::Widget {
         _renderer = _window->renderer();
         _renderer->window()->installPaintEvent([this](Renderer* r) {
             if (!_visible) return;
-            if (_parent) r->setViewport(toGeometryInt(_parent->geometry()));
+            if (_parent) {
+                if (!_status.viewport_changed) {
+                    _status.viewport_changed = true;
+                    _viewport_geometry.size.reset(_trigger_area.geometry().size);
+                    parentGeometry(this, _viewport_geometry);
+                    Logger::log(Logger::Debug, "{} Ori: {},{} Ren: {},{}",
+                                _object_name, _trigger_area.geometry().pos.x,
+                                _trigger_area.geometry().pos.y,
+                                _viewport_geometry.pos.x,
+                                _viewport_geometry.pos.y);
+                    Logger::log(Logger::Debug, "{} Ori: {}x{} RPos: {}x{}",
+                                _object_name, _trigger_area.geometry().size.width,
+                                _trigger_area.geometry().size.height,
+                                _viewport_geometry.size.width,
+                                _viewport_geometry.size.height);
+                }
+                r->setViewport(toGeometryInt(_viewport_geometry));
+            }
             paintEvent(r);
             if (_parent) r->setViewport({});
         }, true);
@@ -140,9 +169,8 @@ namespace MyEngine::Widget {
             auto cur_pos = EventSystem::global()->captureMousePosition();
             bool trigger = false;
             if (_parent) {
-                auto new_geo = Algorithm::translateObjectInParent(_trigger_area.geometry(),
-                                                                  _parent->geometry());
-                trigger = (Algorithm::comparePosInGeometry(cur_pos, new_geo) > 0);
+                trigger = (Algorithm::comparePosInGeometry(cur_pos,
+                                                           toGeometryFloat(_render_geometry)) > 0);
             } else {
                 trigger = (Algorithm::comparePosInRect(cur_pos, _trigger_area) > 0);
             }
@@ -243,7 +271,40 @@ namespace MyEngine::Widget {
     void AbstractWidget::unload() {
         unloadEvent();
         EventSystem::global()->removeEvent(_ev_id);
+    }
 
+    void AbstractWidget::calcRenderGeometry(const MyEngine::Widget::AbstractWidget *parent, GeometryF& new_geo) {
+        if (!parent) return;
+        auto p_pos = parent->position();
+        auto c_size = new_geo.size;
+        auto p_size = parent->geometry().size;
+        p_size.width -= new_geo.pos.x;
+        p_size.height -= new_geo.pos.y;
+        new_geo.pos += p_pos;
+        new_geo.size.width = std::min(p_size.width, c_size.width);
+        new_geo.size.height = std::min(p_size.height, c_size.height);
+        calcRenderGeometry(parent->_parent, new_geo);
+    }
+
+    void AbstractWidget::parentGeometry(const MyEngine::Widget::AbstractWidget *current, GeometryF& new_geo) const {
+        if (!current->_parent) return;
+        if (this != current) {
+            new_geo.pos += current->geometry().pos;
+        }
+        new_geo.size.width = std::min(current->geometry().size.width,
+                                      current->_parent->geometry().size.width);
+        new_geo.size.height = std::min(current->geometry().size.height,
+                                       current->_parent->geometry().size.height);
+
+        parentGeometry(current->_parent, new_geo);
+    }
+
+    bool AbstractWidget::isParentLinkToSelf(const MyEngine::Widget::AbstractWidget *parent) {
+        if (!parent) return false;
+        if (parent->_parent) {
+            return isParentLinkToSelf(parent->_parent);
+        }
+        return parent == this;
     }
 
     void AbstractWidget::setObjectName(std::string object_name) {
@@ -275,18 +336,33 @@ namespace MyEngine::Widget {
 
     void AbstractWidget::setGeometry(float x, float y, float w, float h) {
         _trigger_area.setGeometry(x, y, w, h);
+        auto new_render_geo = _trigger_area.geometry();
+        if (_parent) {
+            calcRenderGeometry(_parent, new_render_geo);
+        }
+        _render_geometry.setGeometry(toGeometryInt(new_render_geo));
         moveEvent(_trigger_area.geometry().pos);
         resizeEvent(_trigger_area.geometry().size);
     }
 
     void AbstractWidget::setGeometry(const Vector2 &position, const Size &size) {
         _trigger_area.setGeometry(position.x, position.y, size.width, size.height);
+        auto new_render_geo = _trigger_area.geometry();
+        if (_parent) {
+            calcRenderGeometry(_parent, new_render_geo);
+        }
+        _render_geometry.setGeometry(toGeometryInt(new_render_geo));
         moveEvent(_trigger_area.geometry().pos);
         resizeEvent(_trigger_area.geometry().size);
     }
 
     void AbstractWidget::setGeometry(const GeometryF &geometry) {
         _trigger_area.setGeometry(geometry);
+        auto new_render_geo = _trigger_area.geometry();
+        if (_parent) {
+            calcRenderGeometry(_parent, new_render_geo);
+        }
+        _render_geometry.setGeometry(toGeometryInt(new_render_geo));
         moveEvent(_trigger_area.geometry().pos);
         resizeEvent(_trigger_area.geometry().size);
     }
@@ -298,12 +374,22 @@ namespace MyEngine::Widget {
     void AbstractWidget::move(float x, float y) {
         if (_status.lock_widget) return;
         _trigger_area.move(x, y);
+        auto new_render_geo = _trigger_area.geometry();
+        if (_parent) {
+            calcRenderGeometry(_parent, new_render_geo);
+        }
+        _render_geometry.setGeometry(toGeometryInt(new_render_geo));
         moveEvent(_trigger_area.geometry().pos);
     }
 
     void AbstractWidget::move(const Vector2 &position) {
         if (_status.lock_widget) return;
         _trigger_area.move(position);
+        auto new_render_geo = _trigger_area.geometry();
+        if (_parent) {
+            calcRenderGeometry(_parent, new_render_geo);
+        }
+        _render_geometry.setGeometry(toGeometryInt(new_render_geo));
         moveEvent(_trigger_area.geometry().pos);
     }
 
@@ -314,12 +400,22 @@ namespace MyEngine::Widget {
     void AbstractWidget::resize(float w, float h) {
         if (_status.lock_widget) return;
         _trigger_area.resize(w, h);
+        auto new_render_geo = _trigger_area.geometry();
+        if (_parent) {
+            calcRenderGeometry(_parent, new_render_geo);
+        }
+        _render_geometry.setGeometry(toGeometryInt(new_render_geo));
         resizeEvent(_trigger_area.geometry().size);
     }
 
     void AbstractWidget::resize(const Size &size) {
         if (_status.lock_widget) return;
         _trigger_area.resize(size);
+        auto new_render_geo = _trigger_area.geometry();
+        if (_parent) {
+            calcRenderGeometry(_parent, new_render_geo);
+        }
+        _render_geometry.setGeometry(toGeometryInt(new_render_geo));
         resizeEvent(_trigger_area.geometry().size);
     }
 

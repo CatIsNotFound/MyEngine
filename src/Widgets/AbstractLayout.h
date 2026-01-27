@@ -22,11 +22,11 @@ namespace MyEngine {
             void removeWidget(AbstractWidget* widget);
             void removeWidget(uint32_t index);
             void removeWidget(const std::string& object_name);
-            [[nodiscard]] AbstractWidget* widget(const std::string& object_name) const;
-            [[nodiscard]] AbstractWidget* widget(uint32_t index) const;
+            [[nodiscard]] std::optional<AbstractWidget *> widget(const std::string& object_name) const;
+            [[nodiscard]] std::optional<AbstractWidget *> widget(uint32_t index) const;
             bool swapWidget(AbstractWidget* widget_1, AbstractWidget* widget_2);
             bool swapWidget(uint32_t index_1, uint32_t index_2);
-            [[nodiscard]] int64_t indexOf(AbstractWidget* widget);
+            [[nodiscard]] std::optional<int64_t> indexOf(AbstractWidget* widget);
 
             void setMargin(float margin);
             void setMargin(float h, float v);

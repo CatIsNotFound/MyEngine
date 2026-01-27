@@ -89,7 +89,7 @@ namespace MyEngine::Widget {
     }
 
     void LineEdit::setText(const std::string &text) {
-        _strings = Algorithm::splitUTF_8(text);
+        _strings = Algorithm::splitUTF8(text);
         _changer_signal |= ENGINE_SIGNAL_LINE_EDIT_TEXT_CHANGED;
         if (_strings.empty()) {
             _status ^= ENGINE_BOOL_LINE_EDIT_HAS_TEXT;
@@ -346,15 +346,28 @@ namespace MyEngine::Widget {
                 updateTextPosition();
             }
 
-            renderer->setViewport(_real_area);
+            Geometry new_clip_view;
+            if (_parent) {
+                new_clip_view.x += _render_geometry.x + horizontalPadding();
+                new_clip_view.y += _render_geometry.y + verticalPadding();
+                new_clip_view.width += _render_geometry.width - horizontalPadding();
+                new_clip_view.height += _render_geometry.height - verticalPadding();
+            } else {
+                new_clip_view.setGeometry(_real_area);
+            }
+            if (new_clip_view.width <= 0 || new_clip_view.height <= 0) {
+                _changer_signal = 0;
+                return;
+            }
+            renderer->setClipView(new_clip_view);
             if (show_text_mode) {
                 TextSystem::global()->drawText(_place_text_id, _text_pos, renderer);
             } else {
                 TextSystem::global()->drawText(_text_id, _text_pos, renderer);
             }
-            renderer->setViewport({});
-
-            bool show_cur = (_status & ENGINE_BOOL_LINE_EDIT_CURSOR_VISIBLE) > 0;
+            new_clip_view.width += horizontalPadding();
+            renderer->setClipView(new_clip_view);
+            bool show_cur = (_status & ENGINE_BOOL_LINE_EDIT_CURSOR_VISIBLE);
             if (!_start_tick) _start_tick = SDL_GetTicks();
             auto now_tick = SDL_GetTicks();
             if (now_tick - _start_tick >= 500) {
@@ -363,6 +376,7 @@ namespace MyEngine::Widget {
                 _start_tick = SDL_GetTicks();
             }
             if (_wid_status == WidgetStatus::Input && show_cur) renderer->drawLine(&_cursor_line);
+            renderer->setClipView({});
         }
         _changer_signal = 0;
     }
@@ -448,7 +462,7 @@ namespace MyEngine::Widget {
 
     void LineEdit::inputEvent(const char *string) {
         AbstractWidget::inputEvent(string);
-        auto new_str = Algorithm::splitUTF_8(string);
+        auto new_str = Algorithm::splitUTF8(string);
         for (auto& s : new_str) {
             _strings.emplace_back(s);
         }
@@ -460,9 +474,7 @@ namespace MyEngine::Widget {
         textChangedEvent();
     }
 
-    void LineEdit::textChangedEvent() {
-
-    }
+    void LineEdit::textChangedEvent() {}
 
     void LineEdit::init() {
         setProperty(ENGINE_PROP_FONT_NAME);
@@ -524,11 +536,12 @@ namespace MyEngine::Widget {
 
     void LineEdit::updateTextPosition() {
         if (!_text) return;
+        _text_pos.reset(_trigger_area.geometry().pos);
         auto hp = (float)horizontalPadding();
         float dis = _trigger_area.geometry().size.width - _text->text_size.width;
         Vector2 st_pos, ed_pos;
         auto real_area = toGeometryFloat(_real_area);
-        st_pos.y += real_area.pos.y;
+        //st_pos.y += real_area.pos.y;
         float text_height = 0.f;
         if (_status & ENGINE_BOOL_LINE_EDIT_PLACEHOLDER_TEXT_VISIBLE) {
             text_height = _place_text->text_size.height;
@@ -537,12 +550,12 @@ namespace MyEngine::Widget {
         }
 
         if (dis - hp * 2 < 0) {
-            st_pos.x += real_area.pos.x + real_area.size.width;
+            st_pos.x += real_area.size.width;
             ed_pos.reset(st_pos);
             _text_pos = {_wid_status == WidgetStatus::Input ? dis - hp * 2 : 0,
                          real_area.size.height / 2.f - text_height / 2.f};
         } else {
-            st_pos.x += real_area.pos.x + _text->text_size.width;
+            st_pos.x += _text->text_size.width;
             ed_pos.reset(st_pos);
             _text_pos = {0, real_area.size.height / 2.f - text_height / 2.f};
         }
@@ -550,6 +563,7 @@ namespace MyEngine::Widget {
 
         _cursor_line.setStartPosition(st_pos);
         _cursor_line.setEndPosition(ed_pos);
+
     }
 
     void LineEdit::updateText() {
@@ -607,7 +621,7 @@ namespace MyEngine::Widget {
         if (hasProperty(key)) {
             return *_GET_PROPERTY_PTR(this, key, SDL_Color);
         }
-        return SDL_Color(0, 0, 0, 255);
+        return StdColor::Black;
     }
 
     SDL_Color LineEdit::getBorderColor(WidgetStatus status) {
@@ -615,6 +629,6 @@ namespace MyEngine::Widget {
         if (hasProperty(key)) {
             return *_GET_PROPERTY_PTR(this, key, SDL_Color);
         }
-        return SDL_Color(0, 0, 0, 255);
+        return StdColor::Black;
     }
 }

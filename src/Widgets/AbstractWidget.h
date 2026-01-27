@@ -79,7 +79,7 @@ namespace MyEngine {
             virtual ~AbstractWidget();
 
             void setParent(AbstractWidget* parent);
-            [[nodiscard]] AbstractWidget* parent() const;
+            [[nodiscard]] const std::optional<AbstractWidget *> parent() const;
 
             void setObjectName(std::string object_name);
             [[nodiscard]] const std::string& objectName() const;
@@ -187,9 +187,14 @@ namespace MyEngine {
         protected:
             Graphics::Rectangle _trigger_area;
             std::string _object_name{};
+            AbstractWidget* _parent{};
+            Geometry _render_geometry{};
         private:
             void load();
             void unload();
+            void calcRenderGeometry(const AbstractWidget* parent, GeometryF& new_geo);
+            void parentGeometry(const AbstractWidget* current, GeometryF& new_geo) const;
+            bool isParentLinkToSelf(const AbstractWidget* parent);
             template<typename T>
             void addKey(T key) {
                 static_assert(std::is_same_v<T, SDL_Scancode>,
@@ -205,8 +210,9 @@ namespace MyEngine {
             bool _visible{true}, _enabled{true}, _focus{false};
             Cursor::StdCursor _cur_style{Cursor::Default};
             struct Status {
-                bool is_loaded{};
+                bool viewport_changed{};
                 bool lock_widget{};
+                bool is_loaded{};
                 bool mouse_in{};
                 bool mouse_down{};
                 bool r_mouse_down{};
@@ -222,8 +228,8 @@ namespace MyEngine {
             };
             Status _status{};
             std::string _cur_ch{};
+            GeometryF _viewport_geometry{};
             std::unordered_map<std::string, Variant> _prop_map{};
-            AbstractWidget* _parent{};
         };
     }
 }

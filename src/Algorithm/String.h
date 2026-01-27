@@ -22,7 +22,7 @@ namespace MyEngine {
             return output;
         }
 
-        inline static StringList splitUTF_8(const std::string& utf8_string) {
+        inline static StringList splitUTF8(const std::string& utf8_string) {
             StringList _ret;
             size_t char_length = 0;
             for (size_t i = 0; i < utf8_string.size();) {
@@ -36,7 +36,8 @@ namespace MyEngine {
                 } else if ((byte & 0xf8) == 0xf0) {
                     char_length = 4;
                 } else {
-                    Logger::log(Logger::Warn, "splitUTF_8: The specified character is not valid! Returned null!");
+                    Logger::log(Logger::Warn, "splitUTF8: "
+                                              "The specified character is not valid! Returned null!");
                     return {};
                 }
                 _ret.emplace_back(utf8_string.substr(i, char_length));

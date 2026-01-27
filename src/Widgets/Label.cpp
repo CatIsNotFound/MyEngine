@@ -348,7 +348,9 @@ namespace MyEngine::Widget {
         }
 
         if (_visible_text || _visible_img) {
-            renderer->setClipView(toGeometryInt(_trigger_area.geometry()));
+            auto clip_geo = _parent ? _render_geometry : toGeometryInt(_trigger_area.geometry());
+            if (clip_geo.width <= 0 || clip_geo.height <= 0) return;
+            renderer->setClipView(clip_geo);
             if (_visible_img && _bg_img) _bg_img->draw();
             if (_visible_text) {
                 TextSystem::global()->drawText(_text_id,_text_pos, renderer);

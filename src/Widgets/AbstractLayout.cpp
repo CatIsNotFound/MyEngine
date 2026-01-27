@@ -43,9 +43,9 @@ namespace MyEngine::Widget {
 
     void AbstractLayout::removeWidget(AbstractWidget *widget) {
         auto idx = indexOf(widget);
-        if (idx == -1) return;
-        _widgets.at(idx)->setParent(nullptr);
-        _widgets.erase(_widgets.begin() + idx);
+        if (!idx) return;
+        _widgets.at(idx.value())->setParent(nullptr);
+        _widgets.erase(_widgets.begin() + idx.value());
         layoutChanged();
     }
 
@@ -59,24 +59,24 @@ namespace MyEngine::Widget {
         layoutChanged();
     }
 
-    AbstractWidget *AbstractLayout::widget(const std::string &object_name) const {
+    std::optional<AbstractWidget *> AbstractLayout::widget(const std::string &object_name) const {
         auto iter = std::find_if(_widgets.begin(), _widgets.end(), [&object_name](AbstractWidget* w) {
             return w->objectName() == object_name;
         });
         if (iter != _widgets.end()) return *iter;
-        return nullptr;
+        return {};
     }
 
-    AbstractWidget *AbstractLayout::widget(uint32_t index) const {
-        if (index >= _widgets.size()) return nullptr;
+    std::optional<AbstractWidget *> AbstractLayout::widget(uint32_t index) const {
+        if (index >= _widgets.size()) return {};
         return _widgets.at(index);
     }
 
     bool AbstractLayout::swapWidget(AbstractWidget *widget_1, AbstractWidget *widget_2) {
         if (!widget_1 || !widget_2) return false;
         auto idx1 = indexOf(widget_1), idx2 = indexOf(widget_2);
-        if (idx1 == -1 || idx2 == -1) return false;
-        std::swap(_widgets[idx1], _widgets[idx2]);
+        if (!idx1 || !idx2) return false;
+        std::swap(_widgets[idx1.value()], _widgets[idx2.value()]);
         layoutChanged();
         return true;
     }
@@ -88,11 +88,11 @@ namespace MyEngine::Widget {
         return true;
     }
 
-    int64_t AbstractLayout::indexOf(AbstractWidget *widget) {
+    std::optional<int64_t> AbstractLayout::indexOf(AbstractWidget *widget) {
         for (int64_t i = 0; i < _widgets.size(); ++i) {
             if (_widgets[i] == widget) return i;
         }
-        return -1;
+        return {};
     }
 
     void AbstractLayout::setMargin(float margin) {
