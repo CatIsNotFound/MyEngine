@@ -62,10 +62,10 @@ namespace MyEngine {
             auto _real_time = (float) (_running_time - _started_time) / 1e9;
             std::string log;
             if (level >= Warn) {
-                log = std::format("[{:.06f}] [{}] {}\n", _real_time, _logLevelToString(level), message);
+                log = FMT::format("[{:.06f}] [{}] {}\n", _real_time, _logLevelToString(level), message);
                 std::cerr << log;
             } else {
-                log = std::format("[{:.06f}] [{}] {}\n", _real_time, _logLevelToString(level), message);
+                log = FMT::format("[{:.06f}] [{}] {}\n", _real_time, _logLevelToString(level), message);
                 std::cout << log;
             }
             if (_write_log) {
@@ -80,7 +80,7 @@ namespace MyEngine {
          * @brief Formats and outputs log messages
          * @tparam Args Types of the passed-in arguments
          * @param level Defines the log level
-         * @param format Defines the output format string, using `{}` as placeholders for the passed-in arguments, similar to the usage of `std::format()`
+         * @param format Defines the output format string, using `{}` as placeholders for the passed-in arguments, similar to the usage of `FMT::format()`
          * @param args Multiple arguments of different types to be passed in
          * @note Not all log messages can be output to the terminal, it depends on the minimum log output level.
          * @details This will output a line in the terminal in the format `[Runtime] [Log Level] Message Content`.
@@ -101,18 +101,18 @@ namespace MyEngine {
             if (level < _base_level) return;
             _running_time = std::chrono::high_resolution_clock::now().time_since_epoch().count();
             auto _real_time = (float) (_running_time - _started_time) / 1e9;
-            std::string fmt = std::format("[{:.06f}] [{}] ", _real_time, _logLevelToString(level));
+            std::string fmt = FMT::format("[{:.06f}] [{}] ", _real_time, _logLevelToString(level));
             std::string msg;
             try {
-                std::vformat_to(std::back_inserter(msg), format, std::make_format_args(args...));
+                FMT::vformat_to(std::back_inserter(msg), format, FMT::make_format_args(args...));
                 std::cout << fmt << msg << "\n";
                 if (_write_log) {
                     _writeLogToFile(fmt);
                 }
                 _last_log_level = level;
                 _last_log_info = msg;
-            } catch (const std::format_error &e) {
-                _last_log_info = std::format("[{:.06f}] [{}] Logger: {}\n",
+            } catch (const FMT::format_error &e) {
+                _last_log_info = FMT::format("[{:.06f}] [{}] Logger: {}\n",
                                              _real_time, _logLevelToString(Error), e.what());
                 std::cerr << _last_log_info;
                 _last_log_level = Error;
@@ -217,7 +217,7 @@ namespace MyEngine {
             FILE* file = fopen(_output_file_name.c_str(), "a+");
             if (!file) {
                 _write_log = false;
-                Logger::log(std::format("Logger: Can't open file '{}' to write log! ", _output_file_name), Warn);
+                Logger::log(FMT::format("Logger: Can't open file '{}' to write log! ", _output_file_name), Warn);
             }
             fprintf(file, "%s", log.c_str());
             fflush(file);

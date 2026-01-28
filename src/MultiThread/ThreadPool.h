@@ -34,7 +34,7 @@ namespace MyEngine {
                         try {
                             this_task();
                         } catch (const std::exception& e) {
-                            Logger::log(std::format("ThreadPool: Task failed! "
+                            Logger::log(FMT::format("ThreadPool: Task failed! "
                                                     "Exception: {}", e.what()), Logger::Error);
                         }
                         lock.lock();
@@ -115,7 +115,7 @@ namespace MyEngine {
                         try {
                             this_task();
                         } catch (const std::exception& e) {
-                            Logger::log(std::format("ThreadPool: Task failed! "
+                            Logger::log(FMT::format("ThreadPool: Task failed! "
                                                     "Exception: {}", e.what()), Logger::Error);
                         }
                         lock.lock();

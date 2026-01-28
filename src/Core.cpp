@@ -181,7 +181,7 @@ namespace MyEngine {
 
     void Renderer::drawDebugFPS(const MyEngine::Vector2 &position, const SDL_Color &color) {
         addCommand<RenderCommand::DebugTextCMD>(_renderer,
-                    std::format("FPS: {}", window()->_engine->fps()), position, color);
+                    FMT::format("FPS: {}", window()->_engine->fps()), position, color);
     }
 
     void Renderer::setViewport(const Geometry& geometry) {
@@ -802,11 +802,11 @@ namespace MyEngine {
     Engine::Engine(const char *app_name, const char *app_version, const char *app_id)
         : _running(true) {
         if (_show_app_info) {
-            std::cout << std::format("MyEngine {} (Based on SDL {}.{}.{})\n",
+            std::cout << FMT::format("MyEngine {} (Based on SDL {}.{}.{})\n",
                                      MYENGINE_FULL_VERSION, SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_MICRO_VERSION)
                       << "For more information, visit: https://github.com/CatIsNotFound/MyEngine \n"
                          "                             https://gitee.com/CatIsNotFound/MyEngine\n" << std::endl;
-            std::cout << std::format("========== Application Info ==========\n"
+            std::cout << FMT::format("========== Application Info ==========\n"
                                      "ID: {} \nName: {} \nVersion: {} \n",
                                      app_id, app_name, app_version) << std::endl;
         }
@@ -927,7 +927,7 @@ namespace MyEngine {
         if (_window_list.contains(id)) {
             return _window_list.at(id).get();
         } else {
-            auto err = std::format("Engine: Window id {} is not created!", id);
+            auto err = FMT::format("Engine: Window id {} is not created!", id);
             Logger::log(err, Logger::Fatal);
             throw NullPointerException(err);
         }
@@ -960,7 +960,7 @@ namespace MyEngine {
             Logger::log("No error found. It will not throw the fatal error!", Logger::Info);
             return;
         }
-        std::string err = std::format("An error has caused the entire program to crash.\nException: {}",
+        std::string err = FMT::format("An error has caused the entire program to crash.\nException: {}",
                                       get_err_info);
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "FATAL ERROR", err.c_str(), nullptr);
         Logger::log(err, Logger::Fatal);
@@ -1113,7 +1113,7 @@ namespace MyEngine {
 
     Font* TextSystem::font(const std::string& font_name) {
         if (!_font_map.contains(font_name)) {
-            auto err = std::format("TextSystem: Font '{}' is not in the font list!", font_name);
+            auto err = FMT::format("TextSystem: Font '{}' is not in the font list!", font_name);
             Logger::log(err, Logger::Fatal);
             throw NullPointerException(err);
         }
@@ -1134,7 +1134,7 @@ namespace MyEngine {
 
     bool TextSystem::setFontSize(const std::string &font_name, float font_size) {
         if (!_font_map.contains(font_name)) {
-            auto err = std::format("TextSystem: Font '{}' is not in the font list!", font_name);
+            auto err = FMT::format("TextSystem: Font '{}' is not in the font list!", font_name);
             Logger::log(err, Logger::Error);
             return false;
         }
@@ -1258,7 +1258,7 @@ namespace MyEngine {
 
     TextSystem::Text* TextSystem::indexOfText(uint64_t text_id) {
         if (!_text_map.contains(text_id)) {
-            auto err = std::format("TextSystem: Text ID {} is not in the text list!", text_id);
+            auto err = FMT::format("TextSystem: Text ID {} is not in the text list!", text_id);
             Logger::log(err, Logger::Fatal);
             throw NullPointerException(err);
         }
@@ -1293,7 +1293,7 @@ namespace MyEngine {
 
     bool TextSystem::updateFont(const std::string &font_name) {
         if (!_font_map.contains(font_name)) {
-            auto err = std::format("TextSystem: Font '{}' is not in the font list!", font_name);
+            auto err = FMT::format("TextSystem: Font '{}' is not in the font list!", font_name);
             Logger::log(err, Logger::Error);
             return false;
         }
@@ -1380,7 +1380,7 @@ namespace MyEngine {
 
     MIX_Mixer *AudioSystem::mixer(size_t index) const {
         if (_mixer_list.size() <= index) {
-            auto err = std::format("AudioSystem: Mixer #{} is not valid! "
+            auto err = FMT::format("AudioSystem: Mixer #{} is not valid! "
                                    "Did you forget to call `AudioSystem::addNewMixer()` function?", index);
             Logger::log(err, Logger::Fatal);
             throw NullPointerException(err);
@@ -1430,12 +1430,12 @@ namespace MyEngine {
             if (std::holds_alternative<std::unique_ptr<BGM>>(_audio_map.at(name))) {
                 return std::get<std::unique_ptr<BGM>>(_audio_map.at(name)).get();
             } else {
-                auto err = std::format("AudioSystem: Audio '{}' is not the BGM type! ", name);
+                auto err = FMT::format("AudioSystem: Audio '{}' is not the BGM type! ", name);
                 Logger::log(err, Logger::Fatal);
                 throw NullPointerException(err);
             }
         } else {
-            auto err = std::format("AudioSystem: Audio '{}' is not exist! ", name);
+            auto err = FMT::format("AudioSystem: Audio '{}' is not exist! ", name);
             Logger::log(err, Logger::Fatal);
             throw NullPointerException(err);
         }
@@ -1446,12 +1446,12 @@ namespace MyEngine {
             if (std::holds_alternative<std::unique_ptr<SFX>>(_audio_map.at(name))) {
                 return std::get<std::unique_ptr<SFX>>(_audio_map.at(name)).get();
             } else {
-                auto err = std::format("AudioSystem: Audio '{}' is not the SFX type! ", name);
+                auto err = FMT::format("AudioSystem: Audio '{}' is not the SFX type! ", name);
                 Logger::log(err, Logger::Fatal);
                 throw NullPointerException(err);
             }
         } else {
-            auto err = std::format("AudioSystem: Audio '{}' is not exist! ", name);
+            auto err = FMT::format("AudioSystem: Audio '{}' is not exist! ", name);
             Logger::log(err, Logger::Fatal);
             throw NullPointerException(err);
         }

@@ -44,7 +44,7 @@ namespace MyEngine::Widget {
 
     void AbstractWidget::load() {
         if (!_window) {
-            auto err = std::format("AbstractWidget ({}): The specified window can not be null!", _object_name);
+            auto err = FMT::format("AbstractWidget ({}): The specified window can not be null!", _object_name);
             Logger::log(Logger::Fatal, "AbstractWidget ({}): The specified window can not be null!", _object_name);
             throw InvalidArgumentException(err);
         }
@@ -650,7 +650,7 @@ namespace MyEngine::Widget {
         if (_prop_map.contains(name)) {
             return &_prop_map.at(name);
         } else {
-            auto err = std::format("AbstractWidget ({}): Property '{}' is not found!", _object_name, name);
+            auto err = FMT::format("AbstractWidget ({}): Property '{}' is not found!", _object_name, name);
             Logger::log(Logger::Fatal, "AbstractWidget ({}): Property '{}' is not found!", _object_name, name);
             throw NullPointerException(err);
         }

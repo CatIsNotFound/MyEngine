@@ -342,13 +342,13 @@ namespace MyEngine {
         } else if (_type == Pointer) {
             return _value != nullptr;
         } else {
-            throw BadValueException(std::format("Variant: The variant can not convert to bool!"));
+            throw BadValueException(FMT::format("Variant: The variant can not convert to bool!"));
         }
     }
 
     int8_t Variant::toInt8() const {
         if (_type == Null || _type == String || _type == Pointer) {
-            throw BadValueException(std::format("Variant: The variant can not convert to int8!"));
+            throw BadValueException(FMT::format("Variant: The variant can not convert to int8!"));
         }
         if (_type == Int8) {
             return *static_cast<int8_t *>(_value);
@@ -359,7 +359,7 @@ namespace MyEngine {
 
     int16_t Variant::toInt16() const {
         if (_type == Null || _type == String || _type == Pointer) {
-            throw BadValueException(std::format("Variant: The variant can not convert to int16!"));
+            throw BadValueException(FMT::format("Variant: The variant can not convert to int16!"));
         }
         if (_type == Int16) {
             return *static_cast<int16_t*>(_value);
@@ -370,7 +370,7 @@ namespace MyEngine {
 
     int32_t Variant::toInt32() const {
         if (_type == Null || _type == String || _type == Pointer) {
-            throw BadValueException(std::format("Variant: The variant can not convert to int32!"));
+            throw BadValueException(FMT::format("Variant: The variant can not convert to int32!"));
         }
         if (_type == Int32) {
             return *static_cast<int32_t *>(_value);
@@ -381,7 +381,7 @@ namespace MyEngine {
 
     int64_t Variant::toInt64() const {
         if (_type == Null || _type == String || _type == Pointer) {
-            throw BadValueException(std::format("Variant: The variant can not convert to int64!"));
+            throw BadValueException(FMT::format("Variant: The variant can not convert to int64!"));
         }
         if (_type == Int64) {
             return *static_cast<int64_t *>(_value);
@@ -392,7 +392,7 @@ namespace MyEngine {
 
     uint8_t Variant::toUInt8() const {
         if (_type == Null || _type == String || _type == Pointer) {
-            throw BadValueException(std::format("Variant: The variant can not convert to uint8!"));
+            throw BadValueException(FMT::format("Variant: The variant can not convert to uint8!"));
         }
         if (_type == UInt8) {
             return *static_cast<uint8_t *>(_value);
@@ -403,7 +403,7 @@ namespace MyEngine {
 
     uint16_t Variant::toUInt16() const {
         if (_type == Null || _type == String || _type == Pointer) {
-            throw BadValueException(std::format("Variant: The variant can not convert to uint16!"));
+            throw BadValueException(FMT::format("Variant: The variant can not convert to uint16!"));
         }
         if (_type == UInt16) {
             return *static_cast<uint16_t *>(_value);
@@ -414,7 +414,7 @@ namespace MyEngine {
 
     uint32_t Variant::toUInt32() const {
         if (_type == Null || _type == String || _type == Pointer) {
-            throw BadValueException(std::format("Variant: The variant can not convert to uint32!"));
+            throw BadValueException(FMT::format("Variant: The variant can not convert to uint32!"));
         }
         if (_type == UInt32) {
             return *static_cast<uint32_t *>(_value);
@@ -425,7 +425,7 @@ namespace MyEngine {
 
     uint64_t Variant::toUInt64() const {
         if (_type == Null || _type == String || _type == Pointer) {
-            throw BadValueException(std::format("Variant: The variant can not convert to uint64!"));
+            throw BadValueException(FMT::format("Variant: The variant can not convert to uint64!"));
         }
         if (_type == UInt64) {
             return *static_cast<uint64_t *>(_value);
@@ -436,7 +436,7 @@ namespace MyEngine {
 
     float Variant::toFloat() const {
         if (_type == Null || _type == String || _type == Pointer) {
-            throw BadValueException(std::format("Variant: The variant can not convert to float!"));
+            throw BadValueException(FMT::format("Variant: The variant can not convert to float!"));
         }
         if (_type == Float) {
             return *static_cast<float *>(_value);
@@ -447,7 +447,7 @@ namespace MyEngine {
 
     double Variant::toDouble() const {
         if (_type == Null || _type == String || _type == Pointer) {
-            throw BadValueException(std::format("Variant: The variant can not convert to double!"));
+            throw BadValueException(FMT::format("Variant: The variant can not convert to double!"));
         }
         if (_type == Double) {
             return *static_cast<double *>(_value);
@@ -458,14 +458,14 @@ namespace MyEngine {
 
     std::string Variant::toString() const {
         if (_type != String) {
-            throw BadValueException(std::format("Variant: The variant can not convert to string!"));
+            throw BadValueException(FMT::format("Variant: The variant can not convert to string!"));
         }
         return *static_cast<std::string*>(_value);
     }
 
     void* Variant::toPointer() const {
         if (_type != Pointer) {
-            throw BadValueException(std::format("Variant: The variant can not convert to pointer!"));
+            throw BadValueException(FMT::format("Variant: The variant can not convert to pointer!"));
         }
         return _value;
     }

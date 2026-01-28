@@ -38,7 +38,7 @@ namespace MyEngine {
             _main_path = std::filesystem::absolute(main_directory).string();
             return true;
         }
-        Logger::log(std::format("FileSystem: Path '{}' is not found!", main_directory), Logger::Error);
+        Logger::log(FMT::format("FileSystem: Path '{}' is not found!", main_directory), Logger::Error);
         return false;
     }
 
@@ -64,7 +64,7 @@ namespace MyEngine {
         if (path.front() != '.') {
             return std::filesystem::is_regular_file(path);
         } else {
-            auto real_path = std::format("{}{}", _main_path, path.substr(path.find_first_of('/')));
+            auto real_path = FMT::format("{}{}", _main_path, path.substr(path.find_first_of('/')));
             return std::filesystem::is_regular_file(real_path);
         }
     }
@@ -73,7 +73,7 @@ namespace MyEngine {
         if (path.front() != '.') {
             return std::filesystem::is_directory(path);
         } else {
-            auto real_path = std::format("{}{}", _main_path, path.substr(path.find_first_of('/')));
+            auto real_path = FMT::format("{}{}", _main_path, path.substr(path.find_first_of('/')));
             return std::filesystem::is_directory(real_path);
         }
     }
@@ -82,7 +82,7 @@ namespace MyEngine {
         std::filesystem::path temp = getAbsolutePath(path);
         if (std::filesystem::is_directory(temp)) {
             if (ignore_error) {
-                Logger::log(std::format("FileSystem: Directory '{}' is exist!", temp.string()),
+                Logger::log(FMT::format("FileSystem: Directory '{}' is exist!", temp.string()),
                             Logger::Error);
             }
             return false;
@@ -98,14 +98,14 @@ namespace MyEngine {
                         std::filesystem::create_directory(temp);
                     } catch (const std::exception& e) {
                         if (ignore_error) return false;
-                        Logger::log(std::format("FileSystem: Directory '{}' can not be created!\n"
+                        Logger::log(FMT::format("FileSystem: Directory '{}' can not be created!\n"
                                      "Exception: {}", temp.string(), e.what()));
                         return false;
                     }
                 }
                 else {
                     if (ignore_error) {
-                        Logger::log(std::format("FileSystem: Directory '{}' is exist!", path));
+                        Logger::log(FMT::format("FileSystem: Directory '{}' is exist!", path));
                     }
                     return false;
                 }
@@ -118,7 +118,7 @@ namespace MyEngine {
         std::filesystem::path temp = getAbsolutePath(path);
         if (!std::filesystem::is_directory(temp)) {
             if (!ignore_error) {
-                Logger::log(std::format("FileSystem: Directory '{}' is not exist!", temp.string()));
+                Logger::log(FMT::format("FileSystem: Directory '{}' is not exist!", temp.string()));
             }
             return false;
         } else {
@@ -126,13 +126,13 @@ namespace MyEngine {
                 auto rm_paths = getPathUntilNotExist(temp.string());
                 if (rm_paths.empty()) {
                     if (ignore_error) {
-                        Logger::log(std::format("FileSystem: Directory '{}' can not be removed!", temp.string()),
+                        Logger::log(FMT::format("FileSystem: Directory '{}' can not be removed!", temp.string()),
                                     Logger::Error);
                     }
                     return false;
                 }
                 for (int64_t idx = (int64_t)(rm_paths.size()) - 1; idx >= 0; idx--) {
-                    Logger::log(std::format("Delete: {}", rm_paths[idx]), Logger::Error);
+                    Logger::log(FMT::format("Delete: {}", rm_paths[idx]), Logger::Error);
                     std::filesystem::remove(rm_paths[idx]);
                 }
             } else {
@@ -141,13 +141,13 @@ namespace MyEngine {
                         std::filesystem::remove(temp);
                     } catch (const std::exception &e) {
                         if (!ignore_error)
-                            Logger::log(std::format("FileSystem: Directory '{}' can not be removed!\n"
+                            Logger::log(FMT::format("FileSystem: Directory '{}' can not be removed!\n"
                                          "Exception: {}", temp.string(), e.what()), Logger::Error);
                         return false;
                     }
                 } else {
                     if (!ignore_error) { 
-                        Logger::log(std::format("FileSystem: Directory '{}' is not exist!", temp.string()),
+                        Logger::log(FMT::format("FileSystem: Directory '{}' is not exist!", temp.string()),
                                     Logger::Error);
                     }
                     return false;
@@ -167,7 +167,7 @@ namespace MyEngine {
         }
         std::ofstream file(temp.string());
         if (!file.is_open()) {
-            if (!ignore_error) Logger::log(std::format("FileSystem: Can't create file '{}'!", temp.string()),
+            if (!ignore_error) Logger::log(FMT::format("FileSystem: Can't create file '{}'!", temp.string()),
                                            Logger::Error);
         }
         file << "";
@@ -181,7 +181,7 @@ namespace MyEngine {
             std::filesystem::remove(temp);
             return true;
         }
-        if (!ignore_error) Logger::log(std::format("FileSystem: Can't remove the file '{}'", temp.string()),
+        if (!ignore_error) Logger::log(FMT::format("FileSystem: Can't remove the file '{}'", temp.string()),
                                        Logger::Error);
         return false;
     }
@@ -191,7 +191,7 @@ namespace MyEngine {
         std::filesystem::path temp = getAbsolutePath(path);
         std::ofstream file(temp.string(),((append_mode ? (std::ios::in | std::ios::app) : std::ios::in)));
         if (!file.is_open()) {
-            if (!ignore_error) Logger::log(std::format("FileSystem: Can't create file '{}'!", temp.string()),
+            if (!ignore_error) Logger::log(FMT::format("FileSystem: Can't create file '{}'!", temp.string()),
                                            Logger::Error);
             return false;
         }
@@ -204,7 +204,7 @@ namespace MyEngine {
         std::filesystem::path temp = getAbsolutePath(path);
         std::ifstream file(temp.string(), std::ios::in);
         if (!file.is_open()) {
-            if (!ignore_error) Logger::log(std::format("FileSystem: File '{}' is not found!", temp.string()),
+            if (!ignore_error) Logger::log(FMT::format("FileSystem: File '{}' is not found!", temp.string()),
                                            Logger::Error);
             if (ok) *ok = false;
             return "";
@@ -220,7 +220,7 @@ namespace MyEngine {
                 if (!file.eof()) output += '\n'; else break;
             }
         } catch (const std::exception &exception) {
-            Logger::log(std::format("FileSystem: Read file '{}' failed at line {}!",
+            Logger::log(FMT::format("FileSystem: Read file '{}' failed at line {}!",
                                     temp.string(), line), Logger::Error);
         }
         file.close();
@@ -234,7 +234,7 @@ namespace MyEngine {
         std::ofstream file(temp.string(),((append_mode ? (std::ios::in | std::ios::app | std::ios::binary) :
                                            std::ios::in | std::ios::binary)));
         if (!file.is_open()) {
-            if (!ignore_error) Logger::log(std::format("FileSystem: Can't create file '{}'!",
+            if (!ignore_error) Logger::log(FMT::format("FileSystem: Can't create file '{}'!",
                                                        temp.string()), Logger::Error);
             return false;
         }
@@ -249,7 +249,7 @@ namespace MyEngine {
         std::ofstream file(temp.string(),((append_mode ? (std::ios::in | std::ios::app | std::ios::binary) :
                                            std::ios::in | std::ios::binary)));
         if (!file.is_open()) {
-            if (!ignore_error) Logger::log(std::format("FileSystem: Can't create file '{}'!",
+            if (!ignore_error) Logger::log(FMT::format("FileSystem: Can't create file '{}'!",
                                                        temp.string()), Logger::Error);
             return false;
         }
@@ -265,7 +265,7 @@ namespace MyEngine {
         std::filesystem::path temp = getAbsolutePath(path);
         std::ifstream file(temp.string(), std::ios::in | std::ios::binary);
         if (!file.is_open()) {
-            if (!ignore_error) Logger::log(std::format("FileSystem: File '{}' is not found!",
+            if (!ignore_error) Logger::log(FMT::format("FileSystem: File '{}' is not found!",
                                                        temp.string()), Logger::Error);
             return false;
         }
@@ -278,7 +278,7 @@ namespace MyEngine {
         std::filesystem::path temp = getAbsolutePath(path);
         std::ifstream file(temp.string(), std::ios::in | std::ios::binary);
         if (!file.is_open()) {
-            if (!ignore_error) Logger::log(std::format("FileSystem: File '{}' is not found!",
+            if (!ignore_error) Logger::log(FMT::format("FileSystem: File '{}' is not found!",
                                                        temp.string()), Logger::Error);
             if (ok) *ok = false;
             return {};
@@ -298,7 +298,7 @@ namespace MyEngine {
         if (std::filesystem::exists(file_path)) {
             return std::filesystem::file_size(file_path);
         } else {
-            Logger::log(std::format("FileSystem: Can't open file '{}'!", file_path), Logger::Warn);
+            Logger::log(FMT::format("FileSystem: Can't open file '{}'!", file_path), Logger::Warn);
             return 0;
         }
     }
@@ -312,11 +312,11 @@ namespace MyEngine {
         if (path.front() == '.') {
             auto pos = path.find_first_of('/');
             if (pos != std::string::npos)
-                return std::format("{}{}", _main_path, path.substr(pos));
+                return FMT::format("{}{}", _main_path, path.substr(pos));
             else
-                return std::format("{}", _main_path);
+                return FMT::format("{}", _main_path);
         }
-        else return std::format("{}/{}", _main_path, path);
+        else return FMT::format("{}/{}", _main_path, path);
     }
 
     std::string FileSystem::getShortFileName(const std::string &path, bool cut_file_extension) {
@@ -366,7 +366,7 @@ namespace MyEngine {
         auto real_path = getAbsolutePath(path);
         std::vector<std::string> out;
         if (!std::filesystem::is_directory(real_path)) {
-            if (!ignore_error) Logger::log(std::format("FileSystem: Path '{}' is not found! ",
+            if (!ignore_error) Logger::log(FMT::format("FileSystem: Path '{}' is not found! ",
                                                        real_path), Logger::Error);
             return {};
         }
@@ -395,7 +395,7 @@ namespace MyEngine {
                 }
             } catch (const std::filesystem::filesystem_error& e) {
                 if (!ignore_error) {
-                    Logger::log(std::format("FileSystem: Access file '{}' error! Exception: {}",
+                    Logger::log(FMT::format("FileSystem: Access file '{}' error! Exception: {}",
                                             real_path, e.what()), Logger::Error);
                 }
             }
@@ -409,7 +409,7 @@ namespace MyEngine {
         auto real_path = getAbsolutePath(path);
         std::vector<std::string> out;
         if (!std::filesystem::is_directory(real_path)) {
-            if (!ignore_error) Logger::log(std::format("FileSystem: Path '{}' is not found! ",
+            if (!ignore_error) Logger::log(FMT::format("FileSystem: Path '{}' is not found! ",
                                                        real_path), Logger::Error);
             return {};
         }
@@ -437,7 +437,7 @@ namespace MyEngine {
                 }
             } catch (const std::filesystem::filesystem_error& e) {
                 if (!ignore_error) {
-                    Logger::log(std::format("FileSystem: Access file '{}' error! Exception: {}",
+                    Logger::log(FMT::format("FileSystem: Access file '{}' error! Exception: {}",
                                             real_path, e.what()), Logger::Error);
                 }
             }
@@ -450,7 +450,7 @@ namespace MyEngine {
         auto real_path = getAbsolutePath(path);
         std::vector<std::string> out;
         if (!std::filesystem::is_directory(real_path)) {
-            if (!ignore_error) Logger::log(std::format("FileSystem: Path '{}' is not found! ",
+            if (!ignore_error) Logger::log(FMT::format("FileSystem: Path '{}' is not found! ",
                                                        real_path), Logger::Error);
             return {};
         }
@@ -479,7 +479,7 @@ namespace MyEngine {
                 }
             } catch (const std::filesystem::filesystem_error& e) {
                 if (!ignore_error) {
-                    Logger::log(std::format("FileSystem: Access file '{}' error! Exception: {}",
+                    Logger::log(FMT::format("FileSystem: Access file '{}' error! Exception: {}",
                                             real_path, e.what()), Logger::Error);
                 }
             }

@@ -35,6 +35,18 @@
 #include <csignal>
 #include <cassert>
 
-#ifdef __APPLE__
+#ifdef __USED_DATE_LIB__
 #include <date/tz.h>
+#define DATE_TZ date
+#else
+#define DATE_TZ std::chrono
 #endif
+#ifdef __USED_FMT_LIB__
+#include <fmt/core.h>
+#include <fmt/chrono.h>
+#define FMT fmt
+#else
+#define FMT std
+#endif
+
+

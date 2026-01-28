@@ -104,7 +104,7 @@ namespace MyEngine {
         void ClipViewCMD::exec() {
             bool _ret = SDL_SetRenderViewport(_renderer, (_reset ? nullptr : &_rect));
             if (!_ret) {
-                Logger::log(std::format("Renderer: Set renderer viewport failed! Exception: {}",
+                Logger::log(FMT::format("Renderer: Set renderer viewport failed! Exception: {}",
                                         SDL_GetError()), Logger::Warn);
             }
         }
@@ -162,13 +162,13 @@ namespace MyEngine {
             auto color = prop->color_alpha;
             auto _ret = SDL_SetTextureColorMod(texture, color.r, color.g, color.b);
             if (!_ret) {
-                Logger::log(std::format("Renderer: Set texture color failed! Exception: {}",
+                Logger::log(FMT::format("Renderer: Set texture color failed! Exception: {}",
                                         SDL_GetError()), Logger::Warn);
             }
             _ret = SDL_SetTextureAlphaMod(texture, color.a);
 
             if (!_ret) {
-                Logger::log(std::format("Renderer: Set texture alpha failed! Exception: {}",
+                Logger::log(FMT::format("Renderer: Set texture alpha failed! Exception: {}",
                                         SDL_GetError()), Logger::Warn);
             }
             auto scaled = prop->scaledGeometry();
@@ -182,7 +182,7 @@ namespace MyEngine {
                                             prop->clip_mode ? &prop->clip_area : nullptr,
                                             &rect_dest, prop->rotate_angle, &center, prop->flip_mode);
             if (!_ret) {
-                Logger::log(std::format("Renderer: Set render texture failed! Exception: {}",
+                Logger::log(FMT::format("Renderer: Set render texture failed! Exception: {}",
                                         SDL_GetError()), Logger::Error);
                 return;
             }
@@ -229,13 +229,13 @@ namespace MyEngine {
             const auto pos = point->position();
             auto _ret = SDL_SetRenderDrawColor(_renderer, color.r, color.g, color.b, color.a);
             if (!_ret) {
-                Logger::log(std::format("Renderer: Set renderer draw color failed! Exception: {}",
+                Logger::log(FMT::format("Renderer: Set renderer draw color failed! Exception: {}",
                                         SDL_GetError()), Logger::Warn);
             }
             if (point->size() == 1) {
                 _ret = SDL_RenderPoint(_renderer, pos.x, pos.y);
                 if (!_ret) {
-                    Logger::log(std::format("Renderer: Set render point failed! Exception: {}",
+                    Logger::log(FMT::format("Renderer: Set render point failed! Exception: {}",
                                             SDL_GetError()), Logger::Error);
                 }
             } else {
@@ -243,7 +243,7 @@ namespace MyEngine {
                                           point->verticesCount(),point->indices(),
                                           point->indicesCount());
                 if (!_ret) {
-                    Logger::log(std::format("Renderer: Set render geometry failed! Exception: {}",
+                    Logger::log(FMT::format("Renderer: Set render geometry failed! Exception: {}",
                                             SDL_GetError()), Logger::Error);
                 }
             }
@@ -292,21 +292,21 @@ namespace MyEngine {
             const auto color = line->color();
             auto _ret = SDL_SetRenderDrawColor(_renderer, color.r, color.g, color.b, color.a);
             if (!_ret) {
-                Logger::log(std::format("Renderer: Set render draw color failed! Exception: {}",
+                Logger::log(FMT::format("Renderer: Set render draw color failed! Exception: {}",
                                         SDL_GetError()), Logger::Warn);
             }
             if (SIZE == 1) {
                 _ret = SDL_RenderLine(_renderer, START.x, START.y,
                                       END.x, END.y);
                 if (!_ret) {
-                    Logger::log(std::format("Renderer: Set render line failed! Exception: {}",
+                    Logger::log(FMT::format("Renderer: Set render line failed! Exception: {}",
                                             SDL_GetError()), Logger::Error);
                 }
             } else {
                 _ret = SDL_RenderGeometry(_renderer, nullptr, line->vertices(),
                                           line->vertexCount(), line->indices(), line->indicesCount());
                 if (!_ret) {
-                    Logger::log(std::format("Renderer: Set render geometry failed! Exception: {}",
+                    Logger::log(FMT::format("Renderer: Set render geometry failed! Exception: {}",
                                             SDL_GetError()), Logger::Error);
                 }
             }
@@ -354,13 +354,13 @@ namespace MyEngine {
                 auto& color = rect->backgroundColor();
                 auto _ret = SDL_SetRenderDrawColor(_renderer, color.r, color.g, color.b, color.a);
                 if (!_ret) {
-                    Logger::log(std::format("Renderer: Set render draw color failed! Exception: {}",
+                    Logger::log(FMT::format("Renderer: Set render draw color failed! Exception: {}",
                                             SDL_GetError()), Logger::Warn);
                 }
                 _ret = SDL_RenderGeometry(_renderer, nullptr, rect->vertices(), rect->verticesCount(),
                                           rect->indices(), rect->indicesCount());
                 if (!_ret) {
-                    Logger::log(std::format("Renderer: Set render geometry failed! Exception: {}",
+                    Logger::log(FMT::format("Renderer: Set render geometry failed! Exception: {}",
                                             SDL_GetError()), Logger::Error);
                 }
             }
@@ -368,14 +368,14 @@ namespace MyEngine {
             auto& color = rect->backgroundColor();
             auto _ret = SDL_SetRenderDrawColor(_renderer, color.r, color.g, color.b, color.a);
             if (!_ret) {
-                Logger::log(std::format("Renderer: Set render draw color failed! Exception: {}",
+                Logger::log(FMT::format("Renderer: Set render draw color failed! Exception: {}",
                                         SDL_GetError()), Logger::Warn);
             }
             _ret = SDL_RenderGeometry(_renderer, nullptr, rect->borderVertices(),
                                       rect->borderVerticesCount(),rect->borderIndices(),
                                       rect->borderIndicesCount());
             if (!_ret) {
-                Logger::log(std::format("Renderer: Set render geometry failed! Exception: {}",
+                Logger::log(FMT::format("Renderer: Set render geometry failed! Exception: {}",
                                         SDL_GetError()), Logger::Error);
             }
         }
@@ -424,7 +424,7 @@ namespace MyEngine {
                 _ret = SDL_RenderGeometry(_renderer, nullptr, triangle->vertices(), 3,
                                           triangle->indices(), 3);
                 if (!_ret) {
-                    Logger::log(std::format("Renderer: Set render geometry failed! Exception: {}",
+                    Logger::log(FMT::format("Renderer: Set render geometry failed! Exception: {}",
                                             SDL_GetError()), Logger::Error);
                 }
             }
@@ -433,7 +433,7 @@ namespace MyEngine {
                 const auto color = triangle->borderColor();
                 _ret = SDL_SetRenderDrawColor(_renderer, color.r, color.g, color.b, color.a);
                 if (!_ret) {
-                    Logger::log(std::format("Renderer: Set render draw color failed! Exception: {}",
+                    Logger::log(FMT::format("Renderer: Set render draw color failed! Exception: {}",
                                             SDL_GetError()), Logger::Warn);
                 }
                 int err_cnt = 0;
@@ -445,7 +445,7 @@ namespace MyEngine {
                     err_cnt += SDL_RenderLine(_renderer, p3.x, p3.y, p2.x, p2.y);
                     err_cnt += SDL_RenderLine(_renderer, p1.x, p1.y, p3.x, p3.y);
                     if (err_cnt < 3) {
-                        Logger::log(std::format("Renderer: Set render triangle failed! Exception: {}",
+                        Logger::log(FMT::format("Renderer: Set render triangle failed! Exception: {}",
                                                 SDL_GetError()), Logger::Error);
                     }
                 } else {
@@ -456,7 +456,7 @@ namespace MyEngine {
                     err_cnt += SDL_RenderGeometry(_renderer, nullptr, triangle->borderVertices3(), triangle->borderVerticesCount(),
                                                   triangle->borderIndices3(), triangle->borderIndicesCount());
                     if (err_cnt < 3) {
-                        Logger::log(std::format("Renderer: Set render triangle failed! Exception: {}",
+                        Logger::log(FMT::format("Renderer: Set render triangle failed! Exception: {}",
                                                 SDL_GetError()), Logger::Error);
                     }
                 }
@@ -508,7 +508,7 @@ namespace MyEngine {
                                           ellipse->vertexCount(),ellipse->indices(),
                                           ellipse->indicesCount());
                 if (!_ret) {
-                    Logger::log(std::format("Renderer: Set render geometry failed! Exception: {}",
+                    Logger::log(FMT::format("Renderer: Set render geometry failed! Exception: {}",
                                             SDL_GetError()), Logger::Error);
                 }
             }
@@ -517,7 +517,7 @@ namespace MyEngine {
                                           ellipse->borderVerticesCount(),ellipse->borderIndices(),
                                           ellipse->borderIndicesCount());
                 if (!_ret) {
-                    Logger::log(std::format("Renderer: Set render geometry failed! Exception: {}",
+                    Logger::log(FMT::format("Renderer: Set render geometry failed! Exception: {}",
                                             SDL_GetError()), Logger::Error);
                 }
             }
@@ -580,7 +580,7 @@ namespace MyEngine {
         void TextCMD::render(TTF_Text *text, Vector2 *position) {
             bool _ret = TTF_DrawRendererText(text, position->x, position->y);
             if (!_ret) {
-                Logger::log(std::format("Renderer: Set render text failed! Exception: {}",
+                Logger::log(FMT::format("Renderer: Set render text failed! Exception: {}",
                                         SDL_GetError()), Logger::Error);
             }
         }
@@ -627,12 +627,12 @@ namespace MyEngine {
             auto _ret = SDL_SetRenderDrawColor(_renderer, _render_color.r, _render_color.g,
                                                _render_color.b, _render_color.a);
             if (!_ret) {
-                Logger::log(std::format("Renderer: Set render draw color failed! Exception: {}",
+                Logger::log(FMT::format("Renderer: Set render draw color failed! Exception: {}",
                                         SDL_GetError()), Logger::Warn);
             }
             _ret = SDL_RenderDebugText(_renderer, position->x, position->y, text.c_str());
             if (!_ret) {
-                Logger::log(std::format("Renderer: Set render debug text failed! Exception: {}",
+                Logger::log(FMT::format("Renderer: Set render debug text failed! Exception: {}",
                                         SDL_GetError()), Logger::Warn);
             }
         }

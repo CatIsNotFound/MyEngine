@@ -11,7 +11,7 @@ namespace MyEngine {
             : _font_size(font_size), _font_path(font_path) {
         _font = TTF_OpenFont(font_path.c_str(), font_size);
         if (!_font) {
-            Logger::log(std::format("Font: Can't load font from path '{}'.", font_path),
+            Logger::log(FMT::format("Font: Can't load font from path '{}'.", font_path),
                         Logger::Error);
         }
         _font_is_loaded = true;
@@ -26,7 +26,7 @@ namespace MyEngine {
     void Font::setFontPath(const std::string &font_path) {
         auto _new_font = TTF_OpenFont(font_path.c_str(), _font_size);
         if (!_new_font) {
-            Logger::log(std::format("Font: Can't load font from path '{}'.", font_path),
+            Logger::log(FMT::format("Font: Can't load font from path '{}'.", font_path),
                         Logger::Error);
             return;
         }
@@ -145,7 +145,7 @@ namespace MyEngine {
             surface = TTF_RenderText_Blended(_font, text.c_str(), 0, _font_color);
         }
         if (!surface) {
-            Logger::log(std::format("Can't drawEvent the current text!\nException: {}", SDL_GetError()), Logger::Error);
+            Logger::log(FMT::format("Can't drawEvent the current text!\nException: {}", SDL_GetError()), Logger::Error);
         }
         return surface;
     }
@@ -183,7 +183,7 @@ namespace MyEngine {
             surface = TTF_RenderText_LCD(_font, text.c_str(), 0, _font_color, backgrond_color);
         }
         if (!surface) {
-            Logger::log(std::format("Can't drawEvent the current text!\nException: {}", SDL_GetError()), Logger::Error);
+            Logger::log(FMT::format("Can't drawEvent the current text!\nException: {}", SDL_GetError()), Logger::Error);
         }
         return surface;
     }
@@ -272,7 +272,7 @@ namespace MyEngine {
                 : _renderer(renderer), _texture(nullptr), _path(path) {
         _surface = IMG_Load(path.c_str());
         if (!_surface) {
-            Logger::log(std::format("Texture: The image path '{}' is not found!", path),
+            Logger::log(FMT::format("Texture: The image path '{}' is not found!", path),
                         Logger::Error);
             _property = std::make_unique<TextureProperty>();
             return;
@@ -283,14 +283,14 @@ namespace MyEngine {
         _property->clip_mode = false;
         _property->color_alpha = RGBAColor::White;
         _property->setScale(1.0f);
-        Logger::log(std::format("Texture: Created from image path '{}'", path));
-        Logger::log(std::format("Texture: Size set to {}x{}", _surface->w, _surface->h));
+        Logger::log(FMT::format("Texture: Created from image path '{}'", path));
+        Logger::log(FMT::format("Texture: Size set to {}x{}", _surface->w, _surface->h));
     }
 
     Texture::Texture(SDL_Surface* surface, Renderer *renderer, bool deep_copy)
                 : _renderer(renderer), _texture(nullptr) {
         if (!surface) {
-            Logger::log(std::format("Texture: The surface is not valid!\n"
+            Logger::log(FMT::format("Texture: The surface is not valid!\n"
                                     "Exception: {}", SDL_GetError()), Logger::Error);
             _property = std::make_unique<TextureProperty>();
             return;
@@ -302,15 +302,15 @@ namespace MyEngine {
         _property->clip_mode = false;
         _property->color_alpha = RGBAColor::White;
         _property->setScale(1.0f);
-        Logger::log(std::format("Texture: Created from surface"));
-        Logger::log(std::format("Texture: Size set to {}x{}", _surface->w, _surface->h));
+        Logger::log(FMT::format("Texture: Created from surface"));
+        Logger::log(FMT::format("Texture: Size set to {}x{}", _surface->w, _surface->h));
     }
 
     Texture::Texture(Renderer* renderer, SDL_PixelFormat format, int width, int height, SDL_TextureAccess access)
         : _renderer(renderer), _surface(nullptr), _texture(nullptr) {
         _texture = SDL_CreateTexture(renderer->self(), format, access, width, height);
         if (!_texture) {
-            Logger::log(std::format("Texture: Created texture failed!\n"
+            Logger::log(FMT::format("Texture: Created texture failed!\n"
                                     "Exception: {}", SDL_GetError()), Logger::Error);
             _property = std::make_unique<TextureProperty>();
             return;
@@ -320,8 +320,8 @@ namespace MyEngine {
         _property->setScale(1.0f);
         _property->clip_mode = false;
         _property->color_alpha = RGBAColor::White;
-        Logger::log(std::format("Texture: Created from addCustomCommand"));
-        Logger::log(std::format("Texture: Size set to {}x{}", width, height));
+        Logger::log(FMT::format("Texture: Created from addCustomCommand"));
+        Logger::log(FMT::format("Texture: Size set to {}x{}", width, height));
     }
 
     Texture::~Texture() {
@@ -341,7 +341,7 @@ namespace MyEngine {
         auto img = IMG_Load(path.c_str());
         _path = path;
         if (!img) {
-            Logger::log(std::format("The image path '{}' is not found!", path), Logger::Error);
+            Logger::log(FMT::format("The image path '{}' is not found!", path), Logger::Error);
             return false;
         }
         if (_texture) {
@@ -353,8 +353,8 @@ namespace MyEngine {
         _surface = img;
         _texture = SDL_CreateTextureFromSurface(_renderer->self(), _surface);
         _property->resize((float)_surface->w, (float)_surface->h);
-        Logger::log(std::format("Texture: Image changed to '{}'", path));
-        Logger::log(std::format("Texture Size updated to {}x{}", _surface->w, _surface->h));
+        Logger::log(FMT::format("Texture: Image changed to '{}'", path));
+        Logger::log(FMT::format("Texture Size updated to {}x{}", _surface->w, _surface->h));
         return true;
     }
 
@@ -364,7 +364,7 @@ namespace MyEngine {
 
     bool Texture::setImageFromSurface(SDL_Surface *surface, bool deep_copy) {
         if (!surface) {
-            Logger::log(std::format("The surface is not valid!\n"
+            Logger::log(FMT::format("The surface is not valid!\n"
                                     "Exception: {}", SDL_GetError()), Logger::Error);
             _property = std::make_unique<TextureProperty>();
             return false;
@@ -376,8 +376,8 @@ namespace MyEngine {
         _property->clip_mode = false;
         _property->color_alpha = RGBAColor::White;
         _property->setScale(1.0f);
-        Logger::log(std::format("Texture: Created from surface"));
-        Logger::log(std::format("Texture: Size set to {}x{}", _surface->w, _surface->h));
+        Logger::log(FMT::format("Texture: Created from surface"));
+        Logger::log(FMT::format("Texture: Size set to {}x{}", _surface->w, _surface->h));
         return true;
     }
 
@@ -425,7 +425,7 @@ namespace MyEngine {
 
     bool TextureAtlas::addTiles(const std::string &tiles_name, const MyEngine::GeometryF &clip_geometry) {
         if (_tiles_map.contains(tiles_name)) {
-            Logger::log(std::format("TextureAtlas: Tiles '{}' is already in tiles map! "
+            Logger::log(FMT::format("TextureAtlas: Tiles '{}' is already in tiles map! "
                                     , tiles_name), Logger::Error);
             return false;
         }
@@ -447,7 +447,7 @@ namespace MyEngine {
             _tiles_map.at(tiles_name).properties.push_back(std::make_unique<TextureProperty>(temp.get()));
             return true;
         } else {
-            Logger::log(std::format("TextureAtlas: Tiles '{}' is not in tiles map! "
+            Logger::log(FMT::format("TextureAtlas: Tiles '{}' is not in tiles map! "
                                     "Did you forget to use `TextureAtlas::addTiles()`?", tiles_name), Logger::Error);
             return false;
         }
@@ -464,13 +464,13 @@ namespace MyEngine {
     TextureProperty *TextureAtlas::tilesProperty(const std::string &tiles_name, size_t index) {
         if (_tiles_map.contains(tiles_name)) {
             if (index >= _tiles_map[tiles_name].properties.size()) {
-                Logger::log(std::format("TextureAtlas: The index of the tiles '{}' is out of range! "
+                Logger::log(FMT::format("TextureAtlas: The index of the tiles '{}' is out of range! "
                             "Try to use `TextureAtlas::tilesPropertyCount()`?", tiles_name), Logger::Error);
                 return nullptr;
             }
             return _tiles_map[tiles_name].properties[index].get();
         } else {
-            Logger::log(std::format("TextureAtlas: Tiles '{}' is not in tiles map! "
+            Logger::log(FMT::format("TextureAtlas: Tiles '{}' is not in tiles map! "
                         "Did you forget to use `TextureAtlas::addTiles()`?", tiles_name), Logger::Error);
             return nullptr;
         }
@@ -480,7 +480,7 @@ namespace MyEngine {
         if (_tiles_map.contains(tiles_name)) {
             return _tiles_map.at(tiles_name).properties.size();
         } else {
-            Logger::log(std::format("TextureAtlas: Tiles '{}' is not in tiles map! "
+            Logger::log(FMT::format("TextureAtlas: Tiles '{}' is not in tiles map! "
                         "Did you forget to use `TextureAtlas::addTiles()`?", tiles_name), Logger::Error);
             return 0;
         }
@@ -490,7 +490,7 @@ namespace MyEngine {
         if (_tiles_map.contains(tiles_name)) {
             _current_tiles = tiles_name;
         } else {
-            Logger::log(std::format("TextureAtlas: Tiles '{}' is not in tiles map! "
+            Logger::log(FMT::format("TextureAtlas: Tiles '{}' is not in tiles map! "
                         "Did you forget to use `TextureAtlas::addTiles()`?", tiles_name), Logger::Error);
         }
     }
@@ -515,7 +515,7 @@ namespace MyEngine {
         if (_tiles_map.contains(_current_tiles)) {
             renderer()->drawTexture(self(), _tiles_map[_current_tiles].properties[0].get());
         } else {
-            auto err = std::format("TextureAtlas: Tiles '{}' is not in tiles map! "
+            auto err = FMT::format("TextureAtlas: Tiles '{}' is not in tiles map! "
                                    "Did you forget to use `TextureAtlas::addTiles()`?", _current_tiles);
             Logger::log(err, Logger::Fatal);
             throw OutOfRangeException(err);
@@ -525,14 +525,14 @@ namespace MyEngine {
     void TextureAtlas::draw(size_t index) {
         if (_tiles_map.contains(_current_tiles)) {
             if (index >= _tiles_map[_current_tiles].properties.size()) {
-                auto err = std::format("TextureAtlas: The index of the tiles '{}' is out of range! "
+                auto err = FMT::format("TextureAtlas: The index of the tiles '{}' is out of range! "
                                        "Try to use `TextureAtlas::tilesPropertyCount()`?", _current_tiles);
                 Logger::log(err, Logger::Fatal);
                 throw OutOfRangeException(err);
             }
             renderer()->drawTexture(self(), _tiles_map[_current_tiles].properties[index].get());
         } else {
-            auto err = std::format("TextureAtlas: Tiles '{}' is not in tiles map! "
+            auto err = FMT::format("TextureAtlas: Tiles '{}' is not in tiles map! "
                                    "Did you forget to use `TextureAtlas::addTiles()`?", _current_tiles);
             Logger::log(err, Logger::Fatal);
             throw OutOfRangeException(err);
@@ -542,14 +542,14 @@ namespace MyEngine {
     void TextureAtlas::draw(const std::string &tiles_name, size_t index) {
         if (_tiles_map.contains(tiles_name)) {
             if (index >= _tiles_map[tiles_name].properties.size()) {
-                auto err = std::format("TextureAtlas: The index of the tiles '{}' is out of range! "
+                auto err = FMT::format("TextureAtlas: The index of the tiles '{}' is out of range! "
                                        "Try to use `TextureAtlas::tilesPropertyCount()`?", _current_tiles);
                 Logger::log(err, Logger::Fatal);
                 throw OutOfRangeException(err);
             }
             renderer()->drawTexture(self(), _tiles_map[tiles_name].properties[index].get());
         } else {
-            auto err = std::format("TextureAtlas: Tiles '{}' is not in tiles map! "
+            auto err = FMT::format("TextureAtlas: Tiles '{}' is not in tiles map! "
                                    "Did you forget to use `TextureAtlas::addTiles()`?", tiles_name);
             Logger::log(err, Logger::Fatal);
             throw OutOfRangeException(err);
@@ -636,7 +636,7 @@ namespace MyEngine {
         if (!_textures.empty()) _textures.clear();
         _img_ani = IMG_LoadAnimation(path.c_str());
         if (!_img_ani) {
-            Logger::log(std::format("TextureAnimation: The image file '{}' is not the animation image file "
+            Logger::log(FMT::format("TextureAnimation: The image file '{}' is not the animation image file "
                                     "(*.gif, *.webp) or it is not valid!", path), Logger::Error);
             _null = false;
             return false;
@@ -649,7 +649,7 @@ namespace MyEngine {
         _property->setAnchor(1, 1);
         _property->resize(static_cast<float>(_img_ani->w), static_cast<float>(_img_ani->h));
         _null = true;
-        Logger::log(std::format("TextureAnimation: Loaded image file '{}', "
+        Logger::log(FMT::format("TextureAnimation: Loaded image file '{}', "
                                 "get image size: {}x{}.", path, _img_ani->w, _img_ani->h));
         return true;
     }
@@ -660,7 +660,7 @@ namespace MyEngine {
             throw NullPointerException("TextureAnimation: No image loaded or it is not valid!");
         }
         if (_textures.size() >= _cur_frame) {
-            auto err = std::format("TextureAnimation: Current frame is out of range (at frame {})!", _cur_frame);
+            auto err = FMT::format("TextureAnimation: Current frame is out of range (at frame {})!", _cur_frame);
             Logger::log(err,Logger::Fatal);
             throw BadValueException(err);
         }
@@ -732,7 +732,7 @@ namespace MyEngine {
             return resume();
         } else if (_play_status == Loaded) {
             if (!MIX_PlayTrack(_track, _prop_id)) {
-                Logger::log(std::format("BGM: Play audio failed! The file path '{}' is not valid! "
+                Logger::log(FMT::format("BGM: Play audio failed! The file path '{}' is not valid! "
                                         "Exception: {}", _path, SDL_GetError()), Logger::Error);
                 _play_status = Invalid;
                 return false;
@@ -861,7 +861,7 @@ namespace MyEngine {
     }
 
     bool BGM::setVolume(float volume) {
-        auto new_vol = volume < 0 ? 0 : std::min(volume, 10.f);
+        auto new_vol = std::clamp(volume, 0.f, 10.f);
         if (MIX_SetTrackGain(_track, new_vol)) {
             _volume = new_vol;
             return true;
@@ -878,15 +878,15 @@ namespace MyEngine {
     }
 
     bool BGM::setLRChannel(float left, float right) {
-        if (left >= 0 && left <= 10.f) _stereo_gains.left = left;
-        if (right >= 0 && right <= 10.f) _stereo_gains.right = right;
+        _stereo_gains.left = std::clamp(left, 0.f, 10.f);
+        _stereo_gains.right = std::clamp(right, 0.f, 10.f);
         return MIX_SetTrackStereo(_track, &_stereo_gains);
     }
 
     bool BGM::set3DPosition(float x, float y, float z) {
         _mix_3d = { .x = x, .y = y, .z = z };
         if (!MIX_SetTrack3DPosition(_track, &_mix_3d)) {
-            Logger::log(std::format("BGM::set3DPosition: Failed to set 3D position! Exception: {}", SDL_GetError()), Logger::Warn);
+            Logger::log(FMT::format("BGM::set3DPosition: Failed to set 3D position! Exception: {}", SDL_GetError()), Logger::Warn);
             return false;
         }
         return true;
@@ -920,20 +920,20 @@ namespace MyEngine {
         _play_status = Loading;
         _audio = MIX_LoadAudio(_mixer, _path.c_str(), false);
         if (!_audio) {
-            Logger::log(std::format("BGM: The specified file path '{}' is not valid! Exception: {}",
+            Logger::log(FMT::format("BGM: The specified file path '{}' is not valid! Exception: {}",
                                     _path, SDL_GetError()), Logger::Error);
             _play_status = Invalid;
             return;
         }
         _track = MIX_CreateTrack(_mixer);
         if (!_track) {
-            Logger::log(std::format("BGM: Create audio track failed! Exception: {}"
+            Logger::log(FMT::format("BGM: Create audio track failed! Exception: {}"
                     , SDL_GetError()), Logger::Error);
             _play_status = Invalid;
             return;
         }
         if (!MIX_SetTrackAudio(_track, _audio)) {
-            Logger::log(std::format("BGM: The specified file path '{}' can not set as audio track! Exception: {}",
+            Logger::log(FMT::format("BGM: The specified file path '{}' can not set as audio track! Exception: {}",
                                     _path, SDL_GetError()), Logger::Error);
             _play_status = Invalid;
             return;
@@ -986,7 +986,7 @@ namespace MyEngine {
         SDL_SetNumberProperty(_prop_id, MIX_PROP_PLAY_LOOPS_NUMBER, (loop ? -1 : 0));
         SDL_SetNumberProperty(_prop_id, MIX_PROP_PLAY_FADE_IN_MILLISECONDS_NUMBER, fade_in_duration);
         if (!MIX_PlayTrack(_track, _prop_id)) {
-            Logger::log(std::format("BGM: Play audio failed! The file path '{}' is not valid! "
+            Logger::log(FMT::format("BGM: Play audio failed! The file path '{}' is not valid! "
                                     "Exception: {}", _path, SDL_GetError()), Logger::Error);
             return false;
         }
@@ -1027,7 +1027,7 @@ namespace MyEngine {
     }
 
     bool SFX::setVolume(float volume) {
-        auto new_vol = volume < 0 ? 0 : std::min(volume, 10.f);
+        auto new_vol = std::clamp(volume, 0.f, 10.f);
         if (MIX_SetTrackGain(_track, new_vol)) {
             _volume = new_vol;
             return true;
@@ -1044,15 +1044,15 @@ namespace MyEngine {
     }
 
     bool SFX::setLRChannel(float left, float right) {
-        _stereo_gains.left = (_stereo_gains.left > 0 ? std::min(left, 10.f) : 0.f);
-        _stereo_gains.right = (_stereo_gains.right > 0 ? std::min(right, 10.f) : 0.f);
+        _stereo_gains.left  = std::clamp(left, 0.f, 10.f);
+        _stereo_gains.right = std::clamp(right, 0.f, 10.f);
         return MIX_SetTrackStereo(_track, &_stereo_gains);
     }
 
     bool SFX::set3DPosition(float x, float y, float z) {
         _mix_3d = { .x = x, .y = y, .z = z };
         if (!MIX_SetTrack3DPosition(_track, &_mix_3d)) {
-            Logger::log(std::format("BGM::set3DPosition: Failed to set 3D position! Exception: {}", SDL_GetError()), Logger::Warn);
+            Logger::log(FMT::format("BGM::set3DPosition: Failed to set 3D position! Exception: {}", SDL_GetError()), Logger::Warn);
             return false;
         }
         return true;
@@ -1086,20 +1086,20 @@ namespace MyEngine {
         auto size = FileSystem::readableSize(_path, FileSystem::MB);
         _audio = MIX_LoadAudio(_mixer, _path.c_str(), (size >= MAX_AUDIO_FILE_SIZE));
         if (!_audio) {
-            Logger::log(std::format("BGM: The specified file path '{}' is not valid! Exception: {}",
+            Logger::log(FMT::format("BGM: The specified file path '{}' is not valid! Exception: {}",
                                     _path, SDL_GetError()), Logger::Error);
             _is_load = false;
             return;
         }
         _track = MIX_CreateTrack(_mixer);
         if (!_track) {
-            Logger::log(std::format("BGM: Create audio track failed! Exception: {}"
+            Logger::log(FMT::format("BGM: Create audio track failed! Exception: {}"
                     , SDL_GetError()), Logger::Error);
             _is_load = false;
             return;
         }
         if (!MIX_SetTrackAudio(_track, _audio)) {
-            Logger::log(std::format("BGM: The specified file path '{}' can not set as audio track! Exception: {}",
+            Logger::log(FMT::format("BGM: The specified file path '{}' can not set as audio track! Exception: {}",
                                     _path, SDL_GetError()), Logger::Error);
             _is_load = false;
             return;

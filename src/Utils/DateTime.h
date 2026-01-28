@@ -2,11 +2,6 @@
 #ifndef MYENGINE_UTILS_DATETIME_H
 #define MYENGINE_UTILS_DATETIME_H
 #include "Logger.h"
-#ifdef __APPLE__
-#define CHRONO date
-#else
-#define CHRONO std::chrono
-#endif
 
 namespace MyEngine {
     /**
@@ -19,7 +14,7 @@ namespace MyEngine {
      * \endif
      */
     class DateTime {
-        inline static std::string timezone{CHRONO::current_zone()->name()};
+        inline static std::string timezone{DATE_TZ::current_zone()->name()};
     public:
         DateTime() = delete;
         ~DateTime() = delete;
@@ -215,6 +210,25 @@ namespace MyEngine {
 
         /**
          * \if EN
+         * @brief Get all supported time zone names
+         * @return Return a list consisting of multiple time zone names
+         *
+         * \endif
+         * @see setDefaultTimezone
+         * @see currentTimezone
+         */
+        static std::vector<std::string_view> timezoneList() {
+            static std::vector<std::string_view> _out;
+            if (_out.empty()) {
+                for (auto &zone: DATE_TZ::get_tzdb().zones) {
+                    _out.emplace_back(zone.name());
+                }
+            }
+            return _out;
+        }
+
+        /**
+         * \if EN
          * @brief Set default time zone
          * @param tz    Specify the time zone (usually `Asia/Shanghai`, `America/New_York`, `UTC`, etc.)
          * @return Returns `true` if the default time zone was set successfully, otherwise `false`.
@@ -223,13 +237,14 @@ namespace MyEngine {
          * MyEngine::DateTime::setDefaultTimezone("Asia/Shanghai");
          * @endcode
          * @see currentTimezone
+         * @see timezoneList
          */
         static bool setDefaultTimezone(const std::string& tz) {
             try {
-                CHRONO::locate_zone(tz);
+                DATE_TZ::locate_zone(tz);
                 timezone = tz;
             } catch (const std::runtime_error& e) {
-                Logger::log(std::format("DateTime: Can't set invalid timezone: {}", tz),
+                Logger::log(FMT::format("DateTime: Can't set invalid timezone: {}", tz),
                             Logger::Error);
                 return false;
             }
@@ -243,6 +258,7 @@ namespace MyEngine {
          * @return Return the time zone name using a string
          * \endif
          * @see setDefaultTimezone
+         * @see timezoneList
          */
         static std::string_view currentTimezone() {
             return timezone;
@@ -288,8 +304,12 @@ namespace MyEngine {
          */
         static std::string now() {
             auto now = std::chrono::system_clock::now();
-            auto zoned = CHRONO::zoned_time(timezone, now);
-            return std::format("{}", zoned);
+            auto zoned = DATE_TZ::zoned_time(timezone, now);
+            auto sys_time = zoned.get_sys_time();
+            auto day_time = DATE_TZ::floor<DATE_TZ::days>(sys_time);
+            DATE_TZ::year_month_day ymy = day_time;
+            DATE_TZ::hh_mm_ss hms(sys_time - day_time);
+            return FMT::format("{}", sys_time);
         }
 
         /**
@@ -303,12 +323,12 @@ namespace MyEngine {
          */
         static DT currentDateTime() {
             auto now = std::chrono::system_clock::now();
-            auto zoned = CHRONO::zoned_time(timezone, now);
+            auto zoned = DATE_TZ::zoned_time(timezone, now);
             auto local_time = zoned.get_local_time();
-            auto day_time = floor<CHRONO::days>(local_time);
-            CHRONO::year_month_day ymy{day_time};
-            CHRONO::hh_mm_ss time{local_time - day_time};
-            CHRONO::weekday w_day = CHRONO::weekday{CHRONO::sys_days{ymy}};
+            auto day_time = floor<DATE_TZ::days>(local_time);
+            DATE_TZ::year_month_day ymy{day_time};
+            DATE_TZ::hh_mm_ss time{local_time - day_time};
+            DATE_TZ::weekday w_day = DATE_TZ::weekday{DATE_TZ::sys_days{ymy}};
             DT _ret{};
             _ret.year = int(ymy.year());
             _ret.month = static_cast<uint8_t>(static_cast<unsigned>(ymy.month()));
@@ -334,15 +354,15 @@ namespace MyEngine {
          */
         static uint64_t generateTimestamp(const DT& datetime, TimeBase time_base = Seconds) {
             auto real_year = (datetime.year < 1900 ? datetime.year + 1900 : datetime.year);
-            CHRONO::year y(real_year);
-            CHRONO::month m(datetime.month);
-            CHRONO::day d(datetime.day);
-            CHRONO::year_month_day ymd(y, m, d);
+            DATE_TZ::year y(real_year);
+            DATE_TZ::month m(datetime.month);
+            DATE_TZ::day d(datetime.day);
+            DATE_TZ::year_month_day ymd(y, m, d);
             if (!ymd.ok()) {
                 Logger::log("DateTime: Current date is not valid!", Logger::Error);
                 return 0;
             }
-            auto days = CHRONO::sys_days{ymd};
+            auto days = DATE_TZ::sys_days{ymd};
             if (datetime.hour > 23 || datetime.minute > 59 || datetime.second > 59) {
                 Logger::log("DateTime: Invalid hour/minute/second", Logger::Error);
                 return 0;
@@ -415,10 +435,10 @@ namespace MyEngine {
             const std::chrono::nanoseconds NANO(nanoseconds_count);
             auto now = std::chrono::system_clock::time_point(NANO);
 
-            auto day_time = floor<CHRONO::days>(now);
-            CHRONO::year_month_day ymy{day_time};
-            CHRONO::hh_mm_ss time{now - day_time};
-            CHRONO::weekday weekday{CHRONO::sys_days{ymy}};
+            auto day_time = floor<DATE_TZ::days>(now);
+            DATE_TZ::year_month_day ymy{day_time};
+            DATE_TZ::hh_mm_ss time{now - day_time};
+            DATE_TZ::weekday weekday{DATE_TZ::sys_days{ymy}};
             DT _ret{};
             _ret.year = int(ymy.year());
             _ret.month = static_cast<uint8_t>(static_cast<unsigned>(ymy.month()));
@@ -452,16 +472,16 @@ namespace MyEngine {
          */
         static std::string formatDateTime(const DT& datetime, const std::string& format) {
             auto real_year = (datetime.year < 1900 ? datetime.year + 1900 : datetime.year);
-            CHRONO::year y(real_year);
-            CHRONO::month m(datetime.month);
-            CHRONO::day d(datetime.day);
-            CHRONO::year_month_day ymd(y, m, d);
+            DATE_TZ::year y(real_year);
+            DATE_TZ::month m(datetime.month);
+            DATE_TZ::day d(datetime.day);
+            DATE_TZ::year_month_day ymd(y, m, d);
             if (!ymd.ok()) {
                 Logger::log("DateTime: Current date is not valid!", Logger::Error);
                 return 0;
             }
-            auto t_sys = CHRONO::sys_days{ymd};
-            auto w_day = CHRONO::weekday{t_sys};
+            auto t_sys = DATE_TZ::sys_days{ymd};
+            auto w_day = DATE_TZ::weekday{t_sys};
             std::string output;
             for (size_t p = 0; p < format.size();) {
                 if (format[p] != '%' && format[p] != '\\') {
@@ -476,37 +496,37 @@ namespace MyEngine {
                 if (sub_str == "%Y") {
                     output += std::to_string(real_year);
                 } else if (sub_str == "%y") {
-                    output += std::format("{:02d}", (real_year % 100));
+                    output += FMT::format("{:02d}", (real_year % 100));
                 } else if (sub_str == "%m") {
-                    output += std::format("{:02d}", datetime.month);
+                    output += FMT::format("{:02d}", datetime.month);
                 } else if (sub_str == "%d") {
-                    output += std::format("{:02d}", datetime.day);
+                    output += FMT::format("{:02d}", datetime.day);
                 } else if (sub_str == "%H") {
-                    output += std::format("{:02d}", datetime.hour);
+                    output += FMT::format("{:02d}", datetime.hour);
                 } else if (sub_str == "%I") {
-                    output += std::format("{:02d}", datetime.hour % 12);
+                    output += FMT::format("{:02d}", datetime.hour % 12);
                 } else if (sub_str == "%M") {
-                    output += std::format("{:02d}", datetime.minute);
+                    output += FMT::format("{:02d}", datetime.minute);
                 } else if (sub_str == "%S") {
-                    output += std::format("{:02d}", datetime.second);
+                    output += FMT::format("{:02d}", datetime.second);
                 } else if (sub_str == "%a") {
-                    output += std::format("{}",
+                    output += FMT::format("{}",
                           weekdayStr(static_cast<Weekday>(w_day.iso_encoding()), true));
                 } else if (sub_str == "%A") {
-                    output += std::format("{}",
+                    output += FMT::format("{}",
                           weekdayStr(static_cast<Weekday>(w_day.iso_encoding()), false));
                 } else if (sub_str == "%b") {
-                    output += std::format("{}",
+                    output += FMT::format("{}",
                           monthStr(static_cast<Month>(datetime.month), true));
                 } else if (sub_str == "%B") {
-                    output += std::format("{}",
+                    output += FMT::format("{}",
                           monthStr(static_cast<Month>(datetime.month), false));
                 } else if (sub_str == "%C") {
-                    output += std::format("{:04d}/{:02d}/{:02d} {:02d}:{:02d}:{:02d}",
+                    output += FMT::format("{:04d}/{:02d}/{:02d} {:02d}:{:02d}:{:02d}",
                                           real_year, datetime.month, datetime.day,
                                           datetime.hour, datetime.minute, datetime.second);
                 } else if (sub_str == "%E") {
-                    output += std::format("{} {} {:02d} {:02d}:{:02d}:{:02d} {} {:04d}",
+                    output += FMT::format("{} {} {:02d} {:02d}:{:02d}:{:02d} {} {:04d}",
                           weekdayStr(static_cast<Weekday>(w_day.iso_encoding()), true),
                              monthStr(static_cast<Month>(datetime.month), true),
                              datetime.day,
@@ -536,8 +556,12 @@ namespace MyEngine {
          * @see now
          */
         static std::string formatCurrentDateTime(const std::string& format) {
-            auto now = std::chrono::system_clock::now();
-            auto zoned = CHRONO::zoned_time(timezone, now);
+            auto zoned = DATE_TZ::zoned_time(timezone, std::chrono::system_clock::now());
+            auto local_time = zoned.get_local_time();
+            auto day_time = DATE_TZ::floor<DATE_TZ::days>(local_time);
+            DATE_TZ::year_month_day ymy(day_time);
+            DATE_TZ::hh_mm_ss hms(local_time - day_time);
+            DATE_TZ::weekday weekday(day_time);
             std::string output;
             size_t p = 0;
             for (; p < format.size();) {
@@ -551,46 +575,47 @@ namespace MyEngine {
                     output += sub_str[1]; continue;
                 }
                 if (sub_str == "%Y") {
-                    output += std::format("{:%Y}", zoned);
+                    output += FMT::format("{:04d}", (int)ymy.year());
                 } else if (sub_str == "%y") {
-                    output += std::format("{:%y}", zoned);
+                    output += FMT::format("{:02d}", (int)ymy.year() % 100);
                 } else if (sub_str == "%m") {
-                    output += std::format("{:%m}", zoned);
+                    output += FMT::format("{:02d}", (unsigned)ymy.month());
                 } else if (sub_str == "%d") {
-                    output += std::format("{:%d}", zoned);
+                    output += FMT::format("{:02d}", (unsigned)ymy.day());
                 } else if (sub_str == "%H") {
-                    output += std::format("{:%H}", zoned);
+                    output += FMT::format("{:02d}", (unsigned)hms.hours().count());
                 } else if (sub_str == "%p") {
-                    output += std::format("{:%p}", zoned);
+                    output += FMT::format("{}", hms.hours().count() > 12 ? "PM" : "AM");
                 } else if (sub_str == "%I") {
-                    output += std::format("{:%I}", zoned);
+                    output += FMT::format("{:02d}", hms.hours().count() % 12);
                 } else if (sub_str == "%M") {
-                    output += std::format("{:%M}", zoned);
+                    output += FMT::format("{:02d}", hms.minutes().count());
                 } else if (sub_str == "%S") {
-                    auto t = std::chrono::system_clock::to_time_t(zoned);
-                    std::stringstream ss;
-                    ss << std::put_time(std::localtime(&t), "%S");
-                    output += ss.str();
+                    output += FMT::format("{:02d}", hms.seconds().count());
                 } else if (sub_str == "%a") {
-                    output += std::format("{:%a}", zoned);
+                    output += FMT::format("{}", weekdayStr(Weekday(weekday.iso_encoding()), true));
                 } else if (sub_str == "%A") {
-                    output += std::format("{:%A}", zoned);
+                    output += FMT::format("{}", weekdayStr(Weekday(weekday.iso_encoding())));
                 } else if (sub_str == "%b") {
-                    output += std::format("{:%b}", zoned);
+                    output += FMT::format("{}", monthStr(Month((unsigned)ymy.month()), true));
                 } else if (sub_str == "%B") {
-                    output += std::format("{:%B}", zoned);
+                    output += FMT::format("{}", monthStr(Month((unsigned)ymy.month())));
                 } else if (sub_str == "%Z") {
-                    output += std::format("{:%Z}", zoned);
+                    output += FMT::format("{}", zoned.get_info().abbrev);
                 } else if (sub_str == "%C") {
-                    auto t = std::chrono::system_clock::to_time_t(zoned);
-                    std::stringstream ss;
-                    ss << std::put_time(std::localtime(&t), "%S");
-                    output += std::format("{:%Y/%m/%d %H:%M:}{}", zoned, ss.str());
+                    output += FMT::format("{:04d}/{:02d}/{:02d} {:02d}:{:02d}:{:02d}",
+                                          (int)ymy.year(), (unsigned)ymy.month(), (unsigned)ymy.day(),
+                                          hms.hours().count(), hms.minutes().count(), hms.seconds().count());
                 } else if (sub_str == "%E") {
-                    auto t = std::chrono::system_clock::to_time_t(zoned);
-                    std::stringstream ss;
-                    ss << std::put_time(std::localtime(&t), "%S");
-                    output += std::format("{:%a %b %d %I:%M:}{} {:%p %Z %Y}", zoned, ss.str(), zoned);
+                    output += FMT::format("{} {} {:02d} {:02d}:{:02d}:{:02d} {} {:04d}",
+                                          weekdayStr(static_cast<Weekday>(weekday.iso_encoding()), true),
+                                          monthStr(Month((unsigned)ymy.month()), true),
+                                          (unsigned)ymy.day(),
+                                          hms.hours().count(),
+                                          hms.minutes().count(),
+                                          hms.seconds().count(),
+                                          (hms.hours().count() / 12 ? "PM" : "AM"),
+                                          (int)ymy.year());
                 }
             }
             return output;

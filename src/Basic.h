@@ -179,7 +179,7 @@ namespace MyEngine {
          */
         static uint64_t getID(size_t index = 0) {
             if (index >= _id_list.size()) {
-                auto err = std::format("IDGenerator: The index of {} is not exist!", index);
+                auto err = FMT::format("IDGenerator: The index of {} is not exist!", index);
                 Logger::log(Logger::Fatal, "IDGenerator: The index of {} is not exist!", index);
                 throw OutOfRangeException(err);
             }
@@ -1248,7 +1248,7 @@ namespace MyEngine {
             }
             return _ret;
         } else {
-            std::string err = std::format("Matrix2D::operator+(): Matrix dimensions mismatch! "
+            std::string err = FMT::format("Matrix2D::operator+(): Matrix dimensions mismatch! "
                                           "Original: ({}, {}), Specified: ({}, {})",
                                           _row, _col, other._row, other._col);
             Logger::log(Logger::Error, "Matrix2D::operator+(): Matrix dimensions mismatch! Original: ({}, {}), Specified: ({}, {})", _row, _col, other._row, other._col);
@@ -1265,7 +1265,7 @@ namespace MyEngine {
             }
             return _ret;
         } else {
-            std::string err = std::format("Matrix2D::operator-(): Matrix dimensions mismatch! "
+            std::string err = FMT::format("Matrix2D::operator-(): Matrix dimensions mismatch! "
                                           "Original: ({}, {}), Specified: ({}, {})",
                                           _row, _col, other._row, other._col);
             Logger::log(Logger::Error, "Matrix2D::operator-(): Matrix dimensions mismatch! Original: ({}, {}), Specified: ({}, {})", _row, _col, other._row, other._col);
@@ -1318,7 +1318,7 @@ namespace MyEngine {
     template<typename T>
     T &Matrix2D<T>::operator[](uint32_t index) {
         if (index >= _datas.size()) {
-            throw OutOfRangeException(std::format("Matrix2D::operator[](): "
+            throw OutOfRangeException(FMT::format("Matrix2D::operator[](): "
                                                 "The index of {} is out of range!", index));
         }
         return _datas[index];
@@ -1328,7 +1328,7 @@ namespace MyEngine {
     T &Matrix2D<T>::operator()(uint32_t row, uint32_t col) {
         auto idx = row * _col + col;
         if (idx >= _datas.size()) {
-            std::string err = std::format("Matrix2D::operator()(): "
+            std::string err = FMT::format("Matrix2D::operator()(): "
                                           "The specified position ({}, {}) is out of range!", row, col);
             Logger::log(Logger::Fatal, "Matrix2D::operator()(): The specified position ({}, {}) is out of range!", row, col);
             throw OutOfRangeException(err);
@@ -1450,7 +1450,7 @@ namespace MyEngine {
                 throw InvalidArgumentException(err);
             }
         } else {
-            std::string err = std::format("Matrix2D::times(): Matrix dimensions mismatch! "
+            std::string err = FMT::format("Matrix2D::times(): Matrix dimensions mismatch! "
                                           "Original: ({}, {}), Specified: ({}, {})",
                                           _row, _col, other._row, other._col);
             Logger::log(Logger::Fatal, "Matrix2D::times(): Matrix dimensions mismatch! Original: ({}, {}), Specified: ({}, {})", _row, _col, other._row, other._col);

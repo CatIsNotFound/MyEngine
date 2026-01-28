@@ -104,7 +104,7 @@ namespace MyEngine {
         }
         SDL_Surface *temp = IMG_Load(path.data());
         if (!temp) {
-            Logger::log(std::format("[ERROR] Can't load image while setting cursor: {}", path), Logger::Error);
+            Logger::log(FMT::format("[ERROR] Can't load image while setting cursor: {}", path), Logger::Error);
             return;
         }
         SDL_DestroyCursor(_cursor);
@@ -132,7 +132,7 @@ namespace MyEngine {
         }
         auto new_cursor = IMG_Load(path.c_str());
         if (!new_cursor) {
-            Logger::log(std::format("[ERROR] Can't set addCustomCommand cursor, "
+            Logger::log(FMT::format("[ERROR] Can't set addCustomCommand cursor, "
                                     "because the current path \"{}\" is not valid!", path), Logger::Error);
             return;
         }

@@ -53,5 +53,11 @@ int main(int argc, const char* argv[]) {
         white_text.draw();
         r->drawDebugFPS({60, 20});
     });
+
+    DateTime::setDefaultTimezone("Asia/Tokyo");
+    Logger::log(DateTime::formatDateTime(
+            DateTime::DT(2021, 10, 21, 10, 30, 39, MyEngine::DateTime::Thu),
+            "%C"));
+    Logger::log(DateTime::formatCurrentDateTime("%E"));
     return engine.exec();
 }

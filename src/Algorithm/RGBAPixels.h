@@ -46,7 +46,7 @@ namespace MyEngine {
                 return false;
             }
             if (!SDL_LockSurface(surface)) {
-                Logger::log(std::format("writePixelToSurface: "
+                Logger::log(FMT::format("writePixelToSurface: "
                                         "Failed to write pixel from the specified surface! "
                                         "Exception: {}", SDL_GetError()), Logger::Error);
                 return false;
@@ -81,7 +81,7 @@ namespace MyEngine {
                 x2 = surface->w - 1; y2 = surface->h - 1;
             }
             if (!SDL_LockSurface(surface)) {
-                Logger::log(std::format("writePixelToSurface: "
+                Logger::log(FMT::format("writePixelToSurface: "
                                         "Failed to write pixel from the specified surface! "
                                         "Exception: {}", SDL_GetError()), Logger::Error);
                 return false;
@@ -115,7 +115,7 @@ namespace MyEngine {
             }
 
             if (!SDL_LockSurface(surface)) {
-                Logger::log(std::format("writePixelToSurface: "
+                Logger::log(FMT::format("writePixelToSurface: "
                                         "Failed to write pixel from the specified surface! "
                                         "Exception: {}", SDL_GetError()), Logger::Error);
                 return false;
@@ -148,7 +148,7 @@ namespace MyEngine {
             Matrix2D<SDL_Color> _map;
             if (!SDL_LockSurface(surface)) {
                 if (ok) *ok = false;
-                Logger::log(std::format("readPixelsFromSurface: "
+                Logger::log(FMT::format("readPixelsFromSurface: "
                                         "Failed to get pixels from the specified surface! "
                                         "Exception: {}", SDL_GetError()), Logger::Error);
                 return _map;
@@ -189,7 +189,7 @@ namespace MyEngine {
             if (end_pos.row >= surface->h) new_height -= end_pos.row - surface->h + 1;
             if (!SDL_LockSurface(surface)) {
                 if (ok) *ok = false;
-                Logger::log(std::format("readPixelsOnlyFromSurface: "
+                Logger::log(FMT::format("readPixelsOnlyFromSurface: "
                                         "Failed to get pixels from the specified surface! "
                                         "Exception: {}", SDL_GetError()), Logger::Error);
                 return _map;
@@ -233,7 +233,7 @@ namespace MyEngine {
             SDL_Surface* surface = SDL_CreateSurface((int)color_map.cols(),
                                                      (int)color_map.rows(), pixel_format);
             if (!surface) {
-                Logger::log(std::format("drawSurfaceByColorMap: Failed to create surface! "
+                Logger::log(FMT::format("drawSurfaceByColorMap: Failed to create surface! "
                                         "Exception: {}", SDL_GetError()), Logger::Error);
                 if (ok) *ok = false;
                 return nullptr;
@@ -246,7 +246,7 @@ namespace MyEngine {
             if (!SDL_LockSurface(surface)) {
                 if (ok) *ok = false;
                 SDL_DestroySurface(surface);
-                Logger::log(std::format("readPixelsFromSurface: "
+                Logger::log(FMT::format("readPixelsFromSurface: "
                                         "Failed to get pixels from the specified surface! "
                                         "Exception: {}", SDL_GetError()), Logger::Error);
                 return nullptr;
@@ -291,7 +291,7 @@ namespace MyEngine {
             if (!SDL_LockSurface(surface)) {
                 if (ok) *ok = false;
                 SDL_DestroySurface(surface);
-                Logger::log(std::format("readPixelsFromSurface: "
+                Logger::log(FMT::format("readPixelsFromSurface: "
                                         "Failed to get pixels from the specified surface! "
                                         "Exception: {}", SDL_GetError()), Logger::Error);
                 return nullptr;
