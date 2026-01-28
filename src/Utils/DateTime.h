@@ -244,7 +244,7 @@ namespace MyEngine {
                 DATE_TZ::locate_zone(tz);
                 timezone = tz;
             } catch (const std::runtime_error& e) {
-                Logger::log(FMT::format("DateTime: Can't set invalid timezone: {}", tz),
+                Logger::log(FMT::format("DateTime: Can't set invalid timezone! Exception: {}", e.what()),
                             Logger::Error);
                 return false;
             }
@@ -431,9 +431,9 @@ namespace MyEngine {
                     nanoseconds_count = timestamp * 86400000000000ull;
             }
 
-            // const duration<long long int, std::ratio<1, 10000000>> NANO(nanoseconds_count);
-            const std::chrono::nanoseconds NANO(nanoseconds_count);
-            auto now = std::chrono::system_clock::time_point(NANO);
+            const std::chrono::duration<long long, std::ratio<1, 10000000>> NANO(nanoseconds_count);
+            const auto sys_duration = std::chrono::duration_cast<std::chrono::system_clock::duration>(NANO);
+            auto now = std::chrono::system_clock::time_point(sys_duration);
 
             auto day_time = floor<DATE_TZ::days>(now);
             DATE_TZ::year_month_day ymy{day_time};

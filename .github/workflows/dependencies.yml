@@ -144,6 +144,7 @@ jobs:
           git clone --depth 1 https://github.com/libsdl-org/SDL_mixer 
           git clone --depth 1 https://github.com/libsdl-org/SDL_ttf
           git clone --depth 1 https://github.com/HowardHinnant/date.git
+          git clone --depth 1 https://github.com/fmtlib/fmt.git
           
           echo "~/git: "
           ls ~/git
@@ -154,8 +155,24 @@ jobs:
           cd ~/git/date
           mkdir -p build ; cd build
           echo "* Starting configure Date...."
-          cmake .. -DBUILD_TZ_LIB=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=~/Libs/date
+          cmake .. -DBUILD_TZ_LIB=ON -DUSE_SYSTEM_TZ_DB=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=~/Libs/date
           echo "* Compiling and installing Date...."
+          cmake --build . -j4 --target install
+          if [ $? -eq 0 ]; then
+              echo "* No error occurred, finished! "
+          else
+              echo "* Failed to compile and install! "
+              exit 1
+          fi
+
+      - name: Compiling and installing FMT
+        shell: bash
+        run: |
+          cd ~/git/fmt
+          mkdir -p build ; cd build
+          echo "* Starting configure FMT...."
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=~/Libs/fmt
+          echo "* Compiling and installing FMT...."
           cmake --build . -j4 --target install
           if [ $? -eq 0 ]; then
               echo "* No error occurred, finished! "
@@ -237,7 +254,8 @@ jobs:
                    -DSDL3_IMAGE_LIB=~/Libs/SDL3_image \
                    -DSDL3_MIXER_LIB=~/Libs/SDL3_mixer \
                    -DSDL3_TTF_LIB=~/Libs/SDL3_ttf \
-                   -DCMAKE_PREFIX_PATH=~/Libs/date \
+                   -DDATE_LIB=~/Libs/date \
+                   -DFMT_LIB=~/Libs/fmt \
                    -DBUILD_TEST=OFF \
                    -DCMAKE_BUILD_TYPE=Release \
                    -DCMAKE_INSTALL_PREFIX=~/Libs/MyEngine

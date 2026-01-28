@@ -3,7 +3,7 @@
 #ifndef MYENGINE_BASIC_H
 #define MYENGINE_BASIC_H
 #ifndef M_PI
-#define M_PI		3.14159265358979323846
+#define M_PI		3.14159265358979323846f
 #endif
 #include "Libs.h"
 #include "Exception.h"
