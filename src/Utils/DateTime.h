@@ -3,9 +3,9 @@
 #define MYENGINE_UTILS_DATETIME_H
 #include "Logger.h"
 #ifdef __APPLE__
-#define CHRONO date::
+#define CHRONO date
 #else
-#define CHRONO std::chrono::
+#define CHRONO std::chrono
 #endif
 
 namespace MyEngine {
@@ -305,10 +305,10 @@ namespace MyEngine {
             auto now = std::chrono::system_clock::now();
             auto zoned = CHRONO::zoned_time(timezone, now);
             auto local_time = zoned.get_local_time();
-            auto day_time = floor<days>(local_time);
+            auto day_time = floor<CHRONO::days>(local_time);
             CHRONO::year_month_day ymy{day_time};
             CHRONO::hh_mm_ss time{local_time - day_time};
-            CHRONO::weekday w_day = weekday{sys_days{ymy}};
+            CHRONO::weekday w_day = CHRONO::weekday{CHRONO::sys_days{ymy}};
             DT _ret{};
             _ret.year = int(ymy.year());
             _ret.month = static_cast<uint8_t>(static_cast<unsigned>(ymy.month()));
@@ -415,10 +415,10 @@ namespace MyEngine {
             const std::chrono::nanoseconds NANO(nanoseconds_count);
             auto now = std::chrono::system_clock::time_point(NANO);
 
-            auto day_time = floor<days>(now);
+            auto day_time = floor<CHRONO::days>(now);
             CHRONO::year_month_day ymy{day_time};
             CHRONO::hh_mm_ss time{now - day_time};
-            CHRONO::weekday weekday{sys_days{ymy}};
+            CHRONO::weekday weekday{CHRONO::sys_days{ymy}};
             DT _ret{};
             _ret.year = int(ymy.year());
             _ret.month = static_cast<uint8_t>(static_cast<unsigned>(ymy.month()));
