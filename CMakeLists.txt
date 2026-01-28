@@ -218,6 +218,7 @@ list(APPEND TARGET_LIBS SDL3_mixer::SDL3_mixer)
 list(APPEND TARGET_LIBS SDL3_ttf::SDL3_ttf)
 if (APPLE)
     list(APPEND TARGET_LIBS date::date)
+    list(APPEND TARGET_LIBS date::date-tz)
 endif()
 
 target_link_libraries(${PROJECT_NAME} PUBLIC

@@ -3,10 +3,10 @@
 #define MYENGINE_UTILS_DATETIME_H
 #include "Logger.h"
 #ifdef __APPLE__
-#include <date/tz.h>
-using namespace date;
+#define CHRONO date::
+#else
+#define CHRONO std::chrono::
 #endif
-using namespace std::chrono;
 
 namespace MyEngine {
     /**
@@ -19,7 +19,7 @@ namespace MyEngine {
      * \endif
      */
     class DateTime {
-        inline static std::string timezone{current_zone()->name()};
+        inline static std::string timezone{CHRONO::current_zone()->name()};
     public:
         DateTime() = delete;
         ~DateTime() = delete;
@@ -226,11 +226,7 @@ namespace MyEngine {
          */
         static bool setDefaultTimezone(const std::string& tz) {
             try {
-#ifdef __APPLE__
-                date::locate_zone(tz);
-#else
-                locate_zone(tz);
-#endif
+                CHRONO::locate_zone(tz);
                 timezone = tz;
             } catch (const std::runtime_error& e) {
                 Logger::log(std::format("DateTime: Can't set invalid timezone: {}", tz),
@@ -291,8 +287,8 @@ namespace MyEngine {
          * @see currentDateTime
          */
         static std::string now() {
-            auto now = system_clock::now();
-            auto zoned = zoned_time(timezone, now);
+            auto now = std::chrono::system_clock::now();
+            auto zoned = CHRONO::zoned_time(timezone, now);
             return std::format("{}", zoned);
         }
 
@@ -306,14 +302,13 @@ namespace MyEngine {
          * @see formatCurrentDateTime
          */
         static DT currentDateTime() {
-            using namespace std::chrono;
-            auto now = system_clock::now();
-            auto zoned = zoned_time(timezone, now);
+            auto now = std::chrono::system_clock::now();
+            auto zoned = CHRONO::zoned_time(timezone, now);
             auto local_time = zoned.get_local_time();
             auto day_time = floor<days>(local_time);
-            year_month_day ymy{day_time};
-            hh_mm_ss time{local_time - day_time};
-            weekday w_day = weekday{sys_days{ymy}};
+            CHRONO::year_month_day ymy{day_time};
+            CHRONO::hh_mm_ss time{local_time - day_time};
+            CHRONO::weekday w_day = weekday{sys_days{ymy}};
             DT _ret{};
             _ret.year = int(ymy.year());
             _ret.month = static_cast<uint8_t>(static_cast<unsigned>(ymy.month()));
@@ -338,17 +333,16 @@ namespace MyEngine {
          * @see parseFromTimestamp
          */
         static uint64_t generateTimestamp(const DT& datetime, TimeBase time_base = Seconds) {
-            using namespace std::chrono;
             auto real_year = (datetime.year < 1900 ? datetime.year + 1900 : datetime.year);
-            year y(real_year);
-            month m(datetime.month);
-            day d(datetime.day);
-            year_month_day ymd(y, m, d);
+            CHRONO::year y(real_year);
+            CHRONO::month m(datetime.month);
+            CHRONO::day d(datetime.day);
+            CHRONO::year_month_day ymd(y, m, d);
             if (!ymd.ok()) {
                 Logger::log("DateTime: Current date is not valid!", Logger::Error);
                 return 0;
             }
-            auto days = sys_days{ymd};
+            auto days = CHRONO::sys_days{ymd};
             if (datetime.hour > 23 || datetime.minute > 59 || datetime.second > 59) {
                 Logger::log("DateTime: Invalid hour/minute/second", Logger::Error);
                 return 0;
@@ -356,9 +350,9 @@ namespace MyEngine {
             if (time_base == Days) {
                 return days.time_since_epoch().count();
             }
-            const auto HH = hours(datetime.hour);
-            const auto MM = minutes(datetime.minute);
-            const auto SS = seconds(datetime.second);
+            const auto HH = std::chrono::hours(datetime.hour);
+            const auto MM = std::chrono::minutes(datetime.minute);
+            const auto SS = std::chrono::seconds(datetime.second);
             auto time = HH + MM + SS;
             if (time_base == Hours) {
                 auto time_point = days + HH;
@@ -393,7 +387,6 @@ namespace MyEngine {
          * @see generateTimestamp
          */
         static DT parseFromTimestamp(uint64_t timestamp, TimeBase timebase = Seconds) {
-            using namespace std::chrono;
             uint64_t nanoseconds_count = 0;
             switch (timebase) {
                 case Nanoseconds:
@@ -418,13 +411,14 @@ namespace MyEngine {
                     nanoseconds_count = timestamp * 86400000000000ull;
             }
 
-            const duration<long long int, std::ratio<1, 10000000>> NANO(nanoseconds_count);
-            auto now = system_clock::time_point(NANO);
+            // const duration<long long int, std::ratio<1, 10000000>> NANO(nanoseconds_count);
+            const std::chrono::nanoseconds NANO(nanoseconds_count);
+            auto now = std::chrono::system_clock::time_point(NANO);
 
             auto day_time = floor<days>(now);
-            year_month_day ymy{day_time};
-            hh_mm_ss time{now - day_time};
-            weekday weekday{sys_days{ymy}};
+            CHRONO::year_month_day ymy{day_time};
+            CHRONO::hh_mm_ss time{now - day_time};
+            CHRONO::weekday weekday{sys_days{ymy}};
             DT _ret{};
             _ret.year = int(ymy.year());
             _ret.month = static_cast<uint8_t>(static_cast<unsigned>(ymy.month()));
@@ -458,16 +452,16 @@ namespace MyEngine {
          */
         static std::string formatDateTime(const DT& datetime, const std::string& format) {
             auto real_year = (datetime.year < 1900 ? datetime.year + 1900 : datetime.year);
-            year y(real_year);
-            month m(datetime.month);
-            day d(datetime.day);
-            year_month_day ymd(y, m, d);
+            CHRONO::year y(real_year);
+            CHRONO::month m(datetime.month);
+            CHRONO::day d(datetime.day);
+            CHRONO::year_month_day ymd(y, m, d);
             if (!ymd.ok()) {
                 Logger::log("DateTime: Current date is not valid!", Logger::Error);
                 return 0;
             }
-            auto t_sys = sys_days{ymd};
-            weekday w_day = weekday{t_sys};
+            auto t_sys = CHRONO::sys_days{ymd};
+            auto w_day = CHRONO::weekday{t_sys};
             std::string output;
             for (size_t p = 0; p < format.size();) {
                 if (format[p] != '%' && format[p] != '\\') {
@@ -542,8 +536,8 @@ namespace MyEngine {
          * @see now
          */
         static std::string formatCurrentDateTime(const std::string& format) {
-            auto now = system_clock::now();
-            auto zoned = zoned_time(timezone, now);
+            auto now = std::chrono::system_clock::now();
+            auto zoned = CHRONO::zoned_time(timezone, now);
             std::string output;
             size_t p = 0;
             for (; p < format.size();) {
@@ -573,7 +567,7 @@ namespace MyEngine {
                 } else if (sub_str == "%M") {
                     output += std::format("{:%M}", zoned);
                 } else if (sub_str == "%S") {
-                    auto t = system_clock::to_time_t(zoned);
+                    auto t = std::chrono::system_clock::to_time_t(zoned);
                     std::stringstream ss;
                     ss << std::put_time(std::localtime(&t), "%S");
                     output += ss.str();
@@ -588,12 +582,12 @@ namespace MyEngine {
                 } else if (sub_str == "%Z") {
                     output += std::format("{:%Z}", zoned);
                 } else if (sub_str == "%C") {
-                    auto t = system_clock::to_time_t(zoned);
+                    auto t = std::chrono::system_clock::to_time_t(zoned);
                     std::stringstream ss;
                     ss << std::put_time(std::localtime(&t), "%S");
                     output += std::format("{:%Y/%m/%d %H:%M:}{}", zoned, ss.str());
                 } else if (sub_str == "%E") {
-                    auto t = system_clock::to_time_t(zoned);
+                    auto t = std::chrono::system_clock::to_time_t(zoned);
                     std::stringstream ss;
                     ss << std::put_time(std::localtime(&t), "%S");
                     output += std::format("{:%a %b %d %I:%M:}{} {:%p %Z %Y}", zoned, ss.str(), zoned);
