@@ -29,11 +29,15 @@ MyEngine 是一个轻量级但功能强大的 2D 图形框架，构建于 SDL3 �
 - [SDL_ttf](https://github.com/libsdl-org/SDL_ttf)
 - [SDL_mixer](https://github.com/libsdl-org/SDL_mixer)
 
+可选依赖：（p.s: 但 MacOS 必需安装）
+- [FMT](https://github.com/fmtlib/fmt.git)
+- [HowardHinnant Date](https://github.com/HowardHinnant/date.git) (Windows 系统不建议安装)
+
 ## 快速开始
 
 ### 二进制版本获取
 
-目前暂时未发布正式版本，预计明年早些时候发布。
+目前暂时未发布正式版本，预计今年 2~3 月份发布 v0.2.1 版本。
 
 ~~可通过 [Github Release]() 或 [Gitee Release]() 页面获取预编译版本。~~
 
@@ -42,13 +46,27 @@ MyEngine 是一个轻量级但功能强大的 2D 图形框架，构建于 SDL3 �
 1. 使用 Git 克隆项目
 
    ```shell
-   git clone --depth 1 --recurse-submodules https://github.com/CatIsNotFound/MyEngine
+   git clone https://github.com/CatIsNotFound/MyEngine.git
    ```
    
    或者使用如下目录克隆项目：
 
    ```shell
-   git clone --depth 1 --recurse-submodules https://gitee.com/CatIsNotFound/MyEngine
+   git clone https://gitee.com/CatIsNotFound/MyEngine.git
+   ```
+   
+   如果需要安装依赖库，请在克隆项目后执行如下命令：
+   
+   ```shell
+   cd MyEngine
+   git submodule update --init --remote
+   ```
+   
+   若只希望安装其中一两个依赖库（比如 `fmt` 库以及 `date` 库），请在终端下执行：
+
+   ```shell
+   cd MyEngine
+   git submodule update --init --remote libs/fmt libs/date
    ```
 
 2. 使用 CMake 配置项目
@@ -85,19 +103,25 @@ MyEngine 是一个轻量级但功能强大的 2D 图形框架，构建于 SDL3 �
     set(SDL3_IMAGE_LIB "/path/to/SDL3_image")
     set(SDL3_TTF_LIB   "/path/to/SDL3_ttf")
     set(SDL3_MIXER_LIB "/path/to/SDL3_mixer")
-    set(MYENGINE_LIB      "/path/to/MyEngine")
+    # set(DATE_LIB     "/path/to/date")
+    # set(FMT_LIB      "/path/to/fmt")
+    set(MYENGINE_LIB   "/path/to/MyEngine")
     set(CMAKE_INCLUDE_CURRENT_DIR ON)
     
     list(APPEND CMAKE_PREFIX_PATH ${SDL3_LIB})
     list(APPEND CMAKE_PREFIX_PATH ${SDL3_IMAGE_LIB})
     list(APPEND CMAKE_PREFIX_PATH ${SDL3_TTF_LIB})
     list(APPEND CMAKE_PREFIX_PATH ${SDL3_MIXER_LIB})
+    # list(APPEND CMAKE_PREFIX_PATH ${DATE_LIB})
+    # list(APPEND CMAKE_PREFIX_PATH ${FMT_LIB})
     list(APPEND CMAKE_PREFIX_PATH ${MYENGINE_LIB})
     
     find_package(SDL3 REQUIRED)
     find_package(SDL3_image REQUIRED)
     find_package(SDL3_ttf REQUIRED)
     find_package(SDL3_mixer REQUIRED)
+    # find_package(date REQUIRED)
+    # find_package(fmt REQUIRED)
     find_package(MyEngine REQUIRED)
     
     add_executable(${PROJECT_NAME}
@@ -109,6 +133,8 @@ MyEngine 是一个轻量级但功能强大的 2D 图形框架，构建于 SDL3 �
             SDL3_image::SDL3_image
             SDL3_ttf::SDL3_ttf
             SDL3_mixer::SDL3_mixer
+            # date::date
+            # fmt::fmt
             MyEngine::MyEngine
     )
    

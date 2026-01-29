@@ -251,12 +251,12 @@ jobs:
         run: |
           mkdir -p build ; cd build
           echo "* Configuring project..."
-          cmake .. -DSDL3_LIB=~/Libs/SDL3 \
+          cmake .. -DDATE_LIB=~/Libs/date \
+                   -DFMT_LIB=~/Libs/fmt \
+                   -DSDL3_LIB=~/Libs/SDL3 \
                    -DSDL3_IMAGE_LIB=~/Libs/SDL3_image \
                    -DSDL3_MIXER_LIB=~/Libs/SDL3_mixer \
                    -DSDL3_TTF_LIB=~/Libs/SDL3_ttf \
-                   -DDATE_LIB=~/Libs/date \
-                   -DFMT_LIB=~/Libs/fmt \
                    -DBUILD_TEST=OFF \
                    -DCMAKE_BUILD_TYPE=Release \
                    -DCMAKE_INSTALL_PREFIX=~/Libs/MyEngine
