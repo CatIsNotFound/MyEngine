@@ -49,7 +49,7 @@ jobs:
           echo "* Starting configure SDL3...."
           cmake .. -DCMAKE_BUILD_TYPE=Release -DSDL_TEST=OFF -DCMAKE_INSTALL_PREFIX=~/Libs/SDL3
           echo "* Compiling and installing SDL3...."
-          cmake --build . -j4 --target install
+          cmake --build . -j10 --target install
           if [ $? -eq 0 ]; then
               echo "* No error occurred, finished! "
           else
@@ -65,7 +65,7 @@ jobs:
           echo "* Starting configure SDL3_image...."
           cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=~/Libs/SDL3 -DCMAKE_INSTALL_PREFIX=~/Libs/SDL3_image
           echo "* Compiling and installing SDL3_image...."
-          cmake --build . -j4 --target install
+          cmake --build . -j10 --target install
           if [ $? -eq 0 ]; then
               echo "* No error occurred, finished! "
           else
@@ -81,7 +81,7 @@ jobs:
           echo "* Starting configure SDL3_mixer...."
           cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=~/Libs/SDL3 -DCMAKE_INSTALL_PREFIX=~/Libs/SDL3_mixer
           echo "* Compiling and installing SDL3_mixer...."
-          cmake --build . -j4 --target install
+          cmake --build . -j10 --target install
           if [ $? -eq 0 ]; then
               echo "* No error occurred, finished! "
           else
@@ -97,11 +97,12 @@ jobs:
           echo "* Starting configure SDL3_ttf...."
           cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=~/Libs/SDL3 -DCMAKE_INSTALL_PREFIX=~/Libs/SDL3_ttf
           echo "* Compiling and installing SDL3_ttf...."
-          cmake --build . -j4 --target install
+          cmake --build . -j10 --target install
           if [ $? -eq 0 ]; then
               echo "* No error occurred, finished! "
           else
               echo "* Failed to compile and install! "
+              exit 1
           fi
 
       - name: Compiling and installing project
@@ -117,7 +118,7 @@ jobs:
                    -DCMAKE_BUILD_TYPE=Release \
                    -DCMAKE_INSTALL_PREFIX=~/Libs/MyEngine
           echo "* Compiling and installing project..."
-          cmake --build . -j4 --target install
+          cmake --build . -j10 --target install
           if [ $? -eq 0 ]; then
               echo "* No errors occurred, finished! "
           else
@@ -157,7 +158,7 @@ jobs:
           echo "* Starting configure Date...."
           cmake .. -DBUILD_TZ_LIB=ON -DUSE_SYSTEM_TZ_DB=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=~/Libs/date
           echo "* Compiling and installing Date...."
-          cmake --build . -j4 --target install
+          cmake --build . -j10 --target install
           if [ $? -eq 0 ]; then
               echo "* No error occurred, finished! "
           else
@@ -173,7 +174,7 @@ jobs:
           echo "* Starting configure FMT...."
           cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=~/Libs/fmt
           echo "* Compiling and installing FMT...."
-          cmake --build . -j4 --target install
+          cmake --build . -j10 --target install
           if [ $? -eq 0 ]; then
               echo "* No error occurred, finished! "
           else
@@ -189,7 +190,7 @@ jobs:
           echo "* Starting configure SDL3...."
           cmake .. -DCMAKE_BUILD_TYPE=Release -DSDL_TEST=OFF -DCMAKE_INSTALL_PREFIX=~/Libs/SDL3
           echo "* Compiling and installing SDL3...."
-          cmake --build . -j4 --target install
+          cmake --build . -j10 --target install
           if [ $? -eq 0 ]; then
               echo "* No error occurred, finished! "
           else
@@ -205,7 +206,7 @@ jobs:
           echo "* Starting configure SDL3_image...."
           cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=~/Libs/SDL3 -DCMAKE_INSTALL_PREFIX=~/Libs/SDL3_image
           echo "* Compiling and installing SDL3_image...."
-          cmake --build . -j4 --target install
+          cmake --build . -j10 --target install
           if [ $? -eq 0 ]; then
               echo "* No error occurred, finished! "
           else
@@ -221,7 +222,7 @@ jobs:
           echo "* Starting configure SDL3_mixer...."
           cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=~/Libs/SDL3 -DCMAKE_INSTALL_PREFIX=~/Libs/SDL3_mixer
           echo "* Compiling and installing SDL3_mixer...."
-          cmake --build . -j4 --target install
+          cmake --build . -j10 --target install
           if [ $? -eq 0 ]; then
               echo "* No error occurred, finished! "
           else
@@ -237,7 +238,7 @@ jobs:
           echo "* Starting configure SDL3_ttf...."
           cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=~/Libs/SDL3 -DCMAKE_INSTALL_PREFIX=~/Libs/SDL3_ttf
           echo "* Compiling and installing SDL3_ttf...."
-          cmake --build . -j4 --target install
+          cmake --build . -j10 --target install
           if [ $? -eq 0 ]; then
               echo "* No error occurred, finished! "
           else
@@ -260,7 +261,7 @@ jobs:
                    -DCMAKE_BUILD_TYPE=Release \
                    -DCMAKE_INSTALL_PREFIX=~/Libs/MyEngine
           echo "* Compiling and installing project..."
-          cmake --build . -j4 --target install
+          cmake --build . -j10 --target install
           if [ $? -eq 0 ]; then
               echo "* No errors occurred, finished! "
           else
@@ -318,7 +319,7 @@ jobs:
             -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT\scripts\buildsystems\vcpkg.cmake"
           Write-Host "* Compiling and installing SDL3...."
           # 编译并安装（--config 指定 Release 配置）
-          cmake --build . -j4 --config Release --target install
+          cmake --build . -j10 --config Release --target install
           if ($LASTEXITCODE -eq 0) {
               Write-Host "* No error occurred, finished! "
           } else {
@@ -340,7 +341,7 @@ jobs:
             -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT\scripts\buildsystems\vcpkg.cmake" `
             -DSDLIMAGE_VENDORED=OFF
           Write-Host "* Compiling and installing SDL3_image...."
-          cmake --build . -j4 --config Release --target install
+          cmake --build . -j10 --config Release --target install
           if ($LASTEXITCODE -eq 0) {
               Write-Host "* No error occurred, finished! "
           } else {
@@ -363,7 +364,7 @@ jobs:
             -DCMAKE_INSTALL_PREFIX="$HOME\Libs\SDL3_mixer" `
             -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT\scripts\buildsystems\vcpkg.cmake"
           Write-Host "* Compiling and installing SDL3_mixer...."
-          cmake --build . -j4 --config Release --target install
+          cmake --build . -j10 --config Release --target install
           if ($LASTEXITCODE -eq 0) {
               Write-Host "* No error occurred, finished! "
           } else {
@@ -386,7 +387,7 @@ jobs:
             -DCMAKE_INSTALL_PREFIX="$HOME\Libs\SDL3_ttf" `
             -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT\scripts\buildsystems\vcpkg.cmake"
           Write-Host "* Compiling and installing SDL3_ttf...."
-          cmake --build . -j4 --config Release --target install
+          cmake --build . -j10 --config Release --target install
           if ($LASTEXITCODE -eq 0) {
               Write-Host "* No error occurred, finished! "
           } else {
@@ -413,7 +414,7 @@ jobs:
             exit /b 1
           )
           echo * Compiling and installing project...
-          cmake --build . --config Release --target INSTALL -j4
+          cmake --build . --config Release --target INSTALL -j10
           if %errorlevel% equ 0 (
             echo * No errors occurred, finished!
           ) else (

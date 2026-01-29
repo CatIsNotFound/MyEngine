@@ -99,7 +99,7 @@ namespace MyEngine::Widget {
             if (!placeHolderText().empty()) _status ^= ENGINE_BOOL_LINE_EDIT_PLACEHOLDER_TEXT_VISIBLE;
         }
         if (_status & ENGINE_BOOL_LINE_EDIT_PASSWORD_MODE) {
-            setProperty(ENGINE_PROP_LINE_EDIT_PASSWORD_LENGTH, _strings.size());
+            setProperty(ENGINE_PROP_LINE_EDIT_PASSWORD_LENGTH, (uint64_t)_strings.size());
             setProperty(ENGINE_PROP_LINE_EDIT_PASSWORD,
                         Algorithm::multiplicationString(_secret_char, _strings.size()));
         }
@@ -130,7 +130,7 @@ namespace MyEngine::Widget {
         if (enabled) {
             _status |= ENGINE_BOOL_LINE_EDIT_PASSWORD_MODE;
             strncpy(_secret_char, secret, sizeof(char) * 8);
-            setProperty(ENGINE_PROP_LINE_EDIT_PASSWORD_LENGTH, _strings.size());
+            setProperty(ENGINE_PROP_LINE_EDIT_PASSWORD_LENGTH, (uint64_t)_strings.size());
             setProperty(ENGINE_PROP_LINE_EDIT_PASSWORD,
                         Algorithm::multiplicationString(_secret_char, _strings.size()));
         } else {
@@ -580,7 +580,7 @@ namespace MyEngine::Widget {
             }
             TextSystem::global()->setText(_text_id, passwd);
             setProperty(ENGINE_PROP_LINE_EDIT_PASSWORD, passwd);
-            setProperty(ENGINE_PROP_LINE_EDIT_PASSWORD_LENGTH, _strings.size());
+            setProperty(ENGINE_PROP_LINE_EDIT_PASSWORD_LENGTH, (uint64_t)_strings.size());
         } else {
             TextSystem::global()->setText(_text_id, text);
         }

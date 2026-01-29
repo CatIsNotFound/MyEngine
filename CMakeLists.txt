@@ -91,7 +91,7 @@ list(APPEND CMAKE_PREFIX_PATH ${SDL3_TTF_LIB})
 
 if (APPLE AND NOT EXISTS ${FMT_LIB})
     message("Tips: Use '-DHELP=ON' option for more help.")
-    message(FATAL_ERROR "FMT Libs path is not found! Use '-DFMT_LIB=path/to/FMT' to set the path.")
+    message(FATAL_ERROR "You are using MacOS, but your FMT Libs path is not set! Use '-DFMT_LIB=path/to/FMT' to set the path.")
 endif()
 
 if (EXISTS ${FMT_LIB})
