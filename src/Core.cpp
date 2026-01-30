@@ -30,7 +30,10 @@ namespace MyEngine {
                 RenderCommand::CommandFactory::release(std::move(cmd));
             }
         }
-        if (_renderer) SDL_DestroyRenderer(_renderer);
+        if (_renderer) {
+            SDL_DestroyRenderer(_renderer);
+            _renderer = nullptr;
+        }
     }
 
     void Renderer::setVSyncMode(Renderer::VSyncMode mode) {
@@ -53,6 +56,15 @@ namespace MyEngine {
 
     size_t Renderer::renderCountInSec() const {
         return _render_cnt_in_sec;
+    }
+
+    SDL_Surface* Renderer::capture() const {
+        return SDL_RenderReadPixels(_renderer, nullptr);
+    }
+
+    SDL_Surface* Renderer::capture(MyEngine::Geometry geometry) const {
+        SDL_Rect rect(geometry.x, geometry.y, geometry.width, geometry.height);
+        return SDL_RenderReadPixels(_renderer, &rect);
     }
 
     void Renderer::_update() {
@@ -204,9 +216,9 @@ namespace MyEngine {
         addCommand<RenderCommand::BlendModeCMD>(_renderer, blend_mode);
     }
 
-    Window::Window(Engine* object, const std::string& title, int width, int height,  GraphicEngine engine)
-        : _window_geometry(0, 0, width, height), _engine(object) {
-        if (engine == Vulkan)
+    Window::Window(Engine* engine, const std::string& title, int width, int height, GraphicEngine graphic_engine)
+        : _window_geometry(0, 0, width, height), _engine(engine) {
+        if (graphic_engine == Vulkan)
             _window = SDL_CreateWindow(title.c_str(), width, height,
                                        SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_VULKAN | SDL_WINDOW_HIDDEN);
         else
@@ -219,8 +231,8 @@ namespace MyEngine {
         _winID = SDL_GetWindowID(_window);
         SDL_GetWindowPosition(_window, &_window_geometry.x, &_window_geometry.y);
         Logger::log(Logger::Debug, "Window: created with ID {}", _winID);
-        if (object) {
-            object->newWindow(this);
+        if (engine) {
+            engine->newWindow(this);
         } else {
             Logger::log("Window: Can't find engine object!", Logger::Fatal);
             Engine::throwFatalError();
@@ -234,6 +246,7 @@ namespace MyEngine {
         if (_win_icon) SDL_DestroySurface(_win_icon);
         if (_window) {
             SDL_DestroyWindow(_window);
+            _window = nullptr;
             Logger::log(Logger::Debug, "Window: ID {} destroyed", _winID);
         }
     }
@@ -410,6 +423,11 @@ namespace MyEngine {
     }
 
     bool Window::maximizeWindow() {
+        if (!resizable()) {
+            Logger::log("Engine: Failed to maximize window! Did you forget to called `setResizable(true)`?",
+                        Logger::Error);
+            return false;
+        }
         return SDL_MaximizeWindow(_window);
     }
 
@@ -524,7 +542,7 @@ namespace MyEngine {
 
     void Window::unloadEvent() {
         if (_engine) {
-            Logger::log(Logger::Info, "Window: Unload window id {}", _winID);
+            Logger::log(Logger::Debug, "Window: Unloaded window id {}", _winID);
             _engine->removeWindow(_winID);
         } else {
             Logger::log(Logger::Error, "Window: Unload window id {} failed!", _winID);
@@ -549,7 +567,7 @@ namespace MyEngine {
     void Window::keyPressedEvent(SDL_Scancode keycode) {}
     void Window::dragInEvent() {}
     void Window::dragOutEvent() {}
-    void Window::dragMovedEvent(const Vector2 &position, const char *url) {}
+    void Window::dragMovedEvent(const Vector2 &position, const char *data) {}
     void Window::dropEvent(const char *url) {}
 
     EventSystem::~EventSystem() = default;
@@ -741,7 +759,7 @@ namespace MyEngine {
                     } else {
                         auto real_pos = Cursor::global()->globalPosition() - toGeometryFloat(win->geometry()).pos;
                         win->_dragging_pos.reset(real_pos);
-                        win->dragMovedEvent(real_pos, ev.drop.source);
+                        win->dragMovedEvent(real_pos, ev.drop.data);
                     }
                 }
             });
@@ -822,7 +840,10 @@ namespace MyEngine {
     }
 
     Engine::~Engine() {
-        cleanUp();
+        if (_running) {
+            cleanUp();
+            Logger::log("Engine: Shutdown application! Did you forget to call `exec()` function?", Logger::Info);
+        }
     }
 
     void Engine::disabledShowAppInfo() {
@@ -857,32 +878,42 @@ namespace MyEngine {
         SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_URL_STRING, app_url);
     }
 
-    std::string_view Engine::applicationID() const {
+    std::string_view Engine::applicationID() {
         return SDL_GetAppMetadataProperty(SDL_PROP_APP_METADATA_IDENTIFIER_STRING);
     }
 
-    std::string_view Engine::applicationName() const {
+    std::string_view Engine::applicationName() {
         return SDL_GetAppMetadataProperty(SDL_PROP_APP_METADATA_NAME_STRING);
     }
 
-    std::string_view Engine::applicationVersion() const {
+    std::string_view Engine::applicationVersion() {
         return SDL_GetAppMetadataProperty(SDL_PROP_APP_METADATA_VERSION_STRING);
     }
 
-    std::string_view Engine::applicationCopyright() const {
+    std::string_view Engine::applicationCopyright() {
         return SDL_GetAppMetadataProperty(SDL_PROP_APP_METADATA_COPYRIGHT_STRING);
     }
 
-    std::string_view Engine::applicationAuthor() const {
+    std::string_view Engine::applicationAuthor() {
         return SDL_GetAppMetadataProperty(SDL_PROP_APP_METADATA_CREATOR_STRING);
     }
 
-    std::string_view Engine::applicationTypeName() const {
+    std::string_view Engine::applicationTypeName() {
         return SDL_GetAppMetadataProperty(SDL_PROP_APP_METADATA_TYPE_STRING);
     }
 
-    std::string_view Engine::applicationURL() const {
+    std::string_view Engine::applicationURL() {
         return SDL_GetAppMetadataProperty(SDL_PROP_APP_METADATA_URL_STRING);
+    }
+
+    void Engine::openApplicationURL(bool* ok) {
+        if (!SDL_OpenURL(SDL_GetAppMetadataProperty(SDL_PROP_APP_METADATA_URL_STRING))) {
+            Logger::log(Logger::Warn, "Engine: Can't open application URL by browser! Exception: {}",
+                        SDL_GetError());
+            if (ok) *ok = false;
+            return;
+        }
+        if (ok) *ok = true;
     }
 
     void Engine::setLimitMaxMemorySize(size_t mem_in_kb) {
@@ -907,6 +938,7 @@ namespace MyEngine {
 
     int Engine::exec() {
         running();
+        cleanUp();
         return _return_code;
     }
 
@@ -919,7 +951,9 @@ namespace MyEngine {
 
     void Engine::removeWindow(SDL_WindowID id) {
         if (_window_list.contains(id)) {
+            std::unique_ptr<Window> win = std::move(_window_list.at(id));
             _window_list.erase(id);
+            win.reset();
         }
     }
 
@@ -927,7 +961,7 @@ namespace MyEngine {
         if (_window_list.contains(id)) {
             return _window_list.at(id).get();
         } else {
-            auto err = FMT::format("Engine: Window id {} is not created!", id);
+            auto err = FMT::format("Engine: Window id {} is not created or is already removed!", id);
             Logger::log(err, Logger::Fatal);
             throw NullPointerException(err);
         }
@@ -978,9 +1012,11 @@ namespace MyEngine {
         for (auto& win : _window_list) {
             win.second.reset();
         }
+        _window_list.clear();
         TextSystem::global()->unload();
         AudioSystem::global()->unload();
         SDL_Quit();
+        if (_running) _running = false;
         Logger::log("Engine: Clean up finished!");
     }
 

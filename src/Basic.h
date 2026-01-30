@@ -3,7 +3,7 @@
 #ifndef MYENGINE_BASIC_H
 #define MYENGINE_BASIC_H
 #ifndef M_PI
-#define M_PI		3.14159265358979323846f
+#define M_PI		3.14159265358979323846
 #endif
 #include "Libs.h"
 #include "Exception.h"
@@ -695,13 +695,9 @@ namespace MyEngine {
     template<typename T>
     class Matrix2D {
     private:
-        
         std::vector<T> _datas;
-        
         uint32_t _row;
-        
         uint32_t _col;
-        
         std::function<void(T &)> _deleter;
     public:
         using iterator = typename std::vector<T>::iterator;
@@ -1759,9 +1755,11 @@ namespace MyEngine {
         class Line {
         public:
             explicit Line() : _start_position(), _end_position(), _size(1), _color(StdColor::LightGray) {}
-            explicit Line(float x1, float y1, float x2, float y2, uint8_t size, const SDL_Color& color)
+            explicit Line(float x1, float y1, float x2, float y2, uint8_t size = 1,
+                          const SDL_Color& color = StdColor::LightGray)
                 : _start_position(x1, y1), _end_position(x2, y2), _size(size), _color(color) {update();}
-            explicit Line(const Vector2& start, const Vector2& end, uint8_t size, const SDL_Color &color)
+            explicit Line(const Vector2& start, const Vector2& end, uint8_t size = 1,
+                          const SDL_Color &color = StdColor::LightGray)
                 : _start_position(start), _end_position(end), _size(size), _color(color) {update();}
 
             const int *indices() { return _indices.data(); }

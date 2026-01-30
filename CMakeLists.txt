@@ -18,7 +18,6 @@ function(SHOW_USAGE)
     message("-DCMAKE_BUILD_TYPE         Set \"Debug\" or \"Release\" mode, default value: \"Release\"")
     message("-DCMAKE_INSTALL_PREFIX     Set install path for installing library after building project\n")
     message("-DBUILD_TEST               A simple test project (For testing project), default value: 'OFF'")
-    message("-DBUILD_GTEST              A test module project (Must use Google test), default value: 'OFF'")
     message("-DBUILD_SHARED_LIBS_ONLY   Is it allowed to only build shared libraries, without guaranteeing direct use. ")
     message("                           If the value is 'OFF', only static libraries will be built, default value: 'OFF'")
     message("-DSDL3_LIB                 Set SDL3 shared library path [REQUIRED]")
@@ -28,7 +27,7 @@ function(SHOW_USAGE)
     message("\nOptional options:")
     message("-DFMT_LIB                  Set FMT library path [p.s: APPLE REQUIRED]")
     message("-DDATE_LIB                 Set Date library path [p.s: APPLE REQUIRED, Windows is not recommend to set]")
-    message("-DGTEST_LIB                Set Google test shared library path [while `BUILD_GTEST` option is ON]")
+    message("-DCATCH2_LIB               Set Catch2 library path [while `BUILD_TEST` option is ON]")
     message(FATAL_ERROR "Configure stopped! To disable show help information, please use '-DHELP=OFF'. Otherwise it will be shown again!")
 endfunction()
 
@@ -64,7 +63,6 @@ else()
 endif()
 
 set(BUILD_TEST OFF CACHE BOOL "Build Test")
-set(BUILD_GTEST OFF CACHE BOOL "Build Test Cases Project")
 set(BUILD_SHARED_LIBS_ONLY OFF CACHE BOOL "Build Shared Libraries Only")
 
 if (NOT EXISTS ${SDL3_LIB})
@@ -309,10 +307,6 @@ if (BUILD_TEST)
     add_subdirectory(test)
 endif()
 
-if (BUILD_GTEST)
-    add_subdirectory(GTest)
-endif()
-
 message("================= Configuration Result ======================")
 message("Project version: ${PROJECT_VERSION}")
 if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
@@ -321,7 +315,6 @@ else()
     message("Build type: Debug")
 endif()
 message("Build test: ${BUILD_TEST}")
-message("Build GTest: ${BUILD_GTEST}")
 message("SDL3 libs  path: ${SDL3_LIB}")
 message("SDL3 image path: ${SDL3_IMAGE_LIB}")
 message("SDL3 mixer path: ${SDL3_MIXER_LIB}")
@@ -342,25 +335,36 @@ message("You can run command as below now: ")
 message("  cmake --build . --target install")
 message("Have fun! :)")
 
-if (WIN32)
+function(CopyDependencies OUT)
     set(POST_BUILD_COMMANDS
-            COMMAND ${CMAKE_COMMAND} -E copy_directory ${SDL3_LIB}/bin ${CMAKE_BINARY_DIR}/bin
-            COMMAND ${CMAKE_COMMAND} -E copy_directory ${SDL3_MIXER_LIB}/bin ${CMAKE_BINARY_DIR}/bin
+            COMMAND ${CMAKE_COMMAND} -E copy_directory ${SDL3_LIB}/bin ${CMAKE_BINARY_DIR}/${OUT}
+            COMMAND ${CMAKE_COMMAND} -E copy_directory ${SDL3_MIXER_LIB}/bin ${CMAKE_BINARY_DIR}/${OUT}
     )
     if (MINGW)
         list(APPEND POST_BUILD_COMMANDS
-                COMMAND ${CMAKE_COMMAND} -E copy_directory ${SDL3_IMAGE_LIB}/x86_64-w64-mingw32/bin ${CMAKE_BINARY_DIR}/bin
-                COMMAND ${CMAKE_COMMAND} -E copy_directory ${SDL3_TTF_LIB}/x86_64-w64-mingw32/bin ${CMAKE_BINARY_DIR}/bin
+                COMMAND ${CMAKE_COMMAND} -E copy_directory ${SDL3_IMAGE_LIB}/x86_64-w64-mingw32/bin ${CMAKE_BINARY_DIR}/${OUT}
+                COMMAND ${CMAKE_COMMAND} -E copy_directory ${SDL3_TTF_LIB}/x86_64-w64-mingw32/bin ${CMAKE_BINARY_DIR}/${OUT}
         )
     else ()
         list(APPEND POST_BUILD_COMMANDS
-                COMMAND ${CMAKE_COMMAND} -E copy_directory ${SDL3_IMAGE_LIB}/bin ${CMAKE_BINARY_DIR}/bin
-                COMMAND ${CMAKE_COMMAND} -E copy_directory ${SDL3_TTF_LIB}/bin ${CMAKE_BINARY_DIR}/bin
+                COMMAND ${CMAKE_COMMAND} -E copy_directory ${SDL3_IMAGE_LIB}/bin ${CMAKE_BINARY_DIR}/${OUT}
+                COMMAND ${CMAKE_COMMAND} -E copy_directory ${SDL3_TTF_LIB}/bin ${CMAKE_BINARY_DIR}/${OUT}
         )
     endif()
 
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             ${POST_BUILD_COMMANDS}
     )
+
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/test/assets ${CMAKE_BINARY_DIR}/${OUT}/assets
+    )
+endfunction()
+
+if (WIN32)
+    if (${BUILD_TEST})
+        CopyDependencies(bin)
+        CopyDependencies(test)
+    endif()
 endif()
 

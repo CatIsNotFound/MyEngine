@@ -77,6 +77,8 @@ namespace MyEngine {
         [[nodiscard]] SDL_Renderer* self() const;
         [[nodiscard]] Window* window() const;
         [[nodiscard]] size_t renderCountInSec() const;
+        [[nodiscard]] SDL_Surface* capture() const;
+        [[nodiscard]] SDL_Surface* capture(Geometry geometry) const;
         void _update();
         void fillBackground(const SDL_Color& color);
         void fillBackground(SDL_Color&& color);
@@ -122,8 +124,8 @@ namespace MyEngine {
             OpenGL,
             Vulkan
         };
-        explicit Window(Engine* object, const std::string& title,
-                        int width = 800, int height = 600, GraphicEngine engine = OpenGL);
+        explicit Window(Engine* engine, const std::string& title,
+                        int width = 800, int height = 600, GraphicEngine graphic_engine = OpenGL);
         virtual ~Window();
 
         bool move(int x, int y);
@@ -208,7 +210,7 @@ namespace MyEngine {
         virtual void keyPressedEvent(SDL_Scancode keycode);
         virtual void dragInEvent();
         virtual void dragOutEvent();
-        virtual void dragMovedEvent(const Vector2 &position, const char *url);
+        virtual void dragMovedEvent(const Vector2 &position, const char *data);
         virtual void dropEvent(const char *url);
 
     private:
@@ -285,21 +287,22 @@ namespace MyEngine {
         ~Engine();
         static void disabledShowAppInfo();
 
-        void setApplicationID(const char *app_id);
-        void setApplicationName(const char *app_name);
-        void setApplicationVersion(const char *app_version);
-        void setApplicationCopyright(const char *app_copyright);
-        void setApplicationAuthor(const char *app_author);
-        void setApplicationTypeName(const char *app_type);
-        void setApplicationURL(const char *app_url);
+        static void setApplicationID(const char *app_id);
+        static void setApplicationName(const char *app_name);
+        static void setApplicationVersion(const char *app_version);
+        static void setApplicationCopyright(const char *app_copyright);
+        static void setApplicationAuthor(const char *app_author);
+        static void setApplicationTypeName(const char *app_type);
+        static void setApplicationURL(const char *app_url);
 
-        [[nodiscard]] std::string_view applicationID() const;
-        [[nodiscard]] std::string_view applicationName() const;
-        [[nodiscard]] std::string_view applicationVersion() const;
-        [[nodiscard]] std::string_view applicationCopyright() const;
-        [[nodiscard]] std::string_view applicationAuthor() const;
-        [[nodiscard]] std::string_view applicationTypeName() const;
-        [[nodiscard]] std::string_view applicationURL() const;
+        static std::string_view applicationID();
+        static std::string_view applicationName();
+        static std::string_view applicationVersion();
+        static std::string_view applicationCopyright();
+        static std::string_view applicationAuthor();
+        static std::string_view applicationTypeName();
+        static std::string_view applicationURL();
+        static void openApplicationURL(bool* ok = nullptr);
 
         void setLimitMaxMemorySize(size_t mem_in_kb);
         [[nodiscard]] size_t limitMaxMemorySize() const;

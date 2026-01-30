@@ -1,18 +1,16 @@
 
-#ifndef MYENGINE_NEWWINDOW_H
-#define MYENGINE_NEWWINDOW_H
-#include <MyEngine>
+#ifndef MYENGINE_TEST_MYWINDOW_H
+#define MYENGINE_TEST_MYWINDOW_H
+#include "MyEngine"
 
-class NewWindow : public MyEngine::Window {
+using namespace MyEngine;
+
+class MyWindow : public MyEngine::Window {
 public:
-    explicit NewWindow(MyEngine::Engine* engine, const std::string& title, int width = 800, int height = 600);
-    ~NewWindow();
-
-    /// TODO: Add more functions to improve your custom window.
+    explicit MyWindow(MyEngine::Engine* engine, const std::string& title, int width = 800, int height = 600);
+    ~MyWindow();
 
 protected:
-    /// TODO: The following are all the supported events,
-    ///       which you can use to implement the functionality of your window.
     void paintEvent() override;
     void resizeEvent() override;
     void moveEvent() override;
@@ -37,14 +35,17 @@ protected:
     void keyPressedEvent(SDL_Scancode keycode) override;
     void dragInEvent() override;
     void dragOutEvent() override;
-    void dragMovedEvent(const MyEngine::Vector2 &position, const char *url) override;
+    void dragMovedEvent(const MyEngine::Vector2 &position, const char *data) override;
     void dropEvent(const char *url) override;
-    /// TIPS: you can add more functions below. :)
-
 
 private:
-    /// TODO: Add the private members or functions here.
-
+    static std::string_view mouseButtonString(MouseStatus status);
+    std::string _debug{}, _debug_mouse{}, _debug_keyboard{};
+    MouseStatus _btn{};
+    SDL_Scancode _key{};
+    bool _is_focus{};
+    SColor _bg_color{StdColor::White}, _font_color{StdColor::Black};
 };
 
-#endif //MYENGINE_NEWWINDOW_H
+
+#endif //MYENGINE_TEST_MYWINDOW_H
