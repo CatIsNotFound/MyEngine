@@ -62,7 +62,7 @@ else()
         set(SDL3_TTF_LIB "/usr/local/SDL3_ttf" CACHE PATH "SDL3 TTF Libs Path")
 endif()
 
-set(BUILD_TEST OFF CACHE BOOL "Build Test")
+set(BUILD_TEST ON CACHE BOOL "Build Test")
 set(BUILD_SHARED_LIBS_ONLY OFF CACHE BOOL "Build Shared Libraries Only")
 
 if (NOT EXISTS ${SDL3_LIB})

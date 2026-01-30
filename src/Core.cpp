@@ -953,7 +953,7 @@ namespace MyEngine {
         if (_window_list.contains(id)) {
             std::unique_ptr<Window> win = std::move(_window_list.at(id));
             _window_list.erase(id);
-            win.reset();
+            win.reset(nullptr);
         }
     }
 

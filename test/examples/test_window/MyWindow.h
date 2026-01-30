@@ -8,7 +8,7 @@ using namespace MyEngine;
 class MyWindow : public MyEngine::Window {
 public:
     explicit MyWindow(MyEngine::Engine* engine, const std::string& title, int width = 800, int height = 600);
-    ~MyWindow();
+    ~MyWindow() override;
 
 protected:
     void paintEvent() override;

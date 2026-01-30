@@ -15,9 +15,9 @@ if (EXISTS ${CATCH2_LIB})
     list(APPEND CMAKE_PREFIX_PATH "${CATCH2_LIB}")
     find_package(Catch2 REQUIRED)
     include(Catch)
-    function(addC2TestModule MODULE_LIST TEST_NAME EXE_FILES)
+    function(addC2TestModule MODULE_LIST TEST_NAME)
         add_executable(${TEST_NAME}
-                ${EXE_FILES}
+                ${ARGN}
         )
         set(${MODULE_LIST} ${${MODULE_LIST}} ${TEST_NAME} PARENT_SCOPE)
     endfunction()
@@ -39,9 +39,9 @@ if (EXISTS ${CATCH2_LIB})
 
 endif()
 ############################################
-function(addModule MODULE_LIST TEST_NAME EXE_LIST)
+function(addModule MODULE_LIST TEST_NAME)
     add_executable(${TEST_NAME}
-            ${EXE_LIST}
+            ${ARGN}
     )
     set(${MODULE_LIST} ${${MODULE_LIST}} ${TEST_NAME} PARENT_SCOPE)
 endfunction()
@@ -52,9 +52,9 @@ addModule(TEST_MODULES test_simple
 )
 
 addModule(TEST_MODULES test_window
-        examples/test_window/test_window.cpp
         examples/test_window/MyWindow.h
         examples/test_window/MyWindow.cpp
+        examples/test_window/test_window.cpp
 )
 
 ############################################
