@@ -35,6 +35,10 @@ if (EXISTS ${CATCH2_LIB})
             core/renderer/test_renderer.cpp
     )
 
+    addC2TestModule(CATCH2_TEST_MODULE_LIST core_event_system
+            core/EventSystem/test_event_system.cpp
+    )
+
     # ......
 
 endif()
@@ -55,6 +59,10 @@ addModule(TEST_MODULES test_window
         examples/test_window/MyWindow.h
         examples/test_window/MyWindow.cpp
         examples/test_window/test_window.cpp
+)
+
+addModule(TEST_MODULES test_renderer
+        examples/test_renderer/test_renderer.cpp
 )
 
 ############################################

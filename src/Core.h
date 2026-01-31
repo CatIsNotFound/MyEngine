@@ -235,6 +235,7 @@ namespace MyEngine {
     };
 
     class EventSystem {
+        friend class Engine;
     public:
         EventSystem(EventSystem &&) = delete;
         EventSystem(const EventSystem &) = delete;
@@ -252,13 +253,14 @@ namespace MyEngine {
 
         [[nodiscard]] size_t eventCount() const;
         [[nodiscard]] size_t globalEventCount() const;
-        [[nodiscard]] const std::vector<int>& captureKeyboardStatus() const;
+        [[nodiscard]] const std::vector<SDL_Scancode>& captureKeyboardStatus() const;
         [[nodiscard]] bool captureKeyboard(SDL_Scancode code) const;
-        [[nodiscard]] uint32_t captureMouseStatus() const;
+        [[nodiscard]] MouseStatus captureMouseStatus() const;
         [[nodiscard]] bool captureMouse(MouseStatus mouse_status) const;
         [[nodiscard]] const Vector2& captureMouseAbsDistance() const;
         [[nodiscard]] const Vector2& captureMousePosition() const;
         bool run();
+        static std::string_view mouseStatusName(MouseStatus status);
     private:
         explicit EventSystem(Engine* engine) : _engine(engine) {}
         static std::unique_ptr<EventSystem> _instance;
@@ -266,8 +268,8 @@ namespace MyEngine {
         bool* _kb_events{nullptr};
         int _nums_keys{0};
         bool _mouse_down_changed{false};
-        std::vector<int> _keys_status;
-        uint32_t _mouse_events{0};
+        std::vector<SDL_Scancode> _keys_status;
+        MouseStatus _mouse_events{0};
         Vector2 _mouse_pos{0, 0}, _mouse_down_dis{0, 0}, _before_mouse_down_pos{0, 0};
         std::unordered_map<uint64_t, std::function<void(SDL_Event)>> _event_list{};
         std::vector<uint64_t> _del_event_deque, _del_g_event_deque;

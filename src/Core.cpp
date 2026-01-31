@@ -590,14 +590,14 @@ namespace MyEngine {
             return;
         }
         _event_list.emplace(id, event);
-        Logger::log(Logger::Info, "EventSystem: Append a new event with ID {}", id);
+        Logger::log(Logger::Debug, "EventSystem: Append a new event with ID {}", id);
     }
 
     void EventSystem::removeEvent(uint64_t id) {
         if (_event_list.contains(id)) {
             // _event_list.erase(id);
             _del_event_deque.push_back(id);
-            Logger::log(Logger::Info, "EventSystem: Removed the event with ID {}", id);
+            Logger::log(Logger::Debug, "EventSystem: Requested to remove event with ID {}", id);
         } else {
             Logger::log(Logger::Warn, "EventSystem: The event with ID {} is not found!", id);
         }
@@ -609,7 +609,7 @@ namespace MyEngine {
             _global_event_list[g_id] = event;
         } else {
             _global_event_list.emplace(g_id, event);
-            Logger::log(Logger::Info, "EventSystem: Append a global event by ID {}", g_id);
+            Logger::log(Logger::Debug, "EventSystem: Append a global event by ID {}", g_id);
         }
     }
 
@@ -617,7 +617,7 @@ namespace MyEngine {
         if (_global_event_list.contains(g_id)) {
             // _global_event_list.erase(g_id);
             _del_g_event_deque.push_back(g_id);
-            Logger::log(Logger::Info, "EventSystem: Removed a global event with ID {}", g_id);
+            Logger::log(Logger::Debug, "EventSystem: Requested to remove global event with ID {}", g_id);
         } else {
             Logger::log(Logger::Warn, "EventSystem: The global event with ID {} is not found!", g_id);
         }
@@ -627,148 +627,153 @@ namespace MyEngine {
 
     bool EventSystem::run() {
         SDL_Event ev;
+        bool running = true;
         if (SDL_PollEvent(&ev)) {
             _kb_events = const_cast<bool*>(SDL_GetKeyboardState(&_nums_keys));
             _keys_status.clear();
             for (int i = 0; i < _nums_keys; ++i) {
-                if (_kb_events[i]) _keys_status.emplace_back(i);
+                if (_kb_events[i]) _keys_status.emplace_back(static_cast<SDL_Scancode>(i));
             }
 
-            _mouse_events = SDL_GetMouseState(&_mouse_pos.x, &_mouse_pos.y);
+            _mouse_events = static_cast<MouseStatus>(SDL_GetMouseState(&_mouse_pos.x, &_mouse_pos.y));
             if (!_mouse_down_changed) {
                 // When any of mouse buttons is pressed down, triggered...
-                if (_mouse_events > 0) {
+                if (_mouse_events > MouseStatus::None) {
                     _mouse_down_changed = true;
                     _before_mouse_down_pos.reset(_mouse_pos);
                 }
             } else {
-                if (_mouse_events > 0) {
+                if (_mouse_events > MouseStatus::None) {
                     _mouse_down_dis.reset(_mouse_pos - _before_mouse_down_pos);
                 } else {
                     _mouse_down_changed = false;
                     _mouse_down_dis.reset(0, 0);
                 }
             }
-            if (!_engine->windowCount()) return false; // Exit engine when no windows loaded.
             auto win_id_list = _engine->windowIDList();
-            static bool mouse_down = false, key_down = false;
-            std::for_each(win_id_list.begin(), win_id_list.end(), [this, &ev](uint32_t id) {
-                auto win = _engine->window(id);
-                if (ev.window.windowID != id) return;
-                if (ev.window.type == SDL_EVENT_WINDOW_MOVED) {
-                    win->moveEvent();
-                } else if (ev.window.type == SDL_EVENT_WINDOW_RESIZED) {
-                    win->resizeEvent();
-                } else if (ev.window.type == SDL_EVENT_WINDOW_FOCUS_GAINED) {
-                    win->getFocusEvent();
-                } else if (ev.window.type == SDL_EVENT_WINDOW_FOCUS_LOST) {
-                    win->lostFocusEvent();
-                } else if (ev.window.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED) {
-                    win->unloadEvent();
-                    return;
-                } else if (ev.window.type == SDL_EVENT_WINDOW_HIDDEN) {
-                    win->hideEvent();
-                } else if (ev.window.type == SDL_EVENT_WINDOW_SHOWN) {
-                    win->showEvent();
-                } else if (ev.window.type == SDL_EVENT_WINDOW_MINIMIZED) {
-                    win->windowMinimizedEvent();
-                } else if (ev.window.type == SDL_EVENT_WINDOW_MAXIMIZED) {
-                    win->windowMaximizedEvent();
-                } else if (ev.window.type == SDL_EVENT_WINDOW_RESTORED) {
-                    win->windowRestoredEvent();
-                } else if (ev.window.type == SDL_EVENT_WINDOW_ENTER_FULLSCREEN) {
-                    win->enteredFullscreenEvent();
-                } else if (ev.window.type == SDL_EVENT_WINDOW_LEAVE_FULLSCREEN) {
-                    win->leaveFullscreenEvent();
-                } else if (ev.window.type == SDL_EVENT_WINDOW_MOUSE_ENTER) {
-                    win->mouseEnteredEvent();
-                } else if (ev.window.type == SDL_EVENT_WINDOW_MOUSE_LEAVE) {
-                    win->mouseLeftEvent();
-                }
-
-                // Keyboard event
-                if (!key_down) {
-                    if (!_keys_status.empty()) {
-                        key_down = true;
-                        win->keyDownEvent(ev.key.scancode);
+            if (!win_id_list.empty()) {
+                static bool mouse_down = false, key_down = false;
+                std::for_each(win_id_list.begin(), win_id_list.end(),
+                              [this, &ev, &win_id_list, &running] (uint32_t id) {
+                    auto win = _engine->window(id);
+                    if (ev.window.windowID != id) return;
+                    if (ev.window.type == SDL_EVENT_WINDOW_MOVED) {
+                        win->moveEvent();
+                    } else if (ev.window.type == SDL_EVENT_WINDOW_RESIZED) {
+                        win->resizeEvent();
+                    } else if (ev.window.type == SDL_EVENT_WINDOW_FOCUS_GAINED) {
+                        win->getFocusEvent();
+                    } else if (ev.window.type == SDL_EVENT_WINDOW_FOCUS_LOST) {
+                        win->lostFocusEvent();
+                    } else if (ev.window.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED) {
+                        win->unloadEvent();
+                        win_id_list = _engine->windowIDList();
+                        if (win_id_list.empty()) running = false;
+                        return;
+                    } else if (ev.window.type == SDL_EVENT_WINDOW_HIDDEN) {
+                        win->hideEvent();
+                    } else if (ev.window.type == SDL_EVENT_WINDOW_SHOWN) {
+                        win->showEvent();
+                    } else if (ev.window.type == SDL_EVENT_WINDOW_MINIMIZED) {
+                        win->windowMinimizedEvent();
+                    } else if (ev.window.type == SDL_EVENT_WINDOW_MAXIMIZED) {
+                        win->windowMaximizedEvent();
+                    } else if (ev.window.type == SDL_EVENT_WINDOW_RESTORED) {
+                        win->windowRestoredEvent();
+                    } else if (ev.window.type == SDL_EVENT_WINDOW_ENTER_FULLSCREEN) {
+                        win->enteredFullscreenEvent();
+                    } else if (ev.window.type == SDL_EVENT_WINDOW_LEAVE_FULLSCREEN) {
+                        win->leaveFullscreenEvent();
+                    } else if (ev.window.type == SDL_EVENT_WINDOW_MOUSE_ENTER) {
+                        win->mouseEnteredEvent();
+                    } else if (ev.window.type == SDL_EVENT_WINDOW_MOUSE_LEAVE) {
+                        win->mouseLeftEvent();
                     }
-                } else {
-                    if (_keys_status.empty()) {
-                        key_down = false;
-                        win->keyUpEvent(ev.key.scancode);
-                        win->keyPressedEvent(ev.key.scancode);
-                    } else if (!ev.key.repeat) {
-                        auto scancode = ev.key.scancode;
-                        if (scancode) {
-                            if (std::find(_keys_status.begin(), _keys_status.end(),
-                                          ev.key.scancode) != _keys_status.end()) {
-                                win->keyDownEvent(ev.key.scancode);
-                            } else {
-                                win->keyUpEvent(ev.key.scancode);
-                                win->keyPressedEvent(ev.key.scancode);
+
+                    // Keyboard event
+                    if (!key_down) {
+                        if (!_keys_status.empty()) {
+                            key_down = true;
+                            win->keyDownEvent(ev.key.scancode);
+                        }
+                    } else {
+                        if (_keys_status.empty()) {
+                            key_down = false;
+                            win->keyUpEvent(ev.key.scancode);
+                            win->keyPressedEvent(ev.key.scancode);
+                        } else if (!ev.key.repeat) {
+                            auto scancode = ev.key.scancode;
+                            if (scancode) {
+                                if (std::find(_keys_status.begin(), _keys_status.end(),
+                                              ev.key.scancode) != _keys_status.end()) {
+                                    win->keyDownEvent(ev.key.scancode);
+                                } else {
+                                    win->keyUpEvent(ev.key.scancode);
+                                    win->keyPressedEvent(ev.key.scancode);
+                                }
                             }
                         }
                     }
-                }
 
-                // Mouse event
-                static uint32_t old_mouse_event{0};
-                if (!mouse_down) {
-                    if (_mouse_events > 0) {
-                        win->mouseDownEvent(static_cast<MouseStatus>(_mouse_events));
-                        mouse_down = true;
-                        old_mouse_event = _mouse_events;
-                    }
-                } else {
-                    if (_mouse_events > 0) {
-                        win->mouseMovedEvent(_mouse_pos, _mouse_down_dis);
-                        old_mouse_event = _mouse_events;
+                    // Mouse event
+                    static MouseStatus old_mouse_event{MouseStatus::None};
+                    if (!mouse_down) {
+                        if (_mouse_events > MouseStatus::None) {
+                            win->mouseDownEvent(static_cast<MouseStatus>(_mouse_events));
+                            mouse_down = true;
+                            old_mouse_event = _mouse_events;
+                        }
                     } else {
-                        mouse_down = false;
-                        win->mouseUpEvent();
-                        win->mouseClickedEvent(static_cast<MouseStatus>(old_mouse_event));
-                        old_mouse_event = 0;
+                        if (_mouse_events > MouseStatus::None) {
+                            win->mouseMovedEvent(_mouse_pos, _mouse_down_dis);
+                            old_mouse_event = _mouse_events;
+                        } else {
+                            mouse_down = false;
+                            win->mouseUpEvent();
+                            win->mouseClickedEvent(static_cast<MouseStatus>(old_mouse_event));
+                            old_mouse_event = MouseStatus::None;
+                        }
                     }
-                }
 
-                // Drag and drop event
-                // - Cope with dragging and dropped
-                // - Must set `Window::setDragDropEnabled()` function to enabled.
-                if (!win->_drag_mode) return;
-                if (!win->_dragging) {
-                    if (ev.drop.type == SDL_EVENT_DROP_BEGIN) {
-                        win->_dragging = true;
-                        win->_dragging_pos.reset(
-                            Cursor::global()->globalPosition() - toGeometryFloat(win->geometry()).pos);
-                        win->dragInEvent();
-                    }
-                } else {
-                    if (ev.drop.type == SDL_EVENT_DROP_COMPLETE) {
-                        win->dragOutEvent();
-                        win->_dragging_pos.reset(0, 0);
-                        win->_dragging = false;
-                    } else if (ev.drop.type == SDL_EVENT_DROP_FILE) {
-                        win->dropEvent(ev.drop.data);
-                        win->_drop_url.assign(ev.drop.data);
-                        win->_dragging_pos.reset(0, 0);
-                        win->_dragging = false;
-                    } else if (ev.drop.type == SDL_EVENT_DROP_TEXT) {
-                        win->dropEvent(ev.drop.data);
-                        win->_drop_url.assign(ev.drop.data);
-                        win->_dragging = false;
+                    // Drag and drop event
+                    // - Cope with dragging and dropped
+                    // - Must set `Window::setDragDropEnabled()` function to enabled.
+                    if (!win->_drag_mode) return;
+                    if (!win->_dragging) {
+                        if (ev.drop.type == SDL_EVENT_DROP_BEGIN) {
+                            win->_dragging = true;
+                            win->_dragging_pos.reset(
+                                    Cursor::global()->globalPosition() - toGeometryFloat(win->geometry()).pos);
+                            win->dragInEvent();
+                        }
                     } else {
-                        auto real_pos = Cursor::global()->globalPosition() - toGeometryFloat(win->geometry()).pos;
-                        win->_dragging_pos.reset(real_pos);
-                        win->dragMovedEvent(real_pos, ev.drop.data);
+                        if (ev.drop.type == SDL_EVENT_DROP_COMPLETE) {
+                            win->dragOutEvent();
+                            win->_dragging_pos.reset(0, 0);
+                            win->_dragging = false;
+                        } else if (ev.drop.type == SDL_EVENT_DROP_FILE) {
+                            win->dropEvent(ev.drop.data);
+                            win->_drop_url.assign(ev.drop.data);
+                            win->_dragging_pos.reset(0, 0);
+                            win->_dragging = false;
+                        } else if (ev.drop.type == SDL_EVENT_DROP_TEXT) {
+                            win->dropEvent(ev.drop.data);
+                            win->_drop_url.assign(ev.drop.data);
+                            win->_dragging = false;
+                        } else {
+                            auto real_pos = Cursor::global()->globalPosition() - toGeometryFloat(win->geometry()).pos;
+                            win->_dragging_pos.reset(real_pos);
+                            win->dragMovedEvent(real_pos, ev.drop.data);
+                        }
                     }
-                }
-            });
-
+                });
+            }
             for (auto& event : _event_list) {
                 if (event.second) event.second(ev);
             }
             for (auto& id : _del_event_deque) {
                 _event_list.erase(id);
+                Logger::log(Logger::Debug, "EventSystem: Removed the event with ID {}", id);
             }
         }
         for (auto& e : _global_event_list) {
@@ -776,29 +781,30 @@ namespace MyEngine {
         }
         for (auto& id : _del_g_event_deque) {
             _global_event_list.erase(id);
+            Logger::log(Logger::Debug, "EventSystem: Removed a global event with ID {}", id);
         }
         _del_event_deque.clear();
         _del_g_event_deque.clear();
-        return true;
+        return running;
     }
 
     size_t EventSystem::globalEventCount() const {
         return _global_event_list.size();
     }
 
-    uint32_t EventSystem::captureMouseStatus() const {
+    MouseStatus EventSystem::captureMouseStatus() const {
         return _mouse_events;
     }
 
     bool EventSystem::captureMouse(MouseStatus mouse_status) const {
         if (mouse_status == MouseStatus::Left) {
-            return _mouse_events % 2;
+            return static_cast<uint8_t>(_mouse_events) % 2 > 0;
         } else if (mouse_status == MouseStatus::Right) {
-            return _mouse_events >= static_cast<uint32_t>(MouseStatus::Right);
+            return _mouse_events >= MouseStatus::Right;
         } else if (mouse_status == MouseStatus::Middle) {
-            return !(_mouse_events % 3) || (_mouse_events == static_cast<uint32_t>(MouseStatus::LeftMiddleRight));
+            return !(static_cast<uint8_t>(_mouse_events) % 3) || (_mouse_events == MouseStatus::LeftMiddleRight);
         }
-        return _mouse_events == static_cast<uint32_t>(mouse_status);
+        return _mouse_events == mouse_status;
     }
 
     const Vector2& EventSystem::captureMouseAbsDistance() const {
@@ -809,7 +815,7 @@ namespace MyEngine {
         return _mouse_pos;
     }
 
-    const std::vector<int>& EventSystem::captureKeyboardStatus() const {
+    const std::vector<SDL_Scancode>& EventSystem::captureKeyboardStatus() const {
         return _keys_status;
     }
 
@@ -817,8 +823,31 @@ namespace MyEngine {
         return _kb_events[code];
     }
 
+    std::string_view EventSystem::mouseStatusName(MouseStatus status) {
+        switch (status) {
+            case MouseStatus::None:
+                return "None";
+            case MouseStatus::Left:
+                return "Left";
+            case MouseStatus::Middle:
+                return "Middle";
+            case MouseStatus::LeftMiddle:
+                return "Left Middle";
+            case MouseStatus::Right:
+                return "Right";
+            case MouseStatus::LeftRight:
+                return "Left Right";
+            case MouseStatus::MiddleRight:
+                return "Middle Right";
+            case MouseStatus::LeftMiddleRight:
+                return "Left Middle Right";
+        }
+        return {};
+    }
+
     Engine::Engine(const char *app_name, const char *app_version, const char *app_id)
         : _running(true) {
+        SDL_SetAppMetadata(app_name, app_version, app_id);
         if (_show_app_info) {
             std::cout << FMT::format("MyEngine {} (Based on SDL {}.{}.{})\n",
                                      MYENGINE_FULL_VERSION, SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_MICRO_VERSION)
@@ -831,7 +860,6 @@ namespace MyEngine {
         if (!SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_EVENTS)) {
             throwFatalError();
         }
-        SDL_SetAppMetadata(app_name, app_version, app_id);
         Logger::log("Engine: Started up application!");
         TextSystem::global();
         AudioSystem::global();
@@ -1015,6 +1043,9 @@ namespace MyEngine {
         _window_list.clear();
         TextSystem::global()->unload();
         AudioSystem::global()->unload();
+        // Clear all events. [p.s: Only exec while Engine doing clean up]
+        EventSystem::global()->_event_list.clear();
+        EventSystem::global()->_global_event_list.clear();
         SDL_Quit();
         if (_running) _running = false;
         Logger::log("Engine: Clean up finished!");

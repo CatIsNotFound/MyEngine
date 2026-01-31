@@ -205,7 +205,7 @@ namespace MyEngine {
             Renderer* _renderer;
             Engine* _engine{nullptr};
             uint64_t _ev_id{0};
-            std::vector<int> _hot_key;
+            std::vector<SDL_Scancode> _hot_key;
             std::vector<std::vector<int>> _hot_key_list;
             bool _visible{true}, _enabled{true}, _focus{false};
             Cursor::StdCursor _cur_style{Cursor::Default};
