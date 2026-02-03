@@ -678,26 +678,25 @@ namespace MyEngine {
         _start_time = 0;
     }
 
-    BGM::BGM(MIX_Mixer *mixer, const std::string &path) : _mixer(mixer), _path(path) {
+    BGM::BGM(MIX_Mixer *mixer, const std::string &path) : _mixer(mixer), _path(path), _play_status() {
         if (!_mixer) {
             Logger::log("BGM: The specified mixer can not be null!", Logger::Fatal);
             throw InvalidArgumentException("BGM: The specified mixer can not be null!");
         }
-        _global_ev_id = IDGenerator::getNewGlobalEventID();
-        EventSystem::global()->appendGlobalEvent(_global_ev_id, [this]() {
-            if (_play_status == FadingOut && !MIX_TrackPlaying(_track)) {
-                _play_status = Loaded;
-            } else if (_play_status == FadingIn) {
-                auto start_pos = SDL_GetNumberProperty(_prop_id,
-                                                       MIX_PROP_PLAY_START_MILLISECOND_NUMBER, 0);
-                auto fade_in_dur = SDL_GetNumberProperty(_prop_id,
-                                                     MIX_PROP_PLAY_FADE_IN_MILLISECONDS_NUMBER, 0);
-                auto end_point = std::min(start_pos + fade_in_dur, duration());
-                if (position() >= end_point) {
-                    _play_status = Playing;
-                }
-            }
-        });
+        init();
+        load();
+    }
+
+    BGM::BGM(MIX_Mixer *mixer, MIX_Audio *audio) : _mixer(mixer), _audio(audio), _path(), _play_status() {
+        if (!_mixer) {
+            Logger::log("BGM: The specified mixer can not be null!", Logger::Fatal);
+            throw InvalidArgumentException("BGM: The specified mixer can not be null!");
+        }
+        if (!_audio) {
+            Logger::log("BGM: The specified audio is not valid!", Logger::Fatal);
+            throw InvalidArgumentException("BGM: The specified audio is not valid!");
+        }
+        init();
         load();
     }
 
@@ -916,14 +915,42 @@ namespace MyEngine {
         return MIX_GetTrackFrequencyRatio(_track);
     }
 
+    const MIX_Audio* BGM::audio() const {
+        return _audio;
+    }
+
+    const MIX_Track* BGM::track() const {
+        return _track;
+    }
+
+    void BGM::init() {
+        _global_ev_id = IDGenerator::getNewGlobalEventID();
+        EventSystem::global()->appendGlobalEvent(_global_ev_id, [this]() {
+            if ((_play_status == Playing || _play_status == FadingOut) && !MIX_TrackPlaying(_track)) {
+                _play_status = Loaded;
+            } else if (_play_status == FadingIn) {
+                auto start_pos = SDL_GetNumberProperty(_prop_id,
+                                                       MIX_PROP_PLAY_START_MILLISECOND_NUMBER, 0);
+                auto fade_in_dur = SDL_GetNumberProperty(_prop_id,
+                                                         MIX_PROP_PLAY_FADE_IN_MILLISECONDS_NUMBER, 0);
+                auto end_point = std::min(start_pos + fade_in_dur, duration());
+                if (position() >= end_point) {
+                    _play_status = Playing;
+                }
+            }
+        });
+    }
+
     void BGM::load() {
         _play_status = Loading;
-        _audio = MIX_LoadAudio(_mixer, _path.c_str(), false);
         if (!_audio) {
-            Logger::log(FMT::format("BGM: The specified file path '{}' is not valid! Exception: {}",
-                                    _path, SDL_GetError()), Logger::Error);
-            _play_status = Invalid;
-            return;
+            _audio = MIX_LoadAudio(_mixer, _path.c_str(), false);
+            if (!_audio) {
+                Logger::log(FMT::format("BGM: The specified file path '{}' is not valid! Exception: {}",
+                                        _path, SDL_GetError()), Logger::Error);
+                _play_status = Invalid;
+                return;
+            }
         }
         _track = MIX_CreateTrack(_mixer);
         if (!_track) {
@@ -944,9 +971,11 @@ namespace MyEngine {
     void BGM::unload() {
         if (_track) {
             MIX_DestroyTrack(_track);
+            _track = nullptr;
         }
         if (_audio) {
             MIX_DestroyAudio(_audio);
+            _audio = nullptr;
         }
         SDL_DestroyProperties(_prop_id);
         _play_status = Invalid;
@@ -1082,6 +1111,14 @@ namespace MyEngine {
         return MIX_GetTrackFrequencyRatio(_track);
     }
 
+    const MIX_Audio* SFX::audio() const {
+        return _audio;
+    }
+
+    const MIX_Track* SFX::track() const {
+        return _track;
+    }
+
     void SFX::load() {
         auto size = FileSystem::readableSize(_path, FileSystem::MB);
         _audio = MIX_LoadAudio(_mixer, _path.c_str(), (size >= MAX_AUDIO_FILE_SIZE));
@@ -1110,9 +1147,11 @@ namespace MyEngine {
     void SFX::unload() {
         if (_track) {
             MIX_DestroyTrack(_track);
+            _track = nullptr;
         }
         if (_audio) {
             MIX_DestroyAudio(_audio);
+            _audio = nullptr;
         }
         SDL_DestroyProperties(_prop_id);
         _is_load = false;

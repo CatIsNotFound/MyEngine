@@ -39,6 +39,10 @@ if (EXISTS ${CATCH2_LIB})
             core/EventSystem/test_event_system.cpp
     )
 
+    addC2TestModule(CATCH2_TEST_MODULE_LIST core_audio_system
+            core/AudioSystem/test_audio_system.cpp
+    )
+
     # ......
 
 endif()
@@ -64,6 +68,10 @@ addModule(TEST_MODULES test_window
 addModule(TEST_MODULES test_renderer
         examples/test_renderer/test_renderer.cpp
 )
+
+#addModule(TEST_MODULES test_audio_system
+#        core/AudioSystem/test_audio_system.cpp
+#)
 
 ############################################
 

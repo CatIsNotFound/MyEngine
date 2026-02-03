@@ -862,7 +862,12 @@ namespace MyEngine {
         }
         Logger::log("Engine: Started up application!");
         TextSystem::global();
-        AudioSystem::global();
+        if (!TextSystem::global()->_is_loaded) {
+            TextSystem::global()->load();
+        }
+        if (!AudioSystem::global()->_is_init) {
+            AudioSystem::global()->load();
+        }
         EventSystem::global(this);
         signal(SIGINT, Engine::exit);
     }
@@ -1019,7 +1024,7 @@ namespace MyEngine {
     void Engine::throwFatalError() {
         std::string get_err_info = Logger::lastError();
         if (get_err_info.empty()) {
-            Logger::log("No error found. It will not throw the fatal error!", Logger::Info);
+            Logger::log("No error found. It will not throw the fatal error!", Logger::Debug);
             return;
         }
         std::string err = FMT::format("An error has caused the entire program to crash.\nException: {}",
@@ -1117,16 +1122,21 @@ namespace MyEngine {
     }
 
     TextSystem::TextSystem() {
-        if (!TTF_Init()) {
-            Logger::log(Logger::Fatal, "TextSystem: Can't load Text System! Exception: {}", SDL_GetError());
-            return;
-        }
-        Logger::log("TextSystem: Loaded text system");
-        _is_loaded = true;
+        load();
     }
 
     bool TextSystem::isLoaded() const {
         return _is_loaded;
+    }
+
+    void TextSystem::load() {
+        if (!TTF_Init()) {
+            Logger::log(Logger::Fatal, "TextSystem: Failed to load Text System! "
+                                       "Exception: {}", SDL_GetError());
+            return;
+        }
+        Logger::log("TextSystem: Loaded text system");
+        _is_loaded = true;
     }
 
     void TextSystem::unload() {
@@ -1424,9 +1434,18 @@ namespace MyEngine {
 
     void AudioSystem::unload() {
         if (!_is_init) return;
-        std::for_each(_mixer_list.begin(), _mixer_list.end(), [this](MIX_Mixer* m) {
-            if (m) MIX_DestroyMixer(m);
-        });
+        for (auto& [name, audio] : _audio_map) {
+            if (audio.index() == 1) {
+                std::get<std::unique_ptr<BGM>>(audio).reset();
+            } else if (audio.index() == 2) {
+                std::get<std::unique_ptr<SFX>>(audio).reset();
+            }
+        }
+        for (auto& mixer : _mixer_list) {
+            if (mixer) MIX_DestroyMixer(mixer);
+        }
+        _audio_map.clear();
+        _mixer_list.clear();
         MIX_Quit();
         Logger::log("AudioSystem: Unloaded audio system!");
         _is_init = false;
@@ -1438,7 +1457,8 @@ namespace MyEngine {
             SDL_AudioSpec _audio_spec(SDL_AUDIO_S16, 2, 44100);
             auto new_mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &_audio_spec);
             if (!new_mixer) {
-                Logger::log(Logger::Error, "AudioSystem: Can't create the new mixer device! Exception: {}", SDL_GetError());
+                Logger::log(Logger::Error, "AudioSystem: Can't create the new mixer device! "
+                                           "Exception: {}", SDL_GetError());
             } else {
                 _mixer_list.push_back(new_mixer);
             }
@@ -1463,7 +1483,7 @@ namespace MyEngine {
         if (!_audio_map.contains(name)) {
             _audio_map.emplace(name, std::make_unique<BGM>(_mixer_list[mixer_index], path));
             if (std::get<std::unique_ptr<BGM>>(_audio_map.at(name))->isLoaded()) {
-                Logger::log(Logger::Info, "AudioSystem: Loaded BGM from path '{}' to Mixer #{}.", path, mixer_index);
+                Logger::log(Logger::Debug, "AudioSystem: Loaded BGM from path '{}' to Mixer #{}.", path, mixer_index);
             } else {
                 Logger::log(Logger::Error, "AudioSystem: Load BGM from path '{}' to Mixer #{} failed!", path, mixer_index);
             }
@@ -1476,7 +1496,7 @@ namespace MyEngine {
         if (!_audio_map.contains(name)) {
             _audio_map.emplace(name, std::make_unique<SFX>(_mixer_list[mixer_index], path));
             if (std::get<std::unique_ptr<SFX>>(_audio_map.at(name))->isLoaded()) {
-                Logger::log(Logger::Info, "AudioSystem: Loaded SFX from path '{}' to Mixer #{}.", path, mixer_index);
+                Logger::log(Logger::Debug, "AudioSystem: Loaded SFX from path '{}' to Mixer #{}.", path, mixer_index);
             } else {
                 Logger::log(Logger::Error, "AudioSystem: Load SFX from path '{}' to Mixer #{} failed!", path, mixer_index);
             }
@@ -1488,11 +1508,11 @@ namespace MyEngine {
     void AudioSystem::remove(const std::string &name) {
         if (_audio_map.contains(name)) {
             _audio_map.erase(name);
-            Logger::log(Logger::Info, "AudioSystem: Removed audio '{}'!", name);
+            Logger::log(Logger::Debug, "AudioSystem: Removed audio '{}'!", name);
         }
     }
 
-    BGM *AudioSystem::getBGM(const std::string &name) {
+    BGM* AudioSystem::getBGM(const std::string &name) {
         if (_audio_map.contains(name)) {
             if (std::holds_alternative<std::unique_ptr<BGM>>(_audio_map.at(name))) {
                 return std::get<std::unique_ptr<BGM>>(_audio_map.at(name)).get();
@@ -1530,7 +1550,8 @@ namespace MyEngine {
 
     void AudioSystem::setMixerVolume(float volume, size_t mixer_index) {
         if (mixer_index >= _mixer_list.size()) {
-            Logger::log(Logger::Error, "AudioSystem: Mixer #{} is not valid! Did you forget to called `AudioSystem::addNewMixer()`", mixer_index);
+            Logger::log(Logger::Error, "AudioSystem: Mixer #{} is not valid! "
+                                       "Did you forget to called `AudioSystem::addNewMixer()`", mixer_index);
             return;
         }
 

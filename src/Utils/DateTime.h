@@ -296,7 +296,7 @@ namespace MyEngine {
 
         /**
          * \if EN
-         * @brief Get the current date and time
+         * @brief Get the current date and time (UTC Time)
          * @return Returns a string type used to represent the current date and time
          * \endif
          * @see formatCurrentDateTime

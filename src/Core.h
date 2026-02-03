@@ -393,6 +393,7 @@ namespace MyEngine {
         SDL_Surface* toImage(uint64_t text_id);
     private:
         explicit TextSystem();
+        void load();
         void unload();
         bool _is_loaded{false};
         std::map<uint64_t, Text> _text_map;

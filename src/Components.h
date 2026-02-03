@@ -106,6 +106,7 @@ namespace MyEngine {
             FadingOut
         };
         explicit BGM(MIX_Mixer* mixer, const std::string& path = {});
+        explicit BGM(MIX_Mixer* mixer, MIX_Audio* audio);
         ~BGM();
 
         void setPath(const std::string& path);
@@ -133,9 +134,12 @@ namespace MyEngine {
         [[nodiscard]] const MIX_StereoGains& getLRChannel() const;
         [[nodiscard]] const MIX_Point3D& get3DPosition() const;
         [[nodiscard]] float speedAndPitch() const;
+        [[nodiscard]] const MIX_Audio* audio() const;
+        [[nodiscard]] const MIX_Track* track() const;
+    private:
+        void init();
         void load();
         void unload();
-    private:
         PlayStatus _play_status;
         std::string _path;
         float _volume{1.f};
@@ -174,10 +178,11 @@ namespace MyEngine {
         [[nodiscard]] const MIX_StereoGains& getLRChannel() const;
         [[nodiscard]] const MIX_Point3D& get3DPosition() const;
         [[nodiscard]] float speedAndPitch() const;
-
+        [[nodiscard]] const MIX_Audio* audio() const;
+        [[nodiscard]] const MIX_Track* track() const;
+    private:
         void load();
         void unload();
-    private:
         bool _is_load{false}, _is_loop{false}, _is_playing{false};
         std::string _path;
         SDL_PropertiesID _prop_id{0};
