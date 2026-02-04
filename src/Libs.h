@@ -37,15 +37,23 @@
 
 #ifdef __USED_DATE_LIB__
 #include <date/tz.h>
+/// @brief HowardHinnant date libs (Defined the date libs).
+/// @since v0.2.1-beta
 #define DATE_TZ date
 #else
+/// @brief std::chrono (Undefined the date libs)
+/// @since v0.2.1-beta
 #define DATE_TZ std::chrono
 #endif
 #ifdef __USED_FMT_LIB__
 #include <fmt/core.h>
 #include <fmt/chrono.h>
+/// @brief FMT library (Defined the fmt libs)
+/// @since v0.2.1-beta
 #define FMT fmt
 #else
+/// @brief standard format library (Undefined the fmt libs)
+/// @since v0.2.1-beta
 #define FMT std
 #endif
 

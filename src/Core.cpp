@@ -1140,6 +1140,7 @@ namespace MyEngine {
     }
 
     void TextSystem::unload() {
+        if (!_is_loaded) return;
         std::for_each(_text_map.begin(), _text_map.end(), [](auto& text) {
             TTF_DestroyText(text.second.self);
         });
@@ -1149,6 +1150,7 @@ namespace MyEngine {
             font.second.font.reset();
         });
         TTF_Quit();
+        _is_loaded = false;
         Logger::log("TextSystem: Unloaded text system");
     }
 
@@ -1434,17 +1436,10 @@ namespace MyEngine {
 
     void AudioSystem::unload() {
         if (!_is_init) return;
-        for (auto& [name, audio] : _audio_map) {
-            if (audio.index() == 1) {
-                std::get<std::unique_ptr<BGM>>(audio).reset();
-            } else if (audio.index() == 2) {
-                std::get<std::unique_ptr<SFX>>(audio).reset();
-            }
-        }
+        _audio_map.clear();
         for (auto& mixer : _mixer_list) {
             if (mixer) MIX_DestroyMixer(mixer);
         }
-        _audio_map.clear();
         _mixer_list.clear();
         MIX_Quit();
         Logger::log("AudioSystem: Unloaded audio system!");

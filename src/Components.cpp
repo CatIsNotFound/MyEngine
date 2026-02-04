@@ -707,6 +707,8 @@ namespace MyEngine {
 
     void BGM::setPath(const std::string &path) {
         _path = path;
+        unload();
+        load();
     }
 
     const std::string &BGM::path() const {
@@ -978,6 +980,7 @@ namespace MyEngine {
             _audio = nullptr;
         }
         SDL_DestroyProperties(_prop_id);
+        _prop_id = 0;
         _play_status = Invalid;
     }
 
@@ -995,6 +998,8 @@ namespace MyEngine {
 
     void SFX::setPath(const std::string &path) {
         _path = path;
+        unload();
+        load();
     }
 
     const std::string &SFX::path() const {
@@ -1154,6 +1159,7 @@ namespace MyEngine {
             _audio = nullptr;
         }
         SDL_DestroyProperties(_prop_id);
+        _prop_id = 0;
         _is_load = false;
     }
 }

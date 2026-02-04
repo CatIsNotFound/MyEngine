@@ -109,7 +109,7 @@ namespace MyEngine {
                 Logger::log("writePixelsToSurface: The specified surface is not valid!", Logger::Error);
                 return false;
             }
-            if (surface->w <= start_pos.col || surface->h <= start_pos.row) {
+            if (surface->w <= (int)start_pos.col || surface->h <= (int)start_pos.row) {
                 Logger::log("writePixelsToSurface: The start position is out of range!", Logger::Error);
                 return false;
             }
@@ -122,8 +122,8 @@ namespace MyEngine {
             }
             auto max_row = start_pos.row + color_map.rows();
             auto max_col = start_pos.col + color_map.cols();
-            max_row = (surface->h <= max_row ? surface->h - 1 : max_row);
-            max_col = (surface->w <= max_col ? surface->w - 1 : max_col);
+            max_row = (surface->h <= (int)max_row ? surface->h - 1 : max_row);
+            max_col = (surface->w <= (int)max_col ? surface->w - 1 : max_col);
             auto pixel_buffer = static_cast<uint8_t*>(surface->pixels);
             const SDL_Palette* palette = SDL_GetSurfacePalette(surface);
             int pitch = surface->pitch;
@@ -145,15 +145,14 @@ namespace MyEngine {
         }
 
         inline Matrix2D<SDL_Color> readPixelsFromSurface(SDL_Surface* surface, bool* ok = nullptr) {
-            Matrix2D<SDL_Color> _map;
             if (!SDL_LockSurface(surface)) {
                 if (ok) *ok = false;
                 Logger::log(FMT::format("readPixelsFromSurface: "
                                         "Failed to get pixels from the specified surface! "
                                         "Exception: {}", SDL_GetError()), Logger::Error);
-                return _map;
+                return Matrix2D<SDL_Color>(0, 0);
             }
-            _map.reshape(surface->h, surface->w);
+            Matrix2D<SDL_Color> _map(surface->h, surface->w);
             SDL_PixelFormat fmt = surface->format;
             auto fmt_details = SDL_GetPixelFormatDetails(fmt);
             auto palette = SDL_GetSurfacePalette(surface);
@@ -178,15 +177,16 @@ namespace MyEngine {
         inline Matrix2D<SDL_Color> readPixelsOnlyFromSurface(SDL_Surface* surface,
                          Matrix2D<SDL_Color>::Position&& start_pos, Matrix2D<SDL_Color>::Position&& end_pos,
                          bool* ok = nullptr) {
-            Matrix2D<SDL_Color> _map;
-            if (start_pos.row >= surface->w || start_pos.col >= surface->h) {
-                if (ok) *ok = false; return _map;
+            Matrix2D<SDL_Color> _map(0, 0);
+            if ((int)start_pos.row >= surface->w || (int)start_pos.col >= surface->h) {
+                if (ok) *ok = false;
+                return _map;
             }
             if (start_pos > end_pos) std::swap(start_pos, end_pos);
             uint32_t new_width = end_pos.col - start_pos.col + 1,
                      new_height = end_pos.row - start_pos.row + 1;
-            if (end_pos.col >= surface->w) new_width -= end_pos.col - surface->w + 1;
-            if (end_pos.row >= surface->h) new_height -= end_pos.row - surface->h + 1;
+            if ((int)end_pos.col >= surface->w) new_width -= end_pos.col - surface->w + 1;
+            if ((int)end_pos.row >= surface->h) new_height -= end_pos.row - surface->h + 1;
             if (!SDL_LockSurface(surface)) {
                 if (ok) *ok = false;
                 Logger::log(FMT::format("readPixelsOnlyFromSurface: "
@@ -201,10 +201,10 @@ namespace MyEngine {
             int pitch = surface->pitch;
             int pixel_bytes = SDL_BYTESPERPIXEL(fmt);
             auto pixel_buffer = static_cast<uint8_t*>(surface->pixels);
-            for (int y = (int)start_pos.row; y < (int)start_pos.row + new_height; ++y) {
-                for (int x = (int)start_pos.col; x < (int)start_pos.col + new_width; ++x) {
-                    if ((x == start_pos.row && y < start_pos.col)) continue;
-                    if (x == end_pos.row && y > end_pos.col) break;
+            for (int y = (int)start_pos.row; y < (int)(start_pos.row + new_height); ++y) {
+                for (int x = (int)start_pos.col; x < (int)(start_pos.col + new_width); ++x) {
+                    if (x == (int)(start_pos.row) && y < (int)(start_pos.col)) continue;
+                    if (x == (int)(end_pos.row) && y > (int)(end_pos.col)) break;
                     int pixel_offset = y * pitch + x * pixel_bytes;
                     auto pixel_ptr = reinterpret_cast<uint32_t*>(pixel_buffer + pixel_offset);
                     uint32_t pixelValue = *pixel_ptr;

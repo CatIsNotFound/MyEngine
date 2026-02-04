@@ -163,6 +163,7 @@ if (BUILD_SHARED_LIBS_ONLY)
             src/Widgets/HorizontalLayout.cpp
             src/Widgets/HorizontalLayout.h
             src/Algorithm/RGBAPixels.h
+            src/Widgets/All.h
     )
 else ()
     add_library(${PROJECT_NAME} STATIC
@@ -224,6 +225,7 @@ else ()
             src/Widgets/HorizontalLayout.cpp
             src/Widgets/HorizontalLayout.h
             src/Algorithm/RGBAPixels.h
+            src/Widgets/All.h
     )
 endif ()
 

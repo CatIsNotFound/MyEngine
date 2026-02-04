@@ -4,7 +4,7 @@
 #include "../Libs.h"
 #include "../Utils/Logger.h"
 
-namespace MyEngine {
+namespace MyEngine::MultiThread {
     class ThreadPool {
     public:
         explicit ThreadPool(uint32_t max_waiting, uint32_t max_running = std::thread::hardware_concurrency())

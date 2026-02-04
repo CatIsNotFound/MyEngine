@@ -306,9 +306,9 @@ namespace MyEngine {
             auto now = std::chrono::system_clock::now();
             auto zoned = DATE_TZ::zoned_time(timezone, now);
             auto sys_time = zoned.get_sys_time();
-            auto day_time = DATE_TZ::floor<DATE_TZ::days>(sys_time);
-            DATE_TZ::year_month_day ymy = day_time;
-            DATE_TZ::hh_mm_ss hms(sys_time - day_time);
+            // auto day_time = DATE_TZ::floor<DATE_TZ::days>(sys_time);
+            // DATE_TZ::year_month_day ymy = day_time;
+            // DATE_TZ::hh_mm_ss hms(sys_time - day_time);
             return FMT::format("{}", sys_time);
         }
 

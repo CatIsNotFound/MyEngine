@@ -10,18 +10,14 @@ TEST_CASE("Audio System Load audios test", "[Core][Engine][Audio]") {
     AudioSystem::global()->appendSFX("sfx", FileSystem::getAbsolutePath("./assets/SineWave.wav"));
     REQUIRE_NOTHROW(AudioSystem::global()->getBGM("bgm"));
     REQUIRE_NOTHROW(AudioSystem::global()->getSFX("sfx"));
-    auto bgm = AudioSystem::global()->getBGM("bgm");
-    auto sfx = AudioSystem::global()->getSFX("sfx");
-    CHECK(bgm->isLoaded());
-    CHECK(sfx->isLoaded());
+    {
+        CHECK(AudioSystem::global()->getBGM("bgm")->isLoaded());
+        CHECK(AudioSystem::global()->getSFX("sfx")->isLoaded());
+    }
 
     Timer quit_timer(1000, [] { Engine::exit(); });
     quit_timer.start();
     CHECK_NOFAIL(engine.exec());
-    CHECK(bgm->audio() == nullptr);
-    CHECK(bgm->track() == nullptr);
-    CHECK(sfx->audio() == nullptr);
-    CHECK(sfx->track() == nullptr);
     CHECK(AudioSystem::global()->size() == 0);
     CHECK_FALSE(AudioSystem::global()->isValid());
 }

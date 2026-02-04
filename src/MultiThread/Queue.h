@@ -3,7 +3,7 @@
 #define MYENGINE_MULTITHREAD_QUEUE_H
 #include "../Libs.h"
 
-namespace MyEngine {
+namespace MyEngine::MultiThread {
     template <typename T>
     class TaskQueue {
     public:

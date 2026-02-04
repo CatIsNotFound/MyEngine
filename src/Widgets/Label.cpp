@@ -140,6 +140,11 @@ namespace MyEngine::Widget {
     }
 
     void Label::setTextAlignment(Alignment alignment) {
+        if (!_text) {
+            Logger::log(Logger::Error, "Label ({}): The font is not set! It will not be effect!",
+                        objectName());
+            return;
+        }
         if (_auto_resize_by_text) return;
         _alignment = alignment;
         _changer_signal |= ENGINE_SIGNAL_LABEL_TEXT_ALIGNMENT_CHANGED;

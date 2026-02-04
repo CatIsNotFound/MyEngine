@@ -69,6 +69,10 @@ addModule(TEST_MODULES test_renderer
         examples/test_renderer/test_renderer.cpp
 )
 
+addModule(TEST_MODULES test_widgets
+        examples/test_widgets/test_widgets.cpp
+)
+
 #addModule(TEST_MODULES test_audio_system
 #        core/AudioSystem/test_audio_system.cpp
 #)
